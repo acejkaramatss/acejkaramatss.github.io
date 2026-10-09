@@ -1,0 +1,546 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>GLF Rwanda Empowerment Summit | ACEJ KARAMA TSS</title>
+  <meta name="description" content="Coverage of ACEJ Karama TSS students participating in the Girls Leaders Forum (GLF) Rwanda leadership and empowerment workshop in Huye District.">
+  <link rel="icon" type="image/png" href="/logo.png">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+  <style>
+    :root {
+      --acej-blue: #0047AB;
+      --acej-dark-blue: #002D6E;
+      --acej-gold: #FFC72C;
+      --acej-gold-hover: #E5B220;
+      --text-dark: #0f172a;
+      --text-muted: #64748b;
+      --bg-light: #f8fafc;
+      --white: #ffffff;
+      --border-color: #e2e8f0;
+      --shadow-sm: 0 4px 14px rgba(0,0,0,0.05);
+      --shadow-md: 0 10px 25px rgba(0, 71, 171, 0.12);
+    }
+
+    * { box-sizing: border-box; margin: 0; padding: 0; font-family: 'Segoe UI', -apple-system, BlinkMacSystemFont, Roboto, sans-serif; }
+    body { color: var(--text-dark); background-color: var(--bg-light); line-height: 1.7; overflow-x: hidden; }
+
+    /* TOP BAR */
+    .top-bar {
+      background: var(--acej-dark-blue);
+      color: #cbd5e1;
+      padding: 9px 5%;
+      font-size: 0.85rem;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      border-bottom: 2px solid var(--acej-gold);
+    }
+    .top-bar a { color: #e2e8f0; text-decoration: none; margin-left: 15px; transition: color 0.2s; }
+    .top-bar a:hover { color: var(--acej-gold); }
+
+    /* NAVBAR */
+    .navbar {
+      background: var(--white);
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      padding: 12px 5%;
+      box-shadow: 0 2px 14px rgba(0,0,0,0.06);
+      position: sticky;
+      top: 0;
+      z-index: 1000;
+    }
+    .brand { display: flex; align-items: center; gap: 14px; text-decoration: none; z-index: 1001; }
+    .brand-logo-img { height: 50px; width: 50px; object-fit: contain; }
+    .brand-text h1 { font-size: 1.3rem; color: var(--acej-blue); font-weight: 900; letter-spacing: -0.5px; line-height: 1.1; }
+    .brand-text p { font-size: 0.65rem; color: #b45309; font-weight: 800; letter-spacing: 1.5px; text-transform: uppercase; }
+
+    .nav-links { display: flex; list-style: none; gap: 26px; align-items: center; }
+    .nav-links a { text-decoration: none; color: var(--text-dark); font-weight: 700; font-size: 0.95rem; transition: color 0.2s; }
+    .nav-links a:hover, .nav-links a.active { color: var(--acej-blue); }
+
+    .nav-actions { display: flex; gap: 10px; align-items: center; }
+    .btn-apply {
+      background: var(--acej-gold);
+      color: var(--acej-dark-blue);
+      text-decoration: none;
+      padding: 9px 18px;
+      border-radius: 6px;
+      font-weight: 800;
+      font-size: 0.85rem;
+      text-transform: uppercase;
+      letter-spacing: 0.5px;
+      transition: all 0.2s;
+    }
+    .btn-portal {
+      background: var(--acej-blue);
+      color: var(--white);
+      text-decoration: none;
+      padding: 9px 16px;
+      border-radius: 6px;
+      font-weight: 700;
+      font-size: 0.85rem;
+      display: flex;
+      align-items: center;
+      gap: 6px;
+    }
+    .menu-toggle { display: none; background: none; border: none; color: var(--acej-blue); font-size: 1.6rem; cursor: pointer; }
+
+    /* ARTICLE CONTAINER */
+    .article-container { max-width: 900px; margin: 40px auto 70px; padding: 0 20px; }
+
+    /* HERO MAGAZINE BANNER */
+    .article-header {
+      background: var(--white);
+      border-radius: 18px;
+      overflow: hidden;
+      box-shadow: var(--shadow-sm);
+      border: 1px solid var(--border-color);
+      margin-bottom: 35px;
+      animation: fadeInDown 0.7s ease-out;
+    }
+    .featured-lead-image {
+      position: relative;
+      height: 480px;
+      width: 100%;
+      background: #000;
+    }
+    .featured-lead-image img {
+      width: 100%;
+      height: 100%;
+      object-fit: cover;
+      display: block;
+    }
+    .featured-tag {
+      position: absolute;
+      top: 20px;
+      left: 20px;
+      background: var(--acej-blue);
+      color: var(--white);
+      padding: 6px 14px;
+      border-radius: 6px;
+      font-size: 0.8rem;
+      font-weight: 800;
+      letter-spacing: 1px;
+      text-transform: uppercase;
+    }
+
+    .article-meta-box { padding: 35px 35px 25px; }
+    .article-breadcrumbs { font-size: 0.88rem; color: var(--text-muted); margin-bottom: 12px; }
+    .article-breadcrumbs a { color: var(--acej-blue); text-decoration: none; font-weight: 600; }
+    .article-title {
+      font-size: 2.35rem;
+      color: var(--acej-dark-blue);
+      font-weight: 900;
+      line-height: 1.25;
+      margin-bottom: 15px;
+    }
+    .article-info-strip {
+      display: flex;
+      gap: 20px;
+      color: var(--text-muted);
+      font-size: 0.9rem;
+      padding-bottom: 20px;
+      border-bottom: 2px solid #f1f5f9;
+      margin-bottom: 25px;
+      flex-wrap: wrap;
+    }
+    .article-info-strip span { display: flex; align-items: center; gap: 6px; }
+
+    /* EDITORIAL TEXT CONTENT */
+    .article-body {
+      background: var(--white);
+      border-radius: 18px;
+      padding: 40px;
+      box-shadow: var(--shadow-sm);
+      border: 1px solid var(--border-color);
+      margin-bottom: 40px;
+    }
+    .lead-paragraph {
+      font-size: 1.15rem;
+      line-height: 1.8;
+      color: #334155;
+      font-weight: 500;
+      border-left: 4px solid var(--acej-gold);
+      padding-left: 20px;
+      margin-bottom: 28px;
+    }
+    .article-body p { margin-bottom: 20px; font-size: 1.05rem; color: #475569; }
+    .article-body h3 { font-size: 1.45rem; color: var(--acej-dark-blue); font-weight: 800; margin: 30px 0 14px; }
+
+    /* PHOTO REPORTAGE GALLERY GRID */
+    .magazine-gallery {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(260px, 1fr));
+      gap: 22px;
+      margin: 35px 0 25px;
+    }
+    .photo-card {
+      background: var(--bg-light);
+      border: 1px solid var(--border-color);
+      border-radius: 14px;
+      overflow: hidden;
+      display: flex;
+      flex-direction: column;
+      transition: all 0.3s ease;
+      animation: cardAppear 0.8s cubic-bezier(0.16, 1, 0.3, 1) backwards;
+    }
+    .photo-card:hover {
+      transform: translateY(-4px);
+      box-shadow: var(--shadow-md);
+      border-color: #cbd5e1;
+    }
+    .photo-card-img {
+      height: 240px;
+      width: 100%;
+      overflow: hidden;
+      background: #e2e8f0;
+    }
+    .photo-card-img img {
+      width: 100%;
+      height: 100%;
+      object-fit: cover;
+      transition: transform 0.4s ease;
+    }
+    .photo-card:hover .photo-card-img img { transform: scale(1.04); }
+    .photo-caption {
+      padding: 14px 16px;
+      font-size: 0.88rem;
+      color: #475569;
+      line-height: 1.5;
+      font-weight: 500;
+      background: var(--white);
+      border-top: 1px solid var(--border-color);
+    }
+    .photo-caption strong { color: var(--acej-blue); display: block; margin-bottom: 3px; font-size: 0.82rem; text-transform: uppercase; }
+
+    /* FOOTER */
+    .site-footer {
+      background: #002D6E;
+      color: #ffffff;
+      padding: 60px 6% 30px;
+      border-top: 5px solid var(--acej-gold);
+    }
+    .footer-container {
+      max-width: 1200px;
+      margin: 0 auto;
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(230px, 1fr));
+      gap: 40px;
+      margin-bottom: 40px;
+    }
+    .footer-col h3 { font-size: 1.15rem; font-weight: 800; margin-bottom: 15px; position: relative; padding-bottom: 8px; }
+    .footer-col h3::after { content: ''; position: absolute; bottom: 0; left: 0; width: 40px; height: 3px; background: var(--acej-gold); }
+    .footer-links { list-style: none; }
+    .footer-links li { margin-bottom: 10px; }
+    .footer-links a { color: #cbd5e1; text-decoration: none; font-size: 0.92rem; }
+    .footer-links a:hover { color: var(--acej-gold); }
+    .footer-bottom {
+      max-width: 1200px;
+      margin: 0 auto;
+      padding-top: 25px;
+      border-top: 1px solid rgba(255,255,255,0.15);
+      display: flex;
+      justify-content: space-between;
+      color: #94a3b8;
+      font-size: 0.85rem;
+      flex-wrap: wrap;
+      gap: 15px;
+    }
+
+    /* WHATSAPP FLOAT */
+    .whatsapp-float {
+      position: fixed;
+      bottom: 25px;
+      right: 25px;
+      background: #25d366;
+      color: var(--white);
+      border-radius: 50%;
+      width: 56px;
+      height: 56px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 1.9rem;
+      box-shadow: 0 6px 20px rgba(37, 211, 102, 0.4);
+      text-decoration: none;
+      z-index: 1000;
+    }
+
+    /* ANIMATIONS */
+    @keyframes fadeInDown { from { opacity: 0; transform: translateY(-20px); } to { opacity: 1; transform: translateY(0); } }
+    @keyframes cardAppear { from { opacity: 0; transform: translateY(20px); } to { opacity: 1; transform: translateY(0); } }
+
+    @media (max-width: 900px) {
+      .top-bar { display: none; }
+      .menu-toggle { display: block; }
+      .nav-links {
+        position: absolute;
+        top: 100%;
+        left: 0;
+        width: 100%;
+        background: var(--white);
+        flex-direction: column;
+        align-items: stretch;
+        gap: 0;
+        padding: 0;
+        max-height: 0;
+        overflow: hidden;
+        transition: max-height 0.35s ease-in-out;
+      }
+      .nav-links.active-menu { max-height: 380px; border-bottom: 3px solid var(--acej-gold); }
+      .nav-links li { width: 100%; border-top: 1px solid #f1f5f9; }
+      .nav-links a { display: block; padding: 15px 6%; color: var(--acej-dark-blue); }
+      .featured-lead-image { height: 320px; }
+      .article-meta-box, .article-body { padding: 25px 20px; }
+      .article-title { font-size: 1.8rem; }
+    }
+  </style>
+</head>
+<body>
+
+  <!-- TOP BAR -->
+  <div class="top-bar">
+    <div>
+      <span><i class="fa-solid fa-location-dot"></i> Muhanga, Southern Province, Rwanda</span>
+      <span style="margin-left: 20px;"><i class="fa-solid fa-code"></i> School Code: 0207030</span>
+    </div>
+    <div>
+      <a href="tel:0788607924"><i class="fa-solid fa-phone"></i> 0788607924</a>
+      <a href="mailto:acejkaramatss@gmail.com"><i class="fa-solid fa-envelope"></i> acejkaramatss@gmail.com</a>
+    </div>
+  </div>
+
+  <!-- NAVBAR -->
+  <header class="navbar">
+    <a href="/" class="brand">
+      <img src="/logo.png" alt="ACEJ Karama Crest" class="brand-logo-img" onerror="this.src='https://blogger.googleusercontent.com/img/b/R29vZ2xl/AVvXsEj7G8n1Z3Q5z90_LOGO/s400/acej-logo.png';">
+      <div class="brand-text">
+        <h1>ACEJ KARAMA</h1>
+        <p>Uburerere &bull; Ubumenyi</p>
+      </div>
+    </a>
+
+    <ul class="nav-links" id="navLinks">
+      <li><a href="/">Home</a></li>
+      <li><a href="/about/">About</a></li>
+      <li><a href="/academics/">Academics</a></li>
+      <li><a href="/staff/">Staff</a></li>
+      <li><a href="/news/glf-rwanda/" class="active">News</a></li>
+      <li><a href="/contact/">Contact</a></li>
+    </ul>
+
+    <div class="nav-actions">
+      <a href="/contact/" class="btn-apply">Apply Now</a>
+      <a href="#" class="btn-portal"><i class="fa-solid fa-user"></i> Portal</a>
+      <button class="menu-toggle" id="menuToggle" aria-label="Toggle navigation menu">
+        <i class="fa-solid fa-bars" id="menuIcon"></i>
+      </button>
+    </div>
+  </header>
+
+  <!-- MAGAZINE ARTICLE CONTAINER -->
+  <main class="article-container">
+    <article class="article-header">
+      <!-- MAIN FEATURED IMAGE (HUYE 1) -->
+      <div class="featured-lead-image">
+        <img src="/Huye%201.jpg" alt="ACEJ Karama TSS Delegation at the Girls Leaders Forum in Huye">
+        <span class="featured-tag">Leadership &bull; Campus News</span>
+      </div>
+
+      <div class="article-meta-box">
+        <div class="article-breadcrumbs">
+          <a href="/">Home</a> &rsaquo; <a href="/news/glf-rwanda/">News &amp; Events</a> &rsaquo; <span>GLF Rwanda</span>
+        </div>
+        <h1 class="article-title">Girls Leaders Forum (GLF) Rwanda: Empowering Future Women Leaders at ACEJ Karama TSS</h1>
+        <div class="article-info-strip">
+          <span><i class="fa-regular fa-calendar"></i> May 08, 2024</span>
+          <span><i class="fa-solid fa-location-dot"></i> Huye District &bull; Southern Province</span>
+          <span><i class="fa-solid fa-users"></i> Student Leadership Delegation</span>
+        </div>
+      </div>
+    </article>
+
+    <!-- EDITORIAL REPORT -->
+    <div class="article-body">
+      <p class="lead-paragraph">
+        The Girls Leaders Forum (GLF) Rwanda continues to play an inspiring role in guiding young women to discover their potential, assert their rights, and step boldly into technical leadership, governance, and entrepreneurship.
+      </p>
+
+      <p>
+        At ACEJ Karama TSS, education extends beyond theoretical textbooks and computer laboratories. Through active participation in the Girls Leaders Forum (GLF) Rwanda seminar held in Huye District, our students joined peer delegates from across the Southern Province for interactive mentorship, capacity-building workshops, and leadership dialogues.
+      </p>
+
+      <h3>Nurturing Confidence, Governance &amp; Economic Independence</h3>
+      <p>
+        The summit addressed critical thematic areas including civic governance, public speaking, health education, and financial literacy. Through collaborative roundtables, student leaders engaged directly with motivational figures, sharing experiences on balancing high-level technical coursework with campus leadership roles.
+      </p>
+
+      <!-- VISUAL PHOTO REPORTAGE -->
+      <h3 style="margin-top: 35px; border-bottom: 2px solid var(--acej-gold); padding-bottom: 8px;">
+        <i class="fa-solid fa-camera-retro" style="color: var(--acej-blue);"></i> Photo Reportage: ACEJ Delegation in Huye
+      </h3>
+
+      <div class="magazine-gallery">
+        <!-- Photo 2 -->
+        <div class="photo-card" style="animation-delay: 0.1s;">
+          <div class="photo-card-img">
+            <img src="/Huye%202.jpg" alt="Student delegates engaging during sessions" loading="lazy">
+          </div>
+          <div class="photo-caption">
+            <strong>Joy &amp; Camaraderie</strong>
+            Student delegates demonstrating unity, confidence, and sisterhood during forum breaks.
+          </div>
+        </div>
+
+        <!-- Photo 3 -->
+        <div class="photo-card" style="animation-delay: 0.2s;">
+          <div class="photo-card-img">
+            <img src="/Huye%203.jpg" alt="Student leaders in school uniform" loading="lazy">
+          </div>
+          <div class="photo-caption">
+            <strong>Campus Representation</strong>
+            ACEJ Karama TSS student representatives networking with fellow secondary school leaders.
+          </div>
+        </div>
+
+        <!-- Photo 4 -->
+        <div class="photo-card" style="animation-delay: 0.3s;">
+          <div class="photo-card-img">
+            <img src="/Huye%204.jpg" alt="Delegates in courtyard" loading="lazy">
+          </div>
+          <div class="photo-caption">
+            <strong>Youth Leadership</strong>
+            Delegates reflecting on practical mentorship steps to implement in campus clubs.
+          </div>
+        </div>
+
+        <!-- Photo 5 -->
+        <div class="photo-card" style="animation-delay: 0.4s;">
+          <div class="photo-card-img">
+            <img src="/Huye%205.jpg" alt="Student delegation group portrait" loading="lazy">
+          </div>
+          <div class="photo-caption">
+            <strong>Ambassadors of Excellence</strong>
+            Student committee members representing the technical departments in Huye.
+          </div>
+        </div>
+
+        <!-- Photo 6 -->
+        <div class="photo-card" style="animation-delay: 0.5s;">
+          <div class="photo-card-img">
+            <img src="/Huye%206.jpg" alt="Team standing together" loading="lazy">
+          </div>
+          <div class="photo-caption">
+            <strong>Collaborative Spirit</strong>
+            Strengthening bonds of mutual support, public voice, and academic discipline.
+          </div>
+        </div>
+
+        <!-- Photo 7 -->
+        <div class="photo-card" style="animation-delay: 0.6s;">
+          <div class="photo-card-img">
+            <img src="/Huye%207.jpg" alt="Pair of student delegates" loading="lazy">
+          </div>
+          <div class="photo-caption">
+            <strong>Mentorship in Action</strong>
+            Active participants discussing women's participation in TVET and technology careers.
+          </div>
+        </div>
+
+        <!-- Photo 8 -->
+        <div class="photo-card" style="animation-delay: 0.7s;">
+          <div class="photo-card-img">
+            <img src="/Huye%208.jpg" alt="Delegates standing by campus trees" loading="lazy">
+          </div>
+          <div class="photo-caption">
+            <strong>Leadership Roundtable</strong>
+            Student leaders reflecting upon ethical governance and community transformation.
+          </div>
+        </div>
+
+        <!-- Photo 9 -->
+        <div class="photo-card" style="animation-delay: 0.8s;">
+          <div class="photo-card-img">
+            <img src="/Huye%209.jpg" alt="Friendship and mentorship" loading="lazy">
+          </div>
+          <div class="photo-caption">
+            <strong>Future Innovators</strong>
+            Inspiring peer support and shared ambition among our future women technicians.
+          </div>
+        </div>
+      </div>
+
+      <p style="margin-top: 25px;">
+        The administration of ACEJ Karama TSS remains dedicated to providing an inclusive learning atmosphere that nurtures disciplined, capable, and confident leaders who will shape the future of Rwanda.
+      </p>
+    </div>
+  </main>
+
+  <!-- FOOTER -->
+  <footer class="site-footer">
+    <div class="footer-container">
+      <div class="footer-col">
+        <h3>About ACEJ</h3>
+        <ul class="footer-links">
+          <li><a href="/about/">&rsaquo; Our History &amp; Mission</a></li>
+          <li><a href="/about/">&rsaquo; Uburerere &bull; Ubumenyi</a></li>
+          <li><a href="/staff/">&rsaquo; Leadership &amp; Faculty</a></li>
+          <li><a href="/academics/">&rsaquo; Academic Programmes</a></li>
+        </ul>
+      </div>
+
+      <div class="footer-col">
+        <h3>Admissions</h3>
+        <ul class="footer-links">
+          <li><a href="/contact/">&rsaquo; New Student Registration</a></li>
+          <li><a href="/academics/">&rsaquo; Levels 3, 4 &amp; 5 Entry</a></li>
+          <li><a href="/contact/">&rsaquo; School Fee Structures</a></li>
+        </ul>
+      </div>
+
+      <div class="footer-col">
+        <h3>Get in Touch</h3>
+        <p style="color: #cbd5e1; font-size: 0.9rem; margin-bottom: 8px;">
+          <i class="fa-solid fa-location-dot" style="color: var(--acej-gold);"></i> WPJG+G3P, Kamazu Village, Nganzo Cell, Mushubati, Muhanga
+        </p>
+        <p style="color: #cbd5e1; font-size: 0.9rem;">
+          <i class="fa-solid fa-phone" style="color: var(--acej-gold);"></i> Headmaster: 0788607924
+        </p>
+      </div>
+    </div>
+
+    <div class="footer-bottom">
+      <div>&copy; 2026 ACEJ KARAMA TSS &bull; All Rights Reserved. Code: 0207030</div>
+      <div>Accredited by Rwanda TVET Board (RTQB)</div>
+    </div>
+  </footer>
+
+  <!-- FLOATING WHATSAPP -->
+  <a href="https://wa.me/250788607924" class="whatsapp-float" target="_blank" rel="noopener noreferrer" title="Chat on WhatsApp">
+    <i class="fa-brands fa-whatsapp"></i>
+  </a>
+
+  <!-- MOBILE SCRIPT -->
+  <script>
+    (function() {
+      var menuToggle = document.getElementById('menuToggle');
+      var navLinks = document.getElementById('navLinks');
+      var menuIcon = document.getElementById('menuIcon');
+
+      menuToggle.addEventListener('click', function() {
+        navLinks.classList.toggle('active-menu');
+        if (navLinks.classList.contains('active-menu')) {
+          menuIcon.classList.remove('fa-bars');
+          menuIcon.classList.add('fa-xmark');
+        } else {
+          menuIcon.classList.remove('fa-xmark');
+          menuIcon.classList.add('fa-bars');
+        }
+      });
+    })();
+  </script>
+
+</body>
+</html>
