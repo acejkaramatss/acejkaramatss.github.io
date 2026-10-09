@@ -17,6 +17,9 @@
       --bg-light: #f8fafc;
       --white: #ffffff;
       --border-color: #e2e8f0;
+      --shadow-sm: 0 4px 14px rgba(0,0,0,0.04);
+      --shadow-md: 0 10px 25px rgba(13, 40, 71, 0.08);
+      --shadow-lg: 0 18px 36px rgba(13, 40, 71, 0.12);
     }
 
     * {
@@ -30,40 +33,87 @@
       color: var(--text-dark);
       background-color: var(--bg-light);
       line-height: 1.6;
+      overflow-x: hidden;
     }
 
+    /* TOP BAR */
     .top-bar {
       background: var(--primary-navy);
       color: #cbd5e1;
-      padding: 8px 5%;
+      padding: 9px 5%;
       font-size: 0.85rem;
       display: flex;
       justify-content: space-between;
       align-items: center;
       border-bottom: 1px solid rgba(255,255,255,0.1);
     }
-    .top-bar a { color: #cbd5e1; text-decoration: none; margin-left: 15px; }
+    .top-bar a {
+      color: #cbd5e1;
+      text-decoration: none;
+      margin-left: 15px;
+      transition: color 0.2s;
+    }
     .top-bar a:hover { color: var(--accent-gold); }
 
+    /* NAVBAR */
     .navbar {
       background: var(--white);
       display: flex;
       justify-content: space-between;
       align-items: center;
-      padding: 15px 5%;
-      box-shadow: 0 2px 10px rgba(0,0,0,0.05);
+      padding: 16px 5%;
+      box-shadow: 0 2px 12px rgba(0,0,0,0.04);
       position: sticky;
       top: 0;
       z-index: 1000;
+      backdrop-filter: blur(8px);
     }
-    .brand { text-decoration: none; }
-    .brand-text h1 { font-size: 1.25rem; color: var(--primary-navy); font-weight: 800; }
-    .brand-text p { font-size: 0.65rem; color: var(--accent-gold); font-weight: 700; letter-spacing: 1px; text-transform: uppercase; }
-
-    .nav-links { display: flex; list-style: none; gap: 24px; align-items: center; }
-    .nav-links a { text-decoration: none; color: var(--text-dark); font-weight: 600; font-size: 0.95rem; }
-    .nav-links a:hover, .nav-links a.active { color: var(--accent-gold); }
-
+    .brand {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      text-decoration: none;
+    }
+    .brand-text h1 {
+      font-size: 1.3rem;
+      color: var(--primary-navy);
+      font-weight: 800;
+      letter-spacing: -0.5px;
+    }
+    .brand-text p {
+      font-size: 0.65rem;
+      color: var(--accent-gold);
+      font-weight: 700;
+      letter-spacing: 1px;
+      text-transform: uppercase;
+    }
+    .nav-links {
+      display: flex;
+      list-style: none;
+      gap: 26px;
+      align-items: center;
+    }
+    .nav-links a {
+      text-decoration: none;
+      color: var(--text-dark);
+      font-weight: 600;
+      font-size: 0.95rem;
+      transition: all 0.2s ease;
+      position: relative;
+    }
+    .nav-links a:hover, .nav-links a.active {
+      color: var(--secondary-blue);
+    }
+    .nav-links a.active::after {
+      content: '';
+      position: absolute;
+      bottom: -6px;
+      left: 0;
+      width: 100%;
+      height: 2px;
+      background: var(--accent-gold);
+      border-radius: 2px;
+    }
     .nav-actions { display: flex; gap: 12px; }
     .btn-apply {
       background: var(--accent-gold);
@@ -74,6 +124,12 @@
       font-weight: 700;
       font-size: 0.88rem;
       text-transform: uppercase;
+      box-shadow: 0 3px 10px rgba(197, 155, 39, 0.25);
+      transition: all 0.25s ease;
+    }
+    .btn-apply:hover {
+      background: var(--accent-gold-hover);
+      transform: translateY(-2px);
     }
     .btn-portal {
       background: var(--primary-navy);
@@ -86,22 +142,30 @@
       display: flex;
       align-items: center;
       gap: 6px;
+      transition: all 0.25s ease;
+    }
+    .btn-portal:hover {
+      background: var(--secondary-blue);
+      transform: translateY(-2px);
     }
 
+    /* CONTAINER */
     .container {
-      max-width: 1100px;
-      margin: 40px auto;
+      max-width: 1140px;
+      margin: 40px auto 60px;
       padding: 0 20px;
     }
 
+    /* PAGE HEADER */
     .page-header {
       background: linear-gradient(135deg, var(--primary-navy) 0%, var(--secondary-blue) 100%);
       color: var(--white);
-      border-radius: 16px;
-      padding: 40px 25px;
+      border-radius: 20px;
+      padding: 45px 30px;
       text-align: center;
       margin-bottom: 35px;
-      box-shadow: 0 10px 25px rgba(13, 40, 71, 0.12);
+      box-shadow: var(--shadow-md);
+      animation: fadeInDown 0.7s ease-out;
     }
     .badge {
       background: rgba(255,255,255,0.15);
@@ -110,43 +174,74 @@
       font-size: 0.8rem;
       letter-spacing: 2px;
       text-transform: uppercase;
-      padding: 5px 14px;
+      padding: 6px 16px;
       border-radius: 20px;
       display: inline-block;
-      margin-bottom: 10px;
+      margin-bottom: 12px;
     }
-    .page-header h2 { font-size: 2.2rem; margin-bottom: 8px; font-weight: 800; }
-    .page-header p { color: #e2e8f0; max-width: 700px; margin: 0 auto; font-size: 1rem; }
+    .page-header h2 {
+      font-size: 2.3rem;
+      font-weight: 800;
+      margin-bottom: 8px;
+    }
+    .page-header p {
+      color: #e2e8f0;
+      max-width: 700px;
+      margin: 0 auto;
+      font-size: 1.02rem;
+    }
 
+    /* GRID & CARDS */
     .grid-2 {
       display: grid;
       grid-template-columns: repeat(auto-fit, minmax(320px, 1fr));
       gap: 25px;
-      margin-bottom: 30px;
+      margin-bottom: 25px;
     }
 
     .card {
       background: var(--white);
       border: 1px solid var(--border-color);
-      border-radius: 14px;
-      padding: 28px;
-      box-shadow: 0 4px 12px rgba(0,0,0,0.04);
+      border-radius: 16px;
+      padding: 32px;
+      box-shadow: var(--shadow-sm);
+      transition: all 0.3s cubic-bezier(0.16, 1, 0.3, 1);
+      animation: cardAppear 0.8s cubic-bezier(0.16, 1, 0.3, 1) backwards;
     }
+    .card:hover {
+      transform: translateY(-4px);
+      box-shadow: var(--shadow-md);
+      border-color: #cbd5e1;
+    }
+
+    /* STAGGERED ENTRANCES */
+    .card-item-1 { animation-delay: 0.1s; }
+    .card-item-2 { animation-delay: 0.25s; }
+    .card-item-3 { animation-delay: 0.4s; }
+    .card-item-4 { animation-delay: 0.55s; }
+
     .card h3 {
-      font-size: 1.3rem;
+      font-size: 1.35rem;
       color: var(--primary-navy);
       margin-bottom: 12px;
       font-weight: 800;
       display: flex;
       align-items: center;
-      gap: 10px;
+      gap: 12px;
+    }
+    .card h3 i {
+      transition: transform 0.3s ease;
+    }
+    .card:hover h3 i {
+      transform: scale(1.15) rotate(5deg);
     }
     .card p {
       color: #475569;
-      font-size: 0.95rem;
-      line-height: 1.6;
+      font-size: 0.96rem;
+      line-height: 1.65;
     }
 
+    /* FLOATING WHATSAPP */
     .whatsapp-float {
       position: fixed;
       bottom: 25px;
@@ -154,20 +249,35 @@
       background: #25d366;
       color: var(--white);
       border-radius: 50%;
-      width: 54px;
-      height: 54px;
+      width: 56px;
+      height: 56px;
       display: flex;
       align-items: center;
       justify-content: center;
-      font-size: 1.8rem;
-      box-shadow: 0 4px 15px rgba(0,0,0,0.2);
+      font-size: 1.9rem;
+      box-shadow: 0 6px 20px rgba(37, 211, 102, 0.4);
       text-decoration: none;
       z-index: 1000;
+      transition: transform 0.25s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+    }
+    .whatsapp-float:hover {
+      transform: scale(1.1) rotate(5deg);
+    }
+
+    /* KEYFRAME ANIMATIONS */
+    @keyframes fadeInDown {
+      from { opacity: 0; transform: translateY(-25px); }
+      to { opacity: 1; transform: translateY(0); }
+    }
+    @keyframes cardAppear {
+      from { opacity: 0; transform: translateY(30px); }
+      to { opacity: 1; transform: translateY(0); }
     }
 
     @media (max-width: 768px) {
       .top-bar { display: none; }
       .nav-links { display: none; }
+      .page-header h2 { font-size: 1.8rem; }
     }
   </style>
 </head>
@@ -187,21 +297,21 @@
 
   <!-- NAVBAR -->
   <header class="navbar">
-    <a href="index.html" class="brand">
+    <a href="/" class="brand">
       <div class="brand-text">
         <h1>ACEJ KARAMA</h1>
         <p>Excellence in Technical Education</p>
       </div>
     </a>
     <ul class="nav-links">
-      <li><a href="index.html">Home</a></li>
-      <li><a href="about.html" class="active">About</a></li>
-      <li><a href="academics.html">Academics</a></li>
-      <li><a href="staff.html">Staff</a></li>
-      <li><a href="contact.html">Contact</a></li>
+      <li><a href="/">Home</a></li>
+      <li><a href="/about/" class="active">About</a></li>
+      <li><a href="/academics/">Academics</a></li>
+      <li><a href="/staff/">Staff</a></li>
+      <li><a href="/contact/">Contact</a></li>
     </ul>
     <div class="nav-actions">
-      <a href="contact.html" class="btn-apply">Apply Now</a>
+      <a href="/contact/" class="btn-apply">Apply Now</a>
       <a href="#" class="btn-portal"><i class="fa-solid fa-user"></i> Portal</a>
     </div>
   </header>
@@ -214,14 +324,15 @@
       <p>Association pour la Contribution à l'Education de la Jeunesse — Dedicated to technical training, moral discipline, and self-reliance.</p>
     </div>
 
+    <!-- MISSION & VISION -->
     <div class="grid-2">
-      <div class="card">
+      <div class="card card-item-1">
         <h3><i class="fa-solid fa-bullseye" style="color: var(--accent-gold);"></i> Our Mission</h3>
         <p>
           To equip secondary school youth with high-level vocational, technical, and analytical skills that foster job creation, technological innovation, and self-reliance, guided by strong moral values ("Uburerere • Ubumenyi").
         </p>
       </div>
-      <div class="card">
+      <div class="card card-item-2">
         <h3><i class="fa-solid fa-eye" style="color: var(--accent-gold);"></i> Our Vision</h3>
         <p>
           To be a premier technical and secondary training center of excellence in Rwanda, producing competent, highly employable graduates equipped to thrive in competitive digital and financial economies.
@@ -229,24 +340,25 @@
       </div>
     </div>
 
+    <!-- ACCREDITATION & CAMPUS -->
     <div class="grid-2">
-      <div class="card">
+      <div class="card card-item-3">
         <h3><i class="fa-solid fa-certificate" style="color: var(--accent-gold);"></i> National Accreditation</h3>
         <p>
-          ACEJ Karama TSS is accredited under the <strong>Rwanda TVET Board (RTQB)</strong> and the Ministry of Education. We offer Competence-Based Training & Assessment (CBT/CBA) curricula for Levels 3, 4, and 5 in Networking, Computer Systems, and Accounting.
+          ACEJ Karama TSS is accredited under the <strong>Rwanda TVET Board (RTQB)</strong> and the Ministry of Education. We offer Competence-Based Training &amp; Assessment (CBT/CBA) curricula for Levels 3, 4, and 5 in Networking, Computer Systems, and Accounting.
         </p>
       </div>
-      <div class="card">
-        <h3><i class="fa-solid fa-map-location-dot" style="color: var(--accent-gold);"></i> Campus & Location</h3>
+      <div class="card card-item-4">
+        <h3><i class="fa-solid fa-map-location-dot" style="color: var(--accent-gold);"></i> Campus &amp; Location</h3>
         <p>
-          Situated in the scenic environment of <strong>Muhanga District, Southern Province, Rwanda</strong>, our campus provides safe boarding accommodations, modern computer networking laboratories, sports fields, and library resources.
+          Situated in the scenic environment of <strong>Mushubati, Muhanga District, Southern Province, Rwanda</strong>, our campus provides safe boarding accommodations, modern computer networking laboratories, sports fields, and library resources.
         </p>
       </div>
     </div>
   </div>
 
-  <!-- WHATSAPP FLOAT -->
-  <a href="https://wa.me/250788607924" class="whatsapp-float" target="_blank" rel="noopener noreferrer">
+  <!-- FLOATING WHATSAPP -->
+  <a href="https://wa.me/250788607924" class="whatsapp-float" target="_blank" rel="noopener noreferrer" title="Chat on WhatsApp">
     <i class="fa-brands fa-whatsapp"></i>
   </a>
 
