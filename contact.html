@@ -4,7 +4,7 @@
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Contact & Admissions | ACEJ KARAMA TSS</title>
-  <meta name="description" content="Contact the administration and admissions office at ACEJ Karama TSS in Muhanga, Rwanda. Submit online inquiries, find campus directions, and connect directly.">
+  <meta name="description" content="Contact the administration and admissions office at ACEJ Karama TSS in Muhanga, Rwanda. Submit online inquiries and access campus directions.">
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
   <style>
     :root {
@@ -19,7 +19,6 @@
       --border-color: #e2e8f0;
       --shadow-sm: 0 4px 14px rgba(0,0,0,0.04);
       --shadow-md: 0 10px 25px rgba(13, 40, 71, 0.08);
-      --shadow-lg: 0 18px 36px rgba(13, 40, 71, 0.12);
     }
 
     * {
@@ -51,7 +50,7 @@
       color: #cbd5e1;
       text-decoration: none;
       margin-left: 15px;
-      transition: color 0.2s ease;
+      transition: color 0.2s;
     }
     .top-bar a:hover { color: var(--accent-gold); }
 
@@ -66,7 +65,6 @@
       position: sticky;
       top: 0;
       z-index: 1000;
-      backdrop-filter: blur(8px);
     }
     .brand {
       display: flex;
@@ -124,8 +122,8 @@
       font-weight: 700;
       font-size: 0.88rem;
       text-transform: uppercase;
-      transition: all 0.25s ease;
       box-shadow: 0 3px 10px rgba(197, 155, 39, 0.25);
+      transition: all 0.25s ease;
     }
     .btn-apply:hover {
       background: var(--accent-gold-hover);
@@ -191,7 +189,7 @@
       font-size: 1.02rem;
     }
 
-    /* LAYOUT SPLIT */
+    /* SPLIT SECTION */
     .contact-layout {
       display: grid;
       grid-template-columns: 1fr 1.35fr;
@@ -210,10 +208,11 @@
       justify-content: space-between;
       gap: 22px;
       animation: fadeInLeft 0.8s ease-out;
-      transition: box-shadow 0.3s ease;
+      transition: box-shadow 0.3s ease, transform 0.3s ease;
     }
     .info-card:hover {
       box-shadow: var(--shadow-md);
+      transform: translateY(-2px);
     }
     .info-card h3 {
       color: var(--primary-navy);
@@ -224,7 +223,7 @@
     .info-card-desc {
       color: var(--text-muted);
       font-size: 0.93rem;
-      margin-bottom: 10px;
+      margin-bottom: 12px;
     }
     .location-box {
       background: #f8fafc;
@@ -249,7 +248,7 @@
       line-height: 1.5;
     }
 
-    /* ACTION BUTTONS */
+    /* BUTTONS */
     .action-links {
       display: flex;
       flex-direction: column;
@@ -268,36 +267,14 @@
       text-decoration: none;
       transition: all 0.25s ease;
     }
-    .act-call {
-      background: #10b981;
-    }
-    .act-call:hover {
-      background: #059669;
-      transform: translateY(-2px);
-    }
-    .act-wa {
-      background: #25d366;
-    }
-    .act-wa:hover {
-      background: #1eb956;
-      transform: translateY(-2px);
-    }
-    .act-email {
-      background: var(--white);
-      border: 1px solid #cbd5e1;
-      color: #0f172a;
-    }
-    .act-email:hover {
-      background: #f1f5f9;
-      transform: translateY(-2px);
-    }
-    .act-maps {
-      background: var(--secondary-blue);
-    }
-    .act-maps:hover {
-      background: var(--primary-navy);
-      transform: translateY(-2px);
-    }
+    .act-call { background: #10b981; }
+    .act-call:hover { background: #059669; transform: translateY(-2px); }
+    .act-wa { background: #25d366; }
+    .act-wa:hover { background: #1eb956; transform: translateY(-2px); }
+    .act-email { background: var(--white); border: 1px solid #cbd5e1; color: #0f172a; }
+    .act-email:hover { background: #f1f5f9; transform: translateY(-2px); }
+    .act-maps { background: var(--secondary-blue); }
+    .act-maps:hover { background: var(--primary-navy); transform: translateY(-2px); }
 
     /* FORM CARD */
     .form-card {
@@ -324,7 +301,7 @@
       margin-bottom: 22px;
     }
 
-    /* IN-PAGE CONFIRMATION BANNERS */
+    /* IN-PAGE MESSAGES */
     #form-status-success {
       background: #ecfdf5;
       border-radius: 12px;
@@ -332,9 +309,9 @@
       color: #065f46;
       display: none;
       margin-bottom: 20px;
-      padding: 24px 20px;
+      padding: 28px 22px;
       text-align: center;
-      animation: fadeInUp 0.5s ease-out;
+      animation: popIn 0.5s cubic-bezier(0.175, 0.885, 0.32, 1.275);
     }
     #form-status-error {
       background: #fef2f2;
@@ -346,29 +323,25 @@
       margin-bottom: 20px;
       padding: 14px 18px;
       text-align: center;
-      animation: fadeInUp 0.5s ease-out;
+      animation: popIn 0.4s ease-out;
     }
 
-    /* FORM INPUTS */
+    /* INPUTS */
     .form-grid {
       display: flex;
       flex-wrap: wrap;
       gap: 16px;
       margin-bottom: 16px;
     }
-    .form-cell {
-      flex: 1 1 210px;
-    }
-    .form-cell label {
+    .form-cell { flex: 1 1 210px; }
+    .form-cell label, .form-full label {
       color: #334155;
       display: block;
       font-size: 0.88rem;
       font-weight: 600;
       margin-bottom: 6px;
     }
-    .form-cell input,
-    .form-cell select,
-    .form-full textarea {
+    .form-cell input, .form-cell select, .form-full textarea {
       width: 100%;
       padding: 11px 14px;
       border: 1.5px solid var(--border-color);
@@ -379,23 +352,12 @@
       outline: none;
       transition: all 0.25s ease;
     }
-    .form-cell input:focus,
-    .form-cell select:focus,
-    .form-full textarea:focus {
+    .form-cell input:focus, .form-cell select:focus, .form-full textarea:focus {
       border-color: var(--secondary-blue);
       background: var(--white);
       box-shadow: 0 0 0 3px rgba(30, 58, 138, 0.1);
     }
-    .form-full {
-      margin-bottom: 16px;
-    }
-    .form-full label {
-      color: #334155;
-      display: block;
-      font-size: 0.88rem;
-      font-weight: 600;
-      margin-bottom: 6px;
-    }
+    .form-full { margin-bottom: 16px; }
 
     /* SUBMIT BUTTON */
     .form-submit-btn {
@@ -422,7 +384,7 @@
       box-shadow: 0 6px 18px rgba(13, 40, 71, 0.3);
     }
 
-    /* MAP PREVIEW SECTION */
+    /* MAP BLOCK */
     .map-section {
       margin-top: 40px;
       background: var(--white);
@@ -482,7 +444,7 @@
       border: 0;
     }
 
-    /* FLOATING WHATSAPP BUTTON */
+    /* FLOATING WHATSAPP */
     .whatsapp-float {
       position: fixed;
       bottom: 25px;
@@ -505,22 +467,27 @@
       transform: scale(1.1) rotate(5deg);
     }
 
-    /* ANIMATIONS */
+    /* KEYFRAME ANIMATIONS */
     @keyframes fadeInDown {
-      from { opacity: 0; transform: translateY(-20px); }
+      from { opacity: 0; transform: translateY(-25px); }
       to { opacity: 1; transform: translateY(0); }
     }
     @keyframes fadeInUp {
-      from { opacity: 0; transform: translateY(20px); }
+      from { opacity: 0; transform: translateY(25px); }
       to { opacity: 1; transform: translateY(0); }
     }
     @keyframes fadeInLeft {
-      from { opacity: 0; transform: translateX(-20px); }
+      from { opacity: 0; transform: translateX(-25px); }
       to { opacity: 1; transform: translateX(0); }
     }
     @keyframes fadeInRight {
-      from { opacity: 0; transform: translateX(20px); }
+      from { opacity: 0; transform: translateX(25px); }
       to { opacity: 1; transform: translateX(0); }
+    }
+    @keyframes popIn {
+      0% { opacity: 0; transform: scale(0.9); }
+      70% { transform: scale(1.03); }
+      100% { opacity: 1; transform: scale(1); }
     }
 
     @media (max-width: 860px) {
@@ -575,7 +542,7 @@
     </div>
 
     <div class="contact-layout">
-      <!-- LEFT COLUMN: CONTACT DETAILS & BUTTONS -->
+      <!-- LEFT COLUMN -->
       <div class="info-card">
         <div>
           <h3>Contact Details</h3>
@@ -608,24 +575,24 @@
         </div>
       </div>
 
-      <!-- RIGHT COLUMN: IN-PAGE SUBMISSION FORM -->
+      <!-- RIGHT COLUMN: FORM -->
       <div class="form-card">
         <h3>Send us a Message</h3>
         <p class="form-card-sub">Fill out this form and our administrative team will reply directly to your email address.</p>
 
-        <!-- IN-PAGE SUCCESS BANNER -->
+        <!-- SUCCESS NOTIFICATION -->
         <div id="form-status-success">
-          <span style="display: block; font-size: 2.2rem; margin-bottom: 8px;">✅</span>
-          <strong style="display: block; font-size: 1.15rem; margin-bottom: 6px;">Thank you! Your message has been sent.</strong>
-          <p style="color: #047857; font-size: 0.92rem; margin: 0;">The administration at ACEJ Karama TSS has received your details and will get back to you shortly.</p>
+          <span style="display: block; font-size: 2.5rem; margin-bottom: 8px;">🎉</span>
+          <strong style="display: block; font-size: 1.25rem; margin-bottom: 6px;">Thank you! Your message has been sent.</strong>
+          <p style="color: #047857; font-size: 0.95rem; margin: 0;">The administration at ACEJ Karama TSS has received your details and will get back to you shortly.</p>
         </div>
 
-        <!-- IN-PAGE ERROR BANNER -->
+        <!-- ERROR NOTIFICATION -->
         <div id="form-status-error">
           ⚠️ Something went wrong. Please check your connection or contact us directly by phone.
         </div>
 
-        <!-- FORM (PROCESSED VIA AJAX) -->
+        <!-- CONTACT FORM -->
         <form action="https://formspree.io/f/xjygwyqr" id="acej-contact-form" method="POST">
           <div class="form-grid">
             <div class="form-cell">
@@ -661,7 +628,7 @@
       </div>
     </div>
 
-    <!-- GOOGLE MAPS BLOCK -->
+    <!-- MAP BLOCK -->
     <div class="map-section">
       <div class="map-header">
         <div class="map-header-text">
@@ -688,7 +655,7 @@
     <i class="fa-brands fa-whatsapp"></i>
   </a>
 
-  <!-- SUBMISSION SCRIPT (SILENT AJAX PROCESSING) -->
+  <!-- AJAX HANDLER SCRIPT -->
   <script>
     (function() {
       var form = document.getElementById("acej-contact-form");
