@@ -3,9 +3,9 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>ACEJ KARAMA TSS | Excellence in Technical Education</title>
-  <meta name="description" content="Official portal of ACEJ Karama TSS (Association pour la Contribution à l'Education de la Jeunesse) in Muhanga, Rwanda. RTQB accredited technical secondary school.">
-  <meta name="keywords" content="ACEJ Karama, ACEJ Karama TSS, Uburerere Ubumenyi, Muhanga TVET, RTQB, Rwanda Technical School">
+  <title>ACEJ KARAMA TSS | Technical Secondary School</title>
+  <meta name="description" content="Official portal of ACEJ Karama TSS (Association pour la Contribution à l'Education de la Jeunesse) in Muhanga, Rwanda. Accredited Technical Secondary School.">
+  <meta name="keywords" content="ACEJ Karama TSS, ACEJ Karama, Technical Secondary School, Muhanga TSS, RTB, NESA, Rwanda TSS">
   <meta name="google-site-verification" content="_2E72En-E2s2izExfWQNHzHOVy7NJ30LTv33ufi-tvk" />
   
   <!-- Favicon / Crest Profile -->
@@ -25,6 +25,7 @@
       --border-color: #e2e8f0;
       --shadow-sm: 0 4px 14px rgba(0,0,0,0.05);
       --shadow-md: 0 10px 25px rgba(0, 71, 171, 0.12);
+      --shadow-lg: 0 18px 36px rgba(0, 45, 110, 0.18);
     }
 
     * {
@@ -71,6 +72,7 @@
       position: sticky;
       top: 0;
       z-index: 1000;
+      backdrop-filter: blur(8px);
     }
 
     .brand {
@@ -182,53 +184,105 @@
       z-index: 1001;
     }
 
-    /* HERO BANNER */
+    /* ========================================================
+       HERO BANNER WITH LOOPING BACKGROUND SLIDESHOW
+       ======================================================== */
     .hero {
       position: relative;
-      min-height: 85vh;
+      min-height: 88vh;
       display: flex;
       flex-direction: column;
       justify-content: center;
       padding: 70px 6%;
       color: var(--white);
-      background: linear-gradient(rgba(0, 45, 110, 0.82), rgba(0, 71, 171, 0.88)),
-                  url('https://blogger.googleusercontent.com/img/b/R29vZ2xl/AVvXsEiS7_BH561jPKxmqk2p56tnZLJDhJWIj4Fr3lrAFbNah59e-Jt3nh0niozIONP5zlhqU3f_yrTLXFKUEKY4WKfgZiZv91GIP5mD4gmtwU55FsKMKwsXF8CN0k9cxE6cVBtrZz_miyKtVuJbJzKUPAf4yk-gMxx-x0pa1t5jI3otslfN-RsGRrPlH44WxPQs/s1600/choir.jpg') center/cover no-repeat;
+      overflow: hidden;
+      background-color: var(--acej-dark-blue);
     }
-    .hero-badge {
-      display: inline-block;
-      background: rgba(255, 199, 44, 0.2);
-      border: 1px solid var(--acej-gold);
+
+    /* Looping Background Layers matching your uploaded files */
+    .hero-bg-layer {
+      position: absolute;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      background-size: cover;
+      background-position: center;
+      z-index: 1;
+      opacity: 0;
+      animation: heroSlideshow 14s infinite ease-in-out;
+    }
+    .hero-bg-1 {
+      background-image: url('/background1.jpeg');
+      animation-delay: 0s;
+    }
+    .hero-bg-2 {
+      background-image: url('/background2.jpg');
+      animation-delay: 7s;
+    }
+
+    /* Semi-transparent Overlay for Readability */
+    .hero-overlay {
+      position: absolute;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      background: linear-gradient(135deg, rgba(0, 45, 110, 0.86) 0%, rgba(0, 71, 171, 0.78) 100%);
+      z-index: 2;
+    }
+
+    .hero-container {
+      position: relative;
+      z-index: 3;
+      max-width: 840px;
+    }
+
+    /* ANIMATED LOOPING BADGE */
+    .hero-badge-animated {
+      display: inline-flex;
+      align-items: center;
+      gap: 8px;
+      background: rgba(255, 199, 44, 0.22);
+      border: 1.5px solid var(--acej-gold);
       color: var(--acej-gold);
-      padding: 6px 14px;
-      border-radius: 6px;
-      font-size: 0.82rem;
+      padding: 8px 18px;
+      border-radius: 30px;
+      font-size: 0.88rem;
       font-weight: 800;
       letter-spacing: 2px;
       text-transform: uppercase;
-      margin-bottom: 18px;
-      width: fit-content;
-      animation: fadeInDown 0.6s ease-out;
+      margin-bottom: 22px;
+      box-shadow: 0 0 15px rgba(255, 199, 44, 0.35);
+      animation: badgePulse 3s infinite ease-in-out;
     }
-    .hero-content {
-      max-width: 760px;
-      animation: fadeInUp 0.8s ease-out;
-    }
+
+    /* LARGE HERO TITLE WITH HIGHLIGHT */
     .hero-title {
-      font-size: 3.4rem;
+      font-size: 3.6rem;
       font-weight: 900;
       line-height: 1.15;
       margin-bottom: 20px;
       letter-spacing: -0.5px;
+      text-shadow: 0 4px 18px rgba(0,0,0,0.3);
     }
+    .hero-title .title-accent {
+      color: var(--acej-gold);
+      display: inline-block;
+      animation: accentFloat 4s infinite ease-in-out;
+    }
+
     .hero-desc {
-      font-size: 1.15rem;
+      font-size: 1.18rem;
       color: #e2e8f0;
-      line-height: 1.6;
-      margin-bottom: 32px;
+      line-height: 1.65;
+      margin-bottom: 35px;
+      max-width: 760px;
     }
+
     .hero-buttons {
       display: flex;
-      gap: 15px;
+      gap: 16px;
       margin-bottom: 45px;
       flex-wrap: wrap;
     }
@@ -236,41 +290,44 @@
       background: var(--acej-gold);
       color: var(--acej-dark-blue);
       text-decoration: none;
-      padding: 13px 28px;
-      border-radius: 6px;
+      padding: 14px 30px;
+      border-radius: 8px;
       font-weight: 800;
-      font-size: 0.95rem;
+      font-size: 0.96rem;
       text-transform: uppercase;
       letter-spacing: 0.5px;
       transition: all 0.25s ease;
-      box-shadow: 0 4px 14px rgba(255, 199, 44, 0.4);
+      box-shadow: 0 4px 16px rgba(255, 199, 44, 0.4);
     }
     .btn-hero-primary:hover {
       background: var(--acej-gold-hover);
-      transform: translateY(-2px);
+      transform: translateY(-3px);
+      box-shadow: 0 8px 22px rgba(255, 199, 44, 0.5);
     }
     .btn-hero-outline {
-      background: rgba(255,255,255,0.1);
-      border: 1px solid rgba(255,255,255,0.4);
+      background: rgba(255,255,255,0.12);
+      border: 1.5px solid rgba(255,255,255,0.5);
       color: var(--white);
       text-decoration: none;
-      padding: 13px 26px;
-      border-radius: 6px;
+      padding: 14px 28px;
+      border-radius: 8px;
       font-weight: 700;
-      font-size: 0.95rem;
+      font-size: 0.96rem;
       transition: all 0.25s ease;
+      backdrop-filter: blur(4px);
     }
     .btn-hero-outline:hover {
       background: rgba(255,255,255,0.25);
-      transform: translateY(-2px);
+      border-color: var(--white);
+      transform: translateY(-3px);
     }
 
-    /* STATS ROW */
+    /* STATS OVERLAY */
     .hero-stats {
       display: flex;
       gap: 45px;
       padding-top: 25px;
-      border-top: 1px solid rgba(255, 255, 255, 0.2);
+      border-top: 1px solid rgba(255, 255, 255, 0.22);
     }
     .stat-item h3 {
       font-size: 2.2rem;
@@ -286,56 +343,70 @@
       margin-top: 5px;
     }
 
-    /* CAMPUS SPOTLIGHT BANNER */
+    /* ========================================================
+       CAMPUS SPOTLIGHT WITH ANIMATED IMAGE FRAME
+       ======================================================== */
     .spotlight-section {
       background: var(--bg-light);
-      padding: 60px 6%;
+      padding: 70px 6%;
       border-bottom: 1px solid var(--border-color);
     }
     .spotlight-container {
-      max-width: 1140px;
+      max-width: 1160px;
       margin: 0 auto;
       display: grid;
-      grid-template-columns: 1.1fr 1fr;
-      gap: 40px;
+      grid-template-columns: 1.15fr 1fr;
+      gap: 45px;
       align-items: center;
     }
-    .spotlight-img {
+
+    /* Animated Crossfade Campus Frame */
+    .spotlight-frame {
       position: relative;
-      border-radius: 16px;
+      height: 400px;
+      border-radius: 20px;
       overflow: hidden;
-      box-shadow: var(--shadow-md);
+      box-shadow: var(--shadow-lg);
       border: 4px solid var(--white);
+      background: #0f172a;
     }
-    .spotlight-img img {
+    .frame-slide {
+      position: absolute;
+      top: 0;
+      left: 0;
       width: 100%;
-      height: 380px;
-      object-fit: cover;
-      display: block;
-      transition: transform 0.4s ease;
+      height: 100%;
+      background-size: cover;
+      background-position: center;
+      transition: opacity 1.2s ease-in-out, transform 6s ease-in-out;
+      opacity: 0;
     }
-    .spotlight-img:hover img {
-      transform: scale(1.03);
+    .frame-slide.active-slide {
+      opacity: 1;
+      transform: scale(1.05);
     }
     .spotlight-tag {
       position: absolute;
-      bottom: 15px;
-      left: 15px;
-      background: rgba(0, 45, 110, 0.9);
+      bottom: 20px;
+      left: 20px;
+      background: rgba(0, 45, 110, 0.92);
       color: var(--acej-gold);
-      padding: 6px 14px;
-      border-radius: 6px;
-      font-size: 0.8rem;
+      padding: 7px 16px;
+      border-radius: 8px;
+      font-size: 0.82rem;
       font-weight: 800;
-      letter-spacing: 1px;
+      letter-spacing: 1.2px;
       text-transform: uppercase;
+      z-index: 5;
+      backdrop-filter: blur(4px);
     }
+
     .spotlight-text h2 {
-      font-size: 2.2rem;
+      font-size: 2.3rem;
       color: var(--acej-dark-blue);
       font-weight: 900;
       line-height: 1.2;
-      margin-bottom: 15px;
+      margin-bottom: 16px;
     }
     .spotlight-text p {
       color: #475569;
@@ -360,9 +431,11 @@
       color: #10b981;
     }
 
-    /* NEWS & VISUAL POSTS SECTION */
+    /* ========================================================
+       NEWS & ANNOUNCEMENTS SECTION
+       ======================================================== */
     .news-section {
-      padding: 70px 6%;
+      padding: 75px 6%;
       max-width: 1200px;
       margin: 0 auto;
     }
@@ -399,12 +472,12 @@
     .news-grid {
       display: grid;
       grid-template-columns: repeat(auto-fit, minmax(320px, 1fr));
-      gap: 28px;
+      gap: 30px;
     }
     .news-card {
       background: var(--white);
       border: 1px solid var(--border-color);
-      border-radius: 16px;
+      border-radius: 18px;
       overflow: hidden;
       box-shadow: var(--shadow-sm);
       display: flex;
@@ -413,12 +486,12 @@
       transition: all 0.3s ease;
     }
     .news-card:hover {
-      transform: translateY(-5px);
+      transform: translateY(-6px);
       box-shadow: var(--shadow-md);
       border-color: #cbd5e1;
     }
     .news-card-img {
-      height: 220px;
+      height: 230px;
       width: 100%;
       overflow: hidden;
       position: relative;
@@ -430,7 +503,7 @@
       transition: transform 0.4s ease;
     }
     .news-card:hover .news-card-img img {
-      transform: scale(1.05);
+      transform: scale(1.06);
     }
     .news-card-body {
       padding: 24px;
@@ -443,7 +516,7 @@
       font-weight: 800;
       letter-spacing: 1px;
       text-transform: uppercase;
-      padding: 4px 10px;
+      padding: 5px 12px;
       border-radius: 4px;
       width: fit-content;
       margin-bottom: 12px;
@@ -457,7 +530,7 @@
       color: #1e40af;
     }
     .news-card-title {
-      font-size: 1.22rem;
+      font-size: 1.25rem;
       color: var(--acej-dark-blue);
       font-weight: 800;
       line-height: 1.35;
@@ -465,34 +538,53 @@
     }
     .news-card-desc {
       color: #64748b;
-      font-size: 0.92rem;
+      font-size: 0.93rem;
       line-height: 1.6;
-      margin-bottom: 18px;
+      margin-bottom: 20px;
       flex-grow: 1;
     }
+
+    /* REDESIGNED CAPSULE BUTTONS */
     .news-card-footer {
       display: flex;
       justify-content: space-between;
       align-items: center;
-      padding-top: 15px;
+      padding: 16px 24px 22px;
       border-top: 1px solid var(--border-color);
       font-size: 0.85rem;
       color: var(--text-muted);
     }
-    .news-card-footer a {
+    .btn-read-more-pro {
+      display: inline-flex;
+      align-items: center;
+      gap: 8px;
+      background: #f1f5f9;
       color: var(--acej-blue);
       text-decoration: none;
-      font-weight: 700;
-      display: flex;
-      align-items: center;
-      gap: 6px;
-      transition: color 0.2s;
+      font-weight: 800;
+      font-size: 0.86rem;
+      padding: 8px 18px;
+      border-radius: 30px;
+      border: 1px solid #cbd5e1;
+      transition: all 0.25s ease;
     }
-    .news-card-footer a:hover {
-      color: var(--acej-gold-hover);
+    .btn-read-more-pro i {
+      transition: transform 0.2s ease;
+    }
+    .btn-read-more-pro:hover {
+      background: var(--acej-blue);
+      color: var(--white);
+      border-color: var(--acej-blue);
+      transform: translateX(3px);
+      box-shadow: 0 4px 12px rgba(0, 71, 171, 0.25);
+    }
+    .btn-read-more-pro:hover i {
+      transform: translateX(3px);
     }
 
-    /* FOOTER */
+    /* ========================================================
+       FOUR-COLUMN FOOTER
+       ======================================================== */
     .site-footer {
       background: #002D6E;
       color: #ffffff;
@@ -526,12 +618,8 @@
       height: 3px;
       background: var(--acej-gold);
     }
-    .footer-links {
-      list-style: none;
-    }
-    .footer-links li {
-      margin-bottom: 11px;
-    }
+    .footer-links { list-style: none; }
+    .footer-links li { margin-bottom: 11px; }
     .footer-links a {
       color: #cbd5e1;
       text-decoration: none;
@@ -587,7 +675,7 @@
       gap: 15px;
     }
 
-    /* WHATSAPP FLOAT */
+    /* FLOATING WHATSAPP BUTTON */
     .whatsapp-float {
       position: fixed;
       bottom: 25px;
@@ -610,17 +698,28 @@
       transform: scale(1.1) rotate(5deg);
     }
 
-    /* KEYFRAME ANIMATIONS */
-    @keyframes fadeInDown {
-      from { opacity: 0; transform: translateY(-25px); }
-      to { opacity: 1; transform: translateY(0); }
-    }
-    @keyframes fadeInUp {
-      from { opacity: 0; transform: translateY(25px); }
-      to { opacity: 1; transform: translateY(0); }
+    /* ========================================================
+       KEYFRAME ANIMATIONS & LOOP EFFECTS
+       ======================================================== */
+    @keyframes heroSlideshow {
+      0% { opacity: 0; transform: scale(1); }
+      15% { opacity: 1; }
+      50% { opacity: 1; transform: scale(1.06); }
+      65% { opacity: 0; }
+      100% { opacity: 0; transform: scale(1); }
     }
 
-    /* RESPONSIVE LAYOUT */
+    @keyframes badgePulse {
+      0%, 100% { transform: scale(1); box-shadow: 0 0 14px rgba(255, 199, 44, 0.35); }
+      50% { transform: scale(1.05); box-shadow: 0 0 25px rgba(255, 199, 44, 0.65); }
+    }
+
+    @keyframes accentFloat {
+      0%, 100% { transform: translateY(0); }
+      50% { transform: translateY(-4px); }
+    }
+
+    /* RESPONSIVE LAYOUT (PHONES & TABLETS) */
     @media (max-width: 900px) {
       .top-bar { display: none; }
       .menu-toggle { display: block; }
@@ -637,7 +736,7 @@
         padding: 0;
         max-height: 0;
         overflow: hidden;
-        transition: max-height 0.35s ease-in-out, box-shadow 0.35s ease;
+        transition: max-height 0.35s ease-in-out;
         box-shadow: none;
       }
 
@@ -647,62 +746,34 @@
         border-bottom: 3px solid var(--acej-gold);
       }
 
-      .nav-links li {
-        width: 100%;
-        border-top: 1px solid #f1f5f9;
-      }
-
-      .nav-links a {
-        display: block;
-        padding: 15px 6%;
-        font-size: 1.05rem;
-        color: var(--acej-dark-blue);
-      }
-
-      .nav-links a:hover,
-      .nav-links a.active {
-        background: #f8fafc;
-        color: var(--acej-blue);
-        padding-left: 8%;
-      }
-
+      .nav-links li { width: 100%; border-top: 1px solid #f1f5f9; }
+      .nav-links a { display: block; padding: 15px 6%; color: var(--acej-dark-blue); }
       .nav-links a.active::after { display: none; }
 
-      .spotlight-container {
-        grid-template-columns: 1fr;
-      }
+      .spotlight-container { grid-template-columns: 1fr; }
+      .spotlight-frame { height: 280px; }
 
       .hero {
-        padding: 45px 5%;
+        padding: 50px 5%;
         min-height: calc(100vh - 72px);
       }
       .hero-title {
-        font-size: 2.3rem;
+        font-size: 2.35rem;
         line-height: 1.2;
       }
-      .hero-buttons {
-        gap: 12px;
-      }
-      .btn-hero-primary, .btn-hero-outline {
-        width: 100%;
-        text-align: center;
-      }
-      .hero-stats {
-        gap: 20px;
-        justify-content: space-between;
-      }
-      .stat-item h3 {
-        font-size: 1.8rem;
-      }
+      .hero-buttons { gap: 12px; }
+      .btn-hero-primary, .btn-hero-outline { width: 100%; text-align: center; }
+      .hero-stats { gap: 20px; justify-content: space-between; }
+      .stat-item h3 { font-size: 1.8rem; }
     }
   </style>
 </head>
 <body>
 
-  <!-- TOP BAR (PC ONLY) -->
+  <!-- TOP BAR (DESKTOP) -->
   <div class="top-bar">
     <div>
-      <span><i class="fa-solid fa-location-dot"></i> Muhanga, Southern Province, Rwanda</span>
+      <span><i class="fa-solid fa-location-dot"></i> Mushubati, Muhanga District, Southern Province, Rwanda</span>
       <span style="margin-left: 20px;"><i class="fa-solid fa-code"></i> School Code: 0207030</span>
     </div>
     <div>
@@ -714,9 +785,9 @@
   <!-- NAVBAR -->
   <header class="navbar">
     <a href="/" class="brand">
-      <img src="/logo.png" alt="ACEJ Karama Crest" class="brand-logo-img" onerror="this.src='https://blogger.googleusercontent.com/img/b/R29vZ2xl/AVvXsEj7G8n1Z3Q5z90_LOGO/s400/acej-logo.png';">
+      <img src="/logo.png" alt="ACEJ Karama Crest" class="brand-logo-img">
       <div class="brand-text">
-        <h1>ACEJ KARAMA</h1>
+        <h1>ACEJ KARAMA TSS</h1>
         <p>Uburerere &bull; Ubumenyi</p>
       </div>
     </a>
@@ -740,89 +811,106 @@
     </div>
   </header>
 
-  <!-- HERO SECTION -->
+  <!-- HERO SECTION WITH LOOPING BACKGROUND SLIDESHOW -->
   <section class="hero">
-    <span class="hero-badge">ACEJ KARAMA TSS &bull; MUHANGA</span>
-    <div class="hero-content">
-      <h1 class="hero-title">Excellence in Technical Education</h1>
+    <!-- Automated Background Slideshow -->
+    <div class="hero-bg-layer hero-bg-1"></div>
+    <div class="hero-bg-layer hero-bg-2"></div>
+    <div class="hero-overlay"></div>
+
+    <div class="hero-container">
+      <!-- Animated Looping School Badge -->
+      <div class="hero-badge-animated">
+        <i class="fa-solid fa-graduation-cap"></i> ACEJ KARAMA TSS &bull; MUHANGA
+      </div>
+
+      <h1 class="hero-title">
+        Excellence in <span class="title-accent">Technical Secondary</span> Education
+      </h1>
+      
       <p class="hero-desc">
-        Equipping secondary technical students in Rwanda with practical, industry-standard competencies in Networking &amp; Internet Technologies, Computer Systems, and Accounting under the Rwanda TVET Board (RTQB).
+        Empowering secondary students with practical, market-aligned trades in Networking &amp; Internet Technologies, Computer Systems &amp; Architecture, and Accounting under the accredited Rwanda TVET Board (RTB) curricula.
       </p>
+
       <div class="hero-buttons">
         <a href="/academics/" class="btn-hero-primary">Explore Programmes</a>
         <a href="/contact/" class="btn-hero-outline">Admissions Open</a>
       </div>
-    </div>
 
-    <!-- STATS OVERLAY -->
-    <div class="hero-stats">
-      <div class="stat-item">
-        <h3>800+</h3>
-        <p>Enrolled Students</p>
-      </div>
-      <div class="stat-item">
-        <h3>35+</h3>
-        <p>Certified Trainers</p>
-      </div>
-      <div class="stat-item">
-        <h3>98%</h3>
-        <p>RTQB Pass Rate</p>
-      </div>
-    </div>
-  </section>
-
-  <!-- CAMPUS & LEADERSHIP SPOTLIGHT -->
-  <section class="spotlight-section">
-    <div class="spotlight-container">
-      <div class="spotlight-img">
-        <img src="https://blogger.googleusercontent.com/img/b/R29vZ2xl/AVvXsEjt1R3b0X-6p8d6m6w8R3xK4P9v0m1q2w3e4r5t6y7u8i9o0p/s1600/welcome-gate.jpg" 
-             alt="ACEJ Karama Campus Welcome"
-             onerror="this.src='https://blogger.googleusercontent.com/img/b/R29vZ2xl/AVvXsEiS7_BH561jPKxmqk2p56tnZLJDhJWIj4Fr3lrAFbNah59e-Jt3nh0niozIONP5zlhqU3f_yrTLXFKUEKY4WKfgZiZv91GIP5mD4gmtwU55FsKMKwsXF8CN0k9cxE6cVBtrZz_miyKtVuJbJzKUPAf4yk-gMxx-x0pa1t5jI3otslfN-RsGRrPlH44WxPQs/s1600/choir.jpg';">
-        <span class="spotlight-tag">Campus Life &bull; Mushubati</span>
-      </div>
-      <div class="spotlight-text">
-        <h2>A Disciplined Campus Environment Built for Innovation</h2>
-        <p>
-          Located in Kamazu Village, Nganzo Cell in Muhanga District, ACEJ Karama TSS provides high-quality secondary TVET education grounded in moral values, modern computer laboratories, and specialized workshops.
-        </p>
-        <div class="spotlight-features">
-          <div class="spotlight-feat"><i class="fa-solid fa-circle-check"></i> Safe Boarding Campus</div>
-          <div class="spotlight-feat"><i class="fa-solid fa-circle-check"></i> Modern Cisco &amp; PC Labs</div>
-          <div class="spotlight-feat"><i class="fa-solid fa-circle-check"></i> National RTQB Certification</div>
-          <div class="spotlight-feat"><i class="fa-solid fa-circle-check"></i> Leadership &amp; Clubs</div>
+      <!-- STATS OVERLAY -->
+      <div class="hero-stats">
+        <div class="stat-item">
+          <h3>800+</h3>
+          <p>Enrolled Students</p>
+        </div>
+        <div class="stat-item">
+          <h3>35+</h3>
+          <p>Certified Trainers</p>
+        </div>
+        <div class="stat-item">
+          <h3>98%</h3>
+          <p>National Exam Success</p>
         </div>
       </div>
     </div>
   </section>
 
-  <!-- VISUAL POSTS & CAMPUS NEWS SECTION -->
+  <!-- CAMPUS SPOTLIGHT WITH ANIMATED IMAGE FRAME -->
+  <section class="spotlight-section">
+    <div class="spotlight-container">
+      <!-- Dual Crossfade Campus Showcase -->
+      <div class="spotlight-frame" id="campusFrame">
+        <div class="frame-slide active-slide" style="background-image: url('/background1.jpeg');"></div>
+        <div class="frame-slide" style="background-image: url('/background2.jpg');"></div>
+        <span class="spotlight-tag"><i class="fa-solid fa-camera"></i> Campus Life &bull; Mushubati</span>
+      </div>
+
+      <div class="spotlight-text">
+        <h2>A Disciplined Campus Environment Built for Innovation</h2>
+        <p>
+          Located in Kamazu Village, Nganzo Cell in Muhanga District, ACEJ Karama TSS provides high-quality technical secondary school education grounded in moral discipline, modern laboratories, and green, serene academic facilities.
+        </p>
+        <div class="spotlight-features">
+          <div class="spotlight-feat"><i class="fa-solid fa-circle-check"></i> Safe Boarding Campus</div>
+          <div class="spotlight-feat"><i class="fa-solid fa-circle-check"></i> Modern Cisco &amp; PC Labs</div>
+          <div class="spotlight-feat"><i class="fa-solid fa-circle-check"></i> National TSS Accreditation</div>
+          <div class="spotlight-feat"><i class="fa-solid fa-circle-check"></i> Clubs, Choir &amp; Leadership</div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- NEWS & ANNOUNCEMENTS SECTION -->
   <section class="news-section">
     <div class="section-header">
       <h2 class="section-header-title">News &amp; Announcements</h2>
-      <a href="/about/" class="btn-view-all">View All</a>
+      <a href="/news/glf-rwanda/" class="btn-view-all">All News</a>
     </div>
-    <!-- POST 1: GLF RWANDA EMPOWERMENT SUMMIT -->
+
+    <div class="news-grid">
+      <!-- POST 1: GLF RWANDA -->
       <article class="news-card">
         <div>
           <div class="news-card-img">
-            <img src="/Huye 1.jpg" alt="ACEJ Karama TSS at GLF Rwanda in Huye">
+            <img src="/Huye%201.jpg" alt="ACEJ Karama TSS at GLF Rwanda in Huye">
           </div>
           <div class="news-card-body">
             <span class="category-badge badge-event">Event</span>
             <h3 class="news-card-title">Girls Leaders Forum (GLF) Rwanda: Empowering Future Women Leaders</h3>
             <p class="news-card-desc">
-              ACEJ Karama TSS student delegates participated in the GLF Rwanda empowerment and leadership summit held in Huye District.
+              ACEJ Karama TSS student delegates participated in the GLF Rwanda empowerment and leadership symposium in Huye District.
             </p>
           </div>
         </div>
-        <div class="news-card-footer" style="margin: 0 24px 20px;">
+        <div class="news-card-footer">
           <span><i class="fa-regular fa-calendar"></i> 08 May 2024</span>
-          <a href="/news/glf-rwanda/">Read More &rarr;</a>
+          <a href="/news/glf-rwanda/" class="btn-read-more-pro">
+            Read More <i class="fa-solid fa-arrow-right"></i>
+          </a>
         </div>
       </article>
 
-  
-<!-- POST 1: KWIBUKA ON CAMPUS -->
+      <!-- POST 2: KWIBUKA ON CAMPUS -->
       <article class="news-card">
         <div>
           <div class="news-card-img">
@@ -836,13 +924,15 @@
             </p>
           </div>
         </div>
-        <div class="news-card-footer" style="margin: 0 24px 20px;">
+        <div class="news-card-footer">
           <span><i class="fa-regular fa-calendar"></i> Commemoration</span>
-          <a href="/news/commemoration-aerg/">Read More &rarr;</a>
+          <a href="/news/commemoration-aerg/" class="btn-read-more-pro">
+            Read More <i class="fa-solid fa-arrow-right"></i>
+          </a>
         </div>
       </article>
 
-      <!-- POST 2: AERG ITERERO AT NYANZA KICUKIRO -->
+      <!-- POST 3: AERG ITETERO AT NYANZA KICUKIRO -->
       <article class="news-card">
         <div>
           <div class="news-card-img">
@@ -850,22 +940,23 @@
           </div>
           <div class="news-card-body">
             <span class="category-badge badge-news">News</span>
-            <h3 class="news-card-title">AERG Itetero Educational Pilgrimage to Nyanza-Kicukiro Genocide Memorial</h3>
+            <h3 class="news-card-title">AERG Itetero Educational Pilgrimage to Nyanza-Kicukiro Memorial</h3>
             <p class="news-card-desc">
-              Student delegates of AERG Itetero visited the historical Nyanza memorial in Kigali to honor victims and deepen historical knowledge.
+              Student delegates of AERG Itetero visited the historical Nyanza-Kicukiro memorial in Kigali to honor victims and preserve history.
             </p>
           </div>
         </div>
-        <div class="news-card-footer" style="margin: 0 24px 20px;">
+        <div class="news-card-footer">
           <span><i class="fa-regular fa-calendar"></i> AERG Pilgrimage</span>
-          <a href="/news/commemoration-aerg/">Read More &rarr;</a>
+          <a href="/news/commemoration-aerg/" class="btn-read-more-pro">
+            Read More <i class="fa-solid fa-arrow-right"></i>
+          </a>
         </div>
       </article>
-   
+    </div>
+  </section>
 
-       
-
-  <!-- FOUR-COLUMN FOOTER -->
+  <!-- FOUR-COLUMN INSTITUTIONAL FOOTER -->
   <footer class="site-footer">
     <div class="footer-container">
       <!-- COLUMN 1: ABOUT -->
@@ -875,7 +966,7 @@
           <li><a href="/about/">&rsaquo; Our History &amp; Mission</a></li>
           <li><a href="/about/">&rsaquo; Uburerere &bull; Ubumenyi</a></li>
           <li><a href="/staff/">&rsaquo; Leadership &amp; Faculty</a></li>
-          <li><a href="/about/">&rsaquo; RTQB Accreditation</a></li>
+          <li><a href="/about/">&rsaquo; TSS National Accreditation</a></li>
           <li><a href="/contact/">&rsaquo; Campus Facilities</a></li>
         </ul>
       </div>
@@ -921,7 +1012,7 @@
 
     <div class="footer-bottom">
       <div>&copy; 2026 ACEJ KARAMA TSS &bull; All Rights Reserved. Code: 0207030</div>
-      <div>Accredited by Rwanda TVET Board (RTQB)</div>
+      <div>Accredited Technical Secondary School (RTB / NESA)</div>
     </div>
   </footer>
 
@@ -930,16 +1021,16 @@
     <i class="fa-brands fa-whatsapp"></i>
   </a>
 
-  <!-- RESPONSIVE MOBILE MENU SCRIPT -->
+  <!-- INTERACTIVE SCRIPTS -->
   <script>
     (function() {
+      // 1. Mobile Menu Toggle
       var menuToggle = document.getElementById('menuToggle');
       var navLinks = document.getElementById('navLinks');
       var menuIcon = document.getElementById('menuIcon');
 
       menuToggle.addEventListener('click', function() {
         navLinks.classList.toggle('active-menu');
-        
         if (navLinks.classList.contains('active-menu')) {
           menuIcon.classList.remove('fa-bars');
           menuIcon.classList.add('fa-xmark');
@@ -957,6 +1048,18 @@
           menuIcon.classList.add('fa-bars');
         });
       });
+
+      // 2. Animated Campus Spotlight Slideshow
+      var slides = document.querySelectorAll('#campusFrame .frame-slide');
+      var currentSlide = 0;
+
+      if (slides.length > 1) {
+        setInterval(function() {
+          slides[currentSlide].classList.remove('active-slide');
+          currentSlide = (currentSlide + 1) % slides.length;
+          slides[currentSlide].classList.add('active-slide');
+        }, 5000); // Transitions every 5 seconds
+      }
     })();
   </script>
 
