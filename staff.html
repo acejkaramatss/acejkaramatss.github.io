@@ -1,0 +1,499 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Faculty & Administration | ACEJ KARAMA TSS</title>
+  <meta name="description" content="Meet the leadership, pedagogical coordinators, and administrative staff at ACEJ Karama TSS.">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+  <style>
+    :root {
+      --primary-navy: #0d2847;
+      --secondary-blue: #1e3a8a;
+      --accent-gold: #c59b27;
+      --accent-gold-hover: #b0891e;
+      --text-dark: #1e293b;
+      --text-muted: #64748b;
+      --bg-light: #f8fafc;
+      --white: #ffffff;
+      --border-color: #e2e8f0;
+    }
+
+    * {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+      font-family: 'Segoe UI', -apple-system, BlinkMacSystemFont, Roboto, sans-serif;
+    }
+
+    body {
+      color: var(--text-dark);
+      background-color: var(--bg-light);
+      line-height: 1.6;
+    }
+
+    /* TOP BAR */
+    .top-bar {
+      background: var(--primary-navy);
+      color: #cbd5e1;
+      padding: 8px 5%;
+      font-size: 0.85rem;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      border-bottom: 1px solid rgba(255,255,255,0.1);
+    }
+    .top-bar a {
+      color: #cbd5e1;
+      text-decoration: none;
+      margin-left: 15px;
+    }
+    .top-bar a:hover { color: var(--accent-gold); }
+
+    /* NAVBAR */
+    .navbar {
+      background: var(--white);
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      padding: 15px 5%;
+      box-shadow: 0 2px 10px rgba(0,0,0,0.05);
+      position: sticky;
+      top: 0;
+      z-index: 1000;
+    }
+    .brand {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      text-decoration: none;
+    }
+    .brand-text h1 {
+      font-size: 1.25rem;
+      color: var(--primary-navy);
+      font-weight: 800;
+      letter-spacing: -0.5px;
+    }
+    .brand-text p {
+      font-size: 0.65rem;
+      color: var(--accent-gold);
+      font-weight: 700;
+      letter-spacing: 1px;
+      text-transform: uppercase;
+    }
+    .nav-links {
+      display: flex;
+      list-style: none;
+      gap: 24px;
+      align-items: center;
+    }
+    .nav-links a {
+      text-decoration: none;
+      color: var(--text-dark);
+      font-weight: 600;
+      font-size: 0.95rem;
+      transition: color 0.2s;
+    }
+    .nav-links a:hover, .nav-links a.active { color: var(--accent-gold); }
+    .nav-actions { display: flex; gap: 12px; }
+    .btn-apply {
+      background: var(--accent-gold);
+      color: var(--white);
+      text-decoration: none;
+      padding: 10px 20px;
+      border-radius: 6px;
+      font-weight: 700;
+      font-size: 0.88rem;
+      text-transform: uppercase;
+      letter-spacing: 0.5px;
+    }
+    .btn-portal {
+      background: var(--primary-navy);
+      color: var(--white);
+      text-decoration: none;
+      padding: 10px 18px;
+      border-radius: 6px;
+      font-weight: 600;
+      font-size: 0.88rem;
+      display: flex;
+      align-items: center;
+      gap: 6px;
+    }
+
+    /* CONTAINER */
+    .container {
+      max-width: 1100px;
+      margin: 40px auto;
+      padding: 0 20px;
+    }
+
+    /* PAGE HEADER BANNER */
+    .page-header {
+      background: linear-gradient(135deg, var(--primary-navy) 0%, var(--secondary-blue) 100%);
+      color: var(--white);
+      border-radius: 16px;
+      padding: 40px 25px;
+      text-align: center;
+      margin-bottom: 35px;
+      box-shadow: 0 10px 25px rgba(13, 40, 71, 0.12);
+    }
+    .badge {
+      background: rgba(255,255,255,0.15);
+      color: #fbbf24;
+      font-weight: 700;
+      font-size: 0.8rem;
+      letter-spacing: 2px;
+      text-transform: uppercase;
+      padding: 5px 14px;
+      border-radius: 20px;
+      display: inline-block;
+      margin-bottom: 10px;
+    }
+    .page-header h2 {
+      font-size: 2.2rem;
+      margin-bottom: 8px;
+      font-weight: 800;
+    }
+    .page-header p {
+      color: #e2e8f0;
+      max-width: 700px;
+      margin: 0 auto;
+      font-size: 1rem;
+    }
+
+    /* SECTION TITLE */
+    .section-title {
+      font-size: 1.35rem;
+      color: var(--primary-navy);
+      font-weight: 800;
+      border-bottom: 2px solid var(--border-color);
+      padding-bottom: 8px;
+      margin: 35px 0 20px;
+    }
+
+    /* HEADMASTER CARD (LEVEL 1) */
+    .headmaster-card {
+      background: var(--white);
+      border: 1px solid var(--border-color);
+      border-radius: 16px;
+      box-shadow: 0 4px 16px rgba(0,0,0,0.05);
+      overflow: hidden;
+      display: flex;
+      flex-wrap: wrap;
+      align-items: center;
+      margin-bottom: 30px;
+    }
+    .headmaster-img {
+      flex: 1 1 280px;
+      max-width: 340px;
+      padding: 24px;
+      margin: 0 auto;
+      text-align: center;
+    }
+    .headmaster-img img {
+      width: 100%;
+      max-width: 260px;
+      height: 300px;
+      object-fit: cover;
+      border-radius: 12px;
+      box-shadow: 0 4px 12px rgba(0,0,0,0.1);
+      display: block;
+      margin: 0 auto;
+    }
+    .headmaster-details {
+      flex: 2 1 340px;
+      padding: 25px 35px;
+    }
+    .role-badge {
+      display: inline-block;
+      font-weight: 700;
+      font-size: 0.78rem;
+      text-transform: uppercase;
+      letter-spacing: 1.2px;
+      padding: 4px 10px;
+      border-radius: 6px;
+      margin-bottom: 8px;
+    }
+    .badge-blue { background: #e0f2fe; color: #0369a1; }
+    .badge-purple { background: #e0e7ff; color: #4338ca; }
+    .badge-pink { background: #fce7f3; color: #be185d; }
+    .badge-yellow { background: #fef3c7; color: #92400e; }
+    .badge-gray { background: #f3f4f6; color: #374151; }
+    .badge-green { background: #ecfdf5; color: #047857; }
+
+    /* GRID FOR TEAMS */
+    .grid-2 {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(320px, 1fr));
+      gap: 20px;
+    }
+    .card {
+      background: var(--white);
+      border: 1px solid var(--border-color);
+      border-radius: 14px;
+      padding: 24px;
+      box-shadow: 0 4px 12px rgba(0,0,0,0.04);
+      display: flex;
+      flex-direction: column;
+      justify-content: space-between;
+    }
+    .card h4 {
+      font-size: 1.25rem;
+      color: var(--text-dark);
+      margin: 10px 0 4px;
+      font-weight: 700;
+    }
+    .card-subtitle {
+      color: var(--text-muted);
+      font-size: 0.88rem;
+      font-weight: 600;
+      margin-bottom: 10px;
+    }
+    .card-desc {
+      color: #475569;
+      font-size: 0.9rem;
+      margin-bottom: 16px;
+      line-height: 1.5;
+    }
+    .contact-btn {
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+      text-decoration: none;
+      background: #f8fafc;
+      border: 1px solid #cbd5e1;
+      color: var(--text-dark);
+      padding: 8px 14px;
+      border-radius: 6px;
+      font-weight: 600;
+      font-size: 0.85rem;
+      width: fit-content;
+      transition: background 0.2s;
+    }
+    .contact-btn:hover { background: #e2e8f0; }
+
+    /* DOYEN CARD WITH IMAGE */
+    .doyen-card {
+      background: var(--white);
+      border: 1px solid var(--border-color);
+      border-radius: 14px;
+      overflow: hidden;
+      box-shadow: 0 4px 12px rgba(0,0,0,0.04);
+      display: flex;
+      flex-wrap: wrap;
+    }
+    .doyen-img {
+      flex: 1 1 180px;
+      height: 230px;
+      background: #f8fafc;
+    }
+    .doyen-img img {
+      width: 100%;
+      height: 100%;
+      object-fit: cover;
+    }
+    .doyen-info {
+      flex: 2 1 220px;
+      padding: 20px;
+      display: flex;
+      flex-direction: column;
+      justify-content: space-between;
+    }
+
+    /* WHATSAPP FLOAT */
+    .whatsapp-float {
+      position: fixed;
+      bottom: 25px;
+      right: 25px;
+      background: #25d366;
+      color: var(--white);
+      border-radius: 50%;
+      width: 54px;
+      height: 54px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 1.8rem;
+      box-shadow: 0 4px 15px rgba(0,0,0,0.2);
+      text-decoration: none;
+      z-index: 1000;
+    }
+
+    @media (max-width: 768px) {
+      .top-bar { display: none; }
+      .nav-links { display: none; }
+      .headmaster-card { flex-direction: column; }
+    }
+  </style>
+</head>
+<body>
+
+  <!-- TOP BAR -->
+  <div class="top-bar">
+    <div>
+      <span><i class="fa-solid fa-location-dot"></i> Muhanga, Southern Province, Rwanda</span>
+      <span style="margin-left: 20px;"><i class="fa-solid fa-code"></i> School Code: 0207030</span>
+    </div>
+    <div>
+      <a href="tel:0788607924"><i class="fa-solid fa-phone"></i> 0788607924</a>
+      <a href="mailto:acejkaramatss@gmail.com"><i class="fa-solid fa-envelope"></i> acejkaramatss@gmail.com</a>
+    </div>
+  </div>
+
+  <!-- NAVBAR -->
+  <header class="navbar">
+    <a href="index.html" class="brand">
+      <div class="brand-text">
+        <h1>ACEJ KARAMA</h1>
+        <p>Excellence in Technical Education</p>
+      </div>
+    </a>
+    <ul class="nav-links">
+      <li><a href="index.html">Home</a></li>
+      <li><a href="about.html">About</a></li>
+      <li><a href="academics.html">Academics</a></li>
+      <li><a href="staff.html" class="active">Staff</a></li>
+      <li><a href="contact.html">Contact</a></li>
+    </ul>
+    <div class="nav-actions">
+      <a href="contact.html" class="btn-apply">Apply Now</a>
+      <a href="#" class="btn-portal"><i class="fa-solid fa-user"></i> Portal</a>
+    </div>
+  </header>
+
+  <!-- CONTENT -->
+  <div class="container">
+    <div class="page-header">
+      <span class="badge">School Leadership &amp; Administration</span>
+      <h2>Our Leadership &amp; Staff</h2>
+      <p>Institutional leadership, academic direction, pedagogical trainers, and finance officers dedicated to excellence at ACEJ Karama TSS.</p>
+    </div>
+
+    <!-- LEVEL 1: HEADMASTER -->
+    <div class="headmaster-card">
+      <div class="headmaster-img">
+        <img src="https://blogger.googleusercontent.com/img/b/R29vZ2xl/AVvXsEhtvkX2kE6t2x9Ufxg4wtk4Qre2Rs01Ocv0SnB_s_M16NAmcZlX5bhIUhlVMIXemSPAwceUZX9NjQGbhwnT0bZNl6CnWsQNhH4CiV0yJqOW23dlQy40BxdodH5Nzj6zWGcer8r4lLuGVVaAsZr3pZSY7qly_wRA4HBBFgdWzyN5r7N8bjTJTAR4hhQqIzie/s600/YOSUFU.jpg" 
+             alt="BISANGABAGABO Youssouf - Head Master" loading="lazy">
+      </div>
+      <div class="headmaster-details">
+        <span class="role-badge badge-blue">Head of Institution</span>
+        <h3 style="font-size: 1.8rem; color: var(--primary-navy); margin: 4px 0 6px; font-weight: 800;">BISANGABAGABO Youssouf</h3>
+        <p style="color: var(--text-muted); font-size: 1rem; font-weight: 600; margin-bottom: 14px;">School Manager &amp; Headmaster</p>
+        <p style="color: #4b5563; font-size: 0.95rem; margin-bottom: 20px; line-height: 1.6;">
+          Oversees overall institutional strategy, national accreditation compliance with RTQB/Rwanda Polytechnic, and ensures quality standards across all educational and technical trades.
+        </p>
+        <div style="display: flex; gap: 10px; flex-wrap: wrap;">
+          <a href="tel:0788607924" class="contact-btn" style="background: #10b981; color: #fff; border: none;">
+            <i class="fa-solid fa-phone"></i> Call: 0788607924
+          </a>
+          <a href="mailto:acejkaramatss@gmail.com" class="contact-btn">
+            <i class="fa-solid fa-envelope"></i> Email Office
+          </a>
+        </div>
+      </div>
+    </div>
+
+    <!-- LEVEL 2: ACADEMIC & DISCIPLINE DIRECTORS -->
+    <h3 class="section-title">Academic &amp; Student Affairs Directorate</h3>
+    <div class="grid-2">
+      <!-- DOS -->
+      <div class="card">
+        <div>
+          <span class="role-badge badge-purple">Academic Directorate</span>
+          <h4>GERMAIN MUNEZA</h4>
+          <p class="card-subtitle">Director of Studies (DOS / Deputy Headmaster)</p>
+          <p class="card-desc">
+            Acts as Vice Headmaster in academic matters. Leads curriculum deployment, timetable administration, examinations, and academic quality assurance.
+          </p>
+        </div>
+        <a href="tel:0783125100" class="contact-btn"><i class="fa-solid fa-phone"></i> Call: 0783125100</a>
+      </div>
+
+      <!-- DISCIPLINE -->
+      <div class="card">
+        <div>
+          <span class="role-badge badge-pink">Student Affairs &amp; Conduct</span>
+          <h4>Alphonsine NYIRAMDIKUMANA</h4>
+          <p class="card-subtitle">Head of Discipline (Préfète de Discipline)</p>
+          <p class="card-desc">
+            Oversees campus discipline, student welfare, boarding rules, moral integrity, and maintains direct communication with parents regarding student conduct.
+          </p>
+        </div>
+        <a href="tel:0788269155" class="contact-btn"><i class="fa-solid fa-phone"></i> Call: 0788269155</a>
+      </div>
+    </div>
+
+    <!-- LEVEL 3: PEDAGOGY & TEACHERS -->
+    <h3 class="section-title">Teaching &amp; Pedagogical Coordination</h3>
+    <div class="grid-2">
+      <!-- DOYEN -->
+      <div class="doyen-card">
+        <div class="doyen-img">
+          <img src="https://blogger.googleusercontent.com/img/b/R29vZ2xl/AVvXsEi6Kzz0qrQGJ5Hclua9valdsic9OFD5N5G8xQjIJEX7Q1O8Z7kACZCWfXzEqZZxDkq1EkLHj6KzjmZJS7XKYicptzeUuh-U91MfVGsQAMfzO5GiP5NUjKaknhFb701nBSAXR0pwnqGcLItrmCyGnvtT5nlYetOh2SCab22zC2dqSXaXCAZ9vLFuuEFAiFR/s600/umurayiki.PNG" 
+               alt="BARIHAMWE Jean D'Amour" loading="lazy">
+        </div>
+        <div class="doyen-info">
+          <div>
+            <span class="role-badge badge-yellow">Pedagogy Lead</span>
+            <h4 style="font-size: 1.15rem; color: var(--text-dark); margin: 6px 0 2px; font-weight: 700;">BARIHAMWE Jean D'Amour</h4>
+            <p class="card-subtitle">Doyen of Teachers / Senior Trainer</p>
+            <p class="card-desc" style="font-size: 0.85rem; margin-bottom: 10px;">
+              Coordinates teacher activities, internal pedagogical evaluations, and practical laboratory methods across departments.
+            </p>
+          </div>
+          <a href="tel:0788410314" class="contact-btn"><i class="fa-solid fa-phone"></i> Call: 0788410314</a>
+        </div>
+      </div>
+
+      <!-- TEACHERS COUNCIL -->
+      <div class="card">
+        <div>
+          <span class="role-badge badge-gray">General Faculty</span>
+          <h4>Teaching &amp; Technical Council</h4>
+          <p class="card-subtitle">Instructors in Networking, CSA &amp; Accounting</p>
+          <p class="card-desc">
+            Our multidisciplinary trainers bring industry-relevant expertise, mentoring students through RTQB Levels 3–5 hands-on projects and laboratory sessions.
+          </p>
+        </div>
+        <span style="font-size: 0.85rem; color: var(--text-muted);"><i class="fa-solid fa-chalkboard-user"></i> 35+ Certified Instructors</span>
+      </div>
+    </div>
+
+    <!-- LEVEL 4: FINANCE & SECRETARIAT -->
+    <h3 class="section-title">Finance &amp; Administrative Support</h3>
+    <div class="grid-2">
+      <!-- SECRETARY -->
+      <div class="card">
+        <div>
+          <span class="role-badge badge-gray">Secretariat &amp; Records</span>
+          <h4>Christine UWAMALIYA</h4>
+          <p class="card-subtitle">School Secretary</p>
+          <p class="card-desc">
+            Manages student registrations, official transcripts, incoming letters, document archives, and administrative scheduling.
+          </p>
+        </div>
+        <a href="tel:0788443464" class="contact-btn"><i class="fa-solid fa-phone"></i> Call: 0788443464</a>
+      </div>
+
+      <!-- CASHIER -->
+      <div class="card">
+        <div>
+          <span class="role-badge badge-green">Finance &amp; Accounts</span>
+          <h4>Marie Louise NYIRANGIRIMANA</h4>
+          <p class="card-subtitle">School Cashier (Caissière)</p>
+          <p class="card-desc">
+            Responsible for school fees verifications, bank slip validation, payment receipts, and treasury operations.
+          </p>
+        </div>
+        <a href="tel:0785485641" class="contact-btn"><i class="fa-solid fa-phone"></i> Call: 0785485641</a>
+      </div>
+    </div>
+  </div>
+
+  <!-- WHATSAPP FLOATING BUTTON -->
+  <a href="https://wa.me/250788607924" class="whatsapp-float" target="_blank" rel="noopener noreferrer">
+    <i class="fa-brands fa-whatsapp"></i>
+  </a>
+
+</body>
+</html>
