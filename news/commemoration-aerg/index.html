@@ -1,0 +1,547 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Kwibuka &amp; AERG Iterero Remembrance | ACEJ KARAMA TSS</title>
+  <meta name="description" content="ACEJ Karama TSS marks the 1994 Genocide against the Tutsi commemoration and AERG Iterero educational pilgrimage to Nyanza-Kicukiro Genocide Memorial.">
+  <link rel="icon" type="image/png" href="/logo.png">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+  <style>
+    :root {
+      --acej-blue: #0047AB;
+      --acej-dark-blue: #002D6E;
+      --acej-gold: #FFC72C;
+      --acej-gold-hover: #E5B220;
+      --text-dark: #0f172a;
+      --text-muted: #64748b;
+      --bg-light: #f8fafc;
+      --white: #ffffff;
+      --border-color: #e2e8f0;
+      --shadow-sm: 0 4px 14px rgba(0,0,0,0.05);
+      --shadow-md: 0 10px 25px rgba(0, 71, 171, 0.12);
+    }
+
+    * { box-sizing: border-box; margin: 0; padding: 0; font-family: 'Segoe UI', -apple-system, BlinkMacSystemFont, Roboto, sans-serif; }
+    body { color: var(--text-dark); background-color: var(--bg-light); line-height: 1.7; overflow-x: hidden; }
+
+    /* TOP BAR */
+    .top-bar {
+      background: var(--acej-dark-blue);
+      color: #cbd5e1;
+      padding: 9px 5%;
+      font-size: 0.85rem;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      border-bottom: 2px solid var(--acej-gold);
+    }
+    .top-bar a { color: #e2e8f0; text-decoration: none; margin-left: 15px; transition: color 0.2s; }
+    .top-bar a:hover { color: var(--acej-gold); }
+
+    /* NAVBAR */
+    .navbar {
+      background: var(--white);
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      padding: 12px 5%;
+      box-shadow: 0 2px 14px rgba(0,0,0,0.06);
+      position: sticky;
+      top: 0;
+      z-index: 1000;
+    }
+    .brand { display: flex; align-items: center; gap: 14px; text-decoration: none; z-index: 1001; }
+    .brand-logo-img { height: 50px; width: 50px; object-fit: contain; }
+    .brand-text h1 { font-size: 1.3rem; color: var(--acej-blue); font-weight: 900; letter-spacing: -0.5px; line-height: 1.1; }
+    .brand-text p { font-size: 0.65rem; color: #b45309; font-weight: 800; letter-spacing: 1.5px; text-transform: uppercase; }
+
+    .nav-links { display: flex; list-style: none; gap: 26px; align-items: center; }
+    .nav-links a { text-decoration: none; color: var(--text-dark); font-weight: 700; font-size: 0.95rem; transition: color 0.2s; }
+    .nav-links a:hover, .nav-links a.active { color: var(--acej-blue); }
+
+    .nav-actions { display: flex; gap: 10px; align-items: center; }
+    .btn-apply {
+      background: var(--acej-gold);
+      color: var(--acej-dark-blue);
+      text-decoration: none;
+      padding: 9px 18px;
+      border-radius: 6px;
+      font-weight: 800;
+      font-size: 0.85rem;
+      text-transform: uppercase;
+      letter-spacing: 0.5px;
+      transition: all 0.2s;
+    }
+    .btn-portal {
+      background: var(--acej-blue);
+      color: var(--white);
+      text-decoration: none;
+      padding: 9px 16px;
+      border-radius: 6px;
+      font-weight: 700;
+      font-size: 0.85rem;
+      display: flex;
+      align-items: center;
+      gap: 6px;
+    }
+    .menu-toggle { display: none; background: none; border: none; color: var(--acej-blue); font-size: 1.6rem; cursor: pointer; }
+
+    /* ARTICLE CONTAINER */
+    .article-container { max-width: 960px; margin: 40px auto 70px; padding: 0 20px; }
+
+    /* HEADER BANNER */
+    .article-header {
+      background: var(--white);
+      border-radius: 18px;
+      overflow: hidden;
+      box-shadow: var(--shadow-sm);
+      border: 1px solid var(--border-color);
+      margin-bottom: 35px;
+    }
+    .featured-lead-image {
+      position: relative;
+      height: 480px;
+      width: 100%;
+      background: #0f172a;
+    }
+    .featured-lead-image img {
+      width: 100%;
+      height: 100%;
+      object-fit: cover;
+      display: block;
+    }
+    .featured-tag {
+      position: absolute;
+      top: 20px;
+      left: 20px;
+      background: #7c2d12;
+      color: #fef3c7;
+      border: 1px solid #b45309;
+      padding: 6px 14px;
+      border-radius: 6px;
+      font-size: 0.8rem;
+      font-weight: 800;
+      letter-spacing: 1px;
+      text-transform: uppercase;
+      box-shadow: 0 2px 8px rgba(0,0,0,0.3);
+    }
+
+    .article-meta-box { padding: 35px 35px 25px; }
+    .article-breadcrumbs { font-size: 0.88rem; color: var(--text-muted); margin-bottom: 12px; }
+    .article-breadcrumbs a { color: var(--acej-blue); text-decoration: none; font-weight: 600; }
+    .article-title {
+      font-size: 2.3rem;
+      color: var(--acej-dark-blue);
+      font-weight: 900;
+      line-height: 1.25;
+      margin-bottom: 15px;
+    }
+    .article-info-strip {
+      display: flex;
+      gap: 20px;
+      color: var(--text-muted);
+      font-size: 0.9rem;
+      padding-bottom: 20px;
+      border-bottom: 2px solid #f1f5f9;
+      margin-bottom: 25px;
+      flex-wrap: wrap;
+    }
+    .article-info-strip span { display: flex; align-items: center; gap: 6px; }
+
+    /* EDITORIAL BODY */
+    .article-body {
+      background: var(--white);
+      border-radius: 18px;
+      padding: 40px;
+      box-shadow: var(--shadow-sm);
+      border: 1px solid var(--border-color);
+      margin-bottom: 40px;
+    }
+    .lead-paragraph {
+      font-size: 1.15rem;
+      line-height: 1.8;
+      color: #334155;
+      font-weight: 500;
+      border-left: 4px solid var(--acej-gold);
+      padding-left: 20px;
+      margin-bottom: 28px;
+    }
+    .article-body p { margin-bottom: 20px; font-size: 1.05rem; color: #475569; }
+    .article-body h3 {
+      font-size: 1.45rem;
+      color: var(--acej-dark-blue);
+      font-weight: 800;
+      margin: 36px 0 14px;
+      display: flex;
+      align-items: center;
+      gap: 10px;
+    }
+
+    /* SPOTLIGHT PHOTO CARD */
+    .memorial-photo-card {
+      background: var(--bg-light);
+      border: 1px solid var(--border-color);
+      border-radius: 16px;
+      overflow: hidden;
+      margin: 30px 0;
+      box-shadow: var(--shadow-sm);
+      transition: all 0.3s ease;
+    }
+    .memorial-photo-card:hover {
+      box-shadow: var(--shadow-md);
+      transform: translateY(-3px);
+    }
+    .memorial-photo-img {
+      width: 100%;
+      height: 480px;
+      overflow: hidden;
+      background: #0f172a;
+    }
+    .memorial-photo-img img {
+      width: 100%;
+      height: 100%;
+      object-fit: cover;
+      display: block;
+      transition: transform 0.4s ease;
+    }
+    .memorial-photo-card:hover .memorial-photo-img img {
+      transform: scale(1.02);
+    }
+    .memorial-caption {
+      padding: 20px 24px;
+      background: var(--white);
+      border-top: 1px solid var(--border-color);
+      font-size: 0.95rem;
+      color: #475569;
+      line-height: 1.6;
+    }
+    .memorial-caption strong {
+      display: block;
+      color: var(--acej-dark-blue);
+      font-size: 1.05rem;
+      margin-bottom: 4px;
+    }
+
+    /* QUOTE HIGHLIGHT */
+    .quote-box {
+      background: #faf5ff;
+      border-left: 4px solid #7e22ce;
+      padding: 20px 24px;
+      border-radius: 0 12px 12px 0;
+      margin: 28px 0;
+      color: #581c87;
+      font-style: italic;
+      font-size: 1.02rem;
+    }
+
+    /* BACK LINK BUTTON */
+    .back-btn-box {
+      margin-top: 35px;
+      padding-top: 25px;
+      border-top: 1px solid var(--border-color);
+    }
+    .btn-back-news {
+      display: inline-flex;
+      align-items: center;
+      gap: 8px;
+      background: var(--acej-blue);
+      color: var(--white);
+      text-decoration: none;
+      padding: 10px 22px;
+      border-radius: 8px;
+      font-weight: 700;
+      font-size: 0.9rem;
+      transition: all 0.2s ease;
+    }
+    .btn-back-news:hover {
+      background: var(--acej-dark-blue);
+      transform: translateY(-2px);
+    }
+
+    /* FOOTER */
+    .site-footer {
+      background: #002D6E;
+      color: #ffffff;
+      padding: 60px 6% 30px;
+      border-top: 5px solid var(--acej-gold);
+    }
+    .footer-container {
+      max-width: 1200px;
+      margin: 0 auto;
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(230px, 1fr));
+      gap: 40px;
+      margin-bottom: 40px;
+    }
+    .footer-col h3 { font-size: 1.15rem; font-weight: 800; margin-bottom: 15px; position: relative; padding-bottom: 8px; }
+    .footer-col h3::after { content: ''; position: absolute; bottom: 0; left: 0; width: 40px; height: 3px; background: var(--acej-gold); }
+    .footer-links { list-style: none; }
+    .footer-links li { margin-bottom: 10px; }
+    .footer-links a { color: #cbd5e1; text-decoration: none; font-size: 0.92rem; }
+    .footer-links a:hover { color: var(--acej-gold); }
+    .footer-bottom {
+      max-width: 1200px;
+      margin: 0 auto;
+      padding-top: 25px;
+      border-top: 1px solid rgba(255,255,255,0.15);
+      display: flex;
+      justify-content: space-between;
+      color: #94a3b8;
+      font-size: 0.85rem;
+      flex-wrap: wrap;
+      gap: 15px;
+    }
+
+    /* WHATSAPP FLOAT */
+    .whatsapp-float {
+      position: fixed;
+      bottom: 25px;
+      right: 25px;
+      background: #25d366;
+      color: var(--white);
+      border-radius: 50%;
+      width: 56px;
+      height: 56px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 1.9rem;
+      box-shadow: 0 6px 20px rgba(37, 211, 102, 0.4);
+      text-decoration: none;
+      z-index: 1000;
+    }
+
+    @media (max-width: 900px) {
+      .top-bar { display: none; }
+      .menu-toggle { display: block; }
+      .nav-links {
+        position: absolute;
+        top: 100%;
+        left: 0;
+        width: 100%;
+        background: var(--white);
+        flex-direction: column;
+        align-items: stretch;
+        gap: 0;
+        padding: 0;
+        max-height: 0;
+        overflow: hidden;
+        transition: max-height 0.35s ease-in-out;
+      }
+      .nav-links.active-menu { max-height: 380px; border-bottom: 3px solid var(--acej-gold); }
+      .nav-links li { width: 100%; border-top: 1px solid #f1f5f9; }
+      .nav-links a { display: block; padding: 15px 6%; color: var(--acej-dark-blue); }
+      .featured-lead-image { height: 320px; }
+      .memorial-photo-img { height: 300px; }
+      .article-meta-box, .article-body { padding: 25px 20px; }
+      .article-title { font-size: 1.75rem; }
+    }
+  </style>
+</head>
+<body>
+
+  <!-- TOP BAR -->
+  <div class="top-bar">
+    <div>
+      <span><i class="fa-solid fa-location-dot"></i> Muhanga, Southern Province, Rwanda</span>
+      <span style="margin-left: 20px;"><i class="fa-solid fa-code"></i> School Code: 0207030</span>
+    </div>
+    <div>
+      <a href="tel:0788607924"><i class="fa-solid fa-phone"></i> 0788607924</a>
+      <a href="mailto:acejkaramatss@gmail.com"><i class="fa-solid fa-envelope"></i> acejkaramatss@gmail.com</a>
+    </div>
+  </div>
+
+  <!-- NAVBAR -->
+  <header class="navbar">
+    <a href="/" class="brand">
+      <img src="/logo.png" alt="ACEJ Karama Crest" class="brand-logo-img">
+      <div class="brand-text">
+        <h1>ACEJ KARAMA</h1>
+        <p>Uburerere &bull; Ubumenyi</p>
+      </div>
+    </a>
+
+    <ul class="nav-links" id="navLinks">
+      <li><a href="/">Home</a></li>
+      <li><a href="/about/">About</a></li>
+      <li><a href="/academics/">Academics</a></li>
+      <li><a href="/staff/">Staff</a></li>
+      <li><a href="/news/glf-rwanda/" class="active">News</a></li>
+      <li><a href="/contact/">Contact</a></li>
+    </ul>
+
+    <div class="nav-actions">
+      <a href="/contact/" class="btn-apply">Apply Now</a>
+      <a href="#" class="btn-portal"><i class="fa-solid fa-user"></i> Portal</a>
+      <button class="menu-toggle" id="menuToggle" aria-label="Toggle navigation menu">
+        <i class="fa-solid fa-bars" id="menuIcon"></i>
+      </button>
+    </div>
+  </header>
+
+  <!-- MAIN ARTICLE -->
+  <main class="article-container">
+    <article class="article-header">
+      <!-- LEAD IMAGE: KWIBUKA ON CAMPUS -->
+      <div class="featured-lead-image">
+        <img src="/Kwibuka.jpg" alt="Kwibuka National Commemoration assembly at ACEJ Karama TSS">
+        <span class="featured-tag">Kwibuka &bull; Remembrance &bull; AERG</span>
+      </div>
+
+      <div class="article-meta-box">
+        <div class="article-breadcrumbs">
+          <a href="/">Home</a> &rsaquo; <span>News &amp; Events</span> &rsaquo; <span>Commemoration &amp; AERG Iterero</span>
+        </div>
+        <h1 class="article-title">Remember, Unite, Renew: ACEJ Karama TSS Commemorates the 1994 Genocide against the Tutsi &amp; AERG Iterero Pilgrimage</h1>
+        <div class="article-info-strip">
+          <span><i class="fa-regular fa-calendar"></i> Commemoration &amp; Educational Tour</span>
+          <span><i class="fa-solid fa-location-dot"></i> Muhanga Campus &amp; Nyanza-Kicukiro</span>
+          <span><i class="fa-solid fa-people-group"></i> ACEJ Administration, Staff &amp; AERG Iterero</span>
+        </div>
+      </div>
+    </article>
+
+    <!-- EDITORIAL REPORT -->
+    <div class="article-body">
+      <p class="lead-paragraph">
+        Every year, the ACEJ Karama TSS community joins the nation in solemn remembrance of the more than one million victims of the 1994 Genocide against the Tutsi. Through educational memorial journeys and on-campus commemoration vigils, our institution reinforces a resolute commitment to historical truth, human dignity, and building a united, resilient Rwanda.
+      </p>
+
+      <!-- SECTION 1: ON-CAMPUS COMMEMORATION -->
+      <h3><i class="fa-solid fa-candle-holder" style="color: var(--acej-blue);"></i> Part I: Solemn Commemoration Assembly at ACEJ Karama TSS Campus</h3>
+      <p>
+        On our campus grounds in Mushubati, Muhanga District, students, teachers, staff, and local government leaders gathered under white memorial marquees for a dedicated day of reflection, testimony, and prayer[cite: 28]. The commemoration brought together the school body with administrative representatives from both the Sector and District levels[cite: 28].
+      </p>
+
+      <p>
+        The ceremony commenced with a minute of silence honoring the innocent lives cut short in 1994[cite: 28]. Keynote speakers, including local elders and institutional leadership, recounted Rwanda’s historical trajectory, highlighting how divisive politics fractured society and how the extraordinary courage of the Rwanda Patriotic Front (RPF-Inkotanyi) stopped the genocide and restored peace.
+      </p>
+
+      <div class="memorial-photo-card">
+        <div class="memorial-photo-img">
+          <img src="/Kwibuka.jpg" alt="Students and guests gathered under tents during Kwibuka commemoration on campus" loading="lazy">
+        </div>
+        <div class="memorial-caption">
+          <strong>Campus Memorial Vigil: Unity &bull; Remembrance &bull; Resilience</strong>
+          Students seated in formal white uniforms on campus alongside teaching staff, distinguished guests, and local administrative authorities during the Kwibuka reflection assembly in Muhanga[cite: 28].
+        </div>
+      </div>
+
+      <div class="quote-box">
+        &ldquo;Educating technically capable youth is only half of our duty; our higher purpose is forming responsible citizens who value every human life, reject genocide ideology, and protect the hard-won peace of our nation.&rdquo;
+      </div>
+
+      <p>
+        Throughout the gathering, student representatives offered poems, choral hymns of comfort, and reflective drama pieces[cite: 28]. The assembly concluded with a reaffirmation of the national pledge, <em>&ldquo;Never Again&rdquo;</em>, inspiring the student body to build careers rooted in civic integrity and mutual respect.
+      </p>
+
+      <!-- SECTION 2: AERG ITERERO EDUCATIONAL PILGRIMAGE -->
+      <h3 style="margin-top: 45px;"><i class="fa-solid fa-monument" style="color: var(--acej-blue);"></i> Part II: AERG Iterero Pilgrimage to the Nyanza-Kicukiro Genocide Memorial</h3>
+      <p>
+        As part of deeper historical education, student members of <strong>AERG Iterero</strong> (Association des Etudiants Rescapés du Genocide) at ACEJ Karama TSS undertook a guided educational pilgrimage to the historic <strong>Nyanza-Kicukiro Genocide Memorial</strong> in Kigali[cite: 27].
+      </p>
+
+      <p>
+        Nyanza-Kicukiro holds profound historical significance in Rwanda's collective memory. In April 1994, thousands of Tutsi sought refuge at the École Technique Officielle (ETO Kicukiro) under the protection of the United Nations Assistance Mission for Rwanda (UNAMIR). Following the abrupt withdrawal of UN peacekeepers on April 11, 1994, over 2,500 Tutsi men, women, and children were marched up the hill to Nyanza and systematically murdered by the Interahamwe militia and government soldiers.
+      </p>
+
+      <p>
+        Accompanied by school chaperones and AERG coordinators, ACEJ Karama TSS students toured the memorial grounds, examined historical documentation, and laid wreaths upon the mass graves where more than 105,000 victims now rest in honor.
+      </p>
+
+      <div class="memorial-photo-card">
+        <div class="memorial-photo-img">
+          <img src="/Nyanza_kicukiro1.jpg" alt="AERG Iterero ACEJ Karama delegation at Nyanza-Kicukiro memorial monument" loading="lazy">
+        </div>
+        <div class="memorial-caption">
+          <strong>AERG Iterero ACEJ Karama TSS Delegation at Nyanza-Kicukiro</strong>
+          Student members of AERG Iterero wearing custom cream committee shirts and burgundy school uniforms, standing proudly beside the soaring metallic memorial flame sculptures alongside school staff and advisors in Kigali[cite: 27].
+        </div>
+      </div>
+
+      <h3>Preserving Memory &bull; Empowering the Next Generation</h3>
+      <p>
+        For our students, standing in front of the sweeping commemorative sails at Nyanza was both an emotional and transformative experience[cite: 27]. The visit brought historical lessons to life, demonstrating the irreversible cost of ethnic hatred and the preciousness of national unity[cite: 27].
+      </p>
+
+      <p>
+        AERG Iterero within ACEJ Karama TSS continues to provide mutual psycho-social support, academic solidarity, and remembrance activities for student survivors, ensuring that the legacy of memory leads directly to purposeful learning, moral clarity, and national service[cite: 27].
+      </p>
+
+      <div class="back-btn-box">
+        <a href="/" class="btn-back-news"><i class="fa-solid fa-arrow-left"></i> Back to Homepage</a>
+        <a href="/news/glf-rwanda/" class="btn-back-news" style="background: var(--acej-gold); color: var(--acej-dark-blue); margin-left: 10px;">
+          Next: GLF Summit Report &rarr;
+        </a>
+      </div>
+    </div>
+  </main>
+
+  <!-- FOOTER -->
+  <footer class="site-footer">
+    <div class="footer-container">
+      <div class="footer-col">
+        <h3>About ACEJ</h3>
+        <ul class="footer-links">
+          <li><a href="/about/">&rsaquo; Our History &amp; Mission</a></li>
+          <li><a href="/about/">&rsaquo; Uburerere &bull; Ubumenyi</a></li>
+          <li><a href="/staff/">&rsaquo; Leadership &amp; Faculty</a></li>
+          <li><a href="/academics/">&rsaquo; Academic Programmes</a></li>
+        </ul>
+      </div>
+
+      <div class="footer-col">
+        <h3>Admissions</h3>
+        <ul class="footer-links">
+          <li><a href="/contact/">&rsaquo; New Student Registration</a></li>
+          <li><a href="/academics/">&rsaquo; Levels 3, 4 &amp; 5 Entry</a></li>
+          <li><a href="/contact/">&rsaquo; School Fee Structures</a></li>
+        </ul>
+      </div>
+
+      <div class="footer-col">
+        <h3>Get in Touch</h3>
+        <p style="color: #cbd5e1; font-size: 0.9rem; margin-bottom: 8px;">
+          <i class="fa-solid fa-location-dot" style="color: var(--acej-gold);"></i> WPJG+G3P, Kamazu Village, Nganzo Cell, Mushubati, Muhanga
+        </p>
+        <p style="color: #cbd5e1; font-size: 0.9rem;">
+          <i class="fa-solid fa-phone" style="color: var(--acej-gold);"></i> Headmaster: 0788607924
+        </p>
+      </div>
+    </div>
+
+    <div class="footer-bottom">
+      <div>&copy; 2026 ACEJ KARAMA TSS &bull; All Rights Reserved. Code: 0207030</div>
+      <div>Accredited by Rwanda TVET Board (RTQB)</div>
+    </div>
+  </footer>
+
+  <!-- FLOATING WHATSAPP -->
+  <a href="https://wa.me/250788607924" class="whatsapp-float" target="_blank" rel="noopener noreferrer" title="Chat on WhatsApp">
+    <i class="fa-brands fa-whatsapp"></i>
+  </a>
+
+  <!-- SCRIPT -->
+  <script>
+    (function() {
+      var menuToggle = document.getElementById('menuToggle');
+      var navLinks = document.getElementById('navLinks');
+      var menuIcon = document.getElementById('menuIcon');
+
+      menuToggle.addEventListener('click', function() {
+        navLinks.classList.toggle('active-menu');
+        if (navLinks.classList.contains('active-menu')) {
+          menuIcon.classList.remove('fa-bars');
+          menuIcon.classList.add('fa-xmark');
+        } else {
+          menuIcon.classList.remove('fa-xmark');
+          menuIcon.classList.add('fa-bars');
+        }
+      });
+    })();
+  </script>
+
+</body>
+</html>
