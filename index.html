@@ -4,6 +4,8 @@
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>ACEJ KARAMA TSS | Excellence in Technical Education</title>
+  <meta name="description" content="Official website of ACEJ Karama TSS (Association pour la Contribution à l'Education de la Jeunesse) in Muhanga, Rwanda. Accredited RTQB TVET programs in NIT, Accounting, and CSA.">
+  <meta name="keywords" content="ACEJ Karama, ACEJ Karama TSS, ACEJ, Muhanga TSS, TVET Rwanda, RTQB, Karama Technical Secondary School">
   <meta name="google-site-verification" content="_2E72En-E2s2izExfWQNHzHOVy7NJ30LTv33ufi-tvk" />
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
   <style>
@@ -46,6 +48,7 @@
       color: #cbd5e1;
       text-decoration: none;
       margin-left: 15px;
+      transition: color 0.2s;
     }
 
     .top-bar a:hover {
@@ -104,10 +107,22 @@
       font-weight: 600;
       font-size: 0.95rem;
       transition: color 0.2s;
+      position: relative;
     }
 
     .nav-links a:hover, .nav-links a.active {
-      color: var(--accent-gold);
+      color: var(--secondary-blue);
+    }
+
+    .nav-links a.active::after {
+      content: '';
+      position: absolute;
+      bottom: -6px;
+      left: 0;
+      width: 100%;
+      height: 2px;
+      background: var(--accent-gold);
+      border-radius: 2px;
     }
 
     .nav-actions {
@@ -125,11 +140,13 @@
       font-size: 0.88rem;
       text-transform: uppercase;
       letter-spacing: 0.5px;
-      transition: background 0.2s;
+      transition: all 0.2s ease;
+      box-shadow: 0 3px 10px rgba(197, 155, 39, 0.25);
     }
 
     .btn-apply:hover {
       background: var(--accent-gold-hover);
+      transform: translateY(-2px);
     }
 
     .btn-portal {
@@ -143,6 +160,12 @@
       display: flex;
       align-items: center;
       gap: 6px;
+      transition: all 0.2s ease;
+    }
+
+    .btn-portal:hover {
+      background: var(--secondary-blue);
+      transform: translateY(-2px);
     }
 
     .hero {
@@ -195,6 +218,7 @@
       display: flex;
       gap: 15px;
       margin-bottom: 50px;
+      flex-wrap: wrap;
     }
 
     .btn-hero-primary {
@@ -207,6 +231,13 @@
       font-size: 0.95rem;
       text-transform: uppercase;
       letter-spacing: 0.5px;
+      transition: all 0.25s ease;
+      box-shadow: 0 4px 14px rgba(197, 155, 39, 0.3);
+    }
+
+    .btn-hero-primary:hover {
+      background: var(--accent-gold-hover);
+      transform: translateY(-2px);
     }
 
     .btn-hero-outline {
@@ -218,6 +249,12 @@
       border-radius: 6px;
       font-weight: 600;
       font-size: 0.95rem;
+      transition: all 0.25s ease;
+    }
+
+    .btn-hero-outline:hover {
+      background: rgba(255,255,255,0.25);
+      transform: translateY(-2px);
     }
 
     .hero-stats {
@@ -249,15 +286,20 @@
       background: #25d366;
       color: var(--white);
       border-radius: 50%;
-      width: 54px;
-      height: 54px;
+      width: 56px;
+      height: 56px;
       display: flex;
       align-items: center;
       justify-content: center;
-      font-size: 1.8rem;
-      box-shadow: 0 4px 15px rgba(0,0,0,0.2);
+      font-size: 1.9rem;
+      box-shadow: 0 6px 20px rgba(37, 211, 102, 0.4);
       text-decoration: none;
       z-index: 1000;
+      transition: transform 0.25s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+    }
+
+    .whatsapp-float:hover {
+      transform: scale(1.1) rotate(5deg);
     }
 
     @media (max-width: 768px) {
@@ -284,21 +326,21 @@
 
   <!-- NAVBAR -->
   <header class="navbar">
-    <a href="index.html" class="brand">
-      <img src="https://blogger.googleusercontent.com/img/b/R29vZ2xl/AVvXsEj7G8n1Z3Q5z90_LOGO/s400/acej-logo.png" alt="ACEJ Karama Crest">
+    <a href="/" class="brand">
+      <img src="https://blogger.googleusercontent.com/img/b/R29vZ2xl/AVvXsEj7G8n1Z3Q5z90_LOGO/s400/acej-logo.png" alt="ACEJ Karama Crest" onerror="this.style.display='none'">
       <div class="brand-text">
         <h1>ACEJ KARAMA</h1>
         <p>Excellence in Technical Education</p>
       </div>
     </a>
 
-  <ul class="nav-links">
-  <li><a href="/">Home</a></li>
-  <li><a href="/about/">About</a></li>
-  <li><a href="/academics/">Academics</a></li>
-  <li><a href="/staff/">Staff</a></li>
-  <li><a href="/contact/">Contact</a></li>
-</ul>
+    <ul class="nav-links">
+      <li><a href="/" class="active">Home</a></li>
+      <li><a href="/about/">About</a></li>
+      <li><a href="/academics/">Academics</a></li>
+      <li><a href="/staff/">Staff</a></li>
+      <li><a href="/contact/">Contact</a></li>
+    </ul>
 
     <div class="nav-actions">
       <a href="/contact/" class="btn-apply">Apply Now</a>
@@ -315,8 +357,8 @@
         ACEJ Karama TSS is a leading technical secondary school located in Muhanga, Rwanda. The school offers accredited Rwanda TVET Board programs in Networking, Accounting, and Computer Systems, preparing students with practical skills for modern careers.
       </p>
       <div class="hero-buttons">
-        <a href="academics.html" class="btn-hero-primary">Learn More</a>
-        <a href="contact.html" class="btn-hero-outline">Admissions Open</a>
+        <a href="/academics/" class="btn-hero-primary">Learn More</a>
+        <a href="/contact/" class="btn-hero-outline">Admissions Open</a>
       </div>
     </div>
 
@@ -338,7 +380,7 @@
   </section>
 
   <!-- WHATSAPP FLOATING BUTTON -->
-  <a href="https://wa.me/250788607924" class="whatsapp-float" target="_blank" rel="noopener noreferrer">
+  <a href="https://wa.me/250788607924" class="whatsapp-float" target="_blank" rel="noopener noreferrer" title="Chat on WhatsApp">
     <i class="fa-brands fa-whatsapp"></i>
   </a>
 
