@@ -195,15 +195,15 @@
     .prog-card {
       background: var(--white);
       border: 1px solid var(--border-color);
-      border-radius: 16px;
+      border-radius: 18px;
       padding: 32px;
       box-shadow: var(--shadow-sm);
-      margin-bottom: 25px;
+      margin-bottom: 28px;
       display: flex;
       flex-wrap: wrap;
       gap: 25px;
-      align-items: center;
-      transition: all 0.3s ease;
+      align-items: flex-start;
+      transition: all 0.3s cubic-bezier(0.16, 1, 0.3, 1);
       animation: cardAppear 0.8s cubic-bezier(0.16, 1, 0.3, 1) backwards;
     }
     .prog-card:nth-child(2) { animation-delay: 0.15s; }
@@ -211,7 +211,7 @@
     .prog-card:nth-child(4) { animation-delay: 0.45s; }
 
     .prog-card:hover {
-      transform: translateY(-4px);
+      transform: translateY(-5px);
       box-shadow: var(--shadow-md);
       border-color: #cbd5e1;
     }
@@ -229,10 +229,10 @@
       transition: transform 0.3s ease;
     }
     .prog-card:hover .prog-icon {
-      transform: scale(1.08) rotate(-3deg);
+      transform: scale(1.08) rotate(-4deg);
     }
     .prog-info {
-      flex: 1 1 300px;
+      flex: 1 1 320px;
     }
     .prog-tag {
       background: #fef3c7;
@@ -262,6 +262,7 @@
       display: flex;
       flex-wrap: wrap;
       gap: 10px;
+      margin-bottom: 22px;
     }
     .feature-pill {
       background: #f1f5f9;
@@ -274,6 +275,46 @@
     }
     .prog-card:hover .feature-pill {
       background: #e2e8f0;
+    }
+
+    /* CARD BOTTOM ACTION BAR */
+    .prog-action-bar {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      flex-wrap: wrap;
+      gap: 15px;
+      padding-top: 18px;
+      border-top: 1px solid var(--border-color);
+    }
+    .prog-duration {
+      color: var(--text-muted);
+      font-size: 0.88rem;
+      font-weight: 600;
+      display: flex;
+      align-items: center;
+      gap: 6px;
+    }
+    .btn-apply-trade {
+      display: inline-flex;
+      align-items: center;
+      gap: 8px;
+      background: var(--primary-navy);
+      color: var(--white);
+      text-decoration: none;
+      padding: 10px 22px;
+      border-radius: 8px;
+      font-size: 0.88rem;
+      font-weight: 700;
+      letter-spacing: 0.3px;
+      transition: all 0.25s ease;
+      box-shadow: 0 3px 10px rgba(13, 40, 71, 0.15);
+    }
+    .btn-apply-trade:hover {
+      background: var(--accent-gold);
+      color: var(--primary-navy);
+      transform: translateY(-2px);
+      box-shadow: 0 5px 15px rgba(197, 155, 39, 0.3);
     }
 
     /* FLOATING WHATSAPP */
@@ -313,6 +354,8 @@
       .top-bar { display: none; }
       .nav-links { display: none; }
       .prog-card { flex-direction: column; align-items: flex-start; }
+      .prog-action-bar { width: 100%; flex-direction: column; align-items: stretch; }
+      .btn-apply-trade { justify-content: center; width: 100%; }
     }
   </style>
 </head>
@@ -374,6 +417,12 @@
           <span class="feature-pill">Server Management</span>
           <span class="feature-pill">Hardware Cabling</span>
         </div>
+        <div class="prog-action-bar">
+          <span class="prog-duration"><i class="fa-regular fa-clock"></i> 3 Years Full-Time (Levels 3–5)</span>
+          <a href="/contact/" class="btn-apply-trade">
+            <span>Apply for NIT</span> <i class="fa-solid fa-arrow-right"></i>
+          </a>
+        </div>
       </div>
     </div>
 
@@ -392,6 +441,12 @@
           <span class="feature-pill">Preventive Maintenance</span>
           <span class="feature-pill">Peripheral Integration</span>
         </div>
+        <div class="prog-action-bar">
+          <span class="prog-duration"><i class="fa-regular fa-clock"></i> 3 Years Full-Time (Levels 3–5)</span>
+          <a href="/contact/" class="btn-apply-trade">
+            <span>Apply for CSA</span> <i class="fa-solid fa-arrow-right"></i>
+          </a>
+        </div>
       </div>
     </div>
 
@@ -409,6 +464,12 @@
           <span class="feature-pill">RRA Tax Compliance</span>
           <span class="feature-pill">Computerized Accounting</span>
           <span class="feature-pill">Auditing Fundamentals</span>
+        </div>
+        <div class="prog-action-bar">
+          <span class="prog-duration"><i class="fa-regular fa-clock"></i> 3 Years Full-Time (Levels 3–5)</span>
+          <a href="/contact/" class="btn-apply-trade">
+            <span>Apply for Accounting</span> <i class="fa-solid fa-arrow-right"></i>
+          </a>
         </div>
       </div>
     </div>
