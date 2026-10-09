@@ -3,8 +3,8 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Contact Us | ACEJ KARAMA TSS</title>
-  <meta name="description" content="Get in touch with ACEJ Karama TSS administration, admissions, and campus offices in Muhanga, Rwanda.">
+  <title>Contact & Admissions | ACEJ KARAMA TSS</title>
+  <meta name="description" content="Contact the administration and admissions office at ACEJ Karama TSS in Muhanga, Rwanda. Submit online inquiries, find campus directions, and connect directly.">
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
   <style>
     :root {
@@ -17,6 +17,9 @@
       --bg-light: #f8fafc;
       --white: #ffffff;
       --border-color: #e2e8f0;
+      --shadow-sm: 0 4px 14px rgba(0,0,0,0.04);
+      --shadow-md: 0 10px 25px rgba(13, 40, 71, 0.08);
+      --shadow-lg: 0 18px 36px rgba(13, 40, 71, 0.12);
     }
 
     * {
@@ -30,20 +33,26 @@
       color: var(--text-dark);
       background-color: var(--bg-light);
       line-height: 1.6;
+      overflow-x: hidden;
     }
 
     /* TOP BAR */
     .top-bar {
       background: var(--primary-navy);
       color: #cbd5e1;
-      padding: 8px 5%;
+      padding: 9px 5%;
       font-size: 0.85rem;
       display: flex;
       justify-content: space-between;
       align-items: center;
       border-bottom: 1px solid rgba(255,255,255,0.1);
     }
-    .top-bar a { color: #cbd5e1; text-decoration: none; margin-left: 15px; }
+    .top-bar a {
+      color: #cbd5e1;
+      text-decoration: none;
+      margin-left: 15px;
+      transition: color 0.2s ease;
+    }
     .top-bar a:hover { color: var(--accent-gold); }
 
     /* NAVBAR */
@@ -52,20 +61,59 @@
       display: flex;
       justify-content: space-between;
       align-items: center;
-      padding: 15px 5%;
-      box-shadow: 0 2px 10px rgba(0,0,0,0.05);
+      padding: 16px 5%;
+      box-shadow: 0 2px 12px rgba(0,0,0,0.04);
       position: sticky;
       top: 0;
       z-index: 1000;
+      backdrop-filter: blur(8px);
     }
-    .brand { text-decoration: none; }
-    .brand-text h1 { font-size: 1.25rem; color: var(--primary-navy); font-weight: 800; }
-    .brand-text p { font-size: 0.65rem; color: var(--accent-gold); font-weight: 700; letter-spacing: 1px; text-transform: uppercase; }
-
-    .nav-links { display: flex; list-style: none; gap: 24px; align-items: center; }
-    .nav-links a { text-decoration: none; color: var(--text-dark); font-weight: 600; font-size: 0.95rem; }
-    .nav-links a:hover, .nav-links a.active { color: var(--accent-gold); }
-
+    .brand {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      text-decoration: none;
+    }
+    .brand-text h1 {
+      font-size: 1.3rem;
+      color: var(--primary-navy);
+      font-weight: 800;
+      letter-spacing: -0.5px;
+    }
+    .brand-text p {
+      font-size: 0.65rem;
+      color: var(--accent-gold);
+      font-weight: 700;
+      letter-spacing: 1px;
+      text-transform: uppercase;
+    }
+    .nav-links {
+      display: flex;
+      list-style: none;
+      gap: 26px;
+      align-items: center;
+    }
+    .nav-links a {
+      text-decoration: none;
+      color: var(--text-dark);
+      font-weight: 600;
+      font-size: 0.95rem;
+      transition: all 0.2s ease;
+      position: relative;
+    }
+    .nav-links a:hover, .nav-links a.active {
+      color: var(--secondary-blue);
+    }
+    .nav-links a.active::after {
+      content: '';
+      position: absolute;
+      bottom: -6px;
+      left: 0;
+      width: 100%;
+      height: 2px;
+      background: var(--accent-gold);
+      border-radius: 2px;
+    }
     .nav-actions { display: flex; gap: 12px; }
     .btn-apply {
       background: var(--accent-gold);
@@ -76,6 +124,12 @@
       font-weight: 700;
       font-size: 0.88rem;
       text-transform: uppercase;
+      transition: all 0.25s ease;
+      box-shadow: 0 3px 10px rgba(197, 155, 39, 0.25);
+    }
+    .btn-apply:hover {
+      background: var(--accent-gold-hover);
+      transform: translateY(-2px);
     }
     .btn-portal {
       background: var(--primary-navy);
@@ -88,22 +142,30 @@
       display: flex;
       align-items: center;
       gap: 6px;
+      transition: all 0.25s ease;
+    }
+    .btn-portal:hover {
+      background: var(--secondary-blue);
+      transform: translateY(-2px);
     }
 
+    /* CONTAINER */
     .container {
-      max-width: 1100px;
-      margin: 40px auto;
+      max-width: 1140px;
+      margin: 40px auto 60px;
       padding: 0 20px;
     }
 
+    /* PAGE HEADER */
     .page-header {
       background: linear-gradient(135deg, var(--primary-navy) 0%, var(--secondary-blue) 100%);
       color: var(--white);
-      border-radius: 16px;
-      padding: 40px 25px;
+      border-radius: 20px;
+      padding: 45px 30px;
       text-align: center;
       margin-bottom: 35px;
-      box-shadow: 0 10px 25px rgba(13, 40, 71, 0.12);
+      box-shadow: var(--shadow-md);
+      animation: fadeInDown 0.7s ease-out;
     }
     .badge {
       background: rgba(255,255,255,0.15);
@@ -112,126 +174,315 @@
       font-size: 0.8rem;
       letter-spacing: 2px;
       text-transform: uppercase;
-      padding: 5px 14px;
+      padding: 6px 16px;
       border-radius: 20px;
       display: inline-block;
-      margin-bottom: 10px;
+      margin-bottom: 12px;
     }
-    .page-header h2 { font-size: 2.2rem; margin-bottom: 8px; font-weight: 800; }
-    .page-header p { color: #e2e8f0; max-width: 700px; margin: 0 auto; font-size: 1rem; }
+    .page-header h2 {
+      font-size: 2.3rem;
+      font-weight: 800;
+      margin-bottom: 8px;
+    }
+    .page-header p {
+      color: #e2e8f0;
+      max-width: 700px;
+      margin: 0 auto;
+      font-size: 1.02rem;
+    }
 
     /* LAYOUT SPLIT */
     .contact-layout {
       display: grid;
-      grid-template-columns: 1fr 1.2fr;
+      grid-template-columns: 1fr 1.35fr;
       gap: 30px;
     }
 
+    /* CONTACT INFO CARD */
     .info-card {
       background: var(--white);
       border: 1px solid var(--border-color);
-      border-radius: 14px;
-      padding: 30px;
-      box-shadow: 0 4px 12px rgba(0,0,0,0.04);
+      border-radius: 16px;
+      padding: 32px;
+      box-shadow: var(--shadow-sm);
       display: flex;
       flex-direction: column;
+      justify-content: space-between;
       gap: 22px;
+      animation: fadeInLeft 0.8s ease-out;
+      transition: box-shadow 0.3s ease;
     }
-    .info-item {
-      display: flex;
-      gap: 16px;
-      align-items: flex-start;
+    .info-card:hover {
+      box-shadow: var(--shadow-md);
     }
-    .info-icon {
-      width: 44px;
-      height: 44px;
-      border-radius: 10px;
-      background: #eff6ff;
-      color: var(--secondary-blue);
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      font-size: 1.2rem;
-      flex-shrink: 0;
-    }
-    .info-item h4 {
-      font-size: 1rem;
+    .info-card h3 {
       color: var(--primary-navy);
+      font-size: 1.35rem;
       font-weight: 700;
-      margin-bottom: 3px;
+      margin-bottom: 6px;
     }
-    .info-item p, .info-item a {
-      color: #475569;
-      font-size: 0.92rem;
+    .info-card-desc {
+      color: var(--text-muted);
+      font-size: 0.93rem;
+      margin-bottom: 10px;
+    }
+    .location-box {
+      background: #f8fafc;
+      border: 1px solid var(--border-color);
+      border-radius: 10px;
+      padding: 16px;
+      margin-bottom: 10px;
+    }
+    .location-label {
+      color: var(--text-muted);
+      display: block;
+      font-size: 0.8rem;
+      font-weight: 700;
+      margin-bottom: 5px;
+      text-transform: uppercase;
+      letter-spacing: 0.5px;
+    }
+    .location-text {
+      color: var(--text-dark);
+      font-size: 0.94rem;
+      font-weight: 600;
+      line-height: 1.5;
+    }
+
+    /* ACTION BUTTONS */
+    .action-links {
+      display: flex;
+      flex-direction: column;
+      gap: 11px;
+    }
+    .act-btn {
+      align-items: center;
+      border-radius: 8px;
+      color: var(--white);
+      display: flex;
+      font-size: 0.95rem;
+      font-weight: 600;
+      gap: 10px;
+      justify-content: center;
+      padding: 12px 18px;
       text-decoration: none;
+      transition: all 0.25s ease;
     }
-    .info-item a:hover { color: var(--accent-gold); }
+    .act-call {
+      background: #10b981;
+    }
+    .act-call:hover {
+      background: #059669;
+      transform: translateY(-2px);
+    }
+    .act-wa {
+      background: #25d366;
+    }
+    .act-wa:hover {
+      background: #1eb956;
+      transform: translateY(-2px);
+    }
+    .act-email {
+      background: var(--white);
+      border: 1px solid #cbd5e1;
+      color: #0f172a;
+    }
+    .act-email:hover {
+      background: #f1f5f9;
+      transform: translateY(-2px);
+    }
+    .act-maps {
+      background: var(--secondary-blue);
+    }
+    .act-maps:hover {
+      background: var(--primary-navy);
+      transform: translateY(-2px);
+    }
 
     /* FORM CARD */
     .form-card {
       background: var(--white);
       border: 1px solid var(--border-color);
-      border-radius: 14px;
-      padding: 32px;
-      box-shadow: 0 4px 12px rgba(0,0,0,0.04);
+      border-radius: 16px;
+      padding: 34px;
+      box-shadow: var(--shadow-sm);
+      animation: fadeInRight 0.8s ease-out;
+      transition: box-shadow 0.3s ease;
+    }
+    .form-card:hover {
+      box-shadow: var(--shadow-md);
     }
     .form-card h3 {
-      font-size: 1.35rem;
+      font-size: 1.45rem;
       color: var(--primary-navy);
-      margin-bottom: 8px;
+      margin-bottom: 6px;
       font-weight: 800;
     }
-    .form-card p {
+    .form-card-sub {
       color: var(--text-muted);
-      font-size: 0.9rem;
+      font-size: 0.92rem;
       margin-bottom: 22px;
     }
-    .form-group {
-      margin-bottom: 18px;
+
+    /* IN-PAGE CONFIRMATION BANNERS */
+    #form-status-success {
+      background: #ecfdf5;
+      border-radius: 12px;
+      border: 1px solid #6ee7b7;
+      color: #065f46;
+      display: none;
+      margin-bottom: 20px;
+      padding: 24px 20px;
+      text-align: center;
+      animation: fadeInUp 0.5s ease-out;
     }
-    .form-group label {
+    #form-status-error {
+      background: #fef2f2;
+      border-radius: 10px;
+      border: 1px solid #fca5a5;
+      color: #991b1b;
+      display: none;
+      font-size: 0.92rem;
+      margin-bottom: 20px;
+      padding: 14px 18px;
+      text-align: center;
+      animation: fadeInUp 0.5s ease-out;
+    }
+
+    /* FORM INPUTS */
+    .form-grid {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 16px;
+      margin-bottom: 16px;
+    }
+    .form-cell {
+      flex: 1 1 210px;
+    }
+    .form-cell label {
+      color: #334155;
       display: block;
       font-size: 0.88rem;
       font-weight: 600;
-      color: var(--text-dark);
       margin-bottom: 6px;
     }
-    .form-group input, .form-group textarea, .form-group select {
+    .form-cell input,
+    .form-cell select,
+    .form-full textarea {
       width: 100%;
-      padding: 10px 14px;
-      border: 1px solid var(--border-color);
+      padding: 11px 14px;
+      border: 1.5px solid var(--border-color);
       border-radius: 8px;
-      font-size: 0.92rem;
+      font-size: 0.93rem;
       color: var(--text-dark);
+      background: #fdfdfd;
       outline: none;
-      transition: border-color 0.2s;
+      transition: all 0.25s ease;
     }
-    .form-group input:focus, .form-group textarea:focus, .form-group select:focus {
+    .form-cell input:focus,
+    .form-cell select:focus,
+    .form-full textarea:focus {
       border-color: var(--secondary-blue);
+      background: var(--white);
+      box-shadow: 0 0 0 3px rgba(30, 58, 138, 0.1);
     }
+    .form-full {
+      margin-bottom: 16px;
+    }
+    .form-full label {
+      color: #334155;
+      display: block;
+      font-size: 0.88rem;
+      font-weight: 600;
+      margin-bottom: 6px;
+    }
+
+    /* SUBMIT BUTTON */
     .form-submit-btn {
-      background: var(--primary-navy);
-      color: var(--white);
+      align-items: center;
+      background: linear-gradient(135deg, var(--primary-navy) 0%, var(--secondary-blue) 100%);
       border: none;
-      padding: 12px 24px;
-      font-size: 0.95rem;
-      font-weight: 700;
       border-radius: 8px;
+      color: var(--white);
       cursor: pointer;
+      display: flex;
+      font-size: 1rem;
+      font-weight: 700;
+      gap: 8px;
+      justify-content: center;
+      margin-top: 8px;
+      padding: 14px 26px;
       width: 100%;
-      transition: background 0.2s;
+      box-shadow: 0 4px 14px rgba(13, 40, 71, 0.2);
+      transition: all 0.3s ease;
     }
-    .form-submit-btn:hover { background: var(--secondary-blue); }
+    .form-submit-btn:hover {
+      background: linear-gradient(135deg, var(--secondary-blue) 0%, var(--primary-navy) 100%);
+      transform: translateY(-2px);
+      box-shadow: 0 6px 18px rgba(13, 40, 71, 0.3);
+    }
 
-    /* MAP CONTAINER */
-    .map-container {
-      margin-top: 35px;
-      border-radius: 14px;
-      overflow: hidden;
+    /* MAP PREVIEW SECTION */
+    .map-section {
+      margin-top: 40px;
+      background: var(--white);
       border: 1px solid var(--border-color);
-      box-shadow: 0 4px 12px rgba(0,0,0,0.04);
+      border-radius: 16px;
+      overflow: hidden;
+      box-shadow: var(--shadow-sm);
+      animation: fadeInUp 0.9s ease-out;
+    }
+    .map-header {
+      padding: 22px 28px;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      flex-wrap: wrap;
+      gap: 15px;
+      background: #fafcff;
+      border-bottom: 1px solid var(--border-color);
+    }
+    .map-header-text h3 {
+      font-size: 1.25rem;
+      color: var(--primary-navy);
+      font-weight: 800;
+      margin-bottom: 3px;
+    }
+    .map-header-text p {
+      font-size: 0.9rem;
+      color: var(--text-muted);
+    }
+    .btn-googlemaps-top {
+      display: inline-flex;
+      align-items: center;
+      gap: 8px;
+      background: #1a73e8;
+      color: var(--white);
+      text-decoration: none;
+      padding: 10px 18px;
+      border-radius: 8px;
+      font-weight: 700;
+      font-size: 0.88rem;
+      box-shadow: 0 3px 10px rgba(26, 115, 232, 0.25);
+      transition: all 0.25s ease;
+    }
+    .btn-googlemaps-top:hover {
+      background: #1557b0;
+      transform: translateY(-2px);
+      box-shadow: 0 5px 15px rgba(26, 115, 232, 0.35);
+    }
+    .map-frame-wrapper {
+      position: relative;
+      height: 380px;
+      width: 100%;
+    }
+    .map-frame-wrapper iframe {
+      width: 100%;
+      height: 100%;
+      border: 0;
     }
 
+    /* FLOATING WHATSAPP BUTTON */
     .whatsapp-float {
       position: fixed;
       bottom: 25px;
@@ -239,21 +490,44 @@
       background: #25d366;
       color: var(--white);
       border-radius: 50%;
-      width: 54px;
-      height: 54px;
+      width: 56px;
+      height: 56px;
       display: flex;
       align-items: center;
       justify-content: center;
-      font-size: 1.8rem;
-      box-shadow: 0 4px 15px rgba(0,0,0,0.2);
+      font-size: 1.9rem;
+      box-shadow: 0 6px 20px rgba(37, 211, 102, 0.4);
       text-decoration: none;
       z-index: 1000;
+      transition: transform 0.25s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+    }
+    .whatsapp-float:hover {
+      transform: scale(1.1) rotate(5deg);
+    }
+
+    /* ANIMATIONS */
+    @keyframes fadeInDown {
+      from { opacity: 0; transform: translateY(-20px); }
+      to { opacity: 1; transform: translateY(0); }
+    }
+    @keyframes fadeInUp {
+      from { opacity: 0; transform: translateY(20px); }
+      to { opacity: 1; transform: translateY(0); }
+    }
+    @keyframes fadeInLeft {
+      from { opacity: 0; transform: translateX(-20px); }
+      to { opacity: 1; transform: translateX(0); }
+    }
+    @keyframes fadeInRight {
+      from { opacity: 0; transform: translateX(20px); }
+      to { opacity: 1; transform: translateX(0); }
     }
 
     @media (max-width: 860px) {
       .top-bar { display: none; }
       .nav-links { display: none; }
       .contact-layout { grid-template-columns: 1fr; }
+      .page-header h2 { font-size: 1.8rem; }
     }
   </style>
 </head>
@@ -295,110 +569,171 @@
   <!-- CONTENT -->
   <div class="container">
     <div class="page-header">
-      <span class="badge">Inquiries &amp; Admissions</span>
-      <h2>Contact ACEJ KARAMA TSS</h2>
-      <p>Have questions regarding admissions, fee schedules, or academic curricula? Reach our administration offices directly.</p>
+      <span class="badge">Get in Touch</span>
+      <h2>Contact &amp; Admissions Office</h2>
+      <p>Reach out to ACEJ Karama TSS administration, admissions office, or technical departments for enrollments and campus visits.</p>
     </div>
 
     <div class="contact-layout">
-      <!-- CONTACT DETAILS -->
+      <!-- LEFT COLUMN: CONTACT DETAILS & BUTTONS -->
       <div class="info-card">
-        <div class="info-item">
-          <div class="info-icon"><i class="fa-solid fa-location-dot"></i></div>
-          <div>
-            <h4>Campus Address</h4>
-            <p>Muhanga District, Southern Province, Rwanda</p>
-            <p style="font-size: 0.85rem; color: var(--text-muted);">School Code: 0207030</p>
+        <div>
+          <h3>Contact Details</h3>
+          <p class="info-card-desc">For admission inquiries, certificates, or campus visits, get in touch directly or visit our campus in Muhanga.</p>
+
+          <div class="location-box">
+            <span class="location-label">📍 Campus Address</span>
+            <div class="location-text">
+              WPJG+G3P, Kamazu Village, Nganzo Cell, Mushubati, Muhanga District, Southern Province, Rwanda
+            </div>
+            <div style="font-size: 0.82rem; color: var(--text-muted); margin-top: 4px;">
+              School Code: 0207030
+            </div>
           </div>
         </div>
 
-        <div class="info-item">
-          <div class="info-icon"><i class="fa-solid fa-phone"></i></div>
-          <div>
-            <h4>Administration Hotline</h4>
-            <p><a href="tel:0788607924">Headmaster: 0788607924</a></p>
-            <p><a href="tel:0783125100">DOS (Academics): 0783125100</a></p>
-            <p><a href="tel:0788269155">Discipline: 0788269155</a></p>
-          </div>
-        </div>
-
-        <div class="info-item">
-          <div class="info-icon"><i class="fa-solid fa-envelope"></i></div>
-          <div>
-            <h4>Email Office</h4>
-            <p><a href="mailto:acejkaramatss@gmail.com">acejkaramatss@gmail.com</a></p>
-          </div>
-        </div>
-
-        <div class="info-item">
-          <div class="info-icon" style="background: #ecfdf5; color: #059669;"><i class="fa-brands fa-whatsapp"></i></div>
-          <div>
-            <h4>Direct WhatsApp</h4>
-            <p><a href="https://wa.me/250788607924" target="_blank" rel="noopener noreferrer">+250 788 607 924</a></p>
-          </div>
+        <div class="action-links">
+          <a href="tel:0788607924" class="act-btn act-call">
+            <i class="fa-solid fa-phone"></i> Call: 0788607924
+          </a>
+          <a href="https://wa.me/250788607924" target="_blank" rel="noopener noreferrer" class="act-btn act-wa">
+            <i class="fa-brands fa-whatsapp"></i> Chat on WhatsApp
+          </a>
+          <a href="mailto:acejkaramatss@gmail.com" class="act-btn act-email">
+            <i class="fa-regular fa-envelope"></i> Email: acejkaramatss@gmail.com
+          </a>
+          <a href="https://maps.google.com/?q=Association+pour+la+Contribution+%C3%A0+l'Education+de+la+Jeunesse+-+ACEJ+Karama" target="_blank" rel="noopener noreferrer" class="act-btn act-maps">
+            <i class="fa-solid fa-diamond-turn-right"></i> Open Campus on Maps
+          </a>
         </div>
       </div>
 
-      <!-- INQUIRY FORM (Connected to Formspree) -->
+      <!-- RIGHT COLUMN: IN-PAGE SUBMISSION FORM -->
       <div class="form-card">
-        <h3>Send an Official Inquiry</h3>
-        <p>Complete the form below to reach the administration desk. Responses are dispatched directly to your email.</p>
-        
-        <form action="https://formspree.io/f/xvgvbwkk" method="POST">
-          <div class="form-group">
-            <label for="name">Full Name *</label>
-            <input type="text" id="name" name="name" placeholder="e.g. Jean Pierre Habimana" required>
+        <h3>Send us a Message</h3>
+        <p class="form-card-sub">Fill out this form and our administrative team will reply directly to your email address.</p>
+
+        <!-- IN-PAGE SUCCESS BANNER -->
+        <div id="form-status-success">
+          <span style="display: block; font-size: 2.2rem; margin-bottom: 8px;">✅</span>
+          <strong style="display: block; font-size: 1.15rem; margin-bottom: 6px;">Thank you! Your message has been sent.</strong>
+          <p style="color: #047857; font-size: 0.92rem; margin: 0;">The administration at ACEJ Karama TSS has received your details and will get back to you shortly.</p>
+        </div>
+
+        <!-- IN-PAGE ERROR BANNER -->
+        <div id="form-status-error">
+          ⚠️ Something went wrong. Please check your connection or contact us directly by phone.
+        </div>
+
+        <!-- FORM (PROCESSED VIA AJAX) -->
+        <form action="https://formspree.io/f/xjygwyqr" id="acej-contact-form" method="POST">
+          <div class="form-grid">
+            <div class="form-cell">
+              <label for="name">Your Name *</label>
+              <input type="text" id="name" name="name" placeholder="e.g. Jean Pierre Habimana" required>
+            </div>
+            <div class="form-cell">
+              <label for="email">Email Address *</label>
+              <input type="email" id="email" name="_replyto" placeholder="name@example.com" required>
+            </div>
           </div>
 
-          <div class="form-group">
-            <label for="email">Email Address *</label>
-            <input type="email" id="email" name="_replyto" placeholder="e.g. name@example.com" required>
+          <div class="form-grid">
+            <div class="form-cell">
+              <label for="phone">Phone Number</label>
+              <input type="tel" id="phone" name="phone" placeholder="e.g. 0788123456">
+            </div>
+            <div class="form-cell">
+              <label for="subject">Subject *</label>
+              <input type="text" id="subject" name="subject" placeholder="e.g. Admission Inquiry" required>
+            </div>
           </div>
 
-          <div class="form-group">
-            <label for="phone">Phone / WhatsApp Number</label>
-            <input type="tel" id="phone" name="phone" placeholder="e.g. 0788123456">
-          </div>
-
-          <div class="form-group">
-            <label for="subject">Inquiry Type</label>
-            <select id="subject" name="subject">
-              <option value="Admission Application">Admission Application</option>
-              <option value="Networking & IT Program">Networking &amp; IT Program</option>
-              <option value="Computer Systems Program">Computer Systems Program</option>
-              <option value="Accounting Program">Accounting Program</option>
-              <option value="General Inquiry">General Inquiry</option>
-            </select>
-          </div>
-
-          <div class="form-group">
+          <div class="form-full">
             <label for="message">Message *</label>
-            <textarea id="message" name="message" rows="4" placeholder="Write your question or request..." required></textarea>
+            <textarea id="message" name="message" rows="5" placeholder="Type your message, questions, or admission requests here..." required></textarea>
           </div>
 
-          <button type="submit" class="form-submit-btn"><i class="fa-solid fa-paper-plane"></i> Submit Inquiry</button>
+          <button type="submit" id="form-submit-btn" class="form-submit-btn">
+            <span id="btn-text"><i class="fa-solid fa-paper-plane"></i> Send Message</span>
+          </button>
         </form>
       </div>
     </div>
 
-    <!-- GOOGLE MAP EMBED (Muhanga, Rwanda) -->
-    <div class="map-container">
-      <iframe 
-        src="https://maps.google.com/maps?q=Muhanga,%20Rwanda&t=&z=13&ie=UTF8&iwloc=&output=embed" 
-        width="100%" 
-        height="320" 
-        style="border:0; display: block;" 
-        allowfullscreen="" 
-        loading="lazy" 
-        referrerpolicy="no-referrer-when-downgrade">
-      </iframe>
+    <!-- GOOGLE MAPS BLOCK -->
+    <div class="map-section">
+      <div class="map-header">
+        <div class="map-header-text">
+          <h3><i class="fa-solid fa-location-crosshairs" style="color: var(--accent-gold);"></i> ACEJ Karama TSS Campus Location</h3>
+          <p>WPJG+G3P, Kamazu Village, Nganzo Cell, Mushubati, Muhanga District, Southern Province, Rwanda.</p>
+        </div>
+        <a href="https://maps.google.com/?q=Association+pour+la+Contribution+%C3%A0+l'Education+de+la+Jeunesse+-+ACEJ+Karama" target="_blank" rel="noopener noreferrer" class="btn-googlemaps-top">
+          <i class="fa-solid fa-map"></i> Open in Google Maps
+        </a>
+      </div>
+      <div class="map-frame-wrapper">
+        <iframe 
+          src="https://maps.google.com/maps?q=Association+pour+la+Contribution+%C3%A0+l'Education+de+la+Jeunesse+-+ACEJ+Karama&t=&z=14&ie=UTF8&iwloc=&output=embed" 
+          allowfullscreen="" 
+          loading="lazy" 
+          referrerpolicy="no-referrer-when-downgrade">
+        </iframe>
+      </div>
     </div>
   </div>
 
-  <!-- WHATSAPP FLOAT -->
-  <a href="https://wa.me/250788607924" class="whatsapp-float" target="_blank" rel="noopener noreferrer">
+  <!-- FLOATING WHATSAPP -->
+  <a href="https://wa.me/250788607924" class="whatsapp-float" target="_blank" rel="noopener noreferrer" title="Chat on WhatsApp">
     <i class="fa-brands fa-whatsapp"></i>
   </a>
+
+  <!-- SUBMISSION SCRIPT (SILENT AJAX PROCESSING) -->
+  <script>
+    (function() {
+      var form = document.getElementById("acej-contact-form");
+      var successBox = document.getElementById("form-status-success");
+      var errorBox = document.getElementById("form-status-error");
+      var submitBtn = document.getElementById("form-submit-btn");
+      var btnText = document.getElementById("btn-text");
+
+      form.addEventListener("submit", function(event) {
+        event.preventDefault();
+        btnText.innerHTML = '<i class="fa-solid fa-spinner fa-spin"></i> Sending...';
+        submitBtn.disabled = true;
+        submitBtn.style.opacity = "0.75";
+
+        var data = new FormData(form);
+
+        fetch(form.action, {
+          method: "POST",
+          body: data,
+          headers: {
+            'Accept': 'application/json'
+          }
+        }).then(function(response) {
+          if (response.ok) {
+            form.reset();
+            form.style.display = "none";
+            errorBox.style.display = "none";
+            successBox.style.display = "block";
+          } else {
+            response.json().then(function() {
+              errorBox.style.display = "block";
+              btnText.innerHTML = '<i class="fa-solid fa-paper-plane"></i> Send Message';
+              submitBtn.disabled = false;
+              submitBtn.style.opacity = "1";
+            });
+          }
+        }).catch(function() {
+          errorBox.style.display = "block";
+          btnText.innerHTML = '<i class="fa-solid fa-paper-plane"></i> Send Message';
+          submitBtn.disabled = false;
+          submitBtn.style.opacity = "1";
+        });
+      });
+    })();
+  </script>
 
 </body>
 </html>
