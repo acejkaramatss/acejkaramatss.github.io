@@ -88,7 +88,7 @@
     .menu-toggle { display: none; background: none; border: none; color: var(--acej-blue); font-size: 1.6rem; cursor: pointer; }
 
     /* ARTICLE CONTAINER */
-    .article-container { max-width: 900px; margin: 40px auto 70px; padding: 0 20px; }
+    .article-container { max-width: 960px; margin: 40px auto 70px; padding: 0 20px; }
 
     /* HERO MAGAZINE BANNER */
     .article-header {
@@ -98,13 +98,12 @@
       box-shadow: var(--shadow-sm);
       border: 1px solid var(--border-color);
       margin-bottom: 35px;
-      animation: fadeInDown 0.7s ease-out;
     }
     .featured-lead-image {
       position: relative;
       height: 480px;
       width: 100%;
-      background: #000;
+      background: #0f172a;
     }
     .featured-lead-image img {
       width: 100%;
@@ -124,13 +123,14 @@
       font-weight: 800;
       letter-spacing: 1px;
       text-transform: uppercase;
+      box-shadow: 0 2px 8px rgba(0,0,0,0.3);
     }
 
     .article-meta-box { padding: 35px 35px 25px; }
     .article-breadcrumbs { font-size: 0.88rem; color: var(--text-muted); margin-bottom: 12px; }
     .article-breadcrumbs a { color: var(--acej-blue); text-decoration: none; font-weight: 600; }
     .article-title {
-      font-size: 2.35rem;
+      font-size: 2.3rem;
       color: var(--acej-dark-blue);
       font-weight: 900;
       line-height: 1.25;
@@ -172,8 +172,8 @@
     /* PHOTO REPORTAGE GALLERY GRID */
     .magazine-gallery {
       display: grid;
-      grid-template-columns: repeat(auto-fit, minmax(260px, 1fr));
-      gap: 22px;
+      grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+      gap: 25px;
       margin: 35px 0 25px;
     }
     .photo-card {
@@ -183,16 +183,16 @@
       overflow: hidden;
       display: flex;
       flex-direction: column;
+      box-shadow: var(--shadow-sm);
       transition: all 0.3s ease;
-      animation: cardAppear 0.8s cubic-bezier(0.16, 1, 0.3, 1) backwards;
     }
     .photo-card:hover {
-      transform: translateY(-4px);
+      transform: translateY(-5px);
       box-shadow: var(--shadow-md);
       border-color: #cbd5e1;
     }
     .photo-card-img {
-      height: 240px;
+      height: 260px;
       width: 100%;
       overflow: hidden;
       background: #e2e8f0;
@@ -201,19 +201,21 @@
       width: 100%;
       height: 100%;
       object-fit: cover;
+      display: block;
       transition: transform 0.4s ease;
     }
-    .photo-card:hover .photo-card-img img { transform: scale(1.04); }
+    .photo-card:hover .photo-card-img img { transform: scale(1.05); }
     .photo-caption {
-      padding: 14px 16px;
-      font-size: 0.88rem;
+      padding: 16px 18px;
+      font-size: 0.9rem;
       color: #475569;
       line-height: 1.5;
       font-weight: 500;
       background: var(--white);
       border-top: 1px solid var(--border-color);
+      flex-grow: 1;
     }
-    .photo-caption strong { color: var(--acej-blue); display: block; margin-bottom: 3px; font-size: 0.82rem; text-transform: uppercase; }
+    .photo-caption strong { color: var(--acej-blue); display: block; margin-bottom: 4px; font-size: 0.84rem; text-transform: uppercase; letter-spacing: 0.5px; }
 
     /* FOOTER */
     .site-footer {
@@ -268,10 +270,6 @@
       z-index: 1000;
     }
 
-    /* ANIMATIONS */
-    @keyframes fadeInDown { from { opacity: 0; transform: translateY(-20px); } to { opacity: 1; transform: translateY(0); } }
-    @keyframes cardAppear { from { opacity: 0; transform: translateY(20px); } to { opacity: 1; transform: translateY(0); } }
-
     @media (max-width: 900px) {
       .top-bar { display: none; }
       .menu-toggle { display: block; }
@@ -315,7 +313,7 @@
   <!-- NAVBAR -->
   <header class="navbar">
     <a href="/" class="brand">
-      <img src="/logo.png" alt="ACEJ Karama Crest" class="brand-logo-img" onerror="this.src='https://blogger.googleusercontent.com/img/b/R29vZ2xl/AVvXsEj7G8n1Z3Q5z90_LOGO/s400/acej-logo.png';">
+      <img src="/logo.png" alt="ACEJ Karama Crest" class="brand-logo-img">
       <div class="brand-text">
         <h1>ACEJ KARAMA</h1>
         <p>Uburerere &bull; Ubumenyi</p>
@@ -351,7 +349,7 @@
 
       <div class="article-meta-box">
         <div class="article-breadcrumbs">
-          <a href="/">Home</a> &rsaquo; <a href="/news/glf-rwanda/">News &amp; Events</a> &rsaquo; <span>GLF Rwanda</span>
+          <a href="/">Home</a> &rsaquo; <span>News &amp; Events</span> &rsaquo; <span>GLF Rwanda</span>
         </div>
         <h1 class="article-title">Girls Leaders Forum (GLF) Rwanda: Empowering Future Women Leaders at ACEJ Karama TSS</h1>
         <div class="article-info-strip">
@@ -365,7 +363,7 @@
     <!-- EDITORIAL REPORT -->
     <div class="article-body">
       <p class="lead-paragraph">
-        The Girls Leaders Forum (GLF) Rwanda continues to play an inspiring role in guiding young women to discover their potential, assert their rights, and step boldly into technical leadership, governance, and entrepreneurship.
+        The Girls Leaders Forum (GLF) Rwanda continues to play an inspiring role in guiding young women to discover their potential, assert their rights, and step boldly into technical leadership, governance, and community development.
       </p>
 
       <p>
@@ -384,9 +382,9 @@
 
       <div class="magazine-gallery">
         <!-- Photo 2 -->
-        <div class="photo-card" style="animation-delay: 0.1s;">
+        <div class="photo-card">
           <div class="photo-card-img">
-            <img src="/Huye%201.jp" alt="Student delegates engaging during sessions" loading="lazy">
+            <img src="/Huye%202.jpg" alt="Student delegates engaging during sessions" loading="lazy">
           </div>
           <div class="photo-caption">
             <strong>Joy &amp; Camaraderie</strong>
@@ -394,11 +392,21 @@
           </div>
         </div>
 
-        <
-        <!-- Photo 4 -->
-        <div class="photo-card" style="animation-delay: 0.3s;">
+        <!-- Photo 3 (Exact match to Huye 3jpg) -->
+        <div class="photo-card">
           <div class="photo-card-img">
-            <img src="/Huye%201.jpg" alt="Delegates in courtyard" loading="lazy">
+            <img src="/Huye%203jpg" alt="Student leaders in school uniform" loading="lazy">
+          </div>
+          <div class="photo-caption">
+            <strong>Campus Representation</strong>
+            ACEJ Karama TSS student representatives networking with fellow secondary school leaders.
+          </div>
+        </div>
+
+        <!-- Photo 4 -->
+        <div class="photo-card">
+          <div class="photo-card-img">
+            <img src="/Huye%204.jpg" alt="Delegates in courtyard" loading="lazy">
           </div>
           <div class="photo-caption">
             <strong>Youth Leadership</strong>
@@ -407,7 +415,7 @@
         </div>
 
         <!-- Photo 5 -->
-        <div class="photo-card" style="animation-delay: 0.4s;">
+        <div class="photo-card">
           <div class="photo-card-img">
             <img src="/Huye%205.jpg" alt="Student delegation group portrait" loading="lazy">
           </div>
@@ -418,7 +426,7 @@
         </div>
 
         <!-- Photo 6 -->
-        <div class="photo-card" style="animation-delay: 0.5s;">
+        <div class="photo-card">
           <div class="photo-card-img">
             <img src="/Huye%206.jpg" alt="Team standing together" loading="lazy">
           </div>
@@ -429,7 +437,7 @@
         </div>
 
         <!-- Photo 7 -->
-        <div class="photo-card" style="animation-delay: 0.6s;">
+        <div class="photo-card">
           <div class="photo-card-img">
             <img src="/Huye%207.jpg" alt="Pair of student delegates" loading="lazy">
           </div>
@@ -440,7 +448,7 @@
         </div>
 
         <!-- Photo 8 -->
-        <div class="photo-card" style="animation-delay: 0.7s;">
+        <div class="photo-card">
           <div class="photo-card-img">
             <img src="/Huye%208.jpg" alt="Delegates standing by campus trees" loading="lazy">
           </div>
@@ -451,7 +459,7 @@
         </div>
 
         <!-- Photo 9 -->
-        <div class="photo-card" style="animation-delay: 0.8s;">
+        <div class="photo-card">
           <div class="photo-card-img">
             <img src="/Huye%209.jpg" alt="Friendship and mentorship" loading="lazy">
           </div>
