@@ -1,36 +1,33 @@
-
 <!DOCTYPE html>
 <html lang="en">
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Fees &amp; Online Payment Portal | ACEJ KARAMA TSS</title>
-  <meta name="description" content="Official school fees payment and slip verification portal for ACEJ Karama TSS. Pay via MTN Mobile Money (+250 782 877 247) and Bank accounts.">
-  <meta name="keywords" content="ACEJ Karama payment, ACEJ Karama fees, MoMo pay Rwanda, Bank of Kigali ACEJ Karama, RTB technical school fees">
+  <meta name="description" content="Official school fees payment and slip verification portal for ACEJ Karama TSS. Pay via MTN Mobile Money to Cashier Marie Louise NYIRANGIRIMANA (0785485641) and bank accounts.">
+  <meta name="keywords" content="ACEJ Karama payment, ACEJ Karama fees, MoMo pay Rwanda, Cashier Marie Louise NYIRANGIRIMANA, RTB technical secondary school fees">
   <meta name="google-site-verification" content="_2E72En-E2s2izExfWQNHzHOVy7NJ30LTv33ufi-tvk" />
   
   <link rel="icon" type="image/png" href="/logo.png">
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-  <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+  <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800;900&display=swap" rel="stylesheet">
 
   <style>
     :root {
-      --acej-blue: #0047AB;         /* Official Cobalt Blue */
+      --acej-blue: #0047AB;         /* Official Emblem Cobalt Blue */
       --acej-dark-blue: #002D6E;    /* Deep Institutional Navy */
       --acej-gold: #FFC72C;         /* Official Emblem Gold */
       --acej-gold-hover: #E5B220;
       --acej-gold-light: #fff8e1;
-      --momo-yellow: #ffcc00;
-      --momo-dark: #222222;
-      --momo-blue: #003366;
       --text-dark: #0f172a;
       --text-muted: #64748b;
       --bg-light: #f8fafc;
       --white: #ffffff;
       --border-color: #e2e8f0;
       --success-green: #10b981;
+      --success-dark: #047857;
       --shadow-sm: 0 4px 14px rgba(0,0,0,0.05);
       --shadow-md: 0 10px 25px rgba(0, 71, 171, 0.12);
       --shadow-lg: 0 18px 36px rgba(0, 45, 110, 0.16);
@@ -268,7 +265,7 @@
     }
     .meta-pill i { color: var(--acej-gold); }
 
-    /* MOMO QUICK PAY CARD IN HERO */
+    /* CASHIER QUICK PAY CARD IN HERO */
     .momo-hero-card {
       background: #ffffff;
       color: var(--text-dark);
@@ -541,6 +538,43 @@
       gap: 10px;
     }
 
+    /* CASHIER VERIFICATION CARD */
+    .cashier-card {
+      background: linear-gradient(135deg, #f0fdf4 0%, #ecfdf5 100%);
+      border: 1.5px solid #a7f3d0;
+      border-radius: 16px;
+      padding: 24px;
+      margin-bottom: 25px;
+    }
+    .cashier-header {
+      display: flex;
+      align-items: center;
+      gap: 14px;
+      margin-bottom: 12px;
+    }
+    .cashier-icon {
+      width: 48px;
+      height: 48px;
+      background: var(--success-green);
+      color: var(--white);
+      border-radius: 50%;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 1.3rem;
+      box-shadow: 0 4px 10px rgba(16, 185, 129, 0.25);
+    }
+    .cashier-info h4 {
+      font-size: 1.1rem;
+      font-weight: 800;
+      color: #065f46;
+    }
+    .cashier-info p {
+      font-size: 0.85rem;
+      color: #047857;
+      font-weight: 700;
+    }
+
     /* PAYMENT METHOD TABS (SIDEBAR) */
     .method-card {
       background: var(--white);
@@ -597,42 +631,6 @@
       color: #334155;
     }
 
-    /* CASHIER VERIFICATION CARD */
-    .cashier-card {
-      background: linear-gradient(135deg, #f0fdf4 0%, #ecfdf5 100%);
-      border: 1.5px solid #a7f3d0;
-      border-radius: 16px;
-      padding: 24px;
-      margin-bottom: 25px;
-    }
-    .cashier-header {
-      display: flex;
-      align-items: center;
-      gap: 12px;
-      margin-bottom: 12px;
-    }
-    .cashier-icon {
-      width: 44px;
-      height: 44px;
-      background: #10b981;
-      color: var(--white);
-      border-radius: 50%;
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      font-size: 1.2rem;
-    }
-    .cashier-info h4 {
-      font-size: 1.05rem;
-      font-weight: 800;
-      color: #065f46;
-    }
-    .cashier-info p {
-      font-size: 0.82rem;
-      color: #047857;
-      font-weight: 600;
-    }
-
     /* BUTTONS */
     .btn-submit-slip {
       width: 100%;
@@ -661,7 +659,7 @@
       background: #25d366;
       color: var(--white);
       text-decoration: none;
-      padding: 13px 20px;
+      padding: 14px 20px;
       border-radius: 10px;
       font-weight: 800;
       font-size: 0.95rem;
@@ -719,6 +717,7 @@
       letter-spacing: 0.5px;
       text-transform: uppercase;
       margin-bottom: 15px;
+      color: #ffffff;
       position: relative;
       padding-bottom: 8px;
     }
@@ -910,41 +909,41 @@
           School Fees &amp; <span>Online Payment</span> System
         </h1>
         <p class="pay-hero-desc">
-          Safe, instant, and transparent fee payment for parents and guardians. Pay easily using Mobile Money (+250 782 877 247) or Bank Deposit, and instantly submit your payment slip for immediate validation by the Finance Office.
+          Official fee payment portal for parents and guardians. Pay safely via MTN Mobile Money directly to the Cashier (<strong>0785485641</strong>) or through official bank accounts, then verify payment clearances instantly with the Treasury Office.
         </p>
 
         <div class="hero-meta-pills">
           <div class="meta-pill"><i class="fa-solid fa-file-invoice"></i> RTQB Levels 3, 4 &amp; 5</div>
           <div class="meta-pill"><i class="fa-solid fa-school"></i> School Code: 0207030</div>
-          <div class="meta-pill"><i class="fa-solid fa-clock"></i> Instant Verification</div>
+          <div class="meta-pill"><i class="fa-solid fa-user-check"></i> Cashier: Marie Louise NYIRANGIRIMANA</div>
         </div>
       </div>
 
-      <!-- MOMO QUICK BOX -->
+      <!-- MOMO QUICK BOX WITH CASHIER NUMBER -->
       <div class="momo-hero-card">
         <div class="momo-card-header">
           <span class="momo-brand-tag">
             <i class="fa-solid fa-mobile-screen-button"></i> MTN MoMo Pay
           </span>
           <div class="momo-status-dot">
-            <span class="status-ping"></span> Active Payment Line
+            <span class="status-ping"></span> Active Cashier Line
           </div>
         </div>
 
         <div class="momo-number-box">
-          <div class="momo-label">Designated Payment Line / Merchant</div>
-          <div class="momo-number-digits" id="momoNumberDisplay">0782877247</div>
-          <div style="font-size: 0.8rem; color: #475569; margin-top: 4px; font-weight: 600;">
-            Account Holder: <strong>ACEJ KARAMA TSS</strong>
+          <div class="momo-label">Designated Cashier Payment Line</div>
+          <div class="momo-number-digits" id="momoNumberDisplay">0785485641</div>
+          <div style="font-size: 0.82rem; color: #334155; margin-top: 5px; font-weight: 700;">
+            Recipient: <strong>Marie Louise NYIRANGIRIMANA</strong> (Caissière)
           </div>
         </div>
 
         <div class="momo-actions">
-          <button class="btn-momo-act btn-momo-copy" onclick="copyMomoNumber()">
-            <i class="fa-regular fa-copy"></i> Copy Number
+          <button class="btn-momo-act btn-momo-copy" onclick="copyCashierNumber()">
+            <i class="fa-regular fa-copy"></i> Copy 0785485641
           </button>
-          <a href="tel:*182#" class="btn-momo-act btn-momo-dial">
-            <i class="fa-solid fa-phone"></i> Dial *182#
+          <a href="tel:0785485641" class="btn-momo-act btn-momo-dial">
+            <i class="fa-solid fa-phone"></i> Call Cashier
           </a>
         </div>
       </div>
@@ -961,12 +960,12 @@
           <span class="card-header-badge"><i class="fa-solid fa-calculator"></i> Step 1: Select Student &amp; Trade</span>
           <h2 class="portal-card-title">Fee Calculator &amp; USSD Generator</h2>
           <p class="portal-card-sub">
-            Choose your student's combination, level, and fee structure to auto-calculate the exact tuition amount and generate a quick-dial payment prompt.
+            Select your student's combination, level, and fee structure to calculate the term tuition amount and generate an instant USSD payment string for Cashier <strong>0785485641</strong>.
           </p>
 
           <div class="form-row">
             <div class="form-group">
-              <label for="studentTrade">Technical Trade / Department <span>*</span></label>
+              <label for="studentTrade">Technical Trade / Combination <span>*</span></label>
               <select id="studentTrade" class="form-control" onchange="calculateFees()">
                 <option value="NIT" selected>Networking &amp; Internet Tech (NIT)</option>
                 <option value="CSA">Computer Systems &amp; Architecture (CSA)</option>
@@ -1017,123 +1016,123 @@
               </div>
             </div>
             <div id="customAmountRow" style="display: none; margin-top: 15px;">
-              <label style="font-size: 0.85rem; font-weight: 700; color: #1e3a8a;">Enter Custom Amount (RWF):</label>
+              <label style="font-size: 0.85rem; font-weight: 700; color: #1e3a8a;">Enter Custom Partial Amount (RWF):</label>
               <input type="number" id="customInput" class="form-control" placeholder="e.g. 50000" oninput="updateCustomAmount()">
             </div>
           </div>
 
-          <!-- GENERATED USSD DIALER BOX -->
+          <!-- GENERATED USSD DIALER BOX FOR CASHIER -->
           <div class="ussd-card-generator">
             <div style="display: flex; justify-content: space-between; align-items: center;">
               <span style="font-size: 0.82rem; font-weight: 800; text-transform: uppercase; letter-spacing: 1px; color: #94a3b8;">
-                <i class="fa-solid fa-bolt" style="color: var(--acej-gold);"></i> Instant MTN MoMo USSD Code
+                <i class="fa-solid fa-bolt" style="color: var(--acej-gold);"></i> Instant MTN MoMo USSD (Cashier Line)
               </span>
-              <span style="font-size: 0.78rem; color: #38bdf8;">Click to Dial or Copy</span>
+              <span style="font-size: 0.78rem; color: #38bdf8;">One-Click Dial / Copy</span>
             </div>
 
             <div class="ussd-dial-code">
-              <span id="ussdDisplayString">*182*8*1*0782877247*125000#</span>
+              <span id="ussdDisplayString">*182*1*1*0785485641*125000#</span>
               <i class="fa-solid fa-mobile-screen" style="font-size: 1.1rem; color: #64748b;"></i>
             </div>
 
             <div class="ussd-action-row">
               <button class="btn-momo-act btn-momo-copy" style="flex: 1;" onclick="copyUSSDCode()">
-                <i class="fa-regular fa-copy"></i> Copy USSD Prompt
+                <i class="fa-regular fa-copy"></i> Copy USSD String
               </button>
-              <a href="tel:*182*8*1*0782877247*125000#" id="directDialLink" class="btn-momo-act btn-momo-dial" style="flex: 1;">
-                <i class="fa-solid fa-phone-volume"></i> Open Phone Dialer
+              <a href="tel:*182*1*1*0785485641*125000#" id="directDialLink" class="btn-momo-act btn-momo-dial" style="flex: 1;">
+                <i class="fa-solid fa-phone-volume"></i> Tap to Dial USSD
               </a>
             </div>
           </div>
         </div>
 
-        <!-- STEP 2: VERIFICATION FORM -->
+        <!-- STEP 2: VERIFICATION & WHATSAPP PROOF SUBMISSION -->
         <div class="portal-card">
           <span class="card-header-badge" style="background: #fdf2f8; color: #be185d;">
-            <i class="fa-solid fa-clipboard-check"></i> Step 2: Submit Payment Slip / TxID
+            <i class="fa-solid fa-clipboard-check"></i> Step 2: Instant Slip / SMS Verification
           </span>
           <h2 class="portal-card-title">Notify Cashier &amp; Confirm Clearance</h2>
           <p class="portal-card-sub">
-            Once you have transferred funds via MoMo or Bank Deposit, submit the transaction reference below to validate the student's finance clearance.
+            After sending funds to Cashier Marie Louise NYIRANGIRIMANA via MoMo or depositing at the bank, fill out the details below to generate a pre-formatted clearance message for direct WhatsApp or email validation.
           </p>
 
-          <form action="https://formspree.io/f/xjygwyqr" method="POST" id="feeSubmissionForm" onsubmit="handleSlipSubmit(event)">
-            <!-- Hidden context fields -->
-            <input type="hidden" name="School_Code" value="0207030 - ACEJ KARAMA TSS">
-            <input type="hidden" name="Designated_MoMo_Line" value="+250 782 877 247">
-            <input type="hidden" name="Calculated_Amount" id="hiddenAmountField" value="125000 RWF">
-
+          <form id="feeSubmissionForm" onsubmit="handleWhatsAppProof(event)">
             <div class="form-row">
               <div class="form-group">
                 <label for="studentName">Student Full Name <span>*</span></label>
-                <input type="text" id="studentName" name="Student_Name" class="form-control" placeholder="e.g. Jean Damascene Uwimana" required>
+                <input type="text" id="studentName" class="form-control" placeholder="e.g. Jean Damascene Uwimana" required>
               </div>
               <div class="form-group">
-                <label for="studentReg">Student Reg ID / School ID <span>*</span></label>
-                <input type="text" id="studentReg" name="Student_Reg_Number" class="form-control" placeholder="e.g. ACEJ/2024/0142" required>
+                <label for="studentReg">Student Code / Registration ID <span>*</span></label>
+                <input type="text" id="studentReg" class="form-control" placeholder="e.g. ACEJ/2024/0142" required>
               </div>
             </div>
 
             <div class="form-row">
               <div class="form-group">
                 <label for="parentPhone">Parent / Payer Phone Number <span>*</span></label>
-                <input type="tel" id="parentPhone" name="Payer_Phone" class="form-control" placeholder="e.g. 0788123456" required>
+                <input type="tel" id="parentPhone" class="form-control" placeholder="e.g. 0788123456" required>
               </div>
               <div class="form-group">
-                <label for="paymentMethodUsed">Payment Method Used <span>*</span></label>
-                <select id="paymentMethodUsed" name="Payment_Method" class="form-control" required>
-                  <option value="MTN MoMo (0782877247)" selected>MTN Mobile Money (0782877247)</option>
-                  <option value="Airtel Money (0782877247)">Airtel Money</option>
-                  <option value="Bank of Kigali (BK)">Bank of Kigali (BK Slip)</option>
-                  <option value="Cogebanque / Equity">Other Bank Transfer</option>
+                <label for="paymentMethodUsed">Payment Channel <span>*</span></label>
+                <select id="paymentMethodUsed" class="form-control" required>
+                  <option value="MTN MoMo to Cashier (0785485641)" selected>MTN MoMo to Cashier (0785485641)</option>
+                  <option value="Airtel Money to 0785485641">Airtel Money to 0785485641</option>
+                  <option value="Bank of Kigali (BK Slip)">Bank of Kigali (BK Slip)</option>
+                  <option value="Equity Bank Slip">Equity Bank Slip</option>
                 </select>
               </div>
             </div>
 
             <div class="form-group">
-              <label for="txReference">MoMo Transaction ID (TxID) or Bank Slip Slip No. <span>*</span></label>
-              <input type="text" id="txReference" name="Transaction_ID_or_Slip_Ref" class="form-control" placeholder="e.g. TxID: 18928374929 or Slip #40921" required>
+              <label for="txReference">MoMo Transaction ID (TxID) or Bank Slip Number <span>*</span></label>
+              <input type="text" id="txReference" class="form-control" placeholder="e.g. TxID: 18928374929 or Slip #40921" required>
             </div>
 
             <div class="form-group">
-              <label for="paymentNotes">Additional Student Notes (Optional)</label>
-              <textarea id="paymentNotes" name="Notes" class="form-control" rows="2" placeholder="Mention trade, boarding status, or installment breakdown..."></textarea>
+              <label for="paymentNotes">Additional Details (Optional)</label>
+              <textarea id="paymentNotes" class="form-control" rows="2" placeholder="Mention boarding status, term installment, or specific fee breakdown..."></textarea>
             </div>
 
-            <button type="submit" class="btn-submit-slip" id="submitBtn">
-              <i class="fa-solid fa-paper-plane"></i> Submit Proof to Cashier Office
+            <button type="submit" class="btn-whatsapp-proof" style="margin-top: 8px;">
+              <i class="fa-brands fa-whatsapp" style="font-size: 1.25rem;"></i> Send Payment Proof to Cashier on WhatsApp (0785485641)
             </button>
           </form>
 
-          <!-- WHATSAPP DIRECT ACTION -->
-          <div style="text-align: center; margin-top: 20px;">
-            <p style="font-size: 0.85rem; color: var(--text-muted); margin-bottom: 6px;">
-              Prefer sending the bank slip photo or MoMo SMS directly?
-            </p>
-            <a href="https://wa.me/250785485641?text=Hello%20ACEJ%20Karama%20TSS%20Cashier,%20I%20have%20paid%20school%20fees%20using%20the%20official%20MoMo%20number%200782877247.%20Here%20is%20the%20student%20proof:" target="_blank" rel="noopener noreferrer" class="btn-whatsapp-proof">
-              <i class="fa-brands fa-whatsapp"></i> Send Payment Slip to Cashier (0785485641)
-            </a>
+          <div style="margin-top: 18px; padding: 14px; background: #f8fafc; border-radius: 10px; border: 1px solid var(--border-color); font-size: 0.85rem; color: #475569;">
+            <i class="fa-solid fa-circle-info" style="color: var(--acej-blue);"></i> <strong>Notice:</strong> Please attach a screenshot of your MoMo SMS or photo of your stamped bank deposit slip in the WhatsApp chat for instant receipt issuance.
           </div>
         </div>
       </div>
 
-      <!-- RIGHT COLUMN: CHANNELS & CASHIER DETAILS -->
+      <!-- RIGHT COLUMN: CASHIER PROFILE & CHANNELS -->
       <div>
         
-        <!-- CASHIER PROFILE -->
+        <!-- OFFICIAL CASHIER PROFILE -->
         <div class="cashier-card">
           <div class="cashier-header">
             <div class="cashier-icon"><i class="fa-solid fa-user-check"></i></div>
             <div class="cashier-info">
               <h4>Marie Louise NYIRANGIRIMANA</h4>
-              <p>School Cashier &bull; Head of Treasury (Caissière)</p>
+              <p>School Cashier &bull; Head of Finance (Caissière)</p>
             </div>
           </div>
-          <p style="font-size: 0.88rem; color: #065f46; line-height: 1.5; margin-bottom: 12px;">
-            Responsible for school fees verifications, bank slip validation, and issuing official school receipts.
+          <p style="font-size: 0.88rem; color: #065f46; line-height: 1.5; margin-bottom: 14px;">
+            Authorized treasury officer at ACEJ Karama TSS responsible for fee verification, bank slip validation, and issuing official stamped payment receipts.
           </p>
-          <div style="font-size: 0.85rem; font-weight: 700; color: #047857;">
-            <i class="fa-solid fa-phone"></i> Direct Line: <a href="tel:0785485641" style="color: #065f46; text-decoration: underline;">0785485641</a>
+          <div style="background: rgba(255,255,255,0.7); border-radius: 10px; padding: 12px; border: 1px solid #a7f3d0; margin-bottom: 12px;">
+            <div style="font-size: 0.75rem; text-transform: uppercase; color: #047857; font-weight: 800;">Official MoMo &amp; Phone Line</div>
+            <div style="font-size: 1.35rem; font-weight: 900; color: #065f46; font-family: 'Courier New', monospace;">
+              0785 485 641
+            </div>
+          </div>
+          <div style="display: flex; gap: 10px;">
+            <a href="tel:0785485641" class="btn-momo-act btn-momo-copy" style="flex: 1; padding: 9px; font-size: 0.82rem; background: #047857;">
+              <i class="fa-solid fa-phone"></i> Call Cashier
+            </a>
+            <a href="https://wa.me/250785485641" target="_blank" rel="noopener noreferrer" class="btn-momo-act btn-momo-dial" style="flex: 1; padding: 9px; font-size: 0.82rem; background: #25d366; color: #fff;">
+              <i class="fa-brands fa-whatsapp"></i> WhatsApp
+            </a>
           </div>
         </div>
 
@@ -1142,26 +1141,26 @@
           <span class="method-badge" style="background: #fef08a; color: #854d0e;">Channel 01</span>
           <h3 class="method-title"><i class="fa-solid fa-mobile-retro" style="color: var(--acej-blue);"></i> Mobile Money (MoMo)</h3>
           <p class="method-desc">
-            Direct transfer from your mobile phone 24/7 without traveling to campus.
+            Direct transfer from your mobile phone 24/7 without needing to travel to the Muhanga campus.
           </p>
 
           <div style="background: #fafaf9; border-radius: 10px; padding: 14px; border: 1px solid var(--border-color); margin-bottom: 14px;">
-            <div style="font-size: 0.75rem; text-transform: uppercase; color: var(--text-muted); font-weight: 800;">Official Payment Line</div>
+            <div style="font-size: 0.75rem; text-transform: uppercase; color: var(--text-muted); font-weight: 800;">Direct Recipient</div>
             <div style="font-size: 1.35rem; font-weight: 900; color: var(--acej-dark-blue); font-family: 'Courier New', monospace;">
-              0782 877 247
+              0785 485 641
             </div>
             <div style="font-size: 0.8rem; color: #047857; font-weight: 700; margin-top: 2px;">
-              Registered: ACEJ KARAMA TSS
+              Name: Marie Louise NYIRANGIRIMANA
             </div>
           </div>
 
           <ol style="font-size: 0.86rem; color: #475569; padding-left: 18px; line-height: 1.6;">
             <li>Dial <strong>*182#</strong> on your phone</li>
-            <li>Select <strong>1) Send Money</strong> or <strong>8) MoMoPay</strong></li>
-            <li>Enter the recipient number: <strong>0782877247</strong></li>
-            <li>Confirm recipient name: <strong>ACEJ KARAMA TSS</strong></li>
-            <li>Enter amount and your MoMo PIN</li>
-            <li>Keep the SMS with the <strong>Transaction ID (TxID)</strong></li>
+            <li>Select <strong>1) Send Money</strong></li>
+            <li>Enter Cashier Number: <strong>0785485641</strong></li>
+            <li>Verify Recipient: <strong>Marie Louise NYIRANGIRIMANA</strong></li>
+            <li>Enter the term amount and confirm with your PIN</li>
+            <li>In the payment reason/reference, write the <strong>Student Name &amp; Level</strong></li>
           </ol>
         </div>
 
@@ -1190,23 +1189,24 @@
             </li>
           </ul>
 
-          <div style="font-size: 0.82rem; color: #b45309; background: #fefce8; padding: 10px; border-radius: 8px; border: 1px solid #fef08a; margin-top: 10px;">
-            <i class="fa-solid fa-triangle-exclamation"></i> <strong>Important:</strong> Bring the yellow/pink stamped bank slip copy to the cashier on reporting day or upload it here.
+          <div style="font-size: 0.82rem; color: #b45309; background: #fefce8; padding: 12px; border-radius: 8px; border: 1px solid #fef08a; margin-top: 10px;">
+            <i class="fa-solid fa-triangle-exclamation"></i> <strong>Important:</strong> Bring the physical stamped bank slip copy to Cashier Marie Louise upon reporting or photograph it and send it via WhatsApp.
           </div>
         </div>
 
-        <!-- INSTITUTIONAL CODES -->
+        <!-- INSTITUTIONAL CODES & RULES -->
         <div class="method-card" style="background: var(--acej-dark-blue); color: var(--white); border-color: var(--acej-dark-blue);">
           <h4 style="font-size: 1.05rem; font-weight: 800; color: var(--acej-gold); margin-bottom: 8px;">
-            <i class="fa-solid fa-certificate"></i> School Identification
+            <i class="fa-solid fa-shield-halved"></i> Institutional Guidelines
           </h4>
           <p style="font-size: 0.86rem; color: #cbd5e1; line-height: 1.5; margin-bottom: 12px;">
-            Always confirm official school credentials before making payment transactions:
+            Strict treasury policies apply to ensure accurate student accounting records:
           </p>
-          <div style="font-size: 0.88rem; display: flex; flex-direction: column; gap: 6px;">
-            <div><strong>School Code:</strong> 0207030</div>
-            <div><strong>Location:</strong> Mushubati, Muhanga, Southern Province</div>
-            <div><strong>Accreditation:</strong> Rwanda TVET Board (RTB) / NESA</div>
+          <div style="font-size: 0.86rem; display: flex; flex-direction: column; gap: 8px; color: #e2e8f0;">
+            <div>&bull; <strong>School Code:</strong> 0207030 (Muhanga)</div>
+            <div>&bull; Always preserve the MoMo confirmation SMS until your official paper receipt is signed.</div>
+            <div>&bull; Tuition must be completed within the first two weeks of each academic term.</div>
+            <div>&bull; For special fee installments, contact the Headmaster or Cashier beforehand.</div>
           </div>
         </div>
 
@@ -1254,11 +1254,11 @@
       <div class="footer-col">
         <h3>Get in Touch</h3>
         <p class="footer-contact-p"><i class="fa-solid fa-location-dot" style="color: var(--acej-gold);"></i> WPJG+G3P, Kamazu Village, Nganzo Cell, Mushubati, Muhanga, Rwanda</p>
-        <p class="footer-contact-p"><i class="fa-solid fa-phone" style="color: var(--acej-gold);"></i> Payment MoMo: 0782 877 247</p>
+        <p class="footer-contact-p"><i class="fa-solid fa-phone" style="color: var(--acej-gold);"></i> Cashier (Marie Louise): 0785 485 641</p>
         <p class="footer-contact-p"><i class="fa-solid fa-envelope" style="color: var(--acej-gold);"></i> acejkaramatss@gmail.com</p>
         
         <div class="footer-social-icons">
-          <a href="https://wa.me/250782877247" target="_blank" rel="noopener noreferrer" title="WhatsApp MoMo Line"><i class="fa-brands fa-whatsapp"></i></a>
+          <a href="https://wa.me/250785485641" target="_blank" rel="noopener noreferrer" title="WhatsApp Cashier"><i class="fa-brands fa-whatsapp"></i></a>
           <a href="mailto:acejkaramatss@gmail.com" title="Email Treasury"><i class="fa-regular fa-envelope"></i></a>
           <a href="https://maps.google.com/?q=Association+pour+la+Contribution+%C3%A0+l'Education+de+la+Jeunesse+-+ACEJ+Karama" target="_blank" rel="noopener noreferrer" title="Campus Map"><i class="fa-solid fa-map-location-dot"></i></a>
         </div>
@@ -1267,12 +1267,12 @@
 
     <div class="footer-bottom">
       <div>&copy; 2026 ACEJ KARAMA TSS &bull; All Rights Reserved. Code: 0207030</div>
-      <div>Official Payment Line: +250 782 877 247 | Accredited RTB / NESA</div>
+      <div>Official Cashier Line: +250 785 485 641 (Marie Louise NYIRANGIRIMANA) &bull; RTB / NESA</div>
     </div>
   </footer>
 
-  <!-- FLOATING WHATSAPP -->
-  <a href="https://wa.me/250785485641?text=Hello%20ACEJ%20Karama%20TSS%20Finance,%20I%20have%20an%20inquiry%20about%20school%20fees%20and%20payment%20verification." class="whatsapp-float" target="_blank" rel="noopener noreferrer" title="Chat with Cashier Office">
+  <!-- FLOATING WHATSAPP BUTTON (DIRECT TO CASHIER) -->
+  <a href="https://wa.me/250785485641?text=Hello%20ACEJ%20Karama%20TSS%20Cashier%20Marie%20Louise,%20I%20have%20an%20inquiry%20regarding%20school%20fees%20payment%20and%20verification." class="whatsapp-float" target="_blank" rel="noopener noreferrer" title="Chat with Cashier Marie Louise">
     <i class="fa-brands fa-whatsapp"></i>
   </a>
 
@@ -1310,9 +1310,9 @@
       });
     })();
 
-    // 2. Fee Calculation & USSD Generator
+    // 2. Fee Calculation & Dynamic USSD Code Generation
     var currentAmount = 125000;
-    var momoNumber = "0782877247";
+    var cashierNumber = "0785485641"; // Cashier Marie Louise NYIRANGIRIMANA
 
     function calculateFees() {
       var trade = document.getElementById('studentTrade').value;
@@ -1321,7 +1321,7 @@
       var term = document.getElementById('termSelect').value;
       var customRow = document.getElementById('customAmountRow');
 
-      var baseFee = 125000; // Standard boarding term fee
+      var baseFee = 125000; // Standard boarding tuition per term
 
       if (category === 'boarding') {
         baseFee = 125000;
@@ -1342,12 +1342,11 @@
 
       currentAmount = baseFee;
 
-      // Update Summary UI
+      // Update UI summary
       document.getElementById('calculatedAmount').innerText = currentAmount.toLocaleString();
-      document.getElementById('hiddenAmountField').value = currentAmount + ' RWF (' + term + ')';
       document.getElementById('summaryTradeLabel').innerText = 'Level ' + level + ' ' + trade + ' • ' + term;
 
-      // Update USSD String
+      // Update USSD string
       updateUSSDDisplay();
     }
 
@@ -1355,38 +1354,37 @@
       var val = parseInt(document.getElementById('customInput').value) || 0;
       currentAmount = val;
       document.getElementById('calculatedAmount').innerText = currentAmount.toLocaleString();
-      document.getElementById('hiddenAmountField').value = currentAmount + ' RWF (Custom)';
       updateUSSDDisplay();
     }
 
     function updateUSSDDisplay() {
-      var ussdCode = "*182*8*1*" + momoNumber + "*" + currentAmount + "#";
+      // Standard MTN MoMo Send Money format to Cashier Phone number
+      var ussdCode = "*182*1*1*" + cashierNumber + "*" + currentAmount + "#";
       document.getElementById('ussdDisplayString').innerText = ussdCode;
       
-      // Update dial link
       var dialLink = document.getElementById('directDialLink');
       dialLink.href = "tel:" + encodeURIComponent(ussdCode);
     }
 
-    // 3. Copy Helper Functions
+    // 3. Clipboard & Toast Helpers
     function showToast(msg) {
       var toast = document.getElementById('toastBox');
       document.getElementById('toastText').innerText = msg;
       toast.style.display = 'flex';
       setTimeout(function() {
         toast.style.display = 'none';
-      }, 3200);
+      }, 3400);
     }
 
-    function copyMomoNumber() {
-      var num = "0782877247";
+    function copyCashierNumber() {
+      var num = "0785485641";
       var input = document.createElement('input');
       input.setAttribute('value', num);
       document.body.appendChild(input);
       input.select();
       document.execCommand('copy');
       document.body.removeChild(input);
-      showToast('MoMo line 0782877247 copied to clipboard!');
+      showToast('Cashier number 0785485641 copied to clipboard!');
     }
 
     function copyUSSDCode() {
@@ -1397,45 +1395,45 @@
       input.select();
       document.execCommand('copy');
       document.body.removeChild(input);
-      showToast('USSD code ' + code + ' copied! Dial on your phone.');
+      showToast('USSD code ' + code + ' copied! Dial directly on your phone.');
     }
 
-    // 4. Form Submission Handling
-    function handleSlipSubmit(e) {
+    // 4. WhatsApp Proof Dispatcher to Cashier Marie Louise
+    function handleWhatsAppProof(e) {
       e.preventDefault();
-      var form = document.getElementById('feeSubmissionForm');
-      var btn = document.getElementById('submitBtn');
 
-      btn.disabled = true;
-      btn.innerHTML = '<i class="fa-solid fa-spinner fa-spin"></i> Submitting to Finance Office...';
+      var studentName = document.getElementById('studentName').value.trim();
+      var studentReg = document.getElementById('studentReg').value.trim();
+      var parentPhone = document.getElementById('parentPhone').value.trim();
+      var paymentMethod = document.getElementById('paymentMethodUsed').value;
+      var txReference = document.getElementById('txReference').value.trim();
+      var notes = document.getElementById('paymentNotes').value.trim();
+      var trade = document.getElementById('studentTrade').value;
+      var level = document.getElementById('studentLevel').value;
+      var term = document.getElementById('termSelect').value;
 
-      var formData = new FormData(form);
+      var textMessage = "*ACEJ KARAMA TSS - SCHOOL FEES PAYMENT SLIP*\n\n" +
+        "👤 *Student Name:* " + studentName + "\n" +
+        "🆔 *Student Reg/Code:* " + studentReg + "\n" +
+        "📚 *Trade & Level:* Level " + level + " (" + trade + ")\n" +
+        "📅 *Term:* " + term + "\n" +
+        "💵 *Amount Paid:* RWF " + currentAmount.toLocaleString() + "\n" +
+        "💳 *Channel:* " + paymentMethod + "\n" +
+        "🧾 *TxID / Slip Ref:* " + txReference + "\n" +
+        "📱 *Payer Phone:* " + parentPhone + "\n";
 
-      fetch(form.action, {
-        method: "POST",
-        body: formData,
-        headers: {
-          'Accept': 'application/json'
-        }
-      }).then(function(response) {
-        if (response.ok) {
-          form.reset();
-          btn.innerHTML = '<i class="fa-solid fa-check-circle"></i> Slip Received Successfully!';
-          btn.style.background = '#10b981';
-          showToast('Payment slip submitted to Cashier Marie Louise! You will receive confirmation.');
-        } else {
-          btn.disabled = false;
-          btn.innerHTML = '<i class="fa-solid fa-paper-plane"></i> Submit Proof to Cashier Office';
-          showToast('Submission error. Please send slip directly via WhatsApp.');
-        }
-      }).catch(function(err) {
-        btn.disabled = false;
-        btn.innerHTML = '<i class="fa-solid fa-paper-plane"></i> Submit Proof to Cashier Office';
-        showToast('Submission error. Please send slip directly via WhatsApp.');
-      });
+      if (notes) {
+        textMessage += "📝 *Notes:* " + notes + "\n";
+      }
+
+      textMessage += "\n_Sent to Cashier Marie Louise NYIRANGIRIMANA (0785485641) for clearance confirmation._";
+
+      var encodedUrl = "https://wa.me/250785485641?text=" + encodeURIComponent(textMessage);
+      window.open(encodedUrl, '_blank');
+      showToast('Opening WhatsApp to send payment proof to Cashier Marie Louise...');
     }
 
-    // Initialize calculator
+    // Initialize calculator defaults
     calculateFees();
   </script>
 
