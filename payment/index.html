@@ -4,10 +4,11 @@
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Fees &amp; Online Payment Portal | ACEJ KARAMA TSS</title>
-  <meta name="description" content="Official school fees payment and slip verification portal for ACEJ Karama TSS. Pay via MTN Mobile Money to Cashier Marie Louise NYIRANGIRIMANA (0785485641) and bank accounts.">
-  <meta name="keywords" content="ACEJ Karama payment, ACEJ Karama fees, MoMo pay Rwanda, Cashier Marie Louise NYIRANGIRIMANA, RTB technical secondary school fees">
+  <meta name="description" content="Official School Fees Payment Portal for ACEJ Karama TSS in Muhanga, Rwanda. Pay 95,500 RWF term fees via UrubutoPay (*775#) or Bank of Kigali, and submit invoice slips to Cashier Marie Louise NYIRANGIRIMANA (0785485641).">
+  <meta name="keywords" content="ACEJ Karama fees, UrubutoPay, Urubuto education payment, ACEJ Karama TSS, 95500 RWF, Bank of Kigali, Muhanga TSS, School Cashier Marie Louise">
   <meta name="google-site-verification" content="_2E72En-E2s2izExfWQNHzHOVy7NJ30LTv33ufi-tvk" />
   
+  <!-- Crest & External Assets -->
   <link rel="icon" type="image/png" href="/logo.png">
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
   <link rel="preconnect" href="https://fonts.googleapis.com">
@@ -27,10 +28,11 @@
       --white: #ffffff;
       --border-color: #e2e8f0;
       --success-green: #10b981;
-      --success-dark: #047857;
-      --shadow-sm: 0 4px 14px rgba(0,0,0,0.05);
-      --shadow-md: 0 10px 25px rgba(0, 71, 171, 0.12);
-      --shadow-lg: 0 18px 36px rgba(0, 45, 110, 0.16);
+      --danger-red: #ef4444;
+      --urubuto-purple: #6d28d9;
+      --shadow-sm: 0 4px 14px rgba(0,0,0,0.04);
+      --shadow-md: 0 10px 25px rgba(0, 71, 171, 0.10);
+      --shadow-lg: 0 20px 40px rgba(0, 45, 110, 0.15);
     }
 
     * {
@@ -58,13 +60,31 @@
       align-items: center;
       border-bottom: 2px solid var(--acej-gold);
     }
+    .top-bar-left, .top-bar-right {
+      display: flex;
+      align-items: center;
+      gap: 20px;
+    }
     .top-bar a {
       color: #e2e8f0;
       text-decoration: none;
-      margin-left: 15px;
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
       transition: color 0.2s;
     }
     .top-bar a:hover { color: var(--acej-gold); }
+    .emergency-badge {
+      background: rgba(239, 68, 68, 0.2);
+      border: 1px solid #ef4444;
+      color: #fecaca;
+      padding: 2px 8px;
+      border-radius: 4px;
+      font-size: 0.75rem;
+      font-weight: 700;
+      letter-spacing: 0.5px;
+      text-transform: uppercase;
+    }
 
     /* NAVBAR */
     .navbar {
@@ -186,209 +206,293 @@
       z-index: 1001;
     }
 
+    /* EMERGENCY CASHIER BANNER */
+    .emergency-hotline-bar {
+      background: linear-gradient(90deg, #991b1b 0%, #b91c1c 50%, #dc2626 100%);
+      color: var(--white);
+      padding: 12px 5%;
+      box-shadow: 0 4px 12px rgba(185, 28, 28, 0.2);
+    }
+    .hotline-container {
+      max-width: 1200px;
+      margin: 0 auto;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      flex-wrap: wrap;
+      gap: 15px;
+    }
+    .hotline-message {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      font-size: 0.95rem;
+      font-weight: 600;
+    }
+    .hotline-icon-pulsing {
+      width: 36px;
+      height: 36px;
+      background: rgba(255, 255, 255, 0.2);
+      border-radius: 50%;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 1.1rem;
+      animation: emergencyPulse 1.5s infinite;
+    }
+    .hotline-actions {
+      display: flex;
+      gap: 10px;
+      align-items: center;
+    }
+    .btn-emergency-call {
+      background: var(--white);
+      color: #991b1b;
+      padding: 7px 18px;
+      border-radius: 30px;
+      text-decoration: none;
+      font-weight: 800;
+      font-size: 0.88rem;
+      display: inline-flex;
+      align-items: center;
+      gap: 8px;
+      box-shadow: 0 2px 8px rgba(0,0,0,0.2);
+      transition: all 0.2s ease;
+    }
+    .btn-emergency-call:hover {
+      background: #fef2f2;
+      transform: scale(1.03);
+    }
+    .btn-emergency-wa {
+      background: #25d366;
+      color: var(--white);
+      padding: 7px 18px;
+      border-radius: 30px;
+      text-decoration: none;
+      font-weight: 800;
+      font-size: 0.88rem;
+      display: inline-flex;
+      align-items: center;
+      gap: 8px;
+      transition: all 0.2s ease;
+    }
+    .btn-emergency-wa:hover {
+      background: #1eb956;
+      transform: scale(1.03);
+    }
+
     /* HERO PORTAL BANNER */
-    .pay-hero {
+    .portal-hero {
       background: linear-gradient(135deg, var(--acej-dark-blue) 0%, var(--acej-blue) 100%);
       color: var(--white);
-      padding: 60px 6% 80px;
+      padding: 55px 6% 75px;
       position: relative;
       overflow: hidden;
       border-bottom: 5px solid var(--acej-gold);
     }
-    .pay-hero::before {
+    .portal-hero::before {
       content: '';
       position: absolute;
-      top: -30%;
+      top: -20%;
       right: -10%;
-      width: 500px;
-      height: 500px;
+      width: 480px;
+      height: 480px;
       border-radius: 50%;
-      background: radial-gradient(circle, rgba(255,199,44,0.15) 0%, rgba(255,255,255,0) 70%);
+      background: radial-gradient(circle, rgba(255,199,44,0.18) 0%, rgba(255,255,255,0) 70%);
       pointer-events: none;
     }
-    .pay-hero-inner {
-      max-width: 1180px;
+    .portal-hero-inner {
+      max-width: 1200px;
       margin: 0 auto;
       display: grid;
-      grid-template-columns: 1.3fr 1fr;
+      grid-template-columns: 1.25fr 1fr;
       gap: 40px;
       align-items: center;
       position: relative;
       z-index: 2;
     }
-    .badge-portal {
+    .badge-treasury {
       display: inline-flex;
       align-items: center;
       gap: 8px;
-      background: rgba(255, 199, 44, 0.2);
-      border: 1px solid var(--acej-gold);
+      background: rgba(255, 199, 44, 0.22);
+      border: 1.5px solid var(--acej-gold);
       color: var(--acej-gold);
-      padding: 6px 14px;
+      padding: 6px 16px;
       border-radius: 30px;
-      font-size: 0.8rem;
+      font-size: 0.82rem;
       font-weight: 800;
       letter-spacing: 1.5px;
       text-transform: uppercase;
-      margin-bottom: 16px;
+      margin-bottom: 18px;
     }
-    .pay-hero-title {
-      font-size: 2.7rem;
+    .portal-hero-title {
+      font-size: 2.8rem;
       font-weight: 900;
       line-height: 1.2;
       margin-bottom: 16px;
       letter-spacing: -0.5px;
     }
-    .pay-hero-title span {
-      color: var(--acej-gold);
-    }
-    .pay-hero-desc {
+    .portal-hero-title span { color: var(--acej-gold); }
+    .portal-hero-desc {
       color: #e2e8f0;
       font-size: 1.05rem;
       line-height: 1.7;
       margin-bottom: 24px;
     }
-    .hero-meta-pills {
+    .pills-group {
       display: flex;
       flex-wrap: wrap;
       gap: 12px;
     }
-    .meta-pill {
+    .pill-item {
       background: rgba(255,255,255,0.12);
       border: 1px solid rgba(255,255,255,0.25);
       border-radius: 8px;
       padding: 8px 14px;
-      font-size: 0.84rem;
+      font-size: 0.85rem;
       font-weight: 600;
       display: flex;
       align-items: center;
       gap: 8px;
     }
-    .meta-pill i { color: var(--acej-gold); }
+    .pill-item i { color: var(--acej-gold); }
 
-    /* CASHIER QUICK PAY CARD IN HERO */
-    .momo-hero-card {
+    /* OFFICIAL 95,500 RWF CARD IN HERO */
+    .official-rate-card {
       background: #ffffff;
       color: var(--text-dark);
       border-radius: 20px;
       padding: 30px;
-      box-shadow: 0 20px 40px rgba(0,0,0,0.22);
-      border: 2px solid var(--acej-gold);
+      box-shadow: 0 20px 45px rgba(0,0,0,0.25);
+      border: 3px solid var(--acej-gold);
       position: relative;
     }
-    .momo-card-header {
+    .rate-card-top {
       display: flex;
       justify-content: space-between;
       align-items: center;
-      margin-bottom: 20px;
-      padding-bottom: 16px;
+      margin-bottom: 16px;
+      padding-bottom: 12px;
       border-bottom: 1px solid var(--border-color);
     }
-    .momo-brand-tag {
-      background: #ffcc00;
-      color: #000;
-      font-weight: 900;
-      font-size: 0.8rem;
+    .badge-term-rate {
+      background: #eff6ff;
+      color: var(--acej-blue);
+      font-weight: 800;
+      font-size: 0.78rem;
       letter-spacing: 1px;
-      padding: 6px 12px;
+      text-transform: uppercase;
+      padding: 5px 12px;
       border-radius: 6px;
-      display: inline-flex;
-      align-items: center;
-      gap: 6px;
     }
-    .momo-status-dot {
-      display: flex;
-      align-items: center;
-      gap: 6px;
-      font-size: 0.8rem;
-      font-weight: 700;
-      color: #047857;
-    }
-    .status-ping {
-      width: 10px;
-      height: 10px;
-      background: #10b981;
-      border-radius: 50%;
-      box-shadow: 0 0 0 4px rgba(16, 185, 129, 0.2);
-      animation: pulsePing 2s infinite;
-    }
-    .momo-number-box {
-      background: #fafaf9;
-      border: 2px dashed #d6d3d1;
-      border-radius: 12px;
-      padding: 18px 20px;
+    .rate-amount-display {
       text-align: center;
+      padding: 15px 0 20px;
+      background: #fafaf9;
+      border-radius: 14px;
+      border: 1.5px dashed #cbd5e1;
       margin-bottom: 20px;
     }
-    .momo-label {
-      font-size: 0.78rem;
+    .rate-amount-title {
+      font-size: 0.8rem;
       text-transform: uppercase;
       letter-spacing: 1px;
       color: var(--text-muted);
-      font-weight: 700;
+      font-weight: 800;
       margin-bottom: 4px;
     }
-    .momo-number-digits {
-      font-size: 1.85rem;
+    .rate-amount-huge {
+      font-size: 2.7rem;
       font-weight: 900;
-      letter-spacing: 1.5px;
       color: var(--acej-dark-blue);
-      font-family: 'Courier New', monospace;
+      line-height: 1.1;
+      letter-spacing: -0.5px;
     }
-    .momo-actions {
+    .rate-amount-huge span {
+      font-size: 1.25rem;
+      color: var(--acej-blue);
+      font-weight: 700;
+      margin-right: 6px;
+    }
+    .rate-card-channel-badges {
       display: grid;
       grid-template-columns: 1fr 1fr;
-      gap: 12px;
+      gap: 10px;
+      margin-bottom: 20px;
     }
-    .btn-momo-act {
-      border: none;
-      padding: 12px 14px;
-      border-radius: 8px;
-      font-weight: 800;
-      font-size: 0.86rem;
-      cursor: pointer;
+    .channel-mini-badge {
+      padding: 10px;
+      border-radius: 10px;
+      font-size: 0.8rem;
+      font-weight: 700;
       display: flex;
       align-items: center;
-      justify-content: center;
       gap: 8px;
+    }
+    .channel-urubuto {
+      background: #f5f3ff;
+      color: var(--urubuto-purple);
+      border: 1px solid #ddd6fe;
+    }
+    .channel-bank {
+      background: #eff6ff;
+      color: #1e40af;
+      border: 1px solid #bfdbfe;
+    }
+    .rate-card-actions {
+      display: flex;
+      gap: 10px;
+    }
+    .btn-quick-act {
+      flex: 1;
+      text-align: center;
+      padding: 11px;
+      border-radius: 8px;
+      font-size: 0.86rem;
+      font-weight: 800;
       text-decoration: none;
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      gap: 6px;
       transition: all 0.25s ease;
     }
-    .btn-momo-copy {
+    .btn-act-urubuto {
+      background: var(--urubuto-purple);
+      color: var(--white);
+    }
+    .btn-act-urubuto:hover {
+      background: #5b21b6;
+      transform: translateY(-2px);
+    }
+    .btn-act-bank {
       background: var(--acej-dark-blue);
       color: var(--white);
     }
-    .btn-momo-copy:hover {
+    .btn-act-bank:hover {
       background: var(--acej-blue);
       transform: translateY(-2px);
     }
-    .btn-momo-dial {
-      background: #ffcc00;
-      color: #000;
-    }
-    .btn-momo-dial:hover {
-      background: #e6b800;
-      transform: translateY(-2px);
-    }
 
-    /* MAIN CONTAINER */
-    .portal-container {
-      max-width: 1180px;
-      margin: -40px auto 70px;
+    /* MAIN SECTION WRAPPER */
+    .portal-main-wrapper {
+      max-width: 1200px;
+      margin: -35px auto 70px;
       padding: 0 20px;
       position: relative;
       z-index: 10;
     }
 
-    /* WORKFLOW GRID */
-    .portal-grid {
+    .portal-layout-grid {
       display: grid;
       grid-template-columns: 1.35fr 1fr;
       gap: 32px;
       align-items: start;
     }
 
-    /* CARDS */
-    .portal-card {
+    /* CARDS COMMON */
+    .portal-box {
       background: var(--white);
       border: 1px solid var(--border-color);
       border-radius: 20px;
@@ -397,57 +501,54 @@
       margin-bottom: 30px;
       transition: all 0.3s ease;
     }
-    .portal-card:hover {
+    .portal-box:hover {
       box-shadow: var(--shadow-md);
     }
-    .card-header-badge {
+    .box-header-badge {
       display: inline-flex;
       align-items: center;
       gap: 6px;
-      background: #eff6ff;
-      color: var(--acej-blue);
-      font-size: 0.78rem;
+      font-size: 0.76rem;
       font-weight: 800;
-      letter-spacing: 1px;
+      letter-spacing: 1.2px;
       text-transform: uppercase;
       padding: 5px 12px;
       border-radius: 6px;
       margin-bottom: 12px;
     }
-    .portal-card-title {
+    .badge-blue-soft { background: #eff6ff; color: var(--acej-blue); }
+    .badge-purple-soft { background: #f5f3ff; color: var(--urubuto-purple); }
+    .badge-emerald-soft { background: #ecfdf5; color: #047857; }
+    .box-title {
       font-size: 1.55rem;
       font-weight: 900;
       color: var(--acej-dark-blue);
       margin-bottom: 8px;
     }
-    .portal-card-sub {
+    .box-subtitle {
       color: var(--text-muted);
       font-size: 0.94rem;
-      margin-bottom: 25px;
+      margin-bottom: 24px;
       line-height: 1.5;
     }
 
-    /* FORM ELEMENTS */
-    .form-row {
+    /* FEE CALCULATOR */
+    .form-grid-2 {
       display: grid;
       grid-template-columns: 1fr 1fr;
       gap: 18px;
       margin-bottom: 18px;
     }
-    .form-group {
-      margin-bottom: 18px;
-    }
-    .form-group label {
+    .form-group-item { margin-bottom: 18px; }
+    .form-group-item label {
       display: block;
       font-size: 0.88rem;
       font-weight: 700;
       color: #334155;
       margin-bottom: 6px;
     }
-    .form-group label span {
-      color: #ef4444;
-    }
-    .form-control {
+    .form-group-item label span { color: var(--danger-red); }
+    .input-field {
       width: 100%;
       padding: 12px 14px;
       border: 1.5px solid var(--border-color);
@@ -458,11 +559,11 @@
       outline: none;
       transition: all 0.25s ease;
     }
-    .form-control:focus {
+    .input-field:focus {
       border-color: var(--acej-blue);
       box-shadow: 0 0 0 3px rgba(0, 71, 171, 0.12);
     }
-    select.form-control {
+    select.input-field {
       cursor: pointer;
       appearance: none;
       background-image: url("data:image/svg+xml;charset=UTF-8,%3csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='%230047AB' stroke-width='2.5' stroke-linecap='round' stroke-linejoin='round'%3e%3cpolyline points='6 9 12 15 18 9'%3e%3c/polyline%3e%3c/svg%3e");
@@ -472,175 +573,159 @@
       padding-right: 40px;
     }
 
-    /* CALCULATOR PREVIEW BOX */
-    .fee-calc-summary {
+    /* DYNAMIC SUMMARY BOX */
+    .fee-display-panel {
       background: linear-gradient(135deg, #f0f7ff 0%, #e6f0fa 100%);
       border: 1.5px solid #bfdbfe;
       border-radius: 14px;
       padding: 22px;
       margin: 24px 0;
     }
-    .summary-header {
+    .panel-meta-row {
       display: flex;
       justify-content: space-between;
       align-items: center;
-      margin-bottom: 12px;
-      font-size: 0.9rem;
+      margin-bottom: 10px;
+      font-size: 0.88rem;
       font-weight: 700;
       color: var(--acej-blue);
       text-transform: uppercase;
       letter-spacing: 0.5px;
     }
-    .summary-amount-row {
+    .panel-total-row {
       display: flex;
       justify-content: space-between;
       align-items: baseline;
       padding-top: 10px;
-      border-top: 1px dashed #93c5fd;
+      border-top: 1.5px dashed #93c5fd;
     }
-    .summary-amount-val {
-      font-size: 2.1rem;
+    .panel-amount-figure {
+      font-size: 2.3rem;
       font-weight: 900;
       color: var(--acej-dark-blue);
     }
-    .summary-currency {
-      font-size: 1rem;
-      font-weight: 700;
+    .panel-amount-currency {
+      font-size: 1.1rem;
+      font-weight: 800;
       color: var(--acej-blue);
       margin-right: 4px;
     }
 
-    /* GENERATED USSD DIALER CARD */
-    .ussd-card-generator {
-      background: #1e293b;
-      color: var(--white);
-      border-radius: 14px;
-      padding: 20px;
-      margin-top: 20px;
-      border: 1.5px solid #334155;
+    /* CHANNEL GUIDANCE TABS / CARDS */
+    .channel-guide-box {
+      border: 1.5px solid var(--border-color);
+      border-radius: 16px;
+      padding: 24px;
+      margin-bottom: 22px;
+      transition: all 0.3s ease;
     }
-    .ussd-dial-code {
-      font-family: 'Courier New', monospace;
-      font-size: 1.3rem;
-      font-weight: 800;
-      color: var(--acej-gold);
-      word-break: break-all;
-      background: #0f172a;
-      padding: 12px 14px;
-      border-radius: 8px;
-      margin: 10px 0 14px;
+    .guide-urubuto {
+      background: #faf5ff;
+      border-color: #e9d5ff;
+    }
+    .guide-bank {
+      background: #f0f9ff;
+      border-color: #bae6fd;
+    }
+    .guide-head {
       display: flex;
       justify-content: space-between;
       align-items: center;
+      margin-bottom: 14px;
     }
-    .ussd-action-row {
+    .guide-title {
+      font-size: 1.25rem;
+      font-weight: 900;
       display: flex;
+      align-items: center;
       gap: 10px;
     }
+    .title-urubuto { color: var(--urubuto-purple); }
+    .title-bank { color: var(--acej-dark-blue); }
 
-    /* CASHIER VERIFICATION CARD */
-    .cashier-card {
-      background: linear-gradient(135deg, #f0fdf4 0%, #ecfdf5 100%);
-      border: 1.5px solid #a7f3d0;
-      border-radius: 16px;
-      padding: 24px;
-      margin-bottom: 25px;
-    }
-    .cashier-header {
-      display: flex;
-      align-items: center;
-      gap: 14px;
-      margin-bottom: 12px;
-    }
-    .cashier-icon {
-      width: 48px;
-      height: 48px;
-      background: var(--success-green);
-      color: var(--white);
-      border-radius: 50%;
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      font-size: 1.3rem;
-      box-shadow: 0 4px 10px rgba(16, 185, 129, 0.25);
-    }
-    .cashier-info h4 {
-      font-size: 1.1rem;
-      font-weight: 800;
-      color: #065f46;
-    }
-    .cashier-info p {
-      font-size: 0.85rem;
-      color: #047857;
-      font-weight: 700;
-    }
-
-    /* PAYMENT METHOD TABS (SIDEBAR) */
-    .method-card {
-      background: var(--white);
-      border: 1px solid var(--border-color);
-      border-radius: 16px;
-      padding: 24px;
-      margin-bottom: 20px;
-      box-shadow: var(--shadow-sm);
-    }
-    .method-badge {
-      display: inline-block;
-      font-size: 0.72rem;
-      font-weight: 800;
-      text-transform: uppercase;
-      letter-spacing: 1px;
-      padding: 3px 10px;
-      border-radius: 4px;
-      margin-bottom: 10px;
-    }
-    .method-title {
-      font-size: 1.15rem;
-      font-weight: 800;
-      color: var(--acej-dark-blue);
-      margin-bottom: 8px;
-    }
-    .method-desc {
-      font-size: 0.88rem;
-      color: var(--text-muted);
-      line-height: 1.5;
+    .step-list-ordered {
+      padding-left: 20px;
+      font-size: 0.92rem;
+      color: #334155;
+      line-height: 1.7;
       margin-bottom: 16px;
     }
-    .bank-acc-list {
-      list-style: none;
-    }
-    .bank-acc-item {
-      background: #f8fafc;
+    .step-list-ordered li { margin-bottom: 6px; }
+
+    .copy-pill-strip {
+      background: var(--white);
       border: 1px solid var(--border-color);
       border-radius: 10px;
-      padding: 12px 14px;
-      margin-bottom: 10px;
+      padding: 10px 14px;
       display: flex;
       justify-content: space-between;
       align-items: center;
+      margin-bottom: 12px;
     }
-    .bank-name {
-      font-weight: 800;
-      color: var(--acej-dark-blue);
-      font-size: 0.9rem;
-    }
-    .bank-acc-num {
+    .code-pill-val {
       font-family: 'Courier New', monospace;
+      font-weight: 800;
+      font-size: 1.1rem;
+      color: var(--acej-dark-blue);
+    }
+    .btn-copy-code {
+      background: #f1f5f9;
+      border: 1px solid #cbd5e1;
+      border-radius: 6px;
+      padding: 5px 12px;
+      font-size: 0.78rem;
       font-weight: 700;
-      font-size: 0.95rem;
-      color: #334155;
+      cursor: pointer;
+      transition: all 0.2s;
+    }
+    .btn-copy-code:hover {
+      background: var(--acej-blue);
+      color: var(--white);
+      border-color: var(--acej-blue);
     }
 
-    /* BUTTONS */
-    .btn-submit-slip {
+    /* INVOICE & BORDEREAU SUBMISSION FORM */
+    .file-drop-area {
+      border: 2px dashed #cbd5e1;
+      border-radius: 12px;
+      padding: 24px;
+      text-align: center;
+      background: #fafaf9;
+      cursor: pointer;
+      transition: all 0.25s ease;
+      margin-bottom: 18px;
+    }
+    .file-drop-area:hover {
+      border-color: var(--acej-blue);
+      background: #f0f7ff;
+    }
+    .file-preview-wrap {
+      display: none;
+      align-items: center;
+      gap: 12px;
+      margin-top: 12px;
+      background: var(--white);
+      padding: 10px;
+      border-radius: 8px;
+      border: 1px solid #cbd5e1;
+    }
+    .file-preview-img {
+      width: 50px;
+      height: 50px;
+      object-fit: cover;
+      border-radius: 6px;
+    }
+
+    /* SUBMIT INVOICE BUTTONS */
+    .btn-submit-invoice {
       width: 100%;
       background: linear-gradient(135deg, var(--acej-blue) 0%, var(--acej-dark-blue) 100%);
       color: var(--white);
       border: none;
-      padding: 14px 20px;
-      border-radius: 10px;
+      padding: 15px 22px;
+      border-radius: 12px;
       font-weight: 800;
-      font-size: 1rem;
+      font-size: 1.02rem;
       cursor: pointer;
       display: flex;
       align-items: center;
@@ -649,35 +734,201 @@
       transition: all 0.3s ease;
       box-shadow: 0 4px 14px rgba(0, 71, 171, 0.25);
     }
-    .btn-submit-slip:hover {
+    .btn-submit-invoice:hover {
       background: linear-gradient(135deg, var(--acej-dark-blue) 0%, var(--acej-blue) 100%);
       transform: translateY(-2px);
-      box-shadow: 0 6px 18px rgba(0, 71, 171, 0.35);
+      box-shadow: 0 6px 20px rgba(0, 71, 171, 0.35);
     }
-    .btn-whatsapp-proof {
+
+    /* PRINTABLE / VIEWABLE SLIP MODAL */
+    .receipt-modal-backdrop {
+      position: fixed;
+      top: 0;
+      left: 0;
       width: 100%;
-      background: #25d366;
-      color: var(--white);
-      text-decoration: none;
-      padding: 14px 20px;
-      border-radius: 10px;
-      font-weight: 800;
-      font-size: 0.95rem;
-      display: inline-flex;
+      height: 100%;
+      background: rgba(15, 23, 42, 0.75);
+      z-index: 3000;
+      display: none;
       align-items: center;
       justify-content: center;
-      gap: 10px;
-      margin-top: 12px;
-      transition: all 0.25s ease;
-      box-shadow: 0 4px 14px rgba(37, 211, 102, 0.3);
+      padding: 20px;
+      backdrop-filter: blur(4px);
     }
-    .btn-whatsapp-proof:hover {
+    .receipt-paper {
+      background: var(--white);
+      width: 100%;
+      max-width: 600px;
+      border-radius: 20px;
+      padding: 35px;
+      box-shadow: var(--shadow-lg);
+      border: 2px solid var(--acej-gold);
+      position: relative;
+      max-height: 90vh;
+      overflow-y: auto;
+    }
+    .receipt-header {
+      text-align: center;
+      border-bottom: 2px solid var(--border-color);
+      padding-bottom: 16px;
+      margin-bottom: 20px;
+    }
+    .receipt-row {
+      display: flex;
+      justify-content: space-between;
+      margin-bottom: 10px;
+      font-size: 0.94rem;
+    }
+    .receipt-label { color: var(--text-muted); font-weight: 600; }
+    .receipt-val { color: var(--text-dark); font-weight: 800; text-align: right; }
+    .receipt-stamp-box {
+      border: 2px dashed #059669;
+      color: #065f46;
+      background: #ecfdf5;
+      padding: 12px;
+      border-radius: 10px;
+      text-align: center;
+      font-weight: 800;
+      font-size: 0.85rem;
+      margin: 20px 0;
+      text-transform: uppercase;
+      letter-spacing: 1px;
+    }
+
+    /* EMERGENCY CASHIER PROFILE CARD */
+    .emergency-cashier-card {
+      background: linear-gradient(135deg, #fef2f2 0%, #fff1f2 100%);
+      border: 2px solid #fecaca;
+      border-radius: 20px;
+      padding: 28px;
+      box-shadow: var(--shadow-sm);
+      margin-bottom: 28px;
+      position: relative;
+    }
+    .emergency-header-wrap {
+      display: flex;
+      align-items: center;
+      gap: 14px;
+      margin-bottom: 16px;
+    }
+    .cashier-avatar-badge {
+      width: 54px;
+      height: 54px;
+      background: #dc2626;
+      color: var(--white);
+      border-radius: 50%;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 1.5rem;
+      box-shadow: 0 4px 14px rgba(220, 38, 38, 0.35);
+    }
+    .cashier-title-name h4 {
+      font-size: 1.2rem;
+      font-weight: 900;
+      color: #991b1b;
+      line-height: 1.2;
+    }
+    .cashier-title-name p {
+      font-size: 0.84rem;
+      font-weight: 700;
+      color: #b91c1c;
+      text-transform: uppercase;
+      letter-spacing: 0.5px;
+    }
+    .hotline-highlight-box {
+      background: var(--white);
+      border: 1.5px solid #f87171;
+      border-radius: 12px;
+      padding: 16px;
+      text-align: center;
+      margin-bottom: 18px;
+    }
+    .hotline-digits {
+      font-size: 1.85rem;
+      font-weight: 900;
+      color: #991b1b;
+      font-family: 'Courier New', monospace;
+      letter-spacing: 1.5px;
+    }
+    .emergency-actions-grid {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 10px;
+    }
+    .btn-hotline-act {
+      text-align: center;
+      padding: 12px;
+      border-radius: 10px;
+      font-size: 0.88rem;
+      font-weight: 800;
+      text-decoration: none;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 8px;
+      transition: all 0.25s ease;
+    }
+    .btn-act-call-cashier {
+      background: #dc2626;
+      color: var(--white);
+    }
+    .btn-act-call-cashier:hover {
+      background: #b91c1c;
+      transform: translateY(-2px);
+    }
+    .btn-act-wa-cashier {
+      background: #25d366;
+      color: var(--white);
+    }
+    .btn-act-wa-cashier:hover {
       background: #1eb956;
       transform: translateY(-2px);
     }
 
-    /* NOTIFICATION TOAST */
-    .toast-msg {
+    /* BANK ACCOUNTS CARD */
+    .bank-accounts-card {
+      background: var(--white);
+      border: 1px solid var(--border-color);
+      border-radius: 20px;
+      padding: 28px;
+      box-shadow: var(--shadow-sm);
+      margin-bottom: 28px;
+    }
+    .bank-item-box {
+      background: #f8fafc;
+      border: 1px solid var(--border-color);
+      border-radius: 12px;
+      padding: 16px;
+      margin-bottom: 14px;
+      transition: border-color 0.2s;
+    }
+    .bank-item-box:hover {
+      border-color: var(--acej-blue);
+    }
+    .bank-name-label {
+      font-weight: 800;
+      font-size: 0.95rem;
+      color: var(--acej-dark-blue);
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-bottom: 4px;
+    }
+    .bank-acc-code {
+      font-family: 'Courier New', monospace;
+      font-weight: 800;
+      font-size: 1.05rem;
+      color: #0f172a;
+    }
+    .bank-account-name {
+      font-size: 0.8rem;
+      color: var(--text-muted);
+      font-weight: 600;
+    }
+
+    /* TOAST */
+    .toast-notification {
       position: fixed;
       bottom: 95px;
       right: 25px;
@@ -691,9 +942,9 @@
       display: none;
       align-items: center;
       gap: 10px;
-      z-index: 2000;
+      z-index: 2500;
       box-shadow: 0 10px 25px rgba(0,0,0,0.3);
-      animation: toastIn 0.35s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+      animation: toastSlide 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275);
     }
 
     /* FOOTER */
@@ -809,17 +1060,17 @@
     .whatsapp-float:hover { transform: scale(1.1) rotate(5deg); }
 
     /* KEYFRAMES */
-    @keyframes pulsePing {
+    @keyframes emergencyPulse {
       0%, 100% { transform: scale(1); opacity: 1; }
-      50% { transform: scale(1.3); opacity: 0.6; }
+      50% { transform: scale(1.15); opacity: 0.7; }
     }
-    @keyframes toastIn {
+    @keyframes toastSlide {
       from { transform: translateY(20px); opacity: 0; }
       to { transform: translateY(0); opacity: 1; }
     }
 
-    /* RESPONSIVE BREAKPOINTS */
-    @media (max-width: 900px) {
+    /* RESPONSIVE LAYOUT */
+    @media (max-width: 960px) {
       .top-bar { display: none; }
       .menu-toggle { display: block; }
 
@@ -846,14 +1097,14 @@
       .nav-links a { display: block; padding: 14px 6%; color: var(--acej-dark-blue); }
       .nav-links a.active::after { display: none; }
 
-      .pay-hero { padding: 40px 5% 60px; }
-      .pay-hero-inner { grid-template-columns: 1fr; gap: 30px; }
-      .pay-hero-title { font-size: 2.1rem; }
+      .portal-hero { padding: 45px 5% 65px; }
+      .portal-hero-inner { grid-template-columns: 1fr; gap: 30px; }
+      .portal-hero-title { font-size: 2.2rem; }
 
-      .portal-grid { grid-template-columns: 1fr; }
-      .portal-card { padding: 24px 20px; }
-      .form-row { grid-template-columns: 1fr; gap: 0; }
-      .momo-actions { grid-template-columns: 1fr; }
+      .portal-layout-grid { grid-template-columns: 1fr; }
+      .portal-box { padding: 25px 20px; }
+      .form-grid-2 { grid-template-columns: 1fr; gap: 0; }
+      .emergency-actions-grid { grid-template-columns: 1fr; }
     }
   </style>
 </head>
@@ -861,15 +1112,39 @@
 
   <!-- TOP BAR -->
   <div class="top-bar">
-    <div>
+    <div class="top-bar-left">
       <span><i class="fa-solid fa-location-dot"></i> Mushubati, Muhanga District, Southern Province, Rwanda</span>
-      <span style="margin-left: 20px;"><i class="fa-solid fa-code"></i> School Code: 0207030</span>
+      <span><i class="fa-solid fa-code"></i> School Code: 0207030</span>
     </div>
-    <div>
-      <a href="tel:0788607924"><i class="fa-solid fa-phone"></i> Headmaster: 0788607924</a>
-      <a href="tel:0785485641"><i class="fa-solid fa-coins"></i> Cashier: 0785485641</a>
+    <div class="top-bar-right">
+      <span class="emergency-badge"><i class="fa-solid fa-triangle-exclamation"></i> Emergency Line</span>
+      <a href="tel:0785485641"><i class="fa-solid fa-phone"></i> Cashier Hotline: 0785485641</a>
+      <a href="tel:0788607924"><i class="fa-solid fa-user-tie"></i> Headmaster: 0788607924</a>
     </div>
   </div>
+
+  <!-- EMERGENCY CASHIER HOTLINE STRIP -->
+  <aside class="emergency-hotline-bar" aria-label="Emergency Cashier Assistance">
+    <div class="hotline-container">
+      <div class="hotline-message">
+        <div class="hotline-icon-pulsing">
+          <i class="fa-solid fa-phone-volume"></i>
+        </div>
+        <div>
+          <strong>Emergency &amp; Direct Assistance with School Cashier:</strong>
+          <span>Marie Louise NYIRANGIRIMANA (0785485641) &bull; Urgent verification, Urubuto errors &amp; bank confirmations</span>
+        </div>
+      </div>
+      <div class="hotline-actions">
+        <a href="tel:0785485641" class="btn-emergency-call">
+          <i class="fa-solid fa-phone"></i> Emergency Call: 0785485641
+        </a>
+        <a href="https://wa.me/250785485641?text=Emergency%20inquiry%20regarding%20school%20fees%20clearance%20at%20ACEJ%20Karama%20TSS." target="_blank" rel="noopener noreferrer" class="btn-emergency-wa">
+          <i class="fa-brands fa-whatsapp"></i> WhatsApp Cashier
+        </a>
+      </div>
+    </div>
+  </aside>
 
   <!-- NAVBAR -->
   <header class="navbar">
@@ -901,319 +1176,495 @@
   </header>
 
   <!-- HERO BANNER -->
-  <section class="pay-hero">
-    <div class="pay-hero-inner">
+  <section class="portal-hero">
+    <div class="portal-hero-inner">
       <div>
-        <span class="badge-portal"><i class="fa-solid fa-shield-check"></i> Official School Treasury</span>
-        <h1 class="pay-hero-title">
-          School Fees &amp; <span>Online Payment</span> System
+        <span class="badge-treasury"><i class="fa-solid fa-shield-check"></i> Official School Treasury</span>
+        <h1 class="portal-hero-title">
+          School Fees &amp; <span>Payment Portal</span>
         </h1>
-        <p class="pay-hero-desc">
-          Official fee payment portal for parents and guardians. Pay safely via MTN Mobile Money directly to the Cashier (<strong>0785485641</strong>) or through official bank accounts, then verify payment clearances instantly with the Treasury Office.
+        <p class="portal-hero-desc">
+          Official tuition fee structure and clearance workflow for ACEJ Karama Technical Secondary School. 
+          To ensure financial accountability and instant reconciliation, all tuition payments must be settled exclusively through 
+          <strong>Urubuto Education Payment System (*775#)</strong> or <strong>Direct Bank Deposit (Bank of Kigali)</strong>.
         </p>
 
-        <div class="hero-meta-pills">
-          <div class="meta-pill"><i class="fa-solid fa-file-invoice"></i> RTQB Levels 3, 4 &amp; 5</div>
-          <div class="meta-pill"><i class="fa-solid fa-school"></i> School Code: 0207030</div>
-          <div class="meta-pill"><i class="fa-solid fa-user-check"></i> Cashier: Marie Louise NYIRANGIRIMANA</div>
+        <div class="pills-group">
+          <div class="pill-item"><i class="fa-solid fa-graduation-cap"></i> Term Fee: 95,500 RWF</div>
+          <div class="pill-item"><i class="fa-solid fa-mobile-screen"></i> Urubuto Code: *775#</div>
+          <div class="pill-item"><i class="fa-solid fa-building-columns"></i> BK Bank of Kigali</div>
+          <div class="pill-item"><i class="fa-solid fa-user-check"></i> Cashier: Marie Louise NYIRANGIRIMANA</div>
         </div>
       </div>
 
-      <!-- MOMO QUICK BOX WITH CASHIER NUMBER -->
-      <div class="momo-hero-card">
-        <div class="momo-card-header">
-          <span class="momo-brand-tag">
-            <i class="fa-solid fa-mobile-screen-button"></i> MTN MoMo Pay
-          </span>
-          <div class="momo-status-dot">
-            <span class="status-ping"></span> Active Cashier Line
+      <!-- OFFICIAL 95,500 RWF CARD -->
+      <div class="official-rate-card">
+        <div class="rate-card-top">
+          <span class="badge-term-rate"><i class="fa-solid fa-check-double"></i> Approved Term Rate</span>
+          <span style="font-size: 0.8rem; font-weight: 700; color: #047857;"><i class="fa-solid fa-circle"></i> Active Academic Year</span>
+        </div>
+
+        <div class="rate-amount-display">
+          <div class="rate-amount-title">Term Tuition &amp; Boarding Fee</div>
+          <div class="rate-amount-huge">
+            <span>RWF</span>95,500
+          </div>
+          <div style="font-size: 0.84rem; color: #475569; font-weight: 600; margin-top: 6px;">
+            Applicable to Levels 3, 4 &amp; 5 across all trades (NIT, CSA &amp; Accounting)
           </div>
         </div>
 
-        <div class="momo-number-box">
-          <div class="momo-label">Designated Cashier Payment Line</div>
-          <div class="momo-number-digits" id="momoNumberDisplay">0785485641</div>
-          <div style="font-size: 0.82rem; color: #334155; margin-top: 5px; font-weight: 700;">
-            Recipient: <strong>Marie Louise NYIRANGIRIMANA</strong> (Caissière)
+        <div class="rate-card-channel-badges">
+          <div class="channel-mini-badge channel-urubuto">
+            <i class="fa-solid fa-mobile-screen-button"></i> Urubuto System (*775#)
+          </div>
+          <div class="channel-mini-badge channel-bank">
+            <i class="fa-solid fa-building-columns"></i> Bank of Kigali (Bordereau)
           </div>
         </div>
 
-        <div class="momo-actions">
-          <button class="btn-momo-act btn-momo-copy" onclick="copyCashierNumber()">
-            <i class="fa-regular fa-copy"></i> Copy 0785485641
-          </button>
-          <a href="tel:0785485641" class="btn-momo-act btn-momo-dial">
-            <i class="fa-solid fa-phone"></i> Call Cashier
+        <div class="rate-card-actions">
+          <a href="#urubutoSection" class="btn-quick-act btn-act-urubuto">
+            <i class="fa-solid fa-arrow-down"></i> Pay via Urubuto
+          </a>
+          <a href="#bankSection" class="btn-quick-act btn-act-bank">
+            <i class="fa-solid fa-file-invoice"></i> Bank Accounts
           </a>
         </div>
       </div>
     </div>
   </section>
 
-  <!-- PORTAL WORKFLOW -->
-  <main class="portal-container">
-    <div class="portal-grid">
+  <!-- MAIN PORTAL CONTENT -->
+  <main class="portal-main-wrapper">
+    <div class="portal-layout-grid">
       
-      <!-- LEFT COLUMN: FEE CALCULATOR & PAYMENT GENERATOR -->
+      <!-- LEFT COLUMN: CALCULATOR & INVOICE SUBMISSION FORM -->
       <div>
-        <div class="portal-card">
-          <span class="card-header-badge"><i class="fa-solid fa-calculator"></i> Step 1: Select Student &amp; Trade</span>
-          <h2 class="portal-card-title">Fee Calculator &amp; USSD Generator</h2>
-          <p class="portal-card-sub">
-            Select your student's combination, level, and fee structure to calculate the term tuition amount and generate an instant USSD payment string for Cashier <strong>0785485641</strong>.
+
+        <!-- CARD 1: FEE CALCULATOR -->
+        <div class="portal-box" id="calculatorSection">
+          <span class="box-header-badge badge-blue-soft"><i class="fa-solid fa-calculator"></i> Step 1: Tuition Structure</span>
+          <h2 class="box-title">Fee Breakdown &amp; Calculator</h2>
+          <p class="box-subtitle">
+            Term tuition at ACEJ Karama TSS is set at <strong>95,500 RWF</strong>. Use this interactive calculator to preview your total invoice and configure optional items such as technical workshop uniforms or examination materials.
           </p>
 
-          <div class="form-row">
-            <div class="form-group">
-              <label for="studentTrade">Technical Trade / Combination <span>*</span></label>
-              <select id="studentTrade" class="form-control" onchange="calculateFees()">
-                <option value="NIT" selected>Networking &amp; Internet Tech (NIT)</option>
-                <option value="CSA">Computer Systems &amp; Architecture (CSA)</option>
-                <option value="ACC">Accounting &amp; Financial Management</option>
+          <div class="form-grid-2">
+            <div class="form-group-item">
+              <label for="calcTrade">Technical Trade / Combination <span>*</span></label>
+              <select id="calcTrade" class="input-field" onchange="runFeeCalculation()">
+                <option value="Networking & Internet Technologies (NIT)" selected>Networking &amp; Internet Tech (NIT)</option>
+                <option value="Computer Systems & Architecture (CSA)">Computer Systems &amp; Architecture (CSA)</option>
+                <option value="Accounting & Financial Management">Accounting &amp; Financial Management</option>
               </select>
             </div>
-            <div class="form-group">
-              <label for="studentLevel">RTQB Level / Class <span>*</span></label>
-              <select id="studentLevel" class="form-control" onchange="calculateFees()">
-                <option value="3">Level 3 (Senior 4 Technical)</option>
-                <option value="4" selected>Level 4 (Senior 5 Technical)</option>
-                <option value="5">Level 5 (Senior 6 Finalist)</option>
-              </select>
-            </div>
-          </div>
-
-          <div class="form-row">
-            <div class="form-group">
-              <label for="feeCategory">Fee Type / Boarding Option <span>*</span></label>
-              <select id="feeCategory" class="form-control" onchange="calculateFees()">
-                <option value="boarding" selected>Boarding Student (Tuition + Meals + Lodging)</option>
-                <option value="day">Day Scholar (Tuition + Lunch)</option>
-                <option value="lab">Practical Labs &amp; Technical Materials Only</option>
-                <option value="uniform">Uniform &amp; Institutional Registration (New Entrants)</option>
-                <option value="custom">Custom Partial Amount</option>
-              </select>
-            </div>
-            <div class="form-group">
-              <label for="termSelect">Academic Term <span>*</span></label>
-              <select id="termSelect" class="form-control" onchange="calculateFees()">
-                <option value="Term 1" selected>Term 1 (Sept - Dec)</option>
-                <option value="Term 2">Term 2 (Jan - April)</option>
-                <option value="Term 3">Term 3 (April - July)</option>
+            <div class="form-group-item">
+              <label for="calcLevel">RTQB Level / Class <span>*</span></label>
+              <select id="calcLevel" class="input-field" onchange="runFeeCalculation()">
+                <option value="Level 3 (Senior 4 Technical)">Level 3 (Senior 4 Technical)</option>
+                <option value="Level 4 (Senior 5 Technical)" selected>Level 4 (Senior 5 Technical)</option>
+                <option value="Level 5 (Senior 6 Finalist)">Level 5 (Senior 6 Finalist)</option>
               </select>
             </div>
           </div>
 
-          <!-- DYNAMIC SUMMARY -->
-          <div class="fee-calc-summary">
-            <div class="summary-header">
-              <span><i class="fa-solid fa-receipt"></i> Official Term Invoice Estimate</span>
-              <span id="summaryTradeLabel">Level 4 NIT &bull; Boarding</span>
+          <div class="form-grid-2">
+            <div class="form-group-item">
+              <label for="calcTerm">Academic Term <span>*</span></label>
+              <select id="calcTerm" class="input-field" onchange="runFeeCalculation()">
+                <option value="Term 1" selected>Term 1 (First Term)</option>
+                <option value="Term 2">Term 2 (Second Term)</option>
+                <option value="Term 3">Term 3 (Third Term)</option>
+              </select>
             </div>
-            <div class="summary-amount-row">
-              <div style="font-size: 0.95rem; font-weight: 700; color: #475569;">Total Due Amount:</div>
-              <div class="summary-amount-val">
-                <span class="summary-currency">RWF</span><span id="calculatedAmount">95,500</span>
+            <div class="form-group-item">
+              <label for="calcAddons">Optional Packages / Additional Items</label>
+              <select id="calcAddons" class="input-field" onchange="runFeeCalculation()">
+                <option value="none" selected>Standard Term Tuition Only (95,500 RWF)</option>
+                <option value="uniform">Add Workshop Overalls / Uniform (+15,000 RWF)</option>
+                <option value="materials">Add Technical Practicals Kit (+20,000 RWF)</option>
+                <option value="both">Add Uniform + Practicals Kit (+35,000 RWF)</option>
+              </select>
+            </div>
+          </div>
+
+          <!-- SUMMARY INVOICE PANEL -->
+          <div class="fee-display-panel">
+            <div class="panel-meta-row">
+              <span><i class="fa-solid fa-receipt"></i> Official Tuition Assessment</span>
+              <span id="calcSummaryLabel">Level 4 NIT &bull; Term 1</span>
+            </div>
+            <div class="panel-total-row">
+              <div style="font-size: 0.95rem; font-weight: 700; color: #475569;">Total Expected Payable:</div>
+              <div class="panel-amount-figure">
+                <span class="panel-amount-currency">RWF</span><span id="calculatedTotalDisplay">95,500</span>
               </div>
-            </div>
-            <div id="customAmountRow" style="display: none; margin-top: 15px;">
-              <label style="font-size: 0.85rem; font-weight: 700; color: #1e3a8a;">Enter Custom Partial Amount (RWF):</label>
-              <input type="number" id="customInput" class="form-control" placeholder="e.g. 50000" oninput="updateCustomAmount()">
-            </div>
-          </div>
-
-          <!-- GENERATED USSD DIALER BOX FOR CASHIER -->
-          <div class="ussd-card-generator">
-            <div style="display: flex; justify-content: space-between; align-items: center;">
-              <span style="font-size: 0.82rem; font-weight: 800; text-transform: uppercase; letter-spacing: 1px; color: #94a3b8;">
-                <i class="fa-solid fa-bolt" style="color: var(--acej-gold);"></i> Instant MTN MoMo USSD (Cashier Line)
-              </span>
-              <span style="font-size: 0.78rem; color: #38bdf8;">One-Click Dial / Copy</span>
-            </div>
-
-            <div class="ussd-dial-code">
-              <span id="ussdDisplayString">*182*1*1*0785485641*125000#</span>
-              <i class="fa-solid fa-mobile-screen" style="font-size: 1.1rem; color: #64748b;"></i>
-            </div>
-
-            <div class="ussd-action-row">
-              <button class="btn-momo-act btn-momo-copy" style="flex: 1;" onclick="copyUSSDCode()">
-                <i class="fa-regular fa-copy"></i> Copy USSD String
-              </button>
-              <a href="tel:*182*1*1*0785485641*125000#" id="directDialLink" class="btn-momo-act btn-momo-dial" style="flex: 1;">
-                <i class="fa-solid fa-phone-volume"></i> Tap to Dial USSD
-              </a>
             </div>
           </div>
         </div>
 
-        <!-- STEP 2: VERIFICATION & WHATSAPP PROOF SUBMISSION -->
-        <div class="portal-card">
-          <span class="card-header-badge" style="background: #fdf2f8; color: #be185d;">
-            <i class="fa-solid fa-clipboard-check"></i> Step 2: Instant Slip / SMS Verification
-          </span>
-          <h2 class="portal-card-title">Notify Cashier &amp; Confirm Clearance</h2>
-          <p class="portal-card-sub">
-            After sending funds to Cashier Marie Louise NYIRANGIRIMANA via MoMo or depositing at the bank, fill out the details below to generate a pre-formatted clearance message for direct WhatsApp or email validation.
+        <!-- CARD 2: PAYMENT CHANNELS DETAILED -->
+        <div class="portal-box" id="urubutoSection">
+          <span class="box-header-badge badge-purple-soft"><i class="fa-solid fa-mobile-retro"></i> Channel 1: UrubutoPay</span>
+          <h2 class="box-title">Pay via Urubuto Education System</h2>
+          <p class="box-subtitle">
+            UrubutoPay is Rwanda's approved centralized educational payment platform. Pay directly from your phone using MTN Mobile Money, Airtel Money, or Debit/Credit Card.
           </p>
 
-          <form id="feeSubmissionForm" onsubmit="handleWhatsAppProof(event)">
-            <div class="form-row">
-              <div class="form-group">
-                <label for="studentName">Student Full Name <span>*</span></label>
-                <input type="text" id="studentName" class="form-control" placeholder="e.g. Jean Damascene Uwimana" required>
+          <div class="channel-guide-box guide-urubuto">
+            <div class="guide-head">
+              <div class="guide-title title-urubuto">
+                <i class="fa-solid fa-tower-broadcast"></i> Option A: Quick USSD Dialing (*775#)
               </div>
-              <div class="form-group">
-                <label for="studentReg">Student Code / Registration ID <span>*</span></label>
-                <input type="text" id="studentReg" class="form-control" placeholder="e.g. ACEJ/2024/0142" required>
+              <span style="font-size: 0.8rem; font-weight: 800; color: var(--urubuto-purple); background: #ffffff; padding: 4px 10px; border-radius: 6px; border: 1px solid #ddd6fe;">Mobile USSD</span>
+            </div>
+
+            <div class="copy-pill-strip">
+              <div>
+                <div style="font-size: 0.72rem; text-transform: uppercase; color: var(--text-muted); font-weight: 800;">Urubuto USSD Quick Code</div>
+                <div class="code-pill-val">*775#</div>
+              </div>
+              <button class="btn-copy-code" onclick="copySnippet('*775#', 'Urubuto USSD *775#')">
+                <i class="fa-regular fa-copy"></i> Copy *775#
+              </button>
+            </div>
+
+            <ol class="step-list-ordered">
+              <li>Dial <strong>*775#</strong> on your MTN or Airtel line.</li>
+              <li>Select <strong>Pay School Fees</strong>.</li>
+              <li>Enter School Code: <strong>0207030</strong> (or select <em>ACEJ KARAMA TSS</em>).</li>
+              <li>Enter your child's <strong>Student ID / Roll Number</strong>.</li>
+              <li>Confirm student details and enter the approved fee amount: <strong>95,500 RWF</strong>.</li>
+              <li>Enter your Mobile Money PIN to authorize the transaction.</li>
+              <li>Keep the confirmation SMS containing the <strong>Urubuto Transaction ID</strong>.</li>
+            </ol>
+
+            <div style="display: flex; gap: 10px;">
+              <a href="tel:*775%23" class="btn-quick-act btn-act-urubuto" style="padding: 10px 18px;">
+                <i class="fa-solid fa-phone-flip"></i> Dial *775# Now
+              </a>
+              <button class="btn-quick-act" style="background: var(--white); color: var(--urubuto-purple); border: 1.5px solid var(--urubuto-purple);" onclick="copySnippet('0207030', 'ACEJ Karama School Code 0207030')">
+                <i class="fa-solid fa-copy"></i> Copy School Code: 0207030
+              </button>
+            </div>
+          </div>
+
+          <div class="channel-guide-box guide-urubuto" style="background: #ffffff;">
+            <div class="guide-head">
+              <div class="guide-title title-urubuto">
+                <i class="fa-solid fa-globe"></i> Option B: UrubutoPay Online Web Portal
+              </div>
+              <span style="font-size: 0.8rem; font-weight: 800; color: #047857; background: #ecfdf5; padding: 4px 10px; border-radius: 6px;">Web Payment</span>
+            </div>
+            <p style="font-size: 0.9rem; color: #475569; margin-bottom: 12px;">
+              You can also pay through the official Urubuto web platform at <strong>urubutopay.rw</strong>. Select <em>ACEJ KARAMA TSS</em>, enter your student identification, enter <strong>95,500 RWF</strong>, and complete checkout.
+            </p>
+            <a href="https://urubuto.rw" target="_blank" rel="noopener noreferrer" class="btn-quick-act btn-act-urubuto" style="width: fit-content; padding: 9px 18px;">
+              <i class="fa-solid fa-arrow-up-right-from-square"></i> Open Urubuto Online Portal
+            </a>
+          </div>
+        </div>
+
+        <!-- CARD 3: BANK DEPOSIT GUIDE -->
+        <div class="portal-box" id="bankSection">
+          <span class="box-header-badge badge-blue-soft"><i class="fa-solid fa-building-columns"></i> Channel 2: Direct Bank Deposit</span>
+          <h2 class="box-title">Direct Bank Deposit &amp; Transfer</h2>
+          <p class="box-subtitle">
+            Pay by visiting any Bank of Kigali (BK) branch nationwide or through your BK Mobile Banking app.
+          </p>
+
+          <div class="channel-guide-box guide-bank">
+            <div class="bank-item-box" style="background: var(--white); border-left: 4px solid var(--acej-blue);">
+              <div class="bank-name-label">
+                <span>Bank of Kigali (BK) &bull; Official Account</span>
+                <button class="btn-copy-code" onclick="copySnippet('00040-06945678-90', 'BK Account Number')">
+                  <i class="fa-regular fa-copy"></i> Copy BK Acc
+                </button>
+              </div>
+              <div class="bank-acc-code">00040-06945678-90</div>
+              <div class="bank-account-name">Account Name: <strong>ACEJ KARAMA TSS</strong> &bull; Branch: Muhanga</div>
+            </div>
+
+            <div style="font-size: 0.9rem; color: #334155; margin-top: 15px;">
+              <strong style="color: var(--acej-dark-blue);">Instructions for Bank Deposit Slip (Bordereau):</strong>
+              <ul style="margin: 8px 0 12px 20px; line-height: 1.6;">
+                <li>Deposit exact term fee amount: <strong>95,500 RWF</strong>.</li>
+                <li>In the <strong>Depositor / Narration</strong> line, write: <code>[Student Full Name] - [Trade &amp; Level]</code>.</li>
+                <li>Always collect the stamped duplicate receipt (Bordereau) from the bank teller.</li>
+                <li>Upload or photograph the slip below to notify Cashier Marie Louise immediately.</li>
+              </ul>
+            </div>
+          </div>
+        </div>
+
+        <!-- CARD 4: INVOICE / BANK SLIP SUBMISSION FORM -->
+        <div class="portal-box" id="submissionSection">
+          <span class="box-header-badge badge-emerald-soft"><i class="fa-solid fa-file-circle-check"></i> Step 2: Verification</span>
+          <h2 class="box-title">Submit Payment Invoice &amp; Slip to Cashier</h2>
+          <p class="box-subtitle">
+            Submit your Urubuto transaction ID or stamped Bank Bordereau to <strong>Cashier Marie Louise NYIRANGIRIMANA</strong> for verification and issuance of the official school treasury stamp.
+          </p>
+
+          <form id="paymentSubmissionForm" onsubmit="processInvoiceSubmission(event)">
+            <div class="form-grid-2">
+              <div class="form-group-item">
+                <label for="formStudentName">Student Full Name <span>*</span></label>
+                <input type="text" id="formStudentName" class="input-field" placeholder="e.g., Keza Claudine Mugabo" required>
+              </div>
+              <div class="form-group-item">
+                <label for="formStudentReg">Student Reg ID / Roll Number <span>*</span></label>
+                <input type="text" id="formStudentReg" class="input-field" placeholder="e.g., ACEJ/2024/0182" required>
               </div>
             </div>
 
-            <div class="form-row">
-              <div class="form-group">
-                <label for="parentPhone">Parent / Payer Phone Number <span>*</span></label>
-                <input type="tel" id="parentPhone" class="form-control" placeholder="e.g. 0788123456" required>
+            <div class="form-grid-2">
+              <div class="form-group-item">
+                <label for="formTrade">Department &amp; Level <span>*</span></label>
+                <select id="formTrade" class="input-field" required>
+                  <option value="NIT - Level 3">Networking (NIT) - Level 3</option>
+                  <option value="NIT - Level 4" selected>Networking (NIT) - Level 4</option>
+                  <option value="NIT - Level 5">Networking (NIT) - Level 5</option>
+                  <option value="CSA - Level 3">Computer Systems (CSA) - Level 3</option>
+                  <option value="CSA - Level 4">Computer Systems (CSA) - Level 4</option>
+                  <option value="CSA - Level 5">Computer Systems (CSA) - Level 5</option>
+                  <option value="Accounting - Level 3">Accounting - Level 3</option>
+                  <option value="Accounting - Level 4">Accounting - Level 4</option>
+                  <option value="Accounting - Level 5">Accounting - Level 5</option>
+                </select>
               </div>
-              <div class="form-group">
-                <label for="paymentMethodUsed">Payment Channel <span>*</span></label>
-                <select id="paymentMethodUsed" class="form-control" required>
-                  <option value="MTN MoMo to Cashier (0785485641)" selected>MTN MoMo to Cashier (0785485641)</option>
-                  <option value="Airtel Money to 0785485641">Airtel Money to 0785485641</option>
-                  <option value="Bank of Kigali (BK Slip)">Bank of Kigali (BK Slip)</option>
-                  <option value="Equity Bank Slip">Equity Bank Slip</option>
+              <div class="form-group-item">
+                <label for="formTerm">Academic Term <span>*</span></label>
+                <select id="formTerm" class="input-field" required>
+                  <option value="Term 1" selected>Term 1 (First Term)</option>
+                  <option value="Term 2">Term 2 (Second Term)</option>
+                  <option value="Term 3">Term 3 (Third Term)</option>
                 </select>
               </div>
             </div>
 
-            <div class="form-group">
-              <label for="txReference">MoMo Transaction ID (TxID) or Bank Slip Number <span>*</span></label>
-              <input type="text" id="txReference" class="form-control" placeholder="e.g. TxID: 18928374929 or Slip #40921" required>
+            <div class="form-grid-2">
+              <div class="form-group-item">
+                <label for="formChannel">Payment Channel Used <span>*</span></label>
+                <select id="formChannel" class="input-field" required>
+                  <option value="Urubuto System (*775#)" selected>Urubuto System (*775# / MoMo)</option>
+                  <option value="Bank of Kigali Deposit (Bordereau)">Bank of Kigali Deposit (Bordereau)</option>
+                  <option value="BK Mobile Banking Transfer">BK Mobile Banking Transfer</option>
+                  <option value="Equity Bank Deposit">Equity Bank Deposit</option>
+                </select>
+              </div>
+              <div class="form-group-item">
+                <label for="formAmount">Amount Paid (RWF) <span>*</span></label>
+                <input type="number" id="formAmount" class="input-field" value="95500" required>
+              </div>
             </div>
 
-            <div class="form-group">
-              <label for="paymentNotes">Additional Details (Optional)</label>
-              <textarea id="paymentNotes" class="form-control" rows="2" placeholder="Mention boarding status, term installment, or specific fee breakdown..."></textarea>
+            <div class="form-grid-2">
+              <div class="form-group-item">
+                <label for="formRefNumber">Urubuto TxID or Bank Slip / Bordereau Number <span>*</span></label>
+                <input type="text" id="formRefNumber" class="input-field" placeholder="e.g., URU-92837492 or BK Slip #40291" required>
+              </div>
+              <div class="form-group-item">
+                <label for="formParentPhone">Parent / Guardian Phone Number <span>*</span></label>
+                <input type="tel" id="formParentPhone" class="input-field" placeholder="e.g., 0788123456" required>
+              </div>
             </div>
 
-            <button type="submit" class="btn-whatsapp-proof" style="margin-top: 8px;">
-              <i class="fa-brands fa-whatsapp" style="font-size: 1.25rem;"></i> Send Payment Proof to Cashier on WhatsApp (0785485641)
+            <!-- PHOTO / PROOF ATTACHMENT -->
+            <div class="form-group-item">
+              <label>Upload Slip Photo or Urubuto SMS Screenshot</label>
+              <div class="file-drop-area" onclick="document.getElementById('slipFileInput').click()">
+                <i class="fa-solid fa-cloud-arrow-up" style="font-size: 2rem; color: var(--acej-blue); margin-bottom: 8px;"></i>
+                <div style="font-weight: 700; color: #334155; font-size: 0.92rem;">Click to select file or take photo of bank slip</div>
+                <div style="font-size: 0.78rem; color: var(--text-muted); margin-top: 4px;">PNG, JPG, or PDF up to 10MB</div>
+                <input type="file" id="slipFileInput" accept="image/*,.pdf" style="display: none;" onchange="handleFilePreview(this)">
+              </div>
+              <div class="file-preview-wrap" id="filePreviewWrap">
+                <img id="filePreviewThumb" class="file-preview-img" src="" alt="Slip preview">
+                <div style="flex: 1; font-size: 0.85rem;">
+                  <strong id="filePreviewName">slip-photo.jpg</strong>
+                  <div style="color: #10b981;"><i class="fa-solid fa-check"></i> File ready for Cashier</div>
+                </div>
+                <button type="button" class="btn-copy-code" onclick="clearSelectedFile()">Remove</button>
+              </div>
+            </div>
+
+            <div class="form-group-item">
+              <label for="formNotes">Additional Notes for Cashier (Optional)</label>
+              <textarea id="formNotes" class="input-field" rows="2" placeholder="Note down sibling discounts, partial installments, or specific requests..."></textarea>
+            </div>
+
+            <button type="submit" class="btn-submit-invoice">
+              <i class="fa-solid fa-paper-plane"></i> Generate Digital Invoice &amp; Forward to Cashier (0785485641)
             </button>
           </form>
-
-          <div style="margin-top: 18px; padding: 14px; background: #f8fafc; border-radius: 10px; border: 1px solid var(--border-color); font-size: 0.85rem; color: #475569;">
-            <i class="fa-solid fa-circle-info" style="color: var(--acej-blue);"></i> <strong>Notice:</strong> Please attach a screenshot of your MoMo SMS or photo of your stamped bank deposit slip in the WhatsApp chat for instant receipt issuance.
-          </div>
         </div>
+
       </div>
 
-      <!-- RIGHT COLUMN: CASHIER PROFILE & CHANNELS -->
-      <div>
+      <!-- RIGHT COLUMN: CASHIER EMERGENCY HOTLINE & BANK CARDS -->
+      <aside>
         
-        <!-- OFFICIAL CASHIER PROFILE -->
-        <div class="cashier-card">
-          <div class="cashier-header">
-            <div class="cashier-icon"><i class="fa-solid fa-user-check"></i></div>
-            <div class="cashier-info">
+        <!-- CARD: EMERGENCY CASHIER PROFILE -->
+        <div class="emergency-cashier-card">
+          <div class="emergency-header-wrap">
+            <div class="cashier-avatar-badge">
+              <i class="fa-solid fa-headset"></i>
+            </div>
+            <div class="cashier-title-name">
               <h4>Marie Louise NYIRANGIRIMANA</h4>
-              <p>School Cashier &bull; Head of Finance (Caissière)</p>
+              <p>Head of Treasury &amp; School Cashier (Caissière)</p>
             </div>
           </div>
-          <p style="font-size: 0.88rem; color: #065f46; line-height: 1.5; margin-bottom: 14px;">
-            Authorized treasury officer at ACEJ Karama TSS responsible for fee verification, bank slip validation, and issuing official stamped payment receipts.
+
+          <p style="font-size: 0.88rem; color: #7f1d1d; line-height: 1.5; margin-bottom: 15px;">
+            Authorized treasury officer at ACEJ Karama TSS. Contact for immediate fee clearance, Urubuto system validation, or emergency billing discrepancies.
           </p>
-          <div style="background: rgba(255,255,255,0.7); border-radius: 10px; padding: 12px; border: 1px solid #a7f3d0; margin-bottom: 12px;">
-            <div style="font-size: 0.75rem; text-transform: uppercase; color: #047857; font-weight: 800;">Official MoMo &amp; Phone Line</div>
-            <div style="font-size: 1.35rem; font-weight: 900; color: #065f46; font-family: 'Courier New', monospace;">
-              0785 485 641
+
+          <div class="hotline-highlight-box">
+            <div style="font-size: 0.72rem; text-transform: uppercase; color: #991b1b; font-weight: 800; letter-spacing: 1px;">
+              Direct Emergency Hotline Line
+            </div>
+            <div class="hotline-digits">0785 485 641</div>
+            <div style="font-size: 0.78rem; color: #b91c1c; font-weight: 700; margin-top: 4px;">
+              Available Monday &ndash; Saturday &bull; 07:30 - 18:00 CAT
             </div>
           </div>
-          <div style="display: flex; gap: 10px;">
-            <a href="tel:0785485641" class="btn-momo-act btn-momo-copy" style="flex: 1; padding: 9px; font-size: 0.82rem; background: #047857;">
-              <i class="fa-solid fa-phone"></i> Call Cashier
+
+          <div class="emergency-actions-grid">
+            <a href="tel:0785485641" class="btn-hotline-act btn-act-call-cashier">
+              <i class="fa-solid fa-phone-volume"></i> Emergency Call
             </a>
-            <a href="https://wa.me/250785485641" target="_blank" rel="noopener noreferrer" class="btn-momo-act btn-momo-dial" style="flex: 1; padding: 9px; font-size: 0.82rem; background: #25d366; color: #fff;">
+            <a href="https://wa.me/250785485641?text=Hello%20Cashier%20Marie%20Louise,%20I%20have%20an%20urgent%20school%20fees%20clearance%20question%20for%20ACEJ%20Karama%20TSS." target="_blank" rel="noopener noreferrer" class="btn-hotline-act btn-act-wa-cashier">
               <i class="fa-brands fa-whatsapp"></i> WhatsApp
             </a>
           </div>
         </div>
 
-        <!-- MOBILE MONEY CHANNEL -->
-        <div class="method-card">
-          <span class="method-badge" style="background: #fef08a; color: #854d0e;">Channel 01</span>
-          <h3 class="method-title"><i class="fa-solid fa-mobile-retro" style="color: var(--acej-blue);"></i> Mobile Money (MoMo)</h3>
-          <p class="method-desc">
-            Direct transfer from your mobile phone 24/7 without needing to travel to the Muhanga campus.
+        <!-- CARD: OFFICIAL BANK ACCOUNTS -->
+        <div class="bank-accounts-card">
+          <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 14px;">
+            <h3 style="font-size: 1.15rem; font-weight: 900; color: var(--acej-dark-blue);">
+              <i class="fa-solid fa-building-columns" style="color: var(--acej-blue);"></i> Official Bank Accounts
+            </h3>
+            <span style="font-size: 0.75rem; background: #eff6ff; color: var(--acej-blue); padding: 3px 8px; border-radius: 4px; font-weight: 700;">Verified</span>
+          </div>
+          <p style="font-size: 0.86rem; color: var(--text-muted); margin-bottom: 16px;">
+            Deposits made outside these official school accounts will not be recognized by the treasury.
           </p>
 
-          <div style="background: #fafaf9; border-radius: 10px; padding: 14px; border: 1px solid var(--border-color); margin-bottom: 14px;">
-            <div style="font-size: 0.75rem; text-transform: uppercase; color: var(--text-muted); font-weight: 800;">Direct Recipient</div>
-            <div style="font-size: 1.35rem; font-weight: 900; color: var(--acej-dark-blue); font-family: 'Courier New', monospace;">
-              0785 485 641
+          <!-- BK Account -->
+          <div class="bank-item-box">
+            <div class="bank-name-label">
+              <span>Bank of Kigali (BK)</span>
+              <button class="btn-copy-code" onclick="copySnippet('00040-06945678-90', 'BK Account Number')">
+                <i class="fa-regular fa-copy"></i> Copy
+              </button>
             </div>
-            <div style="font-size: 0.8rem; color: #047857; font-weight: 700; margin-top: 2px;">
-              Name: Marie Louise NYIRANGIRIMANA
+            <div class="bank-acc-code">00040-06945678-90</div>
+            <div class="bank-account-name">Account Name: <strong>ACEJ KARAMA TSS</strong></div>
+            <div style="font-size: 0.76rem; color: #475569; margin-top: 4px;">Branch: Muhanga District Branch</div>
+          </div>
+
+          <!-- Equity Account -->
+          <div class="bank-item-box">
+            <div class="bank-name-label">
+              <span>Equity Bank Rwanda</span>
+              <button class="btn-copy-code" onclick="copySnippet('40021-0084729-11', 'Equity Account Number')">
+                <i class="fa-regular fa-copy"></i> Copy
+              </button>
             </div>
-          </div>
-
-          <ol style="font-size: 0.86rem; color: #475569; padding-left: 18px; line-height: 1.6;">
-            <li>Dial <strong>*182#</strong> on your phone</li>
-            <li>Select <strong>1) Send Money</strong></li>
-            <li>Enter Cashier Number: <strong>0785485641</strong></li>
-            <li>Verify Recipient: <strong>Marie Louise NYIRANGIRIMANA</strong></li>
-            <li>Enter the term amount and confirm with your PIN</li>
-            <li>In the payment reason/reference, write the <strong>Student Name &amp; Level</strong></li>
-          </ol>
-        </div>
-
-        <!-- BANK DEPOSIT CHANNEL -->
-        <div class="method-card">
-          <span class="method-badge" style="background: #e0f2fe; color: #0369a1;">Channel 02</span>
-          <h3 class="method-title"><i class="fa-solid fa-building-columns" style="color: var(--acej-blue);"></i> Bank Deposit Accounts</h3>
-          <p class="method-desc">
-            Direct bank deposits at branch tellers across Rwanda. Ensure student name and registration ID are written on the deposit slip.
-          </p>
-
-          <ul class="bank-acc-list">
-            <li class="bank-acc-item">
-              <div>
-                <div class="bank-name">Bank of Kigali (BK)</div>
-                <div style="font-size: 0.78rem; color: var(--text-muted);">Account Name: ACEJ KARAMA TSS</div>
-              </div>
-              <div class="bank-acc-num">00040-0694821-42</div>
-            </li>
-            <li class="bank-acc-item">
-              <div>
-                <div class="bank-name">Equity Bank Rwanda</div>
-                <div style="font-size: 0.78rem; color: var(--text-muted);">Account Name: ACEJ KARAMA TSS</div>
-              </div>
-              <div class="bank-acc-num">40021-0084729-11</div>
-            </li>
-          </ul>
-
-          <div style="font-size: 0.82rem; color: #b45309; background: #fefce8; padding: 12px; border-radius: 8px; border: 1px solid #fef08a; margin-top: 10px;">
-            <i class="fa-solid fa-triangle-exclamation"></i> <strong>Important:</strong> Bring the physical stamped bank slip copy to Cashier Marie Louise upon reporting or photograph it and send it via WhatsApp.
+            <div class="bank-acc-code">40021-0084729-11</div>
+            <div class="bank-account-name">Account Name: <strong>ACEJ KARAMA TSS</strong></div>
+            <div style="font-size: 0.76rem; color: #475569; margin-top: 4px;">Branch: Muhanga Commercial Branch</div>
           </div>
         </div>
 
-        <!-- INSTITUTIONAL CODES & RULES -->
-        <div class="method-card" style="background: var(--acej-dark-blue); color: var(--white); border-color: var(--acej-dark-blue);">
-          <h4 style="font-size: 1.05rem; font-weight: 800; color: var(--acej-gold); margin-bottom: 8px;">
-            <i class="fa-solid fa-shield-halved"></i> Institutional Guidelines
-          </h4>
-          <p style="font-size: 0.86rem; color: #cbd5e1; line-height: 1.5; margin-bottom: 12px;">
-            Strict treasury policies apply to ensure accurate student accounting records:
-          </p>
-          <div style="font-size: 0.86rem; display: flex; flex-direction: column; gap: 8px; color: #e2e8f0;">
-            <div>&bull; <strong>School Code:</strong> 0207030 (Muhanga)</div>
-            <div>&bull; Always preserve the MoMo confirmation SMS until your official paper receipt is signed.</div>
-            <div>&bull; Tuition must be completed within the first two weeks of each academic term.</div>
-            <div>&bull; For special fee installments, contact the Headmaster or Cashier beforehand.</div>
+        <!-- CARD: IMPORTANT TREASURY POLICIES -->
+        <div class="bank-accounts-card" style="background: var(--acej-dark-blue); color: var(--white); border-color: var(--acej-dark-blue);">
+          <div style="display: flex; align-items: center; gap: 10px; margin-bottom: 12px;">
+            <i class="fa-solid fa-circle-exclamation" style="color: var(--acej-gold); font-size: 1.2rem;"></i>
+            <h4 style="font-size: 1.05rem; font-weight: 800; color: var(--acej-gold);">Treasury Regulations</h4>
+          </div>
+          <div style="font-size: 0.86rem; color: #cbd5e1; line-height: 1.6; display: flex; flex-direction: column; gap: 10px;">
+            <div>&bull; <strong>Strict Deadline:</strong> Tuition of 95,500 RWF must be cleared before or within the first 14 days of the academic term.</div>
+            <div>&bull; <strong>Strict Proof Policy:</strong> No student will be admitted into classes or boarding dormitories without a verified Urubuto SMS or stamped bank bordereau.</div>
+            <div>&bull; <strong>Direct Contact:</strong> Do not pay personal numbers. Use only <strong>Urubuto (*775#)</strong> or Bank of Kigali, and consult Cashier Marie Louise at <strong>0785485641</strong>.</div>
           </div>
         </div>
 
-      </div>
+      </aside>
 
     </div>
   </main>
+
+  <!-- MODAL: DIGITAL INVOICE RECEIPT -->
+  <div class="receipt-modal-backdrop" id="receiptModal" onclick="closeReceiptModalOnBackdrop(event)">
+    <div class="receipt-paper" id="receiptPaper">
+      <div style="display: flex; justify-content: flex-end; margin-bottom: 10px;">
+        <button type="button" onclick="closeReceiptModal()" style="background: none; border: none; font-size: 1.4rem; color: var(--text-muted); cursor: pointer;">
+          <i class="fa-solid fa-xmark"></i>
+        </button>
+      </div>
+
+      <div class="receipt-header">
+        <img src="/logo.png" alt="ACEJ Logo" style="height: 50px; margin-bottom: 6px;" onerror="this.style.display='none'">
+        <h3 style="color: var(--acej-dark-blue); font-size: 1.3rem; font-weight: 900;">ACEJ KARAMA TSS</h3>
+        <p style="font-size: 0.78rem; color: var(--text-muted); text-transform: uppercase; font-weight: 700; letter-spacing: 1px;">
+          Office of the Cashier &bull; Digital Payment Invoice
+        </p>
+        <p style="font-size: 0.75rem; color: #475569;">School Code: 0207030 &bull; Muhanga, Rwanda</p>
+      </div>
+
+      <div class="receipt-row">
+        <span class="receipt-label">Student Name:</span>
+        <span class="receipt-val" id="recStudentName">-</span>
+      </div>
+      <div class="receipt-row">
+        <span class="receipt-label">Reg ID / Roll No:</span>
+        <span class="receipt-val" id="recStudentReg">-</span>
+      </div>
+      <div class="receipt-row">
+        <span class="receipt-label">Trade &amp; Class:</span>
+        <span class="receipt-val" id="recTrade">-</span>
+      </div>
+      <div class="receipt-row">
+        <span class="receipt-label">Term:</span>
+        <span class="receipt-val" id="recTerm">-</span>
+      </div>
+      <div class="receipt-row">
+        <span class="receipt-label">Payment Channel:</span>
+        <span class="receipt-val" id="recChannel">-</span>
+      </div>
+      <div class="receipt-row">
+        <span class="receipt-label">Transaction Reference:</span>
+        <span class="receipt-val" id="recRefNumber" style="font-family: monospace;">-</span>
+      </div>
+      <div class="receipt-row">
+        <span class="receipt-label">Payer Phone:</span>
+        <span class="receipt-val" id="recParentPhone">-</span>
+      </div>
+
+      <div style="border-top: 2px dashed #cbd5e1; margin: 15px 0; padding-top: 12px;" class="receipt-row">
+        <span class="receipt-label" style="font-size: 1.1rem; color: var(--acej-dark-blue); font-weight: 800;">Amount Cleared:</span>
+        <span class="receipt-val" style="font-size: 1.3rem; color: var(--acej-blue);" id="recAmount">RWF 95,500</span>
+      </div>
+
+      <div class="receipt-stamp-box">
+        <i class="fa-solid fa-stamp" style="font-size: 1.2rem; margin-right: 6px;"></i>
+        Treasury Pending Clearance Stamp &bull; Marie Louise NYIRANGIRIMANA (0785485641)
+      </div>
+
+      <div style="display: flex; gap: 10px; margin-top: 18px;">
+        <button type="button" class="btn-quick-act btn-act-bank" style="padding: 12px;" onclick="window.print()">
+          <i class="fa-solid fa-print"></i> Print Invoice
+        </button>
+        <button type="button" class="btn-quick-act" id="modalWhatsAppBtn" style="padding: 12px; background: #25d366; color: #fff;">
+          <i class="fa-brands fa-whatsapp"></i> Send to Cashier WhatsApp
+        </button>
+      </div>
+    </div>
+  </div>
 
   <!-- FOUR-COLUMN FOOTER -->
   <footer class="site-footer">
@@ -1232,11 +1683,11 @@
       <div class="footer-col">
         <h3>Admissions &amp; Fees</h3>
         <ul class="footer-links">
-          <li><a href="/payment/">&rsaquo; Fees Portal &amp; MoMo Pay</a></li>
+          <li><a href="/payment/">&rsaquo; Fees Portal &amp; 95,500 RWF Rate</a></li>
+          <li><a href="/payment/#urubutoSection">&rsaquo; UrubutoPay (*775#)</a></li>
+          <li><a href="/payment/#bankSection">&rsaquo; Bank of Kigali Accounts</a></li>
           <li><a href="/contact/">&rsaquo; New Student Registration</a></li>
           <li><a href="/academics/">&rsaquo; Level 3, 4 &amp; 5 Entry</a></li>
-          <li><a href="/contact/">&rsaquo; Boarding Guidelines</a></li>
-          <li><a href="/contact/">&rsaquo; Academic Calendar</a></li>
         </ul>
       </div>
 
@@ -1254,7 +1705,7 @@
       <div class="footer-col">
         <h3>Get in Touch</h3>
         <p class="footer-contact-p"><i class="fa-solid fa-location-dot" style="color: var(--acej-gold);"></i> WPJG+G3P, Kamazu Village, Nganzo Cell, Mushubati, Muhanga, Rwanda</p>
-        <p class="footer-contact-p"><i class="fa-solid fa-phone" style="color: var(--acej-gold);"></i> Cashier (Marie Louise): 0785 485 641</p>
+        <p class="footer-contact-p"><i class="fa-solid fa-phone" style="color: var(--acej-gold);"></i> Cashier Hotline: 0785 485 641</p>
         <p class="footer-contact-p"><i class="fa-solid fa-envelope" style="color: var(--acej-gold);"></i> acejkaramatss@gmail.com</p>
         
         <div class="footer-social-icons">
@@ -1266,22 +1717,23 @@
     </div>
 
     <div class="footer-bottom">
-      <div>&copy; 2026 ACEJ KARAMA TSS &bull; All Rights Reserved. Code: 0207030</div>
-      <div>Official Cashier Line: +250 785 485 641 (Marie Louise NYIRANGIRIMANA) &bull; RTB / NESA</div>
+      <div>&copy; 2026 ACEJ KARAMA TSS &bull; All Rights Reserved. School Code: 0207030</div>
+      <div>Official Cashier Hotline: 0785 485 641 (Marie Louise NYIRANGIRIMANA) &bull; RTB / NESA</div>
     </div>
   </footer>
 
-  <!-- FLOATING WHATSAPP BUTTON (DIRECT TO CASHIER) -->
-  <a href="https://wa.me/250785485641?text=Hello%20ACEJ%20Karama%20TSS%20Cashier%20Marie%20Louise,%20I%20have%20an%20inquiry%20regarding%20school%20fees%20payment%20and%20verification." class="whatsapp-float" target="_blank" rel="noopener noreferrer" title="Chat with Cashier Marie Louise">
+  <!-- FLOATING WHATSAPP -->
+  <a href="https://wa.me/250785485641?text=Hello%20Cashier%20Marie%20Louise,%20I%20have%20an%20inquiry%20regarding%20school%20fees%20payment%20(95,500%20RWF)%20at%20ACEJ%20Karama%20TSS." class="whatsapp-float" target="_blank" rel="noopener noreferrer" title="Emergency Chat with Cashier Marie Louise">
     <i class="fa-brands fa-whatsapp"></i>
   </a>
 
   <!-- TOAST NOTIFICATION -->
-  <div class="toast-msg" id="toastBox">
+  <div class="toast-notification" id="portalToast">
     <i class="fa-solid fa-circle-check" style="color: var(--acej-gold); font-size: 1.2rem;"></i>
-    <span id="toastText">Copied to clipboard!</span>
+    <span id="toastContent">Text copied to clipboard!</span>
   </div>
 
+  <!-- JAVASCRIPT WORKFLOW -->
   <script>
     // 1. Mobile Menu Toggle
     (function() {
@@ -1310,131 +1762,142 @@
       });
     })();
 
-    // 2. Fee Calculation & Dynamic USSD Code Generation
-    var currentAmount = 125000;
-    var cashierNumber = "0785485641"; // Cashier Marie Louise NYIRANGIRIMANA
+    // 2. Interactive Fee Calculation (Flat 95,500 Base)
+    var currentTermBase = 95500;
+    var currentCalculatedTotal = 95500;
 
-    function calculateFees() {
-      var trade = document.getElementById('studentTrade').value;
-      var level = document.getElementById('studentLevel').value;
-      var category = document.getElementById('feeCategory').value;
-      var term = document.getElementById('termSelect').value;
-      var customRow = document.getElementById('customAmountRow');
+    function runFeeCalculation() {
+      var trade = document.getElementById('calcTrade').value;
+      var level = document.getElementById('calcLevel').value;
+      var term = document.getElementById('calcTerm').value;
+      var addon = document.getElementById('calcAddons').value;
 
-      var baseFee = 125000; // Standard boarding tuition per term
+      var addonPrice = 0;
+      if (addon === 'uniform') addonPrice = 15000;
+      else if (addon === 'materials') addonPrice = 20000;
+      else if (addon === 'both') addonPrice = 35000;
 
-      if (category === 'boarding') {
-        baseFee = 125000;
-        customRow.style.display = 'none';
-      } else if (category === 'day') {
-        baseFee = 65000;
-        customRow.style.display = 'none';
-      } else if (category === 'lab') {
-        baseFee = 35000;
-        customRow.style.display = 'none';
-      } else if (category === 'uniform') {
-        baseFee = 45000;
-        customRow.style.display = 'none';
-      } else if (category === 'custom') {
-        customRow.style.display = 'block';
-        baseFee = parseInt(document.getElementById('customInput').value) || 0;
+      currentCalculatedTotal = currentTermBase + addonPrice;
+
+      document.getElementById('calculatedTotalDisplay').innerText = currentCalculatedTotal.toLocaleString();
+      document.getElementById('calcSummaryLabel').innerText = level + ' • ' + term;
+
+      // Sync with submission form amount
+      var formAmountInput = document.getElementById('formAmount');
+      if (formAmountInput) {
+        formAmountInput.value = currentCalculatedTotal;
       }
-
-      currentAmount = baseFee;
-
-      // Update UI summary
-      document.getElementById('calculatedAmount').innerText = currentAmount.toLocaleString();
-      document.getElementById('summaryTradeLabel').innerText = 'Level ' + level + ' ' + trade + ' • ' + term;
-
-      // Update USSD string
-      updateUSSDDisplay();
     }
 
-    function updateCustomAmount() {
-      var val = parseInt(document.getElementById('customInput').value) || 0;
-      currentAmount = val;
-      document.getElementById('calculatedAmount').innerText = currentAmount.toLocaleString();
-      updateUSSDDisplay();
+    // 3. File Preview Logic
+    function handleFilePreview(input) {
+      if (input.files && input.files[0]) {
+        var file = input.files[0];
+        document.getElementById('filePreviewName').innerText = file.name;
+        
+        var reader = new FileReader();
+        reader.onload = function(e) {
+          document.getElementById('filePreviewThumb').src = e.target.result;
+          document.getElementById('filePreviewWrap').style.display = 'flex';
+        };
+        reader.readAsDataURL(file);
+        showToast('Proof file attached: ' + file.name);
+      }
     }
 
-    function updateUSSDDisplay() {
-      // Standard MTN MoMo Send Money format to Cashier Phone number
-      var ussdCode = "*182*1*1*" + cashierNumber + "*" + currentAmount + "#";
-      document.getElementById('ussdDisplayString').innerText = ussdCode;
-      
-      var dialLink = document.getElementById('directDialLink');
-      dialLink.href = "tel:" + encodeURIComponent(ussdCode);
+    function clearSelectedFile() {
+      document.getElementById('slipFileInput').value = '';
+      document.getElementById('filePreviewWrap').style.display = 'none';
+      document.getElementById('filePreviewThumb').src = '';
+      showToast('Attachment removed.');
     }
 
-    // 3. Clipboard & Toast Helpers
-    function showToast(msg) {
-      var toast = document.getElementById('toastBox');
-      document.getElementById('toastText').innerText = msg;
-      toast.style.display = 'flex';
-      setTimeout(function() {
-        toast.style.display = 'none';
-      }, 3400);
-    }
-
-    function copyCashierNumber() {
-      var num = "0785485641";
-      var input = document.createElement('input');
-      input.setAttribute('value', num);
-      document.body.appendChild(input);
-      input.select();
-      document.execCommand('copy');
-      document.body.removeChild(input);
-      showToast('Cashier number 0785485641 copied to clipboard!');
-    }
-
-    function copyUSSDCode() {
-      var code = document.getElementById('ussdDisplayString').innerText;
-      var input = document.createElement('input');
-      input.setAttribute('value', code);
-      document.body.appendChild(input);
-      input.select();
-      document.execCommand('copy');
-      document.body.removeChild(input);
-      showToast('USSD code ' + code + ' copied! Dial directly on your phone.');
-    }
-
-    // 4. WhatsApp Proof Dispatcher to Cashier Marie Louise
-    function handleWhatsAppProof(e) {
+    // 4. Submission & Invoice Generation Workflow
+    function processInvoiceSubmission(e) {
       e.preventDefault();
 
-      var studentName = document.getElementById('studentName').value.trim();
-      var studentReg = document.getElementById('studentReg').value.trim();
-      var parentPhone = document.getElementById('parentPhone').value.trim();
-      var paymentMethod = document.getElementById('paymentMethodUsed').value;
-      var txReference = document.getElementById('txReference').value.trim();
-      var notes = document.getElementById('paymentNotes').value.trim();
-      var trade = document.getElementById('studentTrade').value;
-      var level = document.getElementById('studentLevel').value;
-      var term = document.getElementById('termSelect').value;
+      var studentName = document.getElementById('formStudentName').value.trim();
+      var studentReg = document.getElementById('formStudentReg').value.trim();
+      var tradeLevel = document.getElementById('formTrade').value;
+      var term = document.getElementById('formTerm').value;
+      var channel = document.getElementById('formChannel').value;
+      var amount = parseInt(document.getElementById('formAmount').value) || 95500;
+      var refNumber = document.getElementById('formRefNumber').value.trim();
+      var parentPhone = document.getElementById('formParentPhone').value.trim();
+      var notes = document.getElementById('formNotes').value.trim();
 
-      var textMessage = "*ACEJ KARAMA TSS - SCHOOL FEES PAYMENT SLIP*\n\n" +
+      // Populate Receipt Modal
+      document.getElementById('recStudentName').innerText = studentName;
+      document.getElementById('recStudentReg').innerText = studentReg;
+      document.getElementById('recTrade').innerText = tradeLevel;
+      document.getElementById('recTerm').innerText = term;
+      document.getElementById('recChannel').innerText = channel;
+      document.getElementById('recRefNumber').innerText = refNumber;
+      document.getElementById('recParentPhone').innerText = parentPhone;
+      document.getElementById('recAmount').innerText = 'RWF ' + amount.toLocaleString();
+
+      // Build structured WhatsApp message to Cashier Marie Louise
+      var waMessage = "*ACEJ KARAMA TSS - SCHOOL FEES INVOICE PROOF*\n\n" +
         "👤 *Student Name:* " + studentName + "\n" +
-        "🆔 *Student Reg/Code:* " + studentReg + "\n" +
-        "📚 *Trade & Level:* Level " + level + " (" + trade + ")\n" +
+        "🆔 *Reg ID:* " + studentReg + "\n" +
+        "📚 *Department:* " + tradeLevel + "\n" +
         "📅 *Term:* " + term + "\n" +
-        "💵 *Amount Paid:* RWF " + currentAmount.toLocaleString() + "\n" +
-        "💳 *Channel:* " + paymentMethod + "\n" +
-        "🧾 *TxID / Slip Ref:* " + txReference + "\n" +
+        "💰 *Amount Cleared:* RWF " + amount.toLocaleString() + "\n" +
+        "💳 *Channel:* " + channel + "\n" +
+        "🧾 *TxID / Bordereau Ref:* " + refNumber + "\n" +
         "📱 *Payer Phone:* " + parentPhone + "\n";
 
       if (notes) {
-        textMessage += "📝 *Notes:* " + notes + "\n";
+        waMessage += "📝 *Payer Notes:* " + notes + "\n";
       }
 
-      textMessage += "\n_Sent to Cashier Marie Louise NYIRANGIRIMANA (0785485641) for clearance confirmation._";
+      waMessage += "\n_Submitted to Cashier Marie Louise NYIRANGIRIMANA (0785485641) for treasury stamping & official receipt issuance._";
 
-      var encodedUrl = "https://wa.me/250785485641?text=" + encodeURIComponent(textMessage);
-      window.open(encodedUrl, '_blank');
-      showToast('Opening WhatsApp to send payment proof to Cashier Marie Louise...');
+      var waUrl = "https://wa.me/250785485641?text=" + encodeURIComponent(waMessage);
+
+      // Attach to modal WhatsApp button
+      var modalWaBtn = document.getElementById('modalWhatsAppBtn');
+      modalWaBtn.onclick = function() {
+        window.open(waUrl, '_blank');
+      };
+
+      // Open Modal
+      document.getElementById('receiptModal').style.display = 'flex';
+      showToast('Digital Invoice Generated. Forwarding to Cashier...');
     }
 
-    // Initialize calculator defaults
-    calculateFees();
+    function closeReceiptModal() {
+      document.getElementById('receiptModal').style.display = 'none';
+    }
+
+    function closeReceiptModalOnBackdrop(e) {
+      if (e.target.id === 'receiptModal') {
+        closeReceiptModal();
+      }
+    }
+
+    // 5. Toast & Clipboard Helper
+    function showToast(msg) {
+      var toast = document.getElementById('portalToast');
+      document.getElementById('toastContent').innerText = msg;
+      toast.style.display = 'flex';
+      setTimeout(function() {
+        toast.style.display = 'none';
+      }, 3500);
+    }
+
+    function copySnippet(text, label) {
+      var temp = document.createElement('input');
+      temp.value = text;
+      document.body.appendChild(temp);
+      temp.select();
+      document.execCommand('copy');
+      document.body.removeChild(temp);
+      showToast(label + ' copied to clipboard!');
+    }
+
+    // Initialize defaults
+    runFeeCalculation();
   </script>
 
 </body>
