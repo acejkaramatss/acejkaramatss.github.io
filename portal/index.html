@@ -6,7 +6,6 @@
   <title>Student &amp; Staff Portal | ACEJ KARAMA TSS</title>
   <meta name="description" content="Official Academic Portal of ACEJ Karama TSS. Access student term report cards, module marks, fee clearance, and staff gradebook management.">
   
-  <!-- Official Crest Favicon -->
   <link rel="icon" type="image/png" href="/logo.png?v=3">
   <link rel="shortcut icon" type="image/png" href="/logo.png?v=3">
   <link rel="apple-touch-icon" href="/logo.png?v=3">
@@ -32,7 +31,6 @@
     * { box-sizing: border-box; margin: 0; padding: 0; font-family: 'Segoe UI', -apple-system, BlinkMacSystemFont, Roboto, sans-serif; }
     body { color: var(--text-dark); background-color: var(--bg-light); line-height: 1.6; min-height: 100vh; display: flex; flex-direction: column; }
 
-    /* TOP BAR */
     .top-bar {
       background: var(--acej-dark-blue);
       color: #cbd5e1;
@@ -46,7 +44,6 @@
     .top-bar a { color: #e2e8f0; text-decoration: none; margin-left: 15px; }
     .top-bar a:hover { color: var(--acej-gold); }
 
-    /* NAVBAR */
     .navbar {
       background: var(--white);
       display: flex;
@@ -74,17 +71,28 @@
       border-radius: 6px;
       font-size: 0.85rem;
       font-weight: 700;
-      transition: background 0.2s;
     }
     .btn-return-home:hover { background: #cbd5e1; }
 
-    /* PORTAL CONTAINER */
-    .portal-wrapper { max-width: 1140px; margin: 40px auto 60px; padding: 0 20px; width: 100%; flex-grow: 1; }
+    .portal-wrapper { max-width: 1180px; margin: 30px auto 60px; padding: 0 20px; width: 100%; flex-grow: 1; }
 
-    /* AUTHENTICATION CARD */
+    /* BROADCAST BANNER ON PORTAL */
+    .broadcast-banner-view {
+      display: none;
+      background: linear-gradient(135deg, #fef3c7 0%, #fffbeb 100%);
+      border-left: 5px solid var(--acej-gold);
+      border-radius: 10px;
+      padding: 16px 20px;
+      margin-bottom: 25px;
+      box-shadow: var(--shadow-sm);
+      animation: fadeIn 0.4s ease-out;
+    }
+    .broadcast-banner-view h4 { color: #92400e; font-size: 1rem; font-weight: 800; display: flex; align-items: center; gap: 8px; }
+    .broadcast-banner-view p { color: #78350f; font-size: 0.9rem; margin-top: 4px; }
+
     .login-container {
       max-width: 480px;
-      margin: 0 auto;
+      margin: 20px auto 0;
       background: var(--white);
       border-radius: 18px;
       border: 1px solid var(--border-color);
@@ -116,7 +124,6 @@
       align-items: center;
       justify-content: center;
       gap: 8px;
-      transition: all 0.2s;
     }
     .role-tab.active-tab {
       color: var(--acej-blue);
@@ -124,7 +131,7 @@
       border-bottom: 3px solid var(--acej-blue);
     }
     .login-body { padding: 30px 25px; }
-    .form-group { margin-bottom: 20px; }
+    .form-group { margin-bottom: 18px; }
     .form-group label { display: block; font-size: 0.88rem; font-weight: 700; color: #334155; margin-bottom: 6px; }
     .input-control {
       width: 100%;
@@ -134,7 +141,6 @@
       font-size: 0.95rem;
       color: var(--text-dark);
       outline: none;
-      transition: all 0.2s;
     }
     .input-control:focus { border-color: var(--acej-blue); box-shadow: 0 0 0 3px rgba(0, 71, 171, 0.12); }
     
@@ -152,10 +158,8 @@
       align-items: center;
       justify-content: center;
       gap: 8px;
-      transition: all 0.2s;
-      box-shadow: 0 4px 12px rgba(0, 71, 171, 0.2);
     }
-    .btn-login-submit:hover { background: var(--acej-dark-blue); transform: translateY(-2px); }
+    .btn-login-submit:hover { background: var(--acej-dark-blue); }
 
     .login-helper-row {
       display: flex;
@@ -173,13 +177,50 @@
       border: none;
       padding: 0;
     }
-    .forgot-pwd-link:hover { color: var(--acej-dark-blue); }
 
-    /* FIRST-TIME SETUP MODAL / CONTAINER */
+    /* CUSTOM SUSPENSION / IN-PAGE MODAL */
+    .inpage-modal-backdrop {
+      position: fixed;
+      top: 0; left: 0; width: 100%; height: 100%;
+      background: rgba(15, 23, 42, 0.75);
+      display: none; align-items: center; justify-content: center;
+      z-index: 3000; padding: 20px; backdrop-filter: blur(4px);
+    }
+    .inpage-modal-card {
+      background: var(--white);
+      max-width: 500px; width: 100%;
+      border-radius: 16px; padding: 30px;
+      box-shadow: var(--shadow-lg);
+      border-top: 6px solid var(--red);
+      animation: popIn 0.35s ease-out;
+      text-align: center;
+    }
+    .inpage-modal-icon {
+      font-size: 3rem; color: var(--red); margin-bottom: 12px;
+    }
+    .inpage-modal-card h3 { font-size: 1.4rem; color: var(--navy); font-weight: 800; margin-bottom: 8px; }
+    .inpage-modal-card p { font-size: 0.95rem; color: #475569; margin-bottom: 20px; line-height: 1.6; }
+    .contact-officers-grid {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 10px;
+      margin-bottom: 20px;
+      text-align: left;
+    }
+    .officer-box {
+      background: #f8fafc;
+      border: 1px solid var(--border-color);
+      border-radius: 8px;
+      padding: 10px 12px;
+      font-size: 0.82rem;
+    }
+    .officer-box a { color: var(--blue); font-weight: 700; text-decoration: none; }
+
+    /* FIRST-TIME SETUP CONTAINER */
     .setup-container {
       display: none;
       max-width: 540px;
-      margin: 0 auto;
+      margin: 20px auto;
       background: var(--white);
       border-radius: 18px;
       border: 2px solid var(--acej-gold);
@@ -187,12 +228,7 @@
       overflow: hidden;
       animation: fadeIn 0.4s ease-out;
     }
-    .setup-header {
-      background: var(--acej-dark-blue);
-      color: var(--white);
-      padding: 24px;
-      text-align: center;
-    }
+    .setup-header { background: var(--acej-dark-blue); color: var(--white); padding: 24px; text-align: center; }
     .setup-header h3 { font-size: 1.4rem; font-weight: 800; }
     .setup-header p { font-size: 0.88rem; color: #cbd5e1; margin-top: 4px; }
     .setup-body { padding: 25px; }
@@ -214,6 +250,18 @@
     }
     .dash-welcome h3 { font-size: 1.4rem; color: var(--acej-dark-blue); font-weight: 800; }
     .dash-welcome p { font-size: 0.9rem; color: var(--text-muted); margin-top: 3px; }
+    .topbar-actions { display: flex; gap: 10px; align-items: center; }
+    .btn-profile-edit {
+      background: #f1f5f9;
+      color: var(--acej-dark-blue);
+      border: 1px solid var(--border-color);
+      padding: 8px 14px;
+      border-radius: 8px;
+      font-weight: 700;
+      font-size: 0.85rem;
+      cursor: pointer;
+    }
+    .btn-profile-edit:hover { background: #e2e8f0; }
     .btn-logout {
       background: #fef2f2;
       color: #dc2626;
@@ -227,7 +275,16 @@
       align-items: center;
       gap: 6px;
     }
-    .btn-logout:hover { background: #fee2e2; }
+
+    .group-tag {
+      background: #e0f2fe;
+      color: #0369a1;
+      padding: 3px 8px;
+      border-radius: 6px;
+      font-size: 0.78rem;
+      font-weight: 700;
+      margin-right: 4px;
+    }
 
     .metrics-grid {
       display: grid;
@@ -235,13 +292,7 @@
       gap: 20px;
       margin-bottom: 25px;
     }
-    .metric-card {
-      background: var(--white);
-      border: 1px solid var(--border-color);
-      border-radius: 12px;
-      padding: 20px;
-      box-shadow: var(--shadow-sm);
-    }
+    .metric-card { background: var(--white); border: 1px solid var(--border-color); border-radius: 12px; padding: 20px; box-shadow: var(--shadow-sm); }
     .metric-title { font-size: 0.78rem; text-transform: uppercase; font-weight: 800; letter-spacing: 1px; color: var(--text-muted); margin-bottom: 6px; }
     .metric-value { font-size: 1.7rem; font-weight: 900; color: var(--acej-dark-blue); }
     .metric-sub { font-size: 0.82rem; color: #10b981; font-weight: 700; margin-top: 4px; }
@@ -261,35 +312,19 @@
     .grade-badge { display: inline-block; padding: 4px 10px; border-radius: 6px; font-weight: 800; font-size: 0.78rem; }
     .grade-competent { background: #ecfdf5; color: #047857; }
 
-    /* RESET REQUEST MODAL */
-    .modal-backdrop {
-      position: fixed;
-      top: 0;
-      left: 0;
-      width: 100%;
-      height: 100%;
-      background: rgba(15, 23, 42, 0.75);
-      display: none;
-      align-items: center;
-      justify-content: center;
-      z-index: 2000;
-      padding: 20px;
-      backdrop-filter: blur(4px);
+    /* TEACHER SPECIFIC LMS TABS */
+    .lms-tabs { display: flex; gap: 10px; border-bottom: 2px solid var(--border-color); margin-bottom: 20px; }
+    .lms-tab-btn {
+      padding: 10px 18px;
+      border: none;
+      background: none;
+      font-weight: 700;
+      color: var(--text-muted);
+      cursor: pointer;
+      font-size: 0.95rem;
     }
-    .modal-content {
-      background: var(--white);
-      max-width: 500px;
-      width: 100%;
-      border-radius: 16px;
-      padding: 30px;
-      box-shadow: var(--shadow-lg);
-      border: 2px solid var(--acej-gold);
-    }
-    .modal-header { display: flex; justify-content: space-between; align-items: flex-start; margin-bottom: 16px; }
-    .modal-header h3 { font-size: 1.3rem; font-weight: 800; color: var(--acej-dark-blue); }
-    .btn-modal-close { background: none; border: none; font-size: 1.4rem; color: var(--text-muted); cursor: pointer; }
+    .lms-tab-btn.active { color: var(--acej-blue); border-bottom: 3px solid var(--acej-blue); }
 
-    /* FOOTER */
     .portal-footer {
       background: var(--acej-dark-blue);
       color: #94a3b8;
@@ -300,6 +335,10 @@
       margin-top: auto;
     }
 
+    @keyframes popIn {
+      0% { transform: scale(0.9); opacity: 0; }
+      100% { transform: scale(1); opacity: 1; }
+    }
     @keyframes fadeIn {
       from { opacity: 0; transform: translateY(10px); }
       to { opacity: 1; transform: translateY(0); }
@@ -311,7 +350,7 @@
   <!-- TOP BAR -->
   <div class="top-bar">
     <div>
-      <span><i class="fa-solid fa-graduation-cap"></i> ACEJ KARAMA TSS Official Marks &amp; Staff System</span>
+      <span><i class="fa-solid fa-graduation-cap"></i> ACEJ KARAMA TSS Official Portal Workspace</span>
       <span style="margin-left: 15px;"><i class="fa-solid fa-code"></i> School Code: 0207030</span>
     </div>
     <div>
@@ -323,7 +362,7 @@
   <!-- NAVBAR -->
   <header class="navbar">
     <a href="/" class="brand">
-      <img src="/logo.png" alt="ACEJ Karama Crest" class="brand-logo-img">
+      <img src="/logo.png?v=3" alt="ACEJ Karama Crest" class="brand-logo-img">
       <div class="brand-text">
         <h1>ACEJ KARAMA TSS</h1>
         <p>Student &amp; Staff Workspace</p>
@@ -336,11 +375,17 @@
 
   <main class="portal-wrapper">
 
-    <!-- 1. STANDARD LOGIN -->
+    <!-- BROADCAST NOTICE BANNER -->
+    <div class="broadcast-banner-view" id="portalBroadcastBanner">
+      <h4 id="portalBroadcastTitle"><i class="fa-solid fa-bullhorn"></i> Official School Notice</h4>
+      <p id="portalBroadcastBody"></p>
+    </div>
+
+    <!-- 1. LOGIN SCREEN -->
     <div class="login-container" id="loginBox">
       <div class="login-header">
         <h2>Institutional Portal</h2>
-        <p>Sign in to view your academic report cards, financial clearance, or class registers.</p>
+        <p>Sign in to view academic report cards, course management, or class registers.</p>
       </div>
 
       <div class="role-tabs">
@@ -382,28 +427,28 @@
     <div class="setup-container" id="firstTimeSetupBox">
       <div class="setup-header">
         <h3><i class="fa-solid fa-user-shield" style="color: var(--acej-gold);"></i> Welcome to ACEJ Portal!</h3>
-        <p>It looks like this is your first time logging in. Please update your profile and create your personal password to proceed.</p>
+        <p>This is your first login. Please verify your contact information and set your personal password.</p>
       </div>
       <div class="setup-body">
         <form onsubmit="handleFirstTimeSetup(event)">
           <div class="form-group">
-            <label>Your Full Name</label>
+            <label>Full Name</label>
             <input type="text" id="setupFullName" class="input-control" required>
           </div>
           <div class="form-group">
-            <label>Contact Phone Number</label>
+            <label>Mobile Telephone (For verification &amp; alerts)</label>
             <input type="tel" id="setupPhone" class="input-control" placeholder="e.g. 0788123456" required>
           </div>
           <div class="form-group">
             <label>Email Address or Guardian Phone</label>
-            <input type="text" id="setupEmailOrParent" class="input-control" placeholder="e.g. parent.phone@acej.rw or 0785..." required>
+            <input type="text" id="setupEmailOrParent" class="input-control" placeholder="name@domain.rw or 0785..." required>
           </div>
           <div class="form-group">
-            <label>Create New Personal Password</label>
+            <label>Set New Personal Password</label>
             <input type="password" id="setupNewPassword" class="input-control" placeholder="Minimum 6 characters" minlength="6" required>
           </div>
           <button type="submit" class="btn-login-submit">
-            <i class="fa-solid fa-floppy-disk"></i> Save Profile &amp; Continue to Dashboard
+            <i class="fa-solid fa-floppy-disk"></i> Save Profile &amp; Open Dashboard
           </button>
         </form>
       </div>
@@ -417,12 +462,17 @@
           <p>
             <span id="studentDashClass">Level &amp; Trade</span> &bull; 
             Reg: <strong id="studentDashReg" style="color: var(--acej-blue);">Reg ID</strong> &bull;
-            Phone: <span id="studentDashPhone">--</span>
+            Groups: <span id="studentDashGroups"></span>
           </p>
         </div>
-        <button type="button" class="btn-logout" onclick="logoutPortal()">
-          <i class="fa-solid fa-power-off"></i> Sign Out
-        </button>
+        <div class="topbar-actions">
+          <button type="button" class="btn-profile-edit" onclick="openProfileEditModal()">
+            <i class="fa-solid fa-user-gear"></i> Edit Profile
+          </button>
+          <button type="button" class="btn-logout" onclick="logoutPortal()">
+            <i class="fa-solid fa-power-off"></i> Sign Out
+          </button>
+        </div>
       </div>
 
       <div class="metrics-grid">
@@ -432,19 +482,19 @@
           <div class="metric-sub" id="studentMetricStatus"><i class="fa-solid fa-circle-check"></i> Enrolled</div>
         </div>
         <div class="metric-card">
-          <div class="metric-title">Tuition Fee Status</div>
-          <div class="metric-value" id="studentMetricFees">Cleared</div>
+          <div class="metric-title">Tuition Fee Clearance</div>
+          <div class="metric-value">Cleared</div>
           <div class="metric-sub" style="color: var(--acej-blue);"><i class="fa-solid fa-receipt"></i> 95,500 RWF Settled</div>
         </div>
         <div class="metric-card">
           <div class="metric-title">Campus Attendance</div>
-          <div class="metric-value" id="studentMetricAtt">97.8%</div>
+          <div class="metric-value">97.8%</div>
           <div class="metric-sub"><i class="fa-solid fa-calendar-check"></i> Good Standing</div>
         </div>
         <div class="metric-card">
-          <div class="metric-title">Academic Rank</div>
-          <div class="metric-value" id="studentMetricRank">--</div>
-          <div class="metric-sub" style="color: var(--text-muted);">Class Cohort</div>
+          <div class="metric-title">Assigned Tasks</div>
+          <div class="metric-value" id="studentTaskCount">2</div>
+          <div class="metric-sub" style="color: var(--text-muted);">Active Assignments</div>
         </div>
       </div>
 
@@ -466,241 +516,210 @@
           </table>
         </div>
       </div>
+
+      <!-- STUDENT TASKS & NOTES PANEL -->
+      <div class="dash-panel">
+        <h4><i class="fa-solid fa-clipboard-list"></i> Teacher Assignments &amp; Course Materials</h4>
+        <div style="overflow-x: auto;">
+          <table class="records-table">
+            <thead>
+              <tr>
+                <th>Subject / Module</th>
+                <th>Task Title / Material</th>
+                <th>Due Date</th>
+                <th>Instructor</th>
+                <th>Status</th>
+              </tr>
+            </thead>
+            <tbody id="studentTasksTbody">
+              <tr>
+                <td><strong>NIT-L501</strong></td>
+                <td>VLAN Trunking &amp; Subnetting Worksheet</td>
+                <td>Friday, 17:00</td>
+                <td>Trainer Muneza</td>
+                <td><span class="grade-badge" style="background:#fef3c7; color:#b45309;">Pending Submission</span></td>
+              </tr>
+              <tr>
+                <td><strong>NIT-L502</strong></td>
+                <td>Linux Command-Line Scripting Notes.pdf</td>
+                <td>Reference Material</td>
+                <td>Trainer Barihamwe</td>
+                <td><span class="grade-badge grade-competent">Download Available</span></td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+      </div>
     </div>
 
-    <!-- 4. STAFF DASHBOARD -->
+    <!-- 4. TEACHER / STAFF DASHBOARD (WITH LMS FEATURES) -->
     <div class="dashboard-view" id="staffDashboard">
       <div class="dash-topbar">
         <div class="dash-welcome">
           <h3 id="staffDashName">Trainer Name</h3>
           <p id="staffDashRole">Faculty Trainer</p>
         </div>
-        <button type="button" class="btn-logout" onclick="logoutPortal()">
-          <i class="fa-solid fa-power-off"></i> Sign Out
+        <div class="topbar-actions">
+          <button type="button" class="btn-profile-edit" onclick="openProfileEditModal()">
+            <i class="fa-solid fa-user-gear"></i> Edit Profile
+          </button>
+          <button type="button" class="btn-logout" onclick="logoutPortal()">
+            <i class="fa-solid fa-power-off"></i> Sign Out
+          </button>
+        </div>
+      </div>
+
+      <div class="lms-tabs">
+        <button class="lms-tab-btn active" onclick="switchLmsTab('courses', this)">
+          <i class="fa-solid fa-book-open"></i> Courses &amp; Notes
+        </button>
+        <button class="lms-tab-btn" onclick="switchLmsTab('tasks', this)">
+          <i class="fa-solid fa-pen-ruler"></i> Student Tasks &amp; Homework
+        </button>
+        <button class="lms-tab-btn" onclick="switchLmsTab('marks', this)">
+          <i class="fa-solid fa-square-poll-vertical"></i> Gradebook Entry
         </button>
       </div>
 
-      <div class="metrics-grid">
-        <div class="metric-card">
-          <div class="metric-title">Assigned Modules</div>
-          <div class="metric-value">4</div>
-          <div class="metric-sub" style="color: var(--acej-blue);">Assigned Faculty</div>
+      <!-- LMS PANEL 1: COURSES & NOTES -->
+      <div id="lmsPanelCourses" class="dash-panel">
+        <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 15px;">
+          <h4><i class="fa-solid fa-folder-plus"></i> Published Courses &amp; Learning Notes</h4>
+          <button class="btn-login-submit" style="width: auto; padding: 8px 16px; font-size: 0.85rem;" onclick="openCreateCourseModal()">
+            <i class="fa-solid fa-plus"></i> Publish New Notes / Course
+          </button>
         </div>
-        <div class="metric-card">
-          <div class="metric-title">Total Enrolled</div>
-          <div class="metric-value">124</div>
-          <div class="metric-sub">Active Students</div>
+        <div style="overflow-x: auto;">
+          <table class="records-table">
+            <thead>
+              <tr>
+                <th>Trade &amp; Class</th>
+                <th>Course / Module Title</th>
+                <th>Notes / Resources Uploaded</th>
+                <th>Date Published</th>
+              </tr>
+            </thead>
+            <tbody id="staffCoursesTbody">
+              <tr>
+                <td>Level 5 NIT</td>
+                <td>Enterprise Cisco Routing &amp; VLAN Setup</td>
+                <td>Module_01_Slides.pdf, Cisco_Lab_Manual.pkt</td>
+                <td>12 Oct 2026</td>
+              </tr>
+              <tr>
+                <td>Level 4 CSA</td>
+                <td>Motherboard Repair &amp; Troubleshooting Guide</td>
+                <td>Lecture_Notes_Ch2.docx</td>
+                <td>08 Oct 2026</td>
+              </tr>
+            </tbody>
+          </table>
         </div>
-        <div class="metric-card">
-          <div class="metric-title">Marks Submitted</div>
-          <div class="metric-value">95%</div>
-          <div class="metric-sub"><i class="fa-solid fa-check"></i> Complete</div>
+      </div>
+
+      <!-- LMS PANEL 2: STUDENT TASKS -->
+      <div id="lmsPanelTasks" class="dash-panel" style="display: none;">
+        <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 15px;">
+          <h4><i class="fa-solid fa-list-check"></i> Assign Student Tasks &amp; Homework</h4>
+          <button class="btn-login-submit" style="width: auto; padding: 8px 16px; font-size: 0.85rem;" onclick="openCreateTaskModal()">
+            <i class="fa-solid fa-plus"></i> Create New Assignment
+          </button>
+        </div>
+        <div style="overflow-x: auto;">
+          <table class="records-table">
+            <thead>
+              <tr>
+                <th>Target Class</th>
+                <th>Task Title</th>
+                <th>Due Date</th>
+                <th>Submissions Received</th>
+              </tr>
+            </thead>
+            <tbody id="staffTasksTbody">
+              <tr>
+                <td>Level 5 NIT</td>
+                <td>VLAN Trunking &amp; Subnetting Practical Worksheet</td>
+                <td>Friday, 17:00</td>
+                <td>32 / 38 Students</td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+      </div>
+
+      <!-- LMS PANEL 3: GRADEBOOK ENTRY -->
+      <div id="lmsPanelMarks" class="dash-panel" style="display: none;">
+        <h4><i class="fa-solid fa-calculator"></i> Active Cohort Gradebook</h4>
+        <div style="overflow-x: auto;">
+          <table class="records-table">
+            <thead>
+              <tr>
+                <th>Student Name</th>
+                <th>Reg ID</th>
+                <th>Module</th>
+                <th>Continuous (40)</th>
+                <th>Practical (60)</th>
+                <th>Total</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr>
+                <td>Dufitimana Clebert</td>
+                <td>Acej/2026/0100</td>
+                <td>NIT-L501</td>
+                <td><input type="number" value="38" style="width:60px; padding:4px;"></td>
+                <td><input type="number" value="54" style="width:60px; padding:4px;"></td>
+                <td><strong>92 / 100</strong></td>
+              </tr>
+            </tbody>
+          </table>
         </div>
       </div>
     </div>
 
   </main>
 
-  <!-- PASSWORD RESET REQUEST MODAL (SENDS REQUEST TO ADMIN) -->
-  <div class="modal-backdrop" id="forgotModal" onclick="closeModalOnBackdrop(event)">
-    <div class="modal-content">
-      <div class="modal-header">
-        <h3><i class="fa-solid fa-key" style="color: var(--acej-blue);"></i> Request Password Reset</h3>
-        <button type="button" class="btn-modal-close" onclick="closeForgotModal()">&times;</button>
+  <!-- CUSTOM IN-PAGE SUSPENSION NOTIFICATION MODAL -->
+  <div class="inpage-modal-backdrop" id="suspensionModal">
+    <div class="inpage-modal-card">
+      <div class="inpage-modal-icon">
+        <i class="fa-solid fa-triangle-exclamation"></i>
       </div>
-      <div class="modal-body">
-        <p>Enter your account ID and phone number. Your request will be transmitted directly to the Super Admin console for immediate review.</p>
-        
-        <form onsubmit="handleSendResetRequest(event)">
-          <div class="form-group">
-            <label>Registration ID or Username</label>
-            <input type="text" id="resetReqUser" class="input-control" placeholder="e.g. Acej/2026/0100" required>
-          </div>
-          <div class="form-group">
-            <label>Contact Phone Number</label>
-            <input type="tel" id="resetReqPhone" class="input-control" placeholder="e.g. 0788123456" required>
-          </div>
-          <div class="form-group">
-            <label>Reason / Additional Note</label>
-            <input type="text" id="resetReqReason" class="input-control" placeholder="e.g. Forgot password / New phone" required>
-          </div>
-          <button type="submit" class="btn-login-submit">
-            <i class="fa-solid fa-paper-plane"></i> Send Request to Administration
-          </button>
-        </form>
+      <h3>Account Access Restricted</h3>
+      <p>
+        This portal account is currently suspended. For clearance and security reactivation, please consult the official school administration offices:
+      </p>
+
+      <div class="contact-officers-grid">
+        <div class="officer-box">
+          <strong>Director of Studies (DOS):</strong><br>
+          Germain MUNEZA<br>
+          <i class="fa-solid fa-phone"></i> <a href="tel:0783125100">0783125100</a>
+        </div>
+        <div class="officer-box">
+          <strong>School Cashier (Fees):</strong><br>
+          Marie Louise NYIRANGIRIMANA<br>
+          <i class="fa-solid fa-phone"></i> <a href="tel:0785485641">0785485641</a>
+        </div>
+        <div class="officer-box">
+          <strong>Headmaster Office:</strong><br>
+          BISANGABAGABO Youssouf<br>
+          <i class="fa-solid fa-phone"></i> <a href="tel:0788607924">0788607924</a>
+        </div>
+        <div class="officer-box">
+          <strong>Discipline Office:</strong><br>
+          Alphonsine NYIRAMDIKUMANA<br>
+          <i class="fa-solid fa-phone"></i> <a href="tel:0788269155">0788269155</a>
+        </div>
       </div>
+
+      <button type="button" class="btn-login-submit" onclick="closeSuspensionModal()">
+        Return to Login Screen
+      </button>
     </div>
   </div>
 
-  <footer class="portal-footer">
-    <div>&copy; 2026 ACEJ KARAMA TSS &bull; All Rights Reserved. School Code: 0207030</div>
-    <div style="font-size: 0.78rem; margin-top: 4px;">Accredited Technical Secondary School &bull; Rwanda TVET Board (RTB / NESA)</div>
-  </footer>
-
-  <script>
-    var currentRole = 'student';
-    var activeSessionUser = null;
-
-    function switchLoginRole(role) {
-      currentRole = role;
-      var tabStudent = document.getElementById('tabStudent');
-      var tabStaff = document.getElementById('tabStaff');
-      var lblUsername = document.getElementById('lblUsername');
-      var inputUsername = document.getElementById('portalUsername');
-
-      if (role === 'student') {
-        tabStudent.classList.add('active-tab');
-        tabStaff.classList.remove('active-tab');
-        lblUsername.innerText = 'Student Roll / Reg ID Number';
-        inputUsername.placeholder = 'e.g. Acej/2026/0100';
-      } else {
-        tabStaff.classList.add('active-tab');
-        tabStudent.classList.remove('active-tab');
-        lblUsername.innerText = 'Staff Username or Email';
-        inputUsername.placeholder = 'e.g. trainer.muneza';
-      }
-    }
-
-    function handlePortalLogin(e) {
-      e.preventDefault();
-      var user = document.getElementById('portalUsername').value.trim();
-      var pass = document.getElementById('portalPassword').value.trim();
-
-      var storedDB = localStorage.getItem("ACEJ_PORTAL_USERS_DB");
-      var userList = storedDB ? JSON.parse(storedDB) : [];
-
-      var matched = userList.find(function(u) {
-        return u.username.toLowerCase() === user.toLowerCase() && 
-               u.pass === pass && 
-               u.role === currentRole;
-      });
-
-      if (!matched) {
-        alert("Invalid credentials. Please verify your ID and password or click 'Request Reset'.");
-        return;
-      }
-
-      if (matched.status !== "active") {
-        alert("This account is currently suspended. Please contact the DOS or School Cashier.");
-        return;
-      }
-
-      activeSessionUser = matched;
-
-      // FIRST TIME LOGIN INTERCEPT
-      if (matched.firstLogin === true) {
-        document.getElementById('loginBox').style.display = 'none';
-        document.getElementById('setupFullName').value = matched.name;
-        document.getElementById('firstTimeSetupBox').style.display = 'block';
-        return;
-      }
-
-      showUserDashboard(matched);
-    }
-
-    function handleFirstTimeSetup(e) {
-      e.preventDefault();
-      var newName = document.getElementById('setupFullName').value.trim();
-      var phone = document.getElementById('setupPhone').value.trim();
-      var emailParent = document.getElementById('setupEmailOrParent').value.trim();
-      var newPass = document.getElementById('setupNewPassword').value.trim();
-
-      var storedDB = localStorage.getItem("ACEJ_PORTAL_USERS_DB");
-      var userList = storedDB ? JSON.parse(storedDB) : [];
-
-      var idx = userList.findIndex(function(u) { return u.id === activeSessionUser.id; });
-      if (idx !== -1) {
-        userList[idx].name = newName;
-        userList[idx].phone = phone;
-        userList[idx].guardian = emailParent;
-        userList[idx].pass = newPass;
-        userList[idx].firstLogin = false; // Flag removed!
-
-        localStorage.setItem("ACEJ_PORTAL_USERS_DB", JSON.stringify(userList));
-        activeSessionUser = userList[idx];
-      }
-
-      alert("Profile and password updated successfully! Welcome to your dashboard.");
-      document.getElementById('firstTimeSetupBox').style.display = 'none';
-      showUserDashboard(activeSessionUser);
-    }
-
-    function showUserDashboard(matched) {
-      document.getElementById('loginBox').style.display = 'none';
-
-      if (matched.role === 'student') {
-        document.getElementById('studentDashName').innerText = matched.name;
-        document.getElementById('studentDashClass').innerText = (matched.level || "Level") + " • " + (matched.dept || "Technical Combination");
-        document.getElementById('studentDashReg').innerText = matched.username;
-        document.getElementById('studentDashPhone').innerText = matched.phone || "Not set";
-
-        var marksTbody = document.getElementById('studentMarksTbody');
-        document.getElementById('studentMetricAvg').innerText = "88.5%";
-        document.getElementById('studentMetricStatus').innerHTML = '<i class="fa-solid fa-circle-check"></i> Competent (' + matched.level + ' ' + matched.dept + ')';
-        document.getElementById('studentMetricRank').innerText = "2 / 38";
-
-        marksTbody.innerHTML = 
-          '<tr>' +
-            '<td><strong>' + matched.dept + '-301</strong></td>' +
-            '<td>Practical Lab &amp; Core Architecture</td>' +
-            '<td>15</td>' +
-            '<td>89 / 100</td>' +
-            '<td>87 / 100</td>' +
-            '<td><span class="grade-badge grade-competent">Competent</span></td>' +
-          '</tr>' +
-          '<tr>' +
-            '<td><strong>' + matched.dept + '-302</strong></td>' +
-            '<td>Advanced Systems &amp; Maintenance</td>' +
-            '<td>12</td>' +
-            '<td>85 / 100</td>' +
-            '<td>90 / 100</td>' +
-            '<td><span class="grade-badge grade-competent">Competent</span></td>' +
-          '</tr>';
-
-        document.getElementById('studentDashboard').style.display = 'block';
-      } else {
-        document.getElementById('staffDashName').innerText = "Trainer " + matched.name;
-        document.getElementById('staffDashRole').innerText = (matched.dept || "Technical") + " Department • Trainer";
-        document.getElementById('staffDashboard').style.display = 'block';
-      }
-    }
-
-    function logoutPortal() {
-      document.getElementById('studentDashboard').style.display = 'none';
-      document.getElementById('staffDashboard').style.display = 'none';
-      document.getElementById('firstTimeSetupBox').style.display = 'none';
-      document.getElementById('loginBox').style.display = 'block';
-      document.getElementById('portalPassword').value = '';
-      activeSessionUser = null;
-    }
-
-    /* FORGOT PASSWORD REQUEST DISPATCHER */
-    function openForgotModal() { document.getElementById('forgotModal').style.display = 'flex'; }
-    function closeForgotModal() { document.getElementById('forgotModal').style.display = 'none'; }
-    function closeModalOnBackdrop(e) { if (e.target.id === 'forgotModal') closeForgotModal(); }
-
-    function handleSendResetRequest(e) {
-      e.preventDefault();
-      var username = document.getElementById('resetReqUser').value.trim();
-      var phone = document.getElementById('resetReqPhone').value.trim();
-      var reason = document.getElementById('resetReqReason').value.trim();
-
-      var storedReqs = localStorage.getItem("ACEJ_RESET_REQUESTS_DB");
-      var reqList = storedReqs ? JSON.parse(storedReqs) : [];
-
-      reqList.push({
-        id: Date.now().toString(),
-        username: username,
-        phone: phone,
-        reason: reason,
-        date: new Date().toLocaleString()
-      });
-
-      localStorage.setItem("ACEJ_RESET_REQUESTS_DB", JSON.stringify(reqList));
-      alert("Your password reset request has been transmitted to the Super Admin! The administration will contact you or update your credentials shortly.");
-      closeForgotModal();
-      e.target.reset();
-    }
-  </script>
-</body>
-</html>
+  <!-- PASSWORD RESET REQUEST MODAL -->
+  <div class="inpage-modal-backdrop" id="forgotModal">
+    <div class="inpage-modal-card" style="border-top-color: var(--acej-blue); text-align: left;">
+      <h3 style="margin-bottom:
