@@ -10,8 +10,8 @@
   
   <!-- Favicon / Crest Profile -->
   <link rel="icon" type="image/png" href="/logo.png?v=3">
-<link rel="shortcut icon" type="image/png" href="/logo.png?v=3">
-<link rel="apple-touch-icon" href="/logo.png?v=3">
+  <link rel="shortcut icon" type="image/png" href="/logo.png?v=3">
+  <link rel="apple-touch-icon" href="/logo.png?v=3">
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
   
   <style>
@@ -201,7 +201,6 @@
       background-color: var(--acej-dark-blue);
     }
 
-    /* Looping Background Layers matching your uploaded files */
     .hero-bg-layer {
       position: absolute;
       top: 0;
@@ -223,7 +222,6 @@
       animation-delay: 7s;
     }
 
-    /* Semi-transparent Overlay for Readability */
     .hero-overlay {
       position: absolute;
       top: 0;
@@ -240,7 +238,6 @@
       max-width: 840px;
     }
 
-    /* ANIMATED LOOPING BADGE */
     .hero-badge-animated {
       display: inline-flex;
       align-items: center;
@@ -259,7 +256,6 @@
       animation: badgePulse 3s infinite ease-in-out;
     }
 
-    /* LARGE HERO TITLE WITH HIGHLIGHT */
     .hero-title {
       font-size: 3.6rem;
       font-weight: 900;
@@ -345,9 +341,7 @@
       margin-top: 5px;
     }
 
-    /* ========================================================
-       CAMPUS SPOTLIGHT WITH ANIMATED IMAGE FRAME
-       ======================================================== */
+    /* CAMPUS SPOTLIGHT */
     .spotlight-section {
       background: var(--bg-light);
       padding: 70px 6%;
@@ -362,7 +356,6 @@
       align-items: center;
     }
 
-    /* Animated Crossfade Campus Frame */
     .spotlight-frame {
       position: relative;
       height: 400px;
@@ -433,9 +426,7 @@
       color: #10b981;
     }
 
-    /* ========================================================
-       NEWS & ANNOUNCEMENTS SECTION
-       ======================================================== */
+    /* NEWS & ANNOUNCEMENTS */
     .news-section {
       padding: 75px 6%;
       max-width: 1200px;
@@ -546,7 +537,6 @@
       flex-grow: 1;
     }
 
-    /* REDESIGNED CAPSULE BUTTONS */
     .news-card-footer {
       display: flex;
       justify-content: space-between;
@@ -584,9 +574,7 @@
       transform: translateX(3px);
     }
 
-    /* ========================================================
-       FOUR-COLUMN FOOTER
-       ======================================================== */
+    /* FOOTER */
     .site-footer {
       background: #002D6E;
       color: #ffffff;
@@ -677,7 +665,7 @@
       gap: 15px;
     }
 
-    /* FLOATING WHATSAPP BUTTON */
+    /* FLOATING WHATSAPP */
     .whatsapp-float {
       position: fixed;
       bottom: 25px;
@@ -700,9 +688,6 @@
       transform: scale(1.1) rotate(5deg);
     }
 
-    /* ========================================================
-       KEYFRAME ANIMATIONS & LOOP EFFECTS
-       ======================================================== */
     @keyframes heroSlideshow {
       0% { opacity: 0; transform: scale(1); }
       15% { opacity: 1; }
@@ -721,7 +706,7 @@
       50% { transform: translateY(-4px); }
     }
 
-    /* RESPONSIVE LAYOUT (PHONES & TABLETS) */
+    /* RESPONSIVE LAYOUT */
     @media (max-width: 900px) {
       .top-bar { display: none; }
       .menu-toggle { display: block; }
@@ -743,7 +728,7 @@
       }
 
       .nav-links.active-menu {
-        max-height: 380px;
+        max-height: 440px;
         box-shadow: 0 12px 25px rgba(0, 45, 110, 0.15);
         border-bottom: 3px solid var(--acej-gold);
       }
@@ -779,7 +764,7 @@
       <span style="margin-left: 20px;"><i class="fa-solid fa-code"></i> School Code: 0207030</span>
     </div>
     <div>
-      <a href="tel:0788607924"><i class="fa-solid fa-phone"></i> 0788607924</a>
+      <a href="tel:0788607924"><i class="fa-solid fa-phone"></i> 0788607924</a>[cite: 3]
       <a href="mailto:acejkaramatss@gmail.com"><i class="fa-solid fa-envelope"></i> acejkaramatss@gmail.com</a>
     </div>
   </div>
@@ -803,11 +788,14 @@
       <li><a href="/news/glf-rwanda/">News</a></li>
       <li><a href="/payment/">Fees &amp; Payment</a></li>
       <li><a href="/contact/">Contact</a></li>
+      <!-- Mobile Drawer Quick Access to Portal -->
+      <li><a href="/portal/"><i class="fa-solid fa-user-graduate"></i> Student &amp; Staff Portal</a></li>
     </ul>
 
     <div class="nav-actions">
       <a href="/contact/" class="btn-apply">Apply Now</a>
-      <a href="#" class="btn-portal"><i class="fa-solid fa-user"></i> Portal</a>
+      <!-- DIRECT DESKTOP PORTAL BUTTON -->
+      <a href="/portal/" class="btn-portal"><i class="fa-solid fa-user"></i> Portal</a>
       <button class="menu-toggle" id="menuToggle" aria-label="Toggle navigation menu">
         <i class="fa-solid fa-bars" id="menuIcon"></i>
       </button>
@@ -816,13 +804,11 @@
 
   <!-- HERO SECTION WITH LOOPING BACKGROUND SLIDESHOW -->
   <section class="hero">
-    <!-- Automated Background Slideshow -->
     <div class="hero-bg-layer hero-bg-1"></div>
     <div class="hero-bg-layer hero-bg-2"></div>
     <div class="hero-overlay"></div>
 
     <div class="hero-container">
-      <!-- Animated Looping School Badge -->
       <div class="hero-badge-animated">
         <i class="fa-solid fa-graduation-cap"></i> ACEJ KARAMA TSS &bull; MUHANGA
       </div>
@@ -861,7 +847,6 @@
   <!-- CAMPUS SPOTLIGHT WITH ANIMATED IMAGE FRAME -->
   <section class="spotlight-section">
     <div class="spotlight-container">
-      <!-- Dual Crossfade Campus Showcase -->
       <div class="spotlight-frame" id="campusFrame">
         <div class="frame-slide active-slide" style="background-image: url('/background1.jpeg');"></div>
         <div class="frame-slide" style="background-image: url('/background2.jpg');"></div>
@@ -962,7 +947,6 @@
   <!-- FOUR-COLUMN INSTITUTIONAL FOOTER -->
   <footer class="site-footer">
     <div class="footer-container">
-      <!-- COLUMN 1: ABOUT -->
       <div class="footer-col">
         <h3>About ACEJ</h3>
         <ul class="footer-links">
@@ -974,7 +958,6 @@
         </ul>
       </div>
 
-      <!-- COLUMN 2: ADMISSIONS -->
       <div class="footer-col">
         <h3>Admissions</h3>
         <ul class="footer-links">
@@ -986,23 +969,21 @@
         </ul>
       </div>
 
-      <!-- COLUMN 3: ACADEMICS -->
       <div class="footer-col">
-        <h3>Academics</h3>
+        <h3>Academics &amp; Portal</h3>
         <ul class="footer-links">
+          <li><a href="/portal/">&rsaquo; Student Marks Portal</a></li>
+          <li><a href="/portal/">&rsaquo; Teacher &amp; Staff Login</a></li>
           <li><a href="/academics/">&rsaquo; Networking &amp; IT (NIT)</a></li>
           <li><a href="/academics/">&rsaquo; Computer Systems (CSA)</a></li>
           <li><a href="/academics/">&rsaquo; Accounting &amp; Finance</a></li>
-          <li><a href="/staff/">&rsaquo; DOS Academic Office</a></li>
-          <li><a href="/contact/">&rsaquo; Exams &amp; Transcripts</a></li>
         </ul>
       </div>
 
-      <!-- COLUMN 4: GET IN TOUCH -->
       <div class="footer-col">
         <h3>Get in Touch</h3>
         <p class="footer-contact-p"><i class="fa-solid fa-location-dot" style="color: var(--acej-gold);"></i> WPJG+G3P, Kamazu Village, Nganzo Cell, Mushubati, Muhanga, Rwanda</p>
-        <p class="footer-contact-p"><i class="fa-solid fa-phone" style="color: var(--acej-gold);"></i> Headmaster: 0788607924</p>
+        <p class="footer-contact-p"><i class="fa-solid fa-phone" style="color: var(--acej-gold);"></i> Headmaster: 0788607924</p>[cite: 3]
         <p class="footer-contact-p"><i class="fa-solid fa-envelope" style="color: var(--acej-gold);"></i> acejkaramatss@gmail.com</p>
         
         <div class="footer-social-icons">
@@ -1061,7 +1042,7 @@
           slides[currentSlide].classList.remove('active-slide');
           currentSlide = (currentSlide + 1) % slides.length;
           slides[currentSlide].classList.add('active-slide');
-        }, 5000); // Transitions every 5 seconds
+        }, 5000);
       }
     })();
   </script>
