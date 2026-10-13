@@ -5,11 +5,13 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Faculty &amp; Administration | ACEJ KARAMA TSS</title>
   <meta name="description" content="Meet the leadership, pedagogical coordinators, and administrative staff at ACEJ Karama TSS.">
-<!-- Official School Crest Favicon -->
-    <link rel="icon" type="image/png" href="/logo.png?v=3">
-    <link rel="shortcut icon" type="image/png" href="/logo.png?v=3">
-    <link rel="apple-touch-icon" href="/logo.png?v=3">
+  
+  <!-- Official School Crest Favicon -->
+  <link rel="icon" type="image/png" href="/logo.png?v=3">
+  <link rel="shortcut icon" type="image/png" href="/logo.png?v=3">
+  <link rel="apple-touch-icon" href="/logo.png?v=3">
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+  
   <style>
     :root {
       --primary-navy: #0d2847;
@@ -21,6 +23,9 @@
       --bg-light: #f8fafc;
       --white: #ffffff;
       --border-color: #e2e8f0;
+      --shadow-sm: 0 4px 14px rgba(0,0,0,0.04);
+      --shadow-md: 0 10px 25px rgba(13, 40, 71, 0.08);
+      --shadow-lg: 0 18px 36px rgba(13, 40, 71, 0.12);
     }
 
     * {
@@ -34,6 +39,7 @@
       color: var(--text-dark);
       background-color: var(--bg-light);
       line-height: 1.6;
+      overflow-x: hidden;
     }
 
     /* TOP BAR */
@@ -66,6 +72,7 @@
       position: sticky;
       top: 0;
       z-index: 1000;
+      backdrop-filter: blur(8px);
     }
     .brand {
       display: flex;
@@ -73,11 +80,17 @@
       gap: 12px;
       text-decoration: none;
     }
+    .brand-logo-img {
+      height: 48px;
+      width: 48px;
+      object-fit: contain;
+    }
     .brand-text h1 {
       font-size: 1.25rem;
       color: var(--primary-navy);
       font-weight: 800;
       letter-spacing: -0.5px;
+      line-height: 1.1;
     }
     .brand-text p {
       font-size: 0.65rem;
@@ -89,7 +102,7 @@
     .nav-links {
       display: flex;
       list-style: none;
-      gap: 24px;
+      gap: 22px;
       align-items: center;
     }
     .nav-links a {
@@ -116,6 +129,7 @@
     .nav-actions {
       display: flex;
       gap: 12px;
+      align-items: center;
     }
     .btn-apply {
       background: var(--accent-gold);
@@ -127,10 +141,12 @@
       font-size: 0.88rem;
       text-transform: uppercase;
       letter-spacing: 0.5px;
-      transition: background 0.2s;
+      box-shadow: 0 3px 10px rgba(197, 155, 39, 0.25);
+      transition: background 0.2s, transform 0.2s;
     }
     .btn-apply:hover {
       background: var(--accent-gold-hover);
+      transform: translateY(-2px);
     }
     .btn-portal {
       background: var(--primary-navy);
@@ -143,12 +159,26 @@
       display: flex;
       align-items: center;
       gap: 6px;
+      transition: background 0.2s, transform 0.2s;
+    }
+    .btn-portal:hover {
+      background: var(--secondary-blue);
+      transform: translateY(-2px);
+    }
+    .menu-toggle {
+      display: none;
+      background: none;
+      border: none;
+      color: var(--primary-navy);
+      font-size: 1.5rem;
+      cursor: pointer;
+      padding: 4px;
     }
 
     /* CONTAINER */
     .container {
       max-width: 1100px;
-      margin: 40px auto;
+      margin: 40px auto 60px;
       padding: 0 20px;
     }
 
@@ -261,6 +291,11 @@
       display: flex;
       flex-direction: column;
       justify-content: space-between;
+      transition: transform 0.2s ease, box-shadow 0.2s ease;
+    }
+    .card:hover {
+      transform: translateY(-3px);
+      box-shadow: var(--shadow-md);
     }
     .card h4 {
       font-size: 1.25rem;
@@ -306,6 +341,10 @@
       box-shadow: 0 4px 12px rgba(0,0,0,0.04);
       display: flex;
       flex-wrap: wrap;
+      transition: transform 0.2s ease;
+    }
+    .doyen-card:hover {
+      transform: translateY(-3px);
     }
     .doyen-img {
       flex: 1 1 180px;
@@ -323,6 +362,98 @@
       display: flex;
       flex-direction: column;
       justify-content: space-between;
+    }
+
+    /* FOUR-COLUMN INSTITUTIONAL FOOTER */
+    .site-footer {
+      background: #002D6E;
+      color: #ffffff;
+      padding: 70px 6% 30px;
+      border-top: 5px solid var(--acej-gold);
+      margin-top: 60px;
+    }
+    .footer-container {
+      max-width: 1200px;
+      margin: 0 auto;
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(230px, 1fr));
+      gap: 40px;
+      margin-bottom: 50px;
+    }
+    .footer-col h3 {
+      font-size: 1.15rem;
+      font-weight: 800;
+      letter-spacing: 0.5px;
+      text-transform: uppercase;
+      margin-bottom: 15px;
+      color: #ffffff;
+      position: relative;
+      padding-bottom: 8px;
+    }
+    .footer-col h3::after {
+      content: '';
+      position: absolute;
+      bottom: 0;
+      left: 0;
+      width: 40px;
+      height: 3px;
+      background: var(--acej-gold);
+    }
+    .footer-links { list-style: none; }
+    .footer-links li { margin-bottom: 11px; }
+    .footer-links a {
+      color: #cbd5e1;
+      text-decoration: none;
+      font-size: 0.92rem;
+      display: inline-flex;
+      align-items: center;
+      gap: 8px;
+      transition: all 0.2s ease;
+    }
+    .footer-links a:hover {
+      color: var(--acej-gold);
+      transform: translateX(4px);
+    }
+    .footer-contact-p {
+      color: #cbd5e1;
+      font-size: 0.9rem;
+      margin-bottom: 10px;
+      line-height: 1.5;
+    }
+    .footer-social-icons {
+      display: flex;
+      gap: 14px;
+      margin-top: 18px;
+    }
+    .footer-social-icons a {
+      color: #ffffff;
+      font-size: 1.25rem;
+      background: rgba(255,255,255,0.1);
+      width: 38px;
+      height: 38px;
+      border-radius: 8px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      transition: all 0.2s ease;
+    }
+    .footer-social-icons a:hover {
+      background: var(--acej-gold);
+      color: var(--primary-navy);
+      transform: translateY(-2px);
+    }
+    .footer-bottom {
+      max-width: 1200px;
+      margin: 0 auto;
+      padding-top: 25px;
+      border-top: 1px solid rgba(255,255,255,0.15);
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      font-size: 0.85rem;
+      color: #94a3b8;
+      flex-wrap: wrap;
+      gap: 15px;
     }
 
     /* WHATSAPP FLOAT */
@@ -348,9 +479,31 @@
       transform: scale(1.1) rotate(5deg);
     }
 
-    @media (max-width: 768px) {
+    @media (max-width: 900px) {
       .top-bar { display: none; }
-      .nav-links { display: none; }
+      .menu-toggle { display: block; }
+      .nav-links {
+        position: absolute;
+        top: 100%;
+        left: 0;
+        width: 100%;
+        background: var(--white);
+        flex-direction: column;
+        align-items: stretch;
+        gap: 0;
+        padding: 0;
+        max-height: 0;
+        overflow: hidden;
+        transition: max-height 0.35s ease-in-out;
+        box-shadow: var(--shadow-md);
+      }
+      .nav-links.active-menu {
+        max-height: 440px;
+        border-bottom: 2px solid var(--accent-gold);
+      }
+      .nav-links li { width: 100%; border-top: 1px solid #f1f5f9; }
+      .nav-links a { display: block; padding: 14px 6%; color: var(--primary-navy); }
+      .nav-links a.active::after { display: none; }
       .headmaster-card { flex-direction: column; }
     }
   </style>
@@ -372,23 +525,33 @@
   <!-- NAVBAR -->
   <header class="navbar">
     <a href="/" class="brand">
+      <img src="/logo.png" alt="ACEJ Karama Logo" class="brand-logo-img">
       <div class="brand-text">
         <h1>ACEJ KARAMA</h1>
         <p>Excellence in Technical Education</p>
       </div>
     </a>
 
-    <ul class="nav-links">
+    <!-- COMPLETE SITE-WIDE NAVIGATION -->
+    <ul class="nav-links" id="navLinks">
       <li><a href="/">Home</a></li>
       <li><a href="/about/">About</a></li>
       <li><a href="/academics/">Academics</a></li>
       <li><a href="/staff/" class="active">Staff</a></li>
+      <li><a href="/news/glf-rwanda/">News</a></li>
+      <li><a href="/payment/">Fees &amp; Payment</a></li>
       <li><a href="/contact/">Contact</a></li>
+      <!-- Mobile Quick Access to Portal -->
+      <li><a href="/portal/"><i class="fa-solid fa-user-graduate"></i> Student &amp; Staff Portal</a></li>
     </ul>
 
     <div class="nav-actions">
       <a href="/contact/" class="btn-apply">Apply Now</a>
-      <a href="#" class="btn-portal"><i class="fa-solid fa-user"></i> Portal</a>
+      <!-- Desktop Direct Root Portal Route -->
+      <a href="/portal/" class="btn-portal"><i class="fa-solid fa-user"></i> Portal</a>
+      <button class="menu-toggle" id="menuToggle" aria-label="Toggle navigation">
+        <i class="fa-solid fa-bars" id="menuIcon"></i>
+      </button>
     </div>
   </header>
 
@@ -411,7 +574,7 @@
         <h3 style="font-size: 1.8rem; color: var(--primary-navy); margin: 4px 0 6px; font-weight: 800;">BISANGABAGABO Youssouf</h3>
         <p style="color: var(--text-muted); font-size: 1rem; font-weight: 600; margin-bottom: 14px;">School Manager &amp; Headmaster</p>
         <p style="color: #4b5563; font-size: 0.95rem; margin-bottom: 20px; line-height: 1.6;">
-          Oversees overall institutional strategy, national accreditation compliance with RTQB/Rwanda Polytechnic, and ensures quality standards across all educational and technical trades.
+          Oversees overall institutional strategy, national accreditation compliance with RTB / NESA, and ensures quality standards across all educational and technical trades.
         </p>
         <div style="display: flex; gap: 10px; flex-wrap: wrap;">
           <a href="tel:0788607924" class="contact-btn" style="background: #10b981; color: #fff; border: none;">
@@ -483,7 +646,7 @@
           <h4>Teaching &amp; Technical Council</h4>
           <p class="card-subtitle">Instructors in Networking, CSA &amp; Accounting</p>
           <p class="card-desc">
-            Our multidisciplinary trainers bring industry-relevant expertise, mentoring students through RTQB Levels 3–5 hands-on projects and laboratory sessions.
+            Our multidisciplinary trainers bring industry-relevant expertise, mentoring students through RTB Levels 3–5 hands-on projects and laboratory sessions.
           </p>
         </div>
         <span style="font-size: 0.85rem; color: var(--text-muted);"><i class="fa-solid fa-chalkboard-user"></i> 35+ Certified Instructors</span>
@@ -513,18 +676,99 @@
           <h4>Marie Louise NYIRANGIRIMANA</h4>
           <p class="card-subtitle">School Cashier (Caissière)</p>
           <p class="card-desc">
-            Responsible for school fees verifications, bank slip validation, payment receipts, and treasury operations.
+            Responsible for school fees verifications, bank slip validation, Urubuto (*775#) reconciliations, and treasury operations.
           </p>
         </div>
-        <a href="tel:0785485641" class="contact-btn"><i class="fa-solid fa-phone"></i> Call: 0785485641</a>
+        <div style="display: flex; gap: 8px; flex-wrap: wrap;">
+          <a href="tel:0785485641" class="contact-btn"><i class="fa-solid fa-phone"></i> Call: 0785485641</a>
+          <a href="/payment/" class="contact-btn" style="background: #ecfdf5; border-color: #a7f3d0; color: #065f46;"><i class="fa-solid fa-receipt"></i> Pay Fees (95,500 RWF)</a>
+        </div>
       </div>
     </div>
   </div>
+
+  <!-- FOUR-COLUMN FOOTER -->
+  <footer class="site-footer">
+    <div class="footer-container">
+      <div class="footer-col">
+        <h3>About ACEJ</h3>
+        <ul class="footer-links">
+          <li><a href="/about/">&rsaquo; Our History &amp; Mission</a></li>
+          <li><a href="/about/">&rsaquo; Uburerere &bull; Ubumenyi</a></li>
+          <li><a href="/staff/">&rsaquo; Leadership &amp; Faculty</a></li>
+          <li><a href="/about/">&rsaquo; TSS National Accreditation</a></li>
+          <li><a href="/contact/">&rsaquo; Campus Facilities</a></li>
+        </ul>
+      </div>
+
+      <div class="footer-col">
+        <h3>Admissions &amp; Fees</h3>
+        <ul class="footer-links">
+          <li><a href="/payment/">&rsaquo; Fees Portal &amp; 95,500 RWF Rate</a></li>
+          <li><a href="/payment/#urubutoSection">&rsaquo; UrubutoPay (*775#)</a></li>
+          <li><a href="/payment/#bankSection">&rsaquo; Bank of Kigali Accounts</a></li>
+          <li><a href="/contact/">&rsaquo; New Student Registration</a></li>
+          <li><a href="/academics/">&rsaquo; Level 3, 4 &amp; 5 Entry</a></li>
+        </ul>
+      </div>
+
+      <div class="footer-col">
+        <h3>Academics &amp; Portal</h3>
+        <ul class="footer-links">
+          <li><a href="/portal/">&rsaquo; Student &amp; Staff Portal</a></li>
+          <li><a href="/academics/">&rsaquo; Networking &amp; IT (NIT)</a></li>
+          <li><a href="/academics/">&rsaquo; Computer Systems (CSA)</a></li>
+          <li><a href="/academics/">&rsaquo; Accounting &amp; Finance</a></li>
+          <li><a href="/news/glf-rwanda/">&rsaquo; Campus News &amp; Events</a></li>
+        </ul>
+      </div>
+
+      <div class="footer-col">
+        <h3>Get in Touch</h3>
+        <p class="footer-contact-p"><i class="fa-solid fa-location-dot" style="color: var(--accent-gold);"></i> WPJG+G3P, Kamazu Village, Nganzo Cell, Mushubati, Muhanga, Rwanda</p>
+        <p class="footer-contact-p"><i class="fa-solid fa-phone" style="color: var(--accent-gold);"></i> Headmaster: 0788607924</p>
+        <p class="footer-contact-p"><i class="fa-solid fa-envelope" style="color: var(--accent-gold);"></i> acejkaramatss@gmail.com</p>
+        
+        <div class="footer-social-icons">
+          <a href="https://wa.me/250788607924" target="_blank" rel="noopener noreferrer" title="WhatsApp"><i class="fa-brands fa-whatsapp"></i></a>
+          <a href="mailto:acejkaramatss@gmail.com" title="Email"><i class="fa-regular fa-envelope"></i></a>
+          <a href="https://maps.google.com/?q=Association+pour+la+Contribution+%C3%A0+l'Education+de+la+Jeunesse+-+ACEJ+Karama" target="_blank" rel="noopener noreferrer" title="Google Maps"><i class="fa-solid fa-map-location-dot"></i></a>
+        </div>
+      </div>
+    </div>
+
+    <div class="footer-bottom">
+      <div>&copy; 2026 ACEJ KARAMA TSS &bull; All Rights Reserved. Code: 0207030</div>
+      <div>Accredited Technical Secondary School (RTB / NESA)</div>
+    </div>
+  </footer>
 
   <!-- WHATSAPP FLOATING BUTTON -->
   <a href="https://wa.me/250788607924" class="whatsapp-float" target="_blank" rel="noopener noreferrer" title="Chat on WhatsApp">
     <i class="fa-brands fa-whatsapp"></i>
   </a>
+
+  <!-- INTERACTIVE SCRIPT -->
+  <script>
+    (function() {
+      var menuToggle = document.getElementById('menuToggle');
+      var navLinks = document.getElementById('navLinks');
+      var menuIcon = document.getElementById('menuIcon');
+
+      if (menuToggle && navLinks) {
+        menuToggle.addEventListener('click', function() {
+          navLinks.classList.toggle('active-menu');
+          if (navLinks.classList.contains('active-menu')) {
+            menuIcon.classList.remove('fa-bars');
+            menuIcon.classList.add('fa-xmark');
+          } else {
+            menuIcon.classList.remove('fa-xmark');
+            menuIcon.classList.add('fa-bars');
+          }
+        });
+      }
+    })();
+  </script>
 
 </body>
 </html>
