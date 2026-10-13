@@ -949,12 +949,13 @@
       animation: toastSlide 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275);
     }
 
-    /* FOOTER */
+    /* FOUR-COLUMN FOOTER */
     .site-footer {
       background: #002D6E;
       color: #ffffff;
       padding: 70px 6% 30px;
       border-top: 5px solid var(--acej-gold);
+      margin-top: 60px;
     }
     .footer-container {
       max-width: 1200px;
@@ -1151,28 +1152,27 @@
   <!-- NAVBAR -->
   <header class="navbar">
     <a href="/" class="brand">
-      <img src="/logo.png" alt="ACEJ Karama Crest" class="brand-logo-img">
+      <img src="/logo.png" alt="ACEJ Karama Crest" class="brand-logo-img" onerror="this.src='https://blogger.googleusercontent.com/img/b/R29vZ2xl/AVvXsEj7G8n1Z3Q5z90_LOGO/s400/acej-logo.png';">
       <div class="brand-text">
         <h1>ACEJ KARAMA TSS</h1>
         <p>Uburerere &bull; Ubumenyi</p>
       </div>
     </a>
 
+    <!-- MAIN NAVIGATION LINKS (CLEAN LIST) -->
     <ul class="nav-links" id="navLinks">
       <li><a href="/">Home</a></li>
       <li><a href="/about/">About</a></li>
       <li><a href="/academics/">Academics</a></li>
       <li><a href="/staff/">Staff</a></li>
-      <li><a href="/payment/" class="active">Fees &amp; Payment</a></li>
       <li><a href="/news/glf-rwanda/">News</a></li>
+      <li><a href="/payment/" class="active">Fees &amp; Payment</a></li>
       <li><a href="/contact/">Contact</a></li>
-      <!-- Mobile Drawer Portal Access -->
-      <li><a href="/portal/"><i class="fa-solid fa-user-graduate"></i> Student &amp; Staff Portal</a></li>
     </ul>
 
     <div class="nav-actions">
       <a href="/contact/" class="btn-apply">Apply Now</a>
-      <!-- Desktop Direct Root Portal Route -->
+      <!-- EXCLUSIVE ACCESS TO PORTAL VIA DEDICATED BUTTON -->
       <a href="/portal/" class="btn-portal"><i class="fa-solid fa-user"></i> Portal</a>
       <button class="menu-toggle" id="menuToggle" aria-label="Toggle navigation menu">
         <i class="fa-solid fa-bars" id="menuIcon"></i>
@@ -1686,9 +1686,8 @@
       </div>
 
       <div class="footer-col">
-        <h3>Admissions &amp; Portal</h3>
+        <h3>Admissions &amp; Fees</h3>
         <ul class="footer-links">
-          <li><a href="/portal/">&rsaquo; Student &amp; Staff Portal</a></li>
           <li><a href="/payment/">&rsaquo; Fees Portal &amp; 95,500 RWF Rate</a></li>
           <li><a href="/payment/#urubutoSection">&rsaquo; UrubutoPay (*775#)</a></li>
           <li><a href="/payment/#bankSection">&rsaquo; Bank of Kigali Accounts</a></li>
@@ -1698,13 +1697,13 @@
       </div>
 
       <div class="footer-col">
-        <h3>Academics</h3>
+        <h3>Academics &amp; Portal</h3>
         <ul class="footer-links">
+          <li><a href="/portal/">&rsaquo; Student &amp; Staff Portal</a></li>
           <li><a href="/academics/">&rsaquo; Networking &amp; IT (NIT)</a></li>
           <li><a href="/academics/">&rsaquo; Computer Systems (CSA)</a></li>
           <li><a href="/academics/">&rsaquo; Accounting &amp; Finance</a></li>
-          <li><a href="/staff/">&rsaquo; DOS Academic Office</a></li>
-          <li><a href="/contact/">&rsaquo; Exams &amp; Transcripts</a></li>
+          <li><a href="/news/glf-rwanda/">&rsaquo; Campus News &amp; Events</a></li>
         </ul>
       </div>
 
