@@ -99,19 +99,6 @@
       letter-spacing: 1px;
       text-transform: uppercase;
     }
-    .nav-links {
-      display: flex;
-      list-style: none;
-      gap: 20px;
-      align-items: center;
-    }
-    .nav-links a {
-      text-decoration: none;
-      color: var(--text-dark);
-      font-weight: 600;
-      font-size: 0.92rem;
-    }
-    .nav-links a:hover { color: var(--acej-blue); }
 
     .btn-return-home {
       display: inline-flex;
@@ -124,6 +111,7 @@
       border-radius: 6px;
       font-size: 0.85rem;
       font-weight: 700;
+      transition: background 0.2s;
     }
     .btn-return-home:hover { background: #cbd5e1; }
 
@@ -270,9 +258,9 @@
     .demo-btn {
       background: #e2e8f0;
       border: 1px solid #cbd5e1;
-      padding: 4px 8px;
-      border-radius: 4px;
-      font-size: 0.75rem;
+      padding: 5px 10px;
+      border-radius: 5px;
+      font-size: 0.76rem;
       font-weight: 700;
       cursor: pointer;
       margin-top: 6px;
@@ -298,13 +286,14 @@
       gap: 15px;
     }
     .dash-welcome h3 {
-      font-size: 1.35rem;
+      font-size: 1.4rem;
       color: var(--acej-dark-blue);
       font-weight: 800;
     }
     .dash-welcome p {
-      font-size: 0.88rem;
+      font-size: 0.9rem;
       color: var(--text-muted);
+      margin-top: 3px;
     }
     .btn-logout {
       background: #fef2f2;
@@ -355,7 +344,7 @@
       margin-top: 4px;
     }
 
-    /* DATA TABLE */
+    /* DATA TABLES */
     .dash-panel {
       background: var(--white);
       border: 1px solid var(--border-color);
@@ -436,7 +425,7 @@
     .btn-modal-close {
       background: none;
       border: none;
-      font-size: 1.3rem;
+      font-size: 1.4rem;
       color: var(--text-muted);
       cursor: pointer;
     }
@@ -524,7 +513,7 @@
         <form id="portalLoginForm" onsubmit="handlePortalLogin(event)">
           <div class="form-group">
             <label id="lblUsername" for="portalUsername">Student Roll / Reg ID Number</label>
-            <input type="text" id="portalUsername" class="input-control" placeholder="e.g. ACEJ/2024/0182" required>
+            <input type="text" id="portalUsername" class="input-control" placeholder="e.g. Acej/2026/0100" required>
           </div>
 
           <div class="form-group">
@@ -545,56 +534,60 @@
 
           <!-- DEMO PREVIEW HELPER -->
           <div class="demo-hint-box">
-            <strong><i class="fa-solid fa-circle-info"></i> Instant Demo Testing:</strong><br>
-            Click below to autofill and inspect what information students or teachers see:
-            <div style="display: flex; gap: 8px; margin-top: 8px;">
-              <button type="button" class="demo-btn" onclick="fillDemo('student')">Student Sample</button>
-              <button type="button" class="demo-btn" onclick="fillDemo('staff')">Teacher Sample</button>
+            <strong><i class="fa-solid fa-circle-info"></i> Quick Autofill Preview:</strong><br>
+            Click a registered student or staff member below to test live credentials:
+            <div style="display: flex; gap: 8px; margin-top: 8px; flex-wrap: wrap;">
+              <button type="button" class="demo-btn" onclick="fillDemo('clebert')">Clebert (Acej/2026/0100)</button>
+              <button type="button" class="demo-btn" onclick="fillDemo('jean')">Jean Pierre (ACEJ/2024/0182)</button>
+              <button type="button" class="demo-btn" onclick="fillDemo('staff')">Trainer Muneza</button>
             </div>
           </div>
         </form>
       </div>
     </div>
 
-    <!-- 2. STUDENT DASHBOARD VIEW -->
+    <!-- 2. DYNAMIC STUDENT DASHBOARD VIEW -->
     <div class="dashboard-view" id="studentDashboard">
       <div class="dash-topbar">
         <div class="dash-welcome">
-          <h3 id="studentDashName">Habimana Jean Pierre</h3>
-          <p><span id="studentDashClass">Level 4 Networking &amp; Internet Technologies (NIT)</span> &bull; Reg: ACEJ/2024/0182</p>
+          <h3 id="studentDashName">Student Name</h3>
+          <p>
+            <span id="studentDashClass">Level &amp; Trade</span> &bull; 
+            Reg: <strong id="studentDashReg" style="color: var(--acej-blue);">Reg ID</strong>
+          </p>
         </div>
         <button type="button" class="btn-logout" onclick="logoutPortal()">
           <i class="fa-solid fa-power-off"></i> Sign Out
         </button>
       </div>
 
-      <!-- KEY METRICS TILES -->
+      <!-- DYNAMIC METRICS TILES -->
       <div class="metrics-grid">
         <div class="metric-card">
           <div class="metric-title">Term Average / Status</div>
-          <div class="metric-value">84.5%</div>
-          <div class="metric-sub"><i class="fa-solid fa-circle-check"></i> Competent (Level 4 NIT)</div>
+          <div class="metric-value" id="studentMetricAvg">--</div>
+          <div class="metric-sub" id="studentMetricStatus"><i class="fa-solid fa-circle-check"></i> Enrolled</div>
         </div>
         <div class="metric-card">
           <div class="metric-title">Tuition Fee Status</div>
-          <div class="metric-value">Cleared</div>
+          <div class="metric-value" id="studentMetricFees">Cleared</div>
           <div class="metric-sub" style="color: var(--acej-blue);"><i class="fa-solid fa-receipt"></i> 95,500 RWF Settled</div>
         </div>
         <div class="metric-card">
           <div class="metric-title">Campus Attendance</div>
-          <div class="metric-value">98.2%</div>
+          <div class="metric-value" id="studentMetricAtt">97.8%</div>
           <div class="metric-sub"><i class="fa-solid fa-calendar-check"></i> Good Standing</div>
         </div>
         <div class="metric-card">
           <div class="metric-title">Academic Rank</div>
-          <div class="metric-value">4 / 42</div>
+          <div class="metric-value" id="studentMetricRank">--</div>
           <div class="metric-sub" style="color: var(--text-muted);">Class Cohort</div>
         </div>
       </div>
 
-      <!-- REPORT CARD / MARKS TABLE -->
+      <!-- DYNAMIC MODULE MARKS TABLE -->
       <div class="dash-panel">
-        <h4><i class="fa-solid fa-book-bookmark"></i> Competence-Based Assessment (CBT) Term Module Marks</h4>
+        <h4><i class="fa-solid fa-book-bookmark"></i> Competence-Based Assessment (CBT) Module Marks</h4>
         <div style="overflow-x: auto;">
           <table class="records-table">
             <thead>
@@ -603,43 +596,12 @@
                 <th>Module Name</th>
                 <th>Credits</th>
                 <th>Continuous Assessment</th>
-                <th>Final Practical Exam</th>
+                <th>Practical Exam</th>
                 <th>Status</th>
               </tr>
             </thead>
-            <tbody>
-              <tr>
-                <td><strong>NIT-M01</strong></td>
-                <td>Routing &amp; Switching Fundamentals</td>
-                <td>15</td>
-                <td>88 / 100</td>
-                <td>85 / 100</td>
-                <td><span class="grade-badge grade-competent">Competent</span></td>
-              </tr>
-              <tr>
-                <td><strong>NIT-M02</strong></td>
-                <td>Network Security &amp; Firewalls (pfSense)</td>
-                <td>12</td>
-                <td>82 / 100</td>
-                <td>80 / 100</td>
-                <td><span class="grade-badge grade-competent">Competent</span></td>
-              </tr>
-              <tr>
-                <td><strong>NIT-M03</strong></td>
-                <td>Structured Cabling &amp; Fiber Optics</td>
-                <td>10</td>
-                <td>90 / 100</td>
-                <td>92 / 100</td>
-                <td><span class="grade-badge grade-competent">Competent</span></td>
-              </tr>
-              <tr>
-                <td><strong>GEN-M01</strong></td>
-                <td>Technical English &amp; Entrepreneurship</td>
-                <td>8</td>
-                <td>78 / 100</td>
-                <td>76 / 100</td>
-                <td><span class="grade-badge grade-progress">Satisfactory</span></td>
-              </tr>
+            <tbody id="studentMarksTbody">
+              <!-- Dynamically rendered based on combination -->
             </tbody>
           </table>
         </div>
@@ -649,26 +611,26 @@
       <div class="dash-panel">
         <h4><i class="fa-solid fa-receipt"></i> Financial Clearance Record</h4>
         <p style="font-size: 0.9rem; color: #475569; margin-bottom: 12px;">
-          Approved term fee rate: <strong>95,500 RWF</strong>. Payments verified via UrubutoPay (*775#) or Bank of Kigali slip.
+          Approved term fee rate: <strong>95,500 RWF</strong>. Payment reconciliations processed via UrubutoPay (*775#) or Bank of Kigali slip.
         </p>
         <div style="overflow-x: auto;">
           <table class="records-table">
             <thead>
               <tr>
-                <th>Transaction Date</th>
+                <th>Academic Term</th>
                 <th>Payment Channel</th>
                 <th>Reference TxID</th>
                 <th>Amount</th>
                 <th>Treasury Verification</th>
               </tr>
             </thead>
-            <tbody>
+            <tbody id="studentFeesTbody">
               <tr>
-                <td>18 Jan 2026</td>
+                <td>Term 1 (Academic Year)</td>
                 <td>UrubutoPay (*775# MoMo)</td>
-                <td><code>URU-94827104</code></td>
+                <td><code id="studentFeeRef">URU-94827104</code></td>
                 <td>95,500 RWF</td>
-                <td><span class="grade-badge grade-competent">Verified (Cashier Marie Louise)</span></td>
+                <td><span class="grade-badge grade-competent">Cleared (Cashier Marie Louise)</span></td>
               </tr>
             </tbody>
           </table>
@@ -681,7 +643,7 @@
       <div class="dash-topbar">
         <div class="dash-welcome">
           <h3 id="staffDashName">Trainer Muneza Germain</h3>
-          <p>Academic Department &bull; Senior Technical Trainer</p>
+          <p id="staffDashRole">Academic Department &bull; Senior Technical Trainer</p>
         </div>
         <button type="button" class="btn-logout" onclick="logoutPortal()">
           <i class="fa-solid fa-power-off"></i> Sign Out
@@ -692,7 +654,7 @@
         <div class="metric-card">
           <div class="metric-title">Assigned Modules</div>
           <div class="metric-value">4</div>
-          <div class="metric-sub" style="color: var(--acej-blue);">Level 3, 4 &amp; 5 NIT</div>
+          <div class="metric-sub" style="color: var(--acej-blue);" id="staffDeptPill">NIT Faculty</div>
         </div>
         <div class="metric-card">
           <div class="metric-title">Enrolled Students</div>
@@ -702,7 +664,7 @@
         <div class="metric-card">
           <div class="metric-title">Marks Submitted</div>
           <div class="metric-value">92%</div>
-          <div class="metric-sub"><i class="fa-solid fa-check"></i> Term 1 Progress</div>
+          <div class="metric-sub"><i class="fa-solid fa-check"></i> Term Progress</div>
         </div>
       </div>
 
@@ -716,7 +678,7 @@
                 <th>Module Title</th>
                 <th>Total Students</th>
                 <th>Submissions</th>
-                <th>Action</th>
+                <th>Status</th>
               </tr>
             </thead>
             <tbody>
@@ -784,7 +746,7 @@
     <div style="font-size: 0.78rem; margin-top: 4px;">Accredited Technical Secondary School &bull; Rwanda TVET Board (RTB / NESA)</div>
   </footer>
 
-  <!-- INTERACTIVE PORTAL SCRIPTS -->
+  <!-- JAVASCRIPT WORKFLOW -->
   <script>
     var currentRole = 'student';
 
@@ -799,7 +761,7 @@
         tabStudent.classList.add('active-tab');
         tabStaff.classList.remove('active-tab');
         lblUsername.innerText = 'Student Roll / Reg ID Number';
-        inputUsername.placeholder = 'e.g. ACEJ/2024/0182';
+        inputUsername.placeholder = 'e.g. Acej/2026/0100';
       } else {
         tabStaff.classList.add('active-tab');
         tabStudent.classList.remove('active-tab');
@@ -808,15 +770,20 @@
       }
     }
 
-    function fillDemo(role) {
-      switchLoginRole(role);
+    function fillDemo(type) {
       var userField = document.getElementById('portalUsername');
       var pwdField = document.getElementById('portalPassword');
 
-      if (role === 'student') {
+      if (type === 'clebert') {
+        switchLoginRole('student');
+        userField.value = 'Acej/2026/0100';
+        pwdField.value = 'Acej#2026';
+      } else if (type === 'jean') {
+        switchLoginRole('student');
         userField.value = 'ACEJ/2024/0182';
         pwdField.value = 'student123';
-      } else {
+      } else if (type === 'staff') {
+        switchLoginRole('staff');
         userField.value = 'trainer.muneza';
         pwdField.value = 'staff123';
       }
@@ -827,17 +794,132 @@
       var user = document.getElementById('portalUsername').value.trim();
       var pass = document.getElementById('portalPassword').value.trim();
 
-      if (!user || !pass) {
-        alert('Please enter your credentials.');
+      // Fetch live user database created in /admin/
+      var storedDB = localStorage.getItem("ACEJ_PORTAL_USERS_DB");
+      var userList = storedDB ? JSON.parse(storedDB) : [
+        { id: "1", role: "student", name: "Habimana Jean Pierre", username: "ACEJ/2024/0182", pass: "student123", dept: "NIT", level: "Level 4", status: "active" },
+        { id: "2", role: "student", name: "Dufitimana Clebert", username: "Acej/2026/0100", pass: "Acej#2026", dept: "NIT", level: "Level 5", status: "active" },
+        { id: "3", role: "staff", name: "Muneza Germain", username: "trainer.muneza", pass: "staff123", dept: "NIT", level: "Faculty", status: "active" }
+      ];
+
+      // Find matching user (case-insensitive username check)
+      var matched = userList.find(function(u) {
+        return u.username.toLowerCase() === user.toLowerCase() && 
+               u.pass === pass && 
+               u.role === currentRole;
+      });
+
+      if (!matched) {
+        alert("Invalid credentials. Please verify your ID and password or contact the school office.");
         return;
       }
 
+      if (matched.status !== "active") {
+        alert("This account is currently suspended. Please contact the DOS or School Cashier.");
+        return;
+      }
+
+      // Hide login form
       document.getElementById('loginBox').style.display = 'none';
 
-      if (currentRole === 'student') {
+      if (matched.role === 'student') {
+        // Populate personal header info
+        document.getElementById('studentDashName').innerText = matched.name;
+        document.getElementById('studentDashClass').innerText = (matched.level || "Level") + " • " + (matched.dept || "Technical Combination");
+        document.getElementById('studentDashReg').innerText = matched.username;
+        
+        // Populate custom student marks & metrics
+        var marksTbody = document.getElementById('studentMarksTbody');
+        
+        if (matched.username.toLowerCase() === "acej/2026/0100") {
+          // DUFITIMANA CLEBERT CUSTOM PROFILE (Level 5 NIT)
+          document.getElementById('studentMetricAvg').innerText = "89.2%";
+          document.getElementById('studentMetricStatus').innerHTML = '<i class="fa-solid fa-circle-check"></i> Competent (' + matched.level + ' ' + matched.dept + ')';
+          document.getElementById('studentMetricRank').innerText = "2 / 38";
+          document.getElementById('studentFeeRef').innerText = "URU-81920392";
+
+          marksTbody.innerHTML = 
+            '<tr>' +
+              '<td><strong>NIT-L501</strong></td>' +
+              '<td>Advanced Cisco Enterprise Networking &amp; VLANs</td>' +
+              '<td>15</td>' +
+              '<td>91 / 100</td>' +
+              '<td>88 / 100</td>' +
+              '<td><span class="grade-badge grade-competent">Competent</span></td>' +
+            '</tr>' +
+            '<tr>' +
+              '<td><strong>NIT-L502</strong></td>' +
+              '<td>Linux Server Administration &amp; DNS/DHCP</td>' +
+              '<td>14</td>' +
+              '<td>88 / 100</td>' +
+              '<td>90 / 100</td>' +
+              '<td><span class="grade-badge grade-competent">Competent</span></td>' +
+            '</tr>' +
+            '<tr>' +
+              '<td><strong>NIT-L503</strong></td>' +
+              '<td>Cybersecurity, Cryptography &amp; Tailscale VPN</td>' +
+              '<td>12</td>' +
+              '<td>92 / 100</td>' +
+              '<td>87 / 100</td>' +
+              '<td><span class="grade-badge grade-competent">Competent</span></td>' +
+            '</tr>' +
+            '<tr>' +
+              '<td><strong>GEN-L501</strong></td>' +
+              '<td>Final Year Technical Project &amp; Internship</td>' +
+              '<td>10</td>' +
+              '<td>85 / 100</td>' +
+              '<td>88 / 100</td>' +
+              '<td><span class="grade-badge grade-competent">Competent</span></td>' +
+            '</tr>';
+        } else {
+          // GENERAL STUDENT DEFAULT PROFILE
+          document.getElementById('studentMetricAvg').innerText = "84.5%";
+          document.getElementById('studentMetricStatus').innerHTML = '<i class="fa-solid fa-circle-check"></i> Competent (' + matched.level + ' ' + matched.dept + ')';
+          document.getElementById('studentMetricRank').innerText = "4 / 42";
+          document.getElementById('studentFeeRef').innerText = "URU-94827104";
+
+          marksTbody.innerHTML = 
+            '<tr>' +
+              '<td><strong>NIT-M01</strong></td>' +
+              '<td>Routing &amp; Switching Fundamentals</td>' +
+              '<td>15</td>' +
+              '<td>88 / 100</td>' +
+              '<td>85 / 100</td>' +
+              '<td><span class="grade-badge grade-competent">Competent</span></td>' +
+            '</tr>' +
+            '<tr>' +
+              '<td><strong>NIT-M02</strong></td>' +
+              '<td>Network Security &amp; Firewalls (pfSense)</td>' +
+              '<td>12</td>' +
+              '<td>82 / 100</td>' +
+              '<td>80 / 100</td>' +
+              '<td><span class="grade-badge grade-competent">Competent</span></td>' +
+            '</tr>' +
+            '<tr>' +
+              '<td><strong>NIT-M03</strong></td>' +
+              '<td>Structured Cabling &amp; Fiber Optics</td>' +
+              '<td>10</td>' +
+              '<td>90 / 100</td>' +
+              '<td>92 / 100</td>' +
+              '<td><span class="grade-badge grade-competent">Competent</span></td>' +
+            '</tr>' +
+            '<tr>' +
+              '<td><strong>GEN-M01</strong></td>' +
+              '<td>Technical English &amp; Entrepreneurship</td>' +
+              '<td>8</td>' +
+              '<td>78 / 100</td>' +
+              '<td>76 / 100</td>' +
+              '<td><span class="grade-badge grade-progress">Satisfactory</span></td>' +
+            '</tr>';
+        }
+
         document.getElementById('studentDashboard').style.display = 'block';
         document.getElementById('staffDashboard').style.display = 'none';
       } else {
+        // Staff Profile
+        document.getElementById('staffDashName').innerText = "Trainer " + matched.name;
+        document.getElementById('staffDashRole').innerText = (matched.dept || "Technical") + " Department • Faculty Trainer";
+        document.getElementById('staffDeptPill').innerText = matched.dept + " Faculty";
         document.getElementById('staffDashboard').style.display = 'block';
         document.getElementById('studentDashboard').style.display = 'none';
       }
