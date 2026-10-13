@@ -722,4 +722,331 @@
   <!-- PASSWORD RESET REQUEST MODAL -->
   <div class="inpage-modal-backdrop" id="forgotModal">
     <div class="inpage-modal-card" style="border-top-color: var(--acej-blue); text-align: left;">
-      <h3 style="margin-bottom:
+      <h3 style="margin-bottom: 8px;"><i class="fa-solid fa-key" style="color: var(--acej-blue);"></i> Request Password Reset</h3>
+      <p style="font-size: 0.9rem; margin-bottom: 15px;">
+        Submit your registered ID and telephone number. A reset request will be dispatched directly to the Super Admin console.
+      </p>
+      
+      <form onsubmit="handleSendResetRequest(event)">
+        <div class="form-group">
+          <label>Registration ID or Username</label>
+          <input type="text" id="resetReqUser" class="input-control" placeholder="e.g. Acej/2026/0100" required>
+        </div>
+        <div class="form-group">
+          <label>Contact Mobile Phone</label>
+          <input type="tel" id="resetReqPhone" class="input-control" placeholder="e.g. 0788123456" required>
+        </div>
+        <div class="form-group">
+          <label>Reason / Note</label>
+          <input type="text" id="resetReqReason" class="input-control" placeholder="e.g., Forgot password" required>
+        </div>
+        <div style="display: flex; gap: 10px; margin-top: 20px;">
+          <button type="button" class="btn-profile-edit" onclick="closeForgotModal()" style="flex:1;">Cancel</button>
+          <button type="submit" class="btn-login-submit" style="flex:2;">Transmit Request</button>
+        </div>
+      </form>
+    </div>
+  </div>
+
+  <!-- EDIT PROFILE MODAL (FOR LOGGED IN USER) -->
+  <div class="inpage-modal-backdrop" id="profileEditModal">
+    <div class="inpage-modal-card" style="border-top-color: var(--acej-gold); text-align: left;">
+      <h3 style="margin-bottom: 8px;"><i class="fa-solid fa-user-pen" style="color: var(--acej-gold);"></i> Update Account Profile</h3>
+      <form onsubmit="handleSaveOwnProfile(event)">
+        <div class="form-group">
+          <label>Full Name</label>
+          <input type="text" id="ownProfileName" class="input-control" required>
+        </div>
+        <div class="form-group">
+          <label>Contact Mobile Phone</label>
+          <input type="tel" id="ownProfilePhone" class="input-control" required>
+        </div>
+        <div class="form-group">
+          <label>Change Password (Leave blank to keep current)</label>
+          <input type="password" id="ownProfilePassword" class="input-control" placeholder="New password">
+        </div>
+        <div style="display: flex; gap: 10px; margin-top: 20px;">
+          <button type="button" class="btn-profile-edit" onclick="closeProfileEditModal()" style="flex:1;">Cancel</button>
+          <button type="submit" class="btn-login-submit" style="flex:2;">Save Profile Updates</button>
+        </div>
+      </form>
+    </div>
+  </div>
+
+  <footer class="portal-footer">
+    <div>&copy; 2026 ACEJ KARAMA TSS &bull; All Rights Reserved. School Code: 0207030</div>
+    <div style="font-size: 0.78rem; margin-top: 4px;">Accredited Technical Secondary School &bull; Rwanda TVET Board (RTB / NESA)</div>
+  </footer>
+
+  <script>
+    var currentRole = 'student';
+    var activeSessionUser = null;
+
+    function switchLoginRole(role) {
+      currentRole = role;
+      var tabStudent = document.getElementById('tabStudent');
+      var tabStaff = document.getElementById('tabStaff');
+      var lblUsername = document.getElementById('lblUsername');
+      var inputUsername = document.getElementById('portalUsername');
+
+      if (role === 'student') {
+        tabStudent.classList.add('active-tab');
+        tabStaff.classList.remove('active-tab');
+        lblUsername.innerText = 'Student Roll / Reg ID Number';
+        inputUsername.placeholder = 'e.g. Acej/2026/0100';
+      } else {
+        tabStaff.classList.add('active-tab');
+        tabStudent.classList.remove('active-tab');
+        lblUsername.innerText = 'Staff Username or Email';
+        inputUsername.placeholder = 'e.g. trainer.muneza';
+      }
+    }
+
+    // CHECK FOR 1-CLICK IMPERSONATION BY ADMIN
+    window.addEventListener('DOMContentLoaded', function() {
+      renderActiveBroadcast();
+
+      var impersonated = localStorage.getItem("ACEJ_IMPERSONATE_USER");
+      if (impersonated) {
+        localStorage.removeItem("ACEJ_IMPERSONATE_USER");
+        var userObj = JSON.parse(impersonated);
+        activeSessionUser = userObj;
+        showUserDashboard(userObj);
+      }
+    });
+
+    function renderActiveBroadcast() {
+      var stored = localStorage.getItem("ACEJ_PORTAL_BROADCAST");
+      var banner = document.getElementById('portalBroadcastBanner');
+      if (stored) {
+        var n = JSON.parse(stored);
+        document.getElementById('portalBroadcastTitle').innerHTML = '<i class="fa-solid fa-bullhorn"></i> ' + n.title;
+        document.getElementById('portalBroadcastBody').innerText = n.body;
+        banner.style.display = 'block';
+      } else {
+        banner.style.display = 'none';
+      }
+    }
+
+    function handlePortalLogin(e) {
+      e.preventDefault();
+      var user = document.getElementById('portalUsername').value.trim();
+      var pass = document.getElementById('portalPassword').value.trim();
+
+      var storedDB = localStorage.getItem("ACEJ_PORTAL_USERS_DB");
+      var userList = storedDB ? JSON.parse(storedDB) : [];
+
+      var matched = userList.find(function(u) {
+        return u.username.toLowerCase() === user.toLowerCase() && 
+               u.pass === pass && 
+               u.role === currentRole;
+      });
+
+      if (!matched) {
+        alert("Invalid credentials. Please verify your ID and password or submit a reset request.");
+        return;
+      }
+
+      // CUSTOM IN-PAGE SUSPENSION NOTIFICATION
+      if (matched.status !== "active") {
+        document.getElementById('suspensionModal').style.display = 'flex';
+        return;
+      }
+
+      activeSessionUser = matched;
+
+      // FIRST TIME LOGIN INTERCEPT
+      if (matched.firstLogin === true) {
+        document.getElementById('loginBox').style.display = 'none';
+        document.getElementById('setupFullName').value = matched.name;
+        document.getElementById('firstTimeSetupBox').style.display = 'block';
+        return;
+      }
+
+      showUserDashboard(matched);
+    }
+
+    function closeSuspensionModal() {
+      document.getElementById('suspensionModal').style.display = 'none';
+    }
+
+    function handleFirstTimeSetup(e) {
+      e.preventDefault();
+      var newName = document.getElementById('setupFullName').value.trim();
+      var phone = document.getElementById('setupPhone').value.trim();
+      var emailParent = document.getElementById('setupEmailOrParent').value.trim();
+      var newPass = document.getElementById('setupNewPassword').value.trim();
+
+      var storedDB = localStorage.getItem("ACEJ_PORTAL_USERS_DB");
+      var userList = storedDB ? JSON.parse(storedDB) : [];
+
+      var idx = userList.findIndex(function(u) { return u.id === activeSessionUser.id; });
+      if (idx !== -1) {
+        userList[idx].name = newName;
+        userList[idx].phone = phone;
+        userList[idx].guardian = emailParent;
+        userList[idx].pass = newPass;
+        userList[idx].firstLogin = false;
+
+        localStorage.setItem("ACEJ_PORTAL_USERS_DB", JSON.stringify(userList));
+        activeSessionUser = userList[idx];
+      }
+
+      alert("Profile and password saved successfully! Welcome to your dashboard.");
+      document.getElementById('firstTimeSetupBox').style.display = 'none';
+      showUserDashboard(activeSessionUser);
+    }
+
+    function showUserDashboard(matched) {
+      document.getElementById('loginBox').style.display = 'none';
+
+      if (matched.role === 'student') {
+        document.getElementById('studentDashName').innerText = matched.name;
+        document.getElementById('studentDashClass').innerText = (matched.level || "Level") + " • " + (matched.dept || "Technical Combination");
+        document.getElementById('studentDashReg').innerText = matched.username;
+        
+        var groupsHtml = (matched.groups || []).map(function(g) { return '<span class="group-tag">' + g + '</span>'; }).join("");
+        document.getElementById('studentDashGroups').innerHTML = groupsHtml || '<span class="group-tag">General</span>';
+
+        var marksTbody = document.getElementById('studentMarksTbody');
+        document.getElementById('studentMetricAvg').innerText = "88.5%";
+        document.getElementById('studentMetricStatus').innerHTML = '<i class="fa-solid fa-circle-check"></i> Competent (' + matched.level + ' ' + matched.dept + ')';
+
+        marksTbody.innerHTML = 
+          '<tr>' +
+            '<td><strong>' + matched.dept + '-301</strong></td>' +
+            '<td>Practical Lab &amp; Core Architecture</td>' +
+            '<td>15</td>' +
+            '<td>89 / 100</td>' +
+            '<td>87 / 100</td>' +
+            '<td><span class="grade-badge grade-competent">Competent</span></td>' +
+          '</tr>' +
+          '<tr>' +
+            '<td><strong>' + matched.dept + '-302</strong></td>' +
+            '<td>Advanced Systems &amp; Maintenance</td>' +
+            '<td>12</td>' +
+            '<td>85 / 100</td>' +
+            '<td>90 / 100</td>' +
+            '<td><span class="grade-badge grade-competent">Competent</span></td>' +
+          '</tr>';
+
+        document.getElementById('studentDashboard').style.display = 'block';
+        document.getElementById('staffDashboard').style.display = 'none';
+      } else {
+        document.getElementById('staffDashName').innerText = "Trainer " + matched.name;
+        document.getElementById('staffDashRole').innerText = (matched.dept || "Technical") + " Department • Trainer";
+        document.getElementById('staffDashboard').style.display = 'block';
+        document.getElementById('studentDashboard').style.display = 'none';
+      }
+    }
+
+    function logoutPortal() {
+      document.getElementById('studentDashboard').style.display = 'none';
+      document.getElementById('staffDashboard').style.display = 'none';
+      document.getElementById('firstTimeSetupBox').style.display = 'none';
+      document.getElementById('loginBox').style.display = 'block';
+      document.getElementById('portalPassword').value = '';
+      activeSessionUser = null;
+    }
+
+    // PROFILE EDIT MODAL (FOR ACTIVE USER)
+    function openProfileEditModal() {
+      if (!activeSessionUser) return;
+      document.getElementById('ownProfileName').value = activeSessionUser.name;
+      document.getElementById('ownProfilePhone').value = activeSessionUser.phone || "";
+      document.getElementById('ownProfilePassword').value = "";
+      document.getElementById('profileEditModal').style.display = 'flex';
+    }
+
+    function closeProfileEditModal() {
+      document.getElementById('profileEditModal').style.display = 'none';
+    }
+
+    function handleSaveOwnProfile(e) {
+      e.preventDefault();
+      var name = document.getElementById('ownProfileName').value.trim();
+      var phone = document.getElementById('ownProfilePhone').value.trim();
+      var pass = document.getElementById('ownProfilePassword').value.trim();
+
+      var storedDB = localStorage.getItem("ACEJ_PORTAL_USERS_DB");
+      var userList = storedDB ? JSON.parse(storedDB) : [];
+
+      var idx = userList.findIndex(function(u) { return u.id === activeSessionUser.id; });
+      if (idx !== -1) {
+        userList[idx].name = name;
+        userList[idx].phone = phone;
+        if (pass) userList[idx].pass = pass;
+
+        localStorage.setItem("ACEJ_PORTAL_USERS_DB", JSON.stringify(userList));
+        activeSessionUser = userList[idx];
+      }
+
+      alert("Profile updated successfully!");
+      closeProfileEditModal();
+      showUserDashboard(activeSessionUser);
+    }
+
+    // LMS TAB SWITCHER
+    function switchLmsTab(tab, btn) {
+      document.querySelectorAll('.lms-tab-btn').forEach(function(b) { b.classList.remove('active'); });
+      btn.classList.add('active');
+
+      document.getElementById('lmsPanelCourses').style.display = (tab === 'courses') ? 'block' : 'none';
+      document.getElementById('lmsPanelTasks').style.display = (tab === 'tasks') ? 'block' : 'none';
+      document.getElementById('lmsPanelMarks').style.display = (tab === 'marks') ? 'block' : 'none';
+    }
+
+    function openCreateCourseModal() {
+      var title = prompt("Enter Module / Course Name to publish:");
+      if (!title) return;
+      var notes = prompt("Enter Notes filename or reference link:");
+      if (!notes) return;
+
+      var tbody = document.getElementById('staffCoursesTbody');
+      var tr = document.createElement('tr');
+      tr.innerHTML = '<td>Active Class</td><td>' + title + '</td><td>' + notes + '</td><td>Just now</td>';
+      tbody.prepend(tr);
+      alert("New course notes published for students!");
+    }
+
+    function openCreateTaskModal() {
+      var task = prompt("Enter Student Assignment Title:");
+      if (!task) return;
+      var due = prompt("Enter Due Date (e.g., Monday 18:00):", "Monday 18:00");
+      if (!due) return;
+
+      var tbody = document.getElementById('staffTasksTbody');
+      var tr = document.createElement('tr');
+      tr.innerHTML = '<td>All Cohorts</td><td>' + task + '</td><td>' + due + '</td><td>0 / 42 Submitted</td>';
+      tbody.prepend(tr);
+      alert("Task assigned to class cohorts!");
+    }
+
+    function openForgotModal() { document.getElementById('forgotModal').style.display = 'flex'; }
+    function closeForgotModal() { document.getElementById('forgotModal').style.display = 'none'; }
+
+    function handleSendResetRequest(e) {
+      e.preventDefault();
+      var username = document.getElementById('resetReqUser').value.trim();
+      var phone = document.getElementById('resetReqPhone').value.trim();
+      var reason = document.getElementById('resetReqReason').value.trim();
+
+      var storedReqs = localStorage.getItem("ACEJ_RESET_REQUESTS_DB");
+      var reqList = storedReqs ? JSON.parse(storedReqs) : [];
+
+      reqList.push({
+        id: Date.now().toString(),
+        username: username,
+        phone: phone,
+        reason: reason,
+        date: new Date().toLocaleDateString()
+      });
+
+      localStorage.setItem("ACEJ_RESET_REQUESTS_DB", JSON.stringify(reqList));
+      alert("Reset inquiry dispatched to the Super Admin! The administration will contact you at " + phone + ".");
+      closeForgotModal();
+      e.target.reset();
+    }
+  </script>
+</body>
+</html>
