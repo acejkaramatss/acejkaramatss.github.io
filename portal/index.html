@@ -29,21 +29,8 @@
       --shadow-lg: 0 20px 40px rgba(0, 45, 110, 0.18);
     }
 
-    * {
-      box-sizing: border-box;
-      margin: 0;
-      padding: 0;
-      font-family: 'Segoe UI', -apple-system, BlinkMacSystemFont, Roboto, sans-serif;
-    }
-
-    body {
-      color: var(--text-dark);
-      background-color: var(--bg-light);
-      line-height: 1.6;
-      min-height: 100vh;
-      display: flex;
-      flex-direction: column;
-    }
+    * { box-sizing: border-box; margin: 0; padding: 0; font-family: 'Segoe UI', -apple-system, BlinkMacSystemFont, Roboto, sans-serif; }
+    body { color: var(--text-dark); background-color: var(--bg-light); line-height: 1.6; min-height: 100vh; display: flex; flex-direction: column; }
 
     /* TOP BAR */
     .top-bar {
@@ -56,11 +43,7 @@
       align-items: center;
       border-bottom: 2px solid var(--acej-gold);
     }
-    .top-bar a {
-      color: #e2e8f0;
-      text-decoration: none;
-      margin-left: 15px;
-    }
+    .top-bar a { color: #e2e8f0; text-decoration: none; margin-left: 15px; }
     .top-bar a:hover { color: var(--acej-gold); }
 
     /* NAVBAR */
@@ -75,30 +58,10 @@
       top: 0;
       z-index: 1000;
     }
-    .brand {
-      display: flex;
-      align-items: center;
-      gap: 12px;
-      text-decoration: none;
-    }
-    .brand-logo-img {
-      height: 48px;
-      width: 48px;
-      object-fit: contain;
-    }
-    .brand-text h1 {
-      font-size: 1.25rem;
-      color: var(--acej-blue);
-      font-weight: 800;
-      line-height: 1.1;
-    }
-    .brand-text p {
-      font-size: 0.65rem;
-      color: #b45309;
-      font-weight: 700;
-      letter-spacing: 1px;
-      text-transform: uppercase;
-    }
+    .brand { display: flex; align-items: center; gap: 12px; text-decoration: none; }
+    .brand-logo-img { height: 48px; width: 48px; object-fit: contain; }
+    .brand-text h1 { font-size: 1.25rem; color: var(--acej-blue); font-weight: 800; line-height: 1.1; }
+    .brand-text p { font-size: 0.65rem; color: #b45309; font-weight: 700; letter-spacing: 1px; text-transform: uppercase; }
 
     .btn-return-home {
       display: inline-flex;
@@ -116,13 +79,7 @@
     .btn-return-home:hover { background: #cbd5e1; }
 
     /* PORTAL CONTAINER */
-    .portal-wrapper {
-      max-width: 1140px;
-      margin: 40px auto 60px;
-      padding: 0 20px;
-      width: 100%;
-      flex-grow: 1;
-    }
+    .portal-wrapper { max-width: 1140px; margin: 40px auto 60px; padding: 0 20px; width: 100%; flex-grow: 1; }
 
     /* AUTHENTICATION CARD */
     .login-container {
@@ -141,20 +98,10 @@
       text-align: center;
       border-bottom: 4px solid var(--acej-gold);
     }
-    .login-header h2 {
-      font-size: 1.6rem;
-      font-weight: 800;
-      margin-bottom: 6px;
-    }
-    .login-header p {
-      font-size: 0.88rem;
-      color: #e2e8f0;
-    }
-    .role-tabs {
-      display: flex;
-      background: #f8fafc;
-      border-bottom: 1px solid var(--border-color);
-    }
+    .login-header h2 { font-size: 1.6rem; font-weight: 800; margin-bottom: 6px; }
+    .login-header p { font-size: 0.88rem; color: #e2e8f0; }
+
+    .role-tabs { display: flex; background: #f8fafc; border-bottom: 1px solid var(--border-color); }
     .role-tab {
       flex: 1;
       padding: 14px;
@@ -176,19 +123,9 @@
       background: var(--white);
       border-bottom: 3px solid var(--acej-blue);
     }
-    .login-body {
-      padding: 30px 25px;
-    }
-    .form-group {
-      margin-bottom: 20px;
-    }
-    .form-group label {
-      display: block;
-      font-size: 0.88rem;
-      font-weight: 700;
-      color: #334155;
-      margin-bottom: 6px;
-    }
+    .login-body { padding: 30px 25px; }
+    .form-group { margin-bottom: 20px; }
+    .form-group label { display: block; font-size: 0.88rem; font-weight: 700; color: #334155; margin-bottom: 6px; }
     .input-control {
       width: 100%;
       padding: 12px 14px;
@@ -199,10 +136,8 @@
       outline: none;
       transition: all 0.2s;
     }
-    .input-control:focus {
-      border-color: var(--acej-blue);
-      box-shadow: 0 0 0 3px rgba(0, 71, 171, 0.12);
-    }
+    .input-control:focus { border-color: var(--acej-blue); box-shadow: 0 0 0 3px rgba(0, 71, 171, 0.12); }
+    
     .btn-login-submit {
       width: 100%;
       background: var(--acej-blue);
@@ -220,12 +155,8 @@
       transition: all 0.2s;
       box-shadow: 0 4px 12px rgba(0, 71, 171, 0.2);
     }
-    .btn-login-submit:hover {
-      background: var(--acej-dark-blue);
-      transform: translateY(-2px);
-    }
+    .btn-login-submit:hover { background: var(--acej-dark-blue); transform: translateY(-2px); }
 
-    /* FORGOT PASSWORD ROW */
     .login-helper-row {
       display: flex;
       justify-content: space-between;
@@ -244,34 +175,30 @@
     }
     .forgot-pwd-link:hover { color: var(--acej-dark-blue); }
 
-    /* DEMO CREDENTIAL HINT */
-    .demo-hint-box {
-      margin-top: 25px;
-      background: #f8fafc;
-      border: 1.5px dashed #cbd5e1;
-      border-radius: 10px;
-      padding: 14px;
-      font-size: 0.82rem;
-      color: #475569;
-    }
-    .demo-hint-box strong { color: var(--acej-dark-blue); }
-    .demo-btn {
-      background: #e2e8f0;
-      border: 1px solid #cbd5e1;
-      padding: 5px 10px;
-      border-radius: 5px;
-      font-size: 0.76rem;
-      font-weight: 700;
-      cursor: pointer;
-      margin-top: 6px;
-    }
-    .demo-btn:hover { background: #cbd5e1; }
-
-    /* DASHBOARD LAYOUT */
-    .dashboard-view {
+    /* FIRST-TIME SETUP MODAL / CONTAINER */
+    .setup-container {
       display: none;
+      max-width: 540px;
+      margin: 0 auto;
+      background: var(--white);
+      border-radius: 18px;
+      border: 2px solid var(--acej-gold);
+      box-shadow: var(--shadow-lg);
+      overflow: hidden;
       animation: fadeIn 0.4s ease-out;
     }
+    .setup-header {
+      background: var(--acej-dark-blue);
+      color: var(--white);
+      padding: 24px;
+      text-align: center;
+    }
+    .setup-header h3 { font-size: 1.4rem; font-weight: 800; }
+    .setup-header p { font-size: 0.88rem; color: #cbd5e1; margin-top: 4px; }
+    .setup-body { padding: 25px; }
+
+    /* DASHBOARDS */
+    .dashboard-view { display: none; animation: fadeIn 0.4s ease-out; }
     .dash-topbar {
       background: var(--white);
       border: 1px solid var(--border-color);
@@ -285,16 +212,8 @@
       flex-wrap: wrap;
       gap: 15px;
     }
-    .dash-welcome h3 {
-      font-size: 1.4rem;
-      color: var(--acej-dark-blue);
-      font-weight: 800;
-    }
-    .dash-welcome p {
-      font-size: 0.9rem;
-      color: var(--text-muted);
-      margin-top: 3px;
-    }
+    .dash-welcome h3 { font-size: 1.4rem; color: var(--acej-dark-blue); font-weight: 800; }
+    .dash-welcome p { font-size: 0.9rem; color: var(--text-muted); margin-top: 3px; }
     .btn-logout {
       background: #fef2f2;
       color: #dc2626;
@@ -310,7 +229,6 @@
     }
     .btn-logout:hover { background: #fee2e2; }
 
-    /* METRICS TILES */
     .metrics-grid {
       display: grid;
       grid-template-columns: repeat(auto-fit, minmax(230px, 1fr));
@@ -324,27 +242,10 @@
       padding: 20px;
       box-shadow: var(--shadow-sm);
     }
-    .metric-title {
-      font-size: 0.78rem;
-      text-transform: uppercase;
-      font-weight: 800;
-      letter-spacing: 1px;
-      color: var(--text-muted);
-      margin-bottom: 6px;
-    }
-    .metric-value {
-      font-size: 1.7rem;
-      font-weight: 900;
-      color: var(--acej-dark-blue);
-    }
-    .metric-sub {
-      font-size: 0.82rem;
-      color: #10b981;
-      font-weight: 700;
-      margin-top: 4px;
-    }
+    .metric-title { font-size: 0.78rem; text-transform: uppercase; font-weight: 800; letter-spacing: 1px; color: var(--text-muted); margin-bottom: 6px; }
+    .metric-value { font-size: 1.7rem; font-weight: 900; color: var(--acej-dark-blue); }
+    .metric-sub { font-size: 0.82rem; color: #10b981; font-weight: 700; margin-top: 4px; }
 
-    /* DATA TABLES */
     .dash-panel {
       background: var(--white);
       border: 1px solid var(--border-color);
@@ -353,48 +254,21 @@
       box-shadow: var(--shadow-sm);
       margin-bottom: 25px;
     }
-    .dash-panel h4 {
-      font-size: 1.15rem;
-      color: var(--acej-dark-blue);
-      font-weight: 800;
-      margin-bottom: 15px;
-      display: flex;
-      align-items: center;
-      gap: 8px;
-    }
-    .records-table {
-      width: 100%;
-      border-collapse: collapse;
-      font-size: 0.92rem;
-    }
-    .records-table th, .records-table td {
-      padding: 12px 14px;
-      text-align: left;
-      border-bottom: 1px solid #e2e8f0;
-    }
-    .records-table th {
-      background: #f8fafc;
-      color: #334155;
-      font-weight: 700;
-    }
-    .grade-badge {
-      display: inline-block;
-      padding: 4px 10px;
-      border-radius: 6px;
-      font-weight: 800;
-      font-size: 0.78rem;
-    }
+    .dash-panel h4 { font-size: 1.15rem; color: var(--acej-dark-blue); font-weight: 800; margin-bottom: 15px; display: flex; align-items: center; gap: 8px; }
+    .records-table { width: 100%; border-collapse: collapse; font-size: 0.92rem; }
+    .records-table th, .records-table td { padding: 12px 14px; text-align: left; border-bottom: 1px solid #e2e8f0; }
+    .records-table th { background: #f8fafc; color: #334155; font-weight: 700; }
+    .grade-badge { display: inline-block; padding: 4px 10px; border-radius: 6px; font-weight: 800; font-size: 0.78rem; }
     .grade-competent { background: #ecfdf5; color: #047857; }
-    .grade-progress { background: #eff6ff; color: #1d4ed8; }
 
-    /* RESET PASSWORD MODAL */
+    /* RESET REQUEST MODAL */
     .modal-backdrop {
       position: fixed;
       top: 0;
       left: 0;
       width: 100%;
       height: 100%;
-      background: rgba(15, 23, 42, 0.7);
+      background: rgba(15, 23, 42, 0.75);
       display: none;
       align-items: center;
       justify-content: center;
@@ -404,44 +278,16 @@
     }
     .modal-content {
       background: var(--white);
-      max-width: 520px;
+      max-width: 500px;
       width: 100%;
       border-radius: 16px;
       padding: 30px;
       box-shadow: var(--shadow-lg);
       border: 2px solid var(--acej-gold);
     }
-    .modal-header {
-      display: flex;
-      justify-content: space-between;
-      align-items: flex-start;
-      margin-bottom: 16px;
-    }
-    .modal-header h3 {
-      font-size: 1.3rem;
-      font-weight: 800;
-      color: var(--acej-dark-blue);
-    }
-    .btn-modal-close {
-      background: none;
-      border: none;
-      font-size: 1.4rem;
-      color: var(--text-muted);
-      cursor: pointer;
-    }
-    .modal-body p {
-      font-size: 0.92rem;
-      color: #475569;
-      margin-bottom: 14px;
-    }
-    .admin-contact-pill {
-      background: #f8fafc;
-      border: 1px solid var(--border-color);
-      border-radius: 8px;
-      padding: 12px;
-      margin-bottom: 12px;
-      font-size: 0.88rem;
-    }
+    .modal-header { display: flex; justify-content: space-between; align-items: flex-start; margin-bottom: 16px; }
+    .modal-header h3 { font-size: 1.3rem; font-weight: 800; color: var(--acej-dark-blue); }
+    .btn-modal-close { background: none; border: none; font-size: 1.4rem; color: var(--text-muted); cursor: pointer; }
 
     /* FOOTER */
     .portal-footer {
@@ -483,23 +329,20 @@
         <p>Student &amp; Staff Workspace</p>
       </div>
     </a>
-
     <a href="/" class="btn-return-home">
       <i class="fa-solid fa-arrow-left"></i> Return to Main Website
     </a>
   </header>
 
-  <!-- PORTAL CONTENT -->
   <main class="portal-wrapper">
 
-    <!-- 1. LOGIN SCREEN -->
+    <!-- 1. STANDARD LOGIN -->
     <div class="login-container" id="loginBox">
       <div class="login-header">
         <h2>Institutional Portal</h2>
         <p>Sign in to view your academic report cards, financial clearance, or class registers.</p>
       </div>
 
-      <!-- ROLE SELECTOR -->
       <div class="role-tabs">
         <button type="button" class="role-tab active-tab" id="tabStudent" onclick="switchLoginRole('student')">
           <i class="fa-solid fa-user-graduate"></i> Student / Parent
@@ -527,33 +370,54 @@
 
           <div class="login-helper-row">
             <button type="button" class="forgot-pwd-link" onclick="openForgotModal()">
-              <i class="fa-solid fa-key"></i> Forgot Password / Reset PIN?
+              <i class="fa-solid fa-key"></i> Forgot Password / Request Reset?
             </button>
             <span style="color: var(--text-muted); font-size: 0.8rem;">RTB CBT/CBA System</span>
-          </div>
-
-          <!-- DEMO PREVIEW HELPER -->
-          <div class="demo-hint-box">
-            <strong><i class="fa-solid fa-circle-info"></i> Quick Autofill Preview:</strong><br>
-            Click a registered student or staff member below to test live credentials:
-            <div style="display: flex; gap: 8px; margin-top: 8px; flex-wrap: wrap;">
-              <button type="button" class="demo-btn" onclick="fillDemo('clebert')">Clebert (Acej/2026/0100)</button>
-              <button type="button" class="demo-btn" onclick="fillDemo('jean')">Jean Pierre (ACEJ/2024/0182)</button>
-              <button type="button" class="demo-btn" onclick="fillDemo('staff')">Trainer Muneza</button>
-            </div>
           </div>
         </form>
       </div>
     </div>
 
-    <!-- 2. DYNAMIC STUDENT DASHBOARD VIEW -->
+    <!-- 2. FIRST-TIME LOGIN PROFILE SETUP -->
+    <div class="setup-container" id="firstTimeSetupBox">
+      <div class="setup-header">
+        <h3><i class="fa-solid fa-user-shield" style="color: var(--acej-gold);"></i> Welcome to ACEJ Portal!</h3>
+        <p>It looks like this is your first time logging in. Please update your profile and create your personal password to proceed.</p>
+      </div>
+      <div class="setup-body">
+        <form onsubmit="handleFirstTimeSetup(event)">
+          <div class="form-group">
+            <label>Your Full Name</label>
+            <input type="text" id="setupFullName" class="input-control" required>
+          </div>
+          <div class="form-group">
+            <label>Contact Phone Number</label>
+            <input type="tel" id="setupPhone" class="input-control" placeholder="e.g. 0788123456" required>
+          </div>
+          <div class="form-group">
+            <label>Email Address or Guardian Phone</label>
+            <input type="text" id="setupEmailOrParent" class="input-control" placeholder="e.g. parent.phone@acej.rw or 0785..." required>
+          </div>
+          <div class="form-group">
+            <label>Create New Personal Password</label>
+            <input type="password" id="setupNewPassword" class="input-control" placeholder="Minimum 6 characters" minlength="6" required>
+          </div>
+          <button type="submit" class="btn-login-submit">
+            <i class="fa-solid fa-floppy-disk"></i> Save Profile &amp; Continue to Dashboard
+          </button>
+        </form>
+      </div>
+    </div>
+
+    <!-- 3. STUDENT DASHBOARD -->
     <div class="dashboard-view" id="studentDashboard">
       <div class="dash-topbar">
         <div class="dash-welcome">
           <h3 id="studentDashName">Student Name</h3>
           <p>
             <span id="studentDashClass">Level &amp; Trade</span> &bull; 
-            Reg: <strong id="studentDashReg" style="color: var(--acej-blue);">Reg ID</strong>
+            Reg: <strong id="studentDashReg" style="color: var(--acej-blue);">Reg ID</strong> &bull;
+            Phone: <span id="studentDashPhone">--</span>
           </p>
         </div>
         <button type="button" class="btn-logout" onclick="logoutPortal()">
@@ -561,7 +425,6 @@
         </button>
       </div>
 
-      <!-- DYNAMIC METRICS TILES -->
       <div class="metrics-grid">
         <div class="metric-card">
           <div class="metric-title">Term Average / Status</div>
@@ -585,7 +448,6 @@
         </div>
       </div>
 
-      <!-- DYNAMIC MODULE MARKS TABLE -->
       <div class="dash-panel">
         <h4><i class="fa-solid fa-book-bookmark"></i> Competence-Based Assessment (CBT) Module Marks</h4>
         <div style="overflow-x: auto;">
@@ -600,50 +462,18 @@
                 <th>Status</th>
               </tr>
             </thead>
-            <tbody id="studentMarksTbody">
-              <!-- Dynamically rendered based on combination -->
-            </tbody>
-          </table>
-        </div>
-      </div>
-
-      <!-- TUITION & FINANCIAL RECORD -->
-      <div class="dash-panel">
-        <h4><i class="fa-solid fa-receipt"></i> Financial Clearance Record</h4>
-        <p style="font-size: 0.9rem; color: #475569; margin-bottom: 12px;">
-          Approved term fee rate: <strong>95,500 RWF</strong>. Payment reconciliations processed via UrubutoPay (*775#) or Bank of Kigali slip.
-        </p>
-        <div style="overflow-x: auto;">
-          <table class="records-table">
-            <thead>
-              <tr>
-                <th>Academic Term</th>
-                <th>Payment Channel</th>
-                <th>Reference TxID</th>
-                <th>Amount</th>
-                <th>Treasury Verification</th>
-              </tr>
-            </thead>
-            <tbody id="studentFeesTbody">
-              <tr>
-                <td>Term 1 (Academic Year)</td>
-                <td>UrubutoPay (*775# MoMo)</td>
-                <td><code id="studentFeeRef">URU-94827104</code></td>
-                <td>95,500 RWF</td>
-                <td><span class="grade-badge grade-competent">Cleared (Cashier Marie Louise)</span></td>
-              </tr>
-            </tbody>
+            <tbody id="studentMarksTbody"></tbody>
           </table>
         </div>
       </div>
     </div>
 
-    <!-- 3. TEACHER / STAFF DASHBOARD VIEW -->
+    <!-- 4. STAFF DASHBOARD -->
     <div class="dashboard-view" id="staffDashboard">
       <div class="dash-topbar">
         <div class="dash-welcome">
-          <h3 id="staffDashName">Trainer Muneza Germain</h3>
-          <p id="staffDashRole">Academic Department &bull; Senior Technical Trainer</p>
+          <h3 id="staffDashName">Trainer Name</h3>
+          <p id="staffDashRole">Faculty Trainer</p>
         </div>
         <button type="button" class="btn-logout" onclick="logoutPortal()">
           <i class="fa-solid fa-power-off"></i> Sign Out
@@ -654,101 +484,62 @@
         <div class="metric-card">
           <div class="metric-title">Assigned Modules</div>
           <div class="metric-value">4</div>
-          <div class="metric-sub" style="color: var(--acej-blue);" id="staffDeptPill">NIT Faculty</div>
+          <div class="metric-sub" style="color: var(--acej-blue);">Assigned Faculty</div>
         </div>
         <div class="metric-card">
-          <div class="metric-title">Enrolled Students</div>
+          <div class="metric-title">Total Enrolled</div>
           <div class="metric-value">124</div>
-          <div class="metric-sub">Active Enrollees</div>
+          <div class="metric-sub">Active Students</div>
         </div>
         <div class="metric-card">
           <div class="metric-title">Marks Submitted</div>
-          <div class="metric-value">92%</div>
-          <div class="metric-sub"><i class="fa-solid fa-check"></i> Term Progress</div>
-        </div>
-      </div>
-
-      <div class="dash-panel">
-        <h4><i class="fa-solid fa-list-check"></i> Module Gradebooks</h4>
-        <div style="overflow-x: auto;">
-          <table class="records-table">
-            <thead>
-              <tr>
-                <th>Trade &amp; Cohort</th>
-                <th>Module Title</th>
-                <th>Total Students</th>
-                <th>Submissions</th>
-                <th>Status</th>
-              </tr>
-            </thead>
-            <tbody>
-              <tr>
-                <td><strong>Level 4 NIT</strong></td>
-                <td>Routing &amp; Switching Practical Lab</td>
-                <td>42 Students</td>
-                <td>42 / 42 Complete</td>
-                <td><span class="grade-badge grade-competent">Finalized</span></td>
-              </tr>
-              <tr>
-                <td><strong>Level 5 CSA</strong></td>
-                <td>Hardware Maintenance &amp; Troubleshooting</td>
-                <td>38 Students</td>
-                <td>35 / 38 Submitted</td>
-                <td><span class="grade-badge grade-progress">In Review</span></td>
-              </tr>
-            </tbody>
-          </table>
+          <div class="metric-value">95%</div>
+          <div class="metric-sub"><i class="fa-solid fa-check"></i> Complete</div>
         </div>
       </div>
     </div>
 
   </main>
 
-  <!-- FORGOT PASSWORD / RESET PIN MODAL -->
+  <!-- PASSWORD RESET REQUEST MODAL (SENDS REQUEST TO ADMIN) -->
   <div class="modal-backdrop" id="forgotModal" onclick="closeModalOnBackdrop(event)">
     <div class="modal-content">
       <div class="modal-header">
-        <h3><i class="fa-solid fa-shield-halved" style="color: var(--acej-blue);"></i> Password &amp; PIN Reset</h3>
+        <h3><i class="fa-solid fa-key" style="color: var(--acej-blue);"></i> Request Password Reset</h3>
         <button type="button" class="btn-modal-close" onclick="closeForgotModal()">&times;</button>
       </div>
       <div class="modal-body">
-        <p>
-          To safeguard student confidential marks and institutional financial records, automated self-reset is restricted to verified campus coordinators.
-        </p>
-
-        <div class="admin-contact-pill">
-          <strong>1. Academic Records &amp; Marks Inquiries:</strong><br>
-          Contact DOS <strong>GERMAIN MUNEZA</strong> (Director of Studies)<br>
-          <i class="fa-solid fa-phone"></i> Phone: <a href="tel:0783125100" style="color: var(--acej-blue); font-weight: 700;">0783125100</a>
-        </div>
-
-        <div class="admin-contact-pill">
-          <strong>2. Fees &amp; Financial Account ID Clearance:</strong><br>
-          Contact School Cashier <strong>Marie Louise NYIRANGIRIMANA</strong><br>
-          <i class="fa-solid fa-phone"></i> Phone: <a href="tel:0785485641" style="color: var(--acej-blue); font-weight: 700;">0785485641</a>
-        </div>
-
-        <div class="admin-contact-pill">
-          <strong>3. Direct Campus Administration Support:</strong><br>
-          Visit the Academic Office in Kamazu Village, Mushubati, or call the Headmaster at <a href="tel:0788607924" style="color: var(--acej-blue); font-weight: 700;">0788607924</a>.
-        </div>
-
-        <button type="button" class="btn-login-submit" style="margin-top: 15px;" onclick="closeForgotModal()">
-          Close Window
-        </button>
+        <p>Enter your account ID and phone number. Your request will be transmitted directly to the Super Admin console for immediate review.</p>
+        
+        <form onsubmit="handleSendResetRequest(event)">
+          <div class="form-group">
+            <label>Registration ID or Username</label>
+            <input type="text" id="resetReqUser" class="input-control" placeholder="e.g. Acej/2026/0100" required>
+          </div>
+          <div class="form-group">
+            <label>Contact Phone Number</label>
+            <input type="tel" id="resetReqPhone" class="input-control" placeholder="e.g. 0788123456" required>
+          </div>
+          <div class="form-group">
+            <label>Reason / Additional Note</label>
+            <input type="text" id="resetReqReason" class="input-control" placeholder="e.g. Forgot password / New phone" required>
+          </div>
+          <button type="submit" class="btn-login-submit">
+            <i class="fa-solid fa-paper-plane"></i> Send Request to Administration
+          </button>
+        </form>
       </div>
     </div>
   </div>
 
-  <!-- PORTAL FOOTER -->
   <footer class="portal-footer">
     <div>&copy; 2026 ACEJ KARAMA TSS &bull; All Rights Reserved. School Code: 0207030</div>
     <div style="font-size: 0.78rem; margin-top: 4px;">Accredited Technical Secondary School &bull; Rwanda TVET Board (RTB / NESA)</div>
   </footer>
 
-  <!-- JAVASCRIPT WORKFLOW -->
   <script>
     var currentRole = 'student';
+    var activeSessionUser = null;
 
     function switchLoginRole(role) {
       currentRole = role;
@@ -770,39 +561,14 @@
       }
     }
 
-    function fillDemo(type) {
-      var userField = document.getElementById('portalUsername');
-      var pwdField = document.getElementById('portalPassword');
-
-      if (type === 'clebert') {
-        switchLoginRole('student');
-        userField.value = 'Acej/2026/0100';
-        pwdField.value = 'Acej#2026';
-      } else if (type === 'jean') {
-        switchLoginRole('student');
-        userField.value = 'ACEJ/2024/0182';
-        pwdField.value = 'student123';
-      } else if (type === 'staff') {
-        switchLoginRole('staff');
-        userField.value = 'trainer.muneza';
-        pwdField.value = 'staff123';
-      }
-    }
-
     function handlePortalLogin(e) {
       e.preventDefault();
       var user = document.getElementById('portalUsername').value.trim();
       var pass = document.getElementById('portalPassword').value.trim();
 
-      // Fetch live user database created in /admin/
       var storedDB = localStorage.getItem("ACEJ_PORTAL_USERS_DB");
-      var userList = storedDB ? JSON.parse(storedDB) : [
-        { id: "1", role: "student", name: "Habimana Jean Pierre", username: "ACEJ/2024/0182", pass: "student123", dept: "NIT", level: "Level 4", status: "active" },
-        { id: "2", role: "student", name: "Dufitimana Clebert", username: "Acej/2026/0100", pass: "Acej#2026", dept: "NIT", level: "Level 5", status: "active" },
-        { id: "3", role: "staff", name: "Muneza Germain", username: "trainer.muneza", pass: "staff123", dept: "NIT", level: "Faculty", status: "active" }
-      ];
+      var userList = storedDB ? JSON.parse(storedDB) : [];
 
-      // Find matching user (case-insensitive username check)
       var matched = userList.find(function(u) {
         return u.username.toLowerCase() === user.toLowerCase() && 
                u.pass === pass && 
@@ -810,7 +576,7 @@
       });
 
       if (!matched) {
-        alert("Invalid credentials. Please verify your ID and password or contact the school office.");
+        alert("Invalid credentials. Please verify your ID and password or click 'Request Reset'.");
         return;
       }
 
@@ -819,133 +585,122 @@
         return;
       }
 
-      // Hide login form
+      activeSessionUser = matched;
+
+      // FIRST TIME LOGIN INTERCEPT
+      if (matched.firstLogin === true) {
+        document.getElementById('loginBox').style.display = 'none';
+        document.getElementById('setupFullName').value = matched.name;
+        document.getElementById('firstTimeSetupBox').style.display = 'block';
+        return;
+      }
+
+      showUserDashboard(matched);
+    }
+
+    function handleFirstTimeSetup(e) {
+      e.preventDefault();
+      var newName = document.getElementById('setupFullName').value.trim();
+      var phone = document.getElementById('setupPhone').value.trim();
+      var emailParent = document.getElementById('setupEmailOrParent').value.trim();
+      var newPass = document.getElementById('setupNewPassword').value.trim();
+
+      var storedDB = localStorage.getItem("ACEJ_PORTAL_USERS_DB");
+      var userList = storedDB ? JSON.parse(storedDB) : [];
+
+      var idx = userList.findIndex(function(u) { return u.id === activeSessionUser.id; });
+      if (idx !== -1) {
+        userList[idx].name = newName;
+        userList[idx].phone = phone;
+        userList[idx].guardian = emailParent;
+        userList[idx].pass = newPass;
+        userList[idx].firstLogin = false; // Flag removed!
+
+        localStorage.setItem("ACEJ_PORTAL_USERS_DB", JSON.stringify(userList));
+        activeSessionUser = userList[idx];
+      }
+
+      alert("Profile and password updated successfully! Welcome to your dashboard.");
+      document.getElementById('firstTimeSetupBox').style.display = 'none';
+      showUserDashboard(activeSessionUser);
+    }
+
+    function showUserDashboard(matched) {
       document.getElementById('loginBox').style.display = 'none';
 
       if (matched.role === 'student') {
-        // Populate personal header info
         document.getElementById('studentDashName').innerText = matched.name;
         document.getElementById('studentDashClass').innerText = (matched.level || "Level") + " • " + (matched.dept || "Technical Combination");
         document.getElementById('studentDashReg').innerText = matched.username;
-        
-        // Populate custom student marks & metrics
+        document.getElementById('studentDashPhone').innerText = matched.phone || "Not set";
+
         var marksTbody = document.getElementById('studentMarksTbody');
-        
-        if (matched.username.toLowerCase() === "acej/2026/0100") {
-          // DUFITIMANA CLEBERT CUSTOM PROFILE (Level 5 NIT)
-          document.getElementById('studentMetricAvg').innerText = "89.2%";
-          document.getElementById('studentMetricStatus').innerHTML = '<i class="fa-solid fa-circle-check"></i> Competent (' + matched.level + ' ' + matched.dept + ')';
-          document.getElementById('studentMetricRank').innerText = "2 / 38";
-          document.getElementById('studentFeeRef').innerText = "URU-81920392";
+        document.getElementById('studentMetricAvg').innerText = "88.5%";
+        document.getElementById('studentMetricStatus').innerHTML = '<i class="fa-solid fa-circle-check"></i> Competent (' + matched.level + ' ' + matched.dept + ')';
+        document.getElementById('studentMetricRank').innerText = "2 / 38";
 
-          marksTbody.innerHTML = 
-            '<tr>' +
-              '<td><strong>NIT-L501</strong></td>' +
-              '<td>Advanced Cisco Enterprise Networking &amp; VLANs</td>' +
-              '<td>15</td>' +
-              '<td>91 / 100</td>' +
-              '<td>88 / 100</td>' +
-              '<td><span class="grade-badge grade-competent">Competent</span></td>' +
-            '</tr>' +
-            '<tr>' +
-              '<td><strong>NIT-L502</strong></td>' +
-              '<td>Linux Server Administration &amp; DNS/DHCP</td>' +
-              '<td>14</td>' +
-              '<td>88 / 100</td>' +
-              '<td>90 / 100</td>' +
-              '<td><span class="grade-badge grade-competent">Competent</span></td>' +
-            '</tr>' +
-            '<tr>' +
-              '<td><strong>NIT-L503</strong></td>' +
-              '<td>Cybersecurity, Cryptography &amp; Tailscale VPN</td>' +
-              '<td>12</td>' +
-              '<td>92 / 100</td>' +
-              '<td>87 / 100</td>' +
-              '<td><span class="grade-badge grade-competent">Competent</span></td>' +
-            '</tr>' +
-            '<tr>' +
-              '<td><strong>GEN-L501</strong></td>' +
-              '<td>Final Year Technical Project &amp; Internship</td>' +
-              '<td>10</td>' +
-              '<td>85 / 100</td>' +
-              '<td>88 / 100</td>' +
-              '<td><span class="grade-badge grade-competent">Competent</span></td>' +
-            '</tr>';
-        } else {
-          // GENERAL STUDENT DEFAULT PROFILE
-          document.getElementById('studentMetricAvg').innerText = "84.5%";
-          document.getElementById('studentMetricStatus').innerHTML = '<i class="fa-solid fa-circle-check"></i> Competent (' + matched.level + ' ' + matched.dept + ')';
-          document.getElementById('studentMetricRank').innerText = "4 / 42";
-          document.getElementById('studentFeeRef').innerText = "URU-94827104";
-
-          marksTbody.innerHTML = 
-            '<tr>' +
-              '<td><strong>NIT-M01</strong></td>' +
-              '<td>Routing &amp; Switching Fundamentals</td>' +
-              '<td>15</td>' +
-              '<td>88 / 100</td>' +
-              '<td>85 / 100</td>' +
-              '<td><span class="grade-badge grade-competent">Competent</span></td>' +
-            '</tr>' +
-            '<tr>' +
-              '<td><strong>NIT-M02</strong></td>' +
-              '<td>Network Security &amp; Firewalls (pfSense)</td>' +
-              '<td>12</td>' +
-              '<td>82 / 100</td>' +
-              '<td>80 / 100</td>' +
-              '<td><span class="grade-badge grade-competent">Competent</span></td>' +
-            '</tr>' +
-            '<tr>' +
-              '<td><strong>NIT-M03</strong></td>' +
-              '<td>Structured Cabling &amp; Fiber Optics</td>' +
-              '<td>10</td>' +
-              '<td>90 / 100</td>' +
-              '<td>92 / 100</td>' +
-              '<td><span class="grade-badge grade-competent">Competent</span></td>' +
-            '</tr>' +
-            '<tr>' +
-              '<td><strong>GEN-M01</strong></td>' +
-              '<td>Technical English &amp; Entrepreneurship</td>' +
-              '<td>8</td>' +
-              '<td>78 / 100</td>' +
-              '<td>76 / 100</td>' +
-              '<td><span class="grade-badge grade-progress">Satisfactory</span></td>' +
-            '</tr>';
-        }
+        marksTbody.innerHTML = 
+          '<tr>' +
+            '<td><strong>' + matched.dept + '-301</strong></td>' +
+            '<td>Practical Lab &amp; Core Architecture</td>' +
+            '<td>15</td>' +
+            '<td>89 / 100</td>' +
+            '<td>87 / 100</td>' +
+            '<td><span class="grade-badge grade-competent">Competent</span></td>' +
+          '</tr>' +
+          '<tr>' +
+            '<td><strong>' + matched.dept + '-302</strong></td>' +
+            '<td>Advanced Systems &amp; Maintenance</td>' +
+            '<td>12</td>' +
+            '<td>85 / 100</td>' +
+            '<td>90 / 100</td>' +
+            '<td><span class="grade-badge grade-competent">Competent</span></td>' +
+          '</tr>';
 
         document.getElementById('studentDashboard').style.display = 'block';
-        document.getElementById('staffDashboard').style.display = 'none';
       } else {
-        // Staff Profile
         document.getElementById('staffDashName').innerText = "Trainer " + matched.name;
-        document.getElementById('staffDashRole').innerText = (matched.dept || "Technical") + " Department • Faculty Trainer";
-        document.getElementById('staffDeptPill').innerText = matched.dept + " Faculty";
+        document.getElementById('staffDashRole').innerText = (matched.dept || "Technical") + " Department • Trainer";
         document.getElementById('staffDashboard').style.display = 'block';
-        document.getElementById('studentDashboard').style.display = 'none';
       }
     }
 
     function logoutPortal() {
       document.getElementById('studentDashboard').style.display = 'none';
       document.getElementById('staffDashboard').style.display = 'none';
+      document.getElementById('firstTimeSetupBox').style.display = 'none';
       document.getElementById('loginBox').style.display = 'block';
       document.getElementById('portalPassword').value = '';
+      activeSessionUser = null;
     }
 
-    function openForgotModal() {
-      document.getElementById('forgotModal').style.display = 'flex';
-    }
+    /* FORGOT PASSWORD REQUEST DISPATCHER */
+    function openForgotModal() { document.getElementById('forgotModal').style.display = 'flex'; }
+    function closeForgotModal() { document.getElementById('forgotModal').style.display = 'none'; }
+    function closeModalOnBackdrop(e) { if (e.target.id === 'forgotModal') closeForgotModal(); }
 
-    function closeForgotModal() {
-      document.getElementById('forgotModal').style.display = 'none';
-    }
+    function handleSendResetRequest(e) {
+      e.preventDefault();
+      var username = document.getElementById('resetReqUser').value.trim();
+      var phone = document.getElementById('resetReqPhone').value.trim();
+      var reason = document.getElementById('resetReqReason').value.trim();
 
-    function closeModalOnBackdrop(e) {
-      if (e.target.id === 'forgotModal') {
-        closeForgotModal();
-      }
+      var storedReqs = localStorage.getItem("ACEJ_RESET_REQUESTS_DB");
+      var reqList = storedReqs ? JSON.parse(storedReqs) : [];
+
+      reqList.push({
+        id: Date.now().toString(),
+        username: username,
+        phone: phone,
+        reason: reason,
+        date: new Date().toLocaleString()
+      });
+
+      localStorage.setItem("ACEJ_RESET_REQUESTS_DB", JSON.stringify(reqList));
+      alert("Your password reset request has been transmitted to the Super Admin! The administration will contact you or update your credentials shortly.");
+      closeForgotModal();
+      e.target.reset();
     }
   </script>
-
 </body>
 </html>
