@@ -61,7 +61,7 @@
     .brand-text h1 { font-size: 1.3rem; color: var(--acej-blue); font-weight: 900; letter-spacing: -0.5px; line-height: 1.1; }
     .brand-text p { font-size: 0.65rem; color: #b45309; font-weight: 800; letter-spacing: 1.5px; text-transform: uppercase; }
 
-    .nav-links { display: flex; list-style: none; gap: 26px; align-items: center; }
+    .nav-links { display: flex; list-style: none; gap: 22px; align-items: center; }
     .nav-links a { text-decoration: none; color: var(--text-dark); font-weight: 700; font-size: 0.95rem; transition: color 0.2s; }
     .nav-links a:hover, .nav-links a.active { color: var(--acej-blue); }
 
@@ -277,7 +277,7 @@
     .site-footer {
       background: #002D6E;
       color: #ffffff;
-      padding: 60px 6% 30px;
+      padding: 70px 6% 30px;
       border-top: 5px solid var(--acej-gold);
     }
     .footer-container {
@@ -377,6 +377,7 @@
       </div>
     </a>
 
+    <!-- MAIN NAVIGATION LINKS (CLEAN LIST) -->
     <ul class="nav-links" id="navLinks">
       <li><a href="/">Home</a></li>
       <li><a href="/about/">About</a></li>
@@ -385,13 +386,11 @@
       <li><a href="/payment/">Fees &amp; Payment</a></li>
       <li><a href="/news/glf-rwanda/" class="active">News</a></li>
       <li><a href="/contact/">Contact</a></li>
-      <!-- Mobile Drawer Portal Access -->
-      <li><a href="/portal/"><i class="fa-solid fa-user-graduate"></i> Student &amp; Staff Portal</a></li>
     </ul>
 
     <div class="nav-actions">
       <a href="/contact/" class="btn-apply">Apply Now</a>
-      <!-- Desktop Direct Root Portal Route -->
+      <!-- EXCLUSIVE ACCESS TO PORTAL VIA DEDICATED BUTTON -->
       <a href="/portal/" class="btn-portal"><i class="fa-solid fa-user"></i> Portal</a>
       <button class="menu-toggle" id="menuToggle" aria-label="Toggle navigation menu">
         <i class="fa-solid fa-bars" id="menuIcon"></i>
@@ -511,12 +510,22 @@
       </div>
 
       <div class="footer-col">
-        <h3>Admissions &amp; Portal</h3>
+        <h3>Admissions &amp; Fees</h3>
         <ul class="footer-links">
-          <li><a href="/portal/">&rsaquo; Student &amp; Staff Portal</a></li>
+          <li><a href="/payment/">&rsaquo; Fees Portal &amp; 95,500 RWF Rate</a></li>
           <li><a href="/contact/">&rsaquo; New Student Registration</a></li>
           <li><a href="/academics/">&rsaquo; Levels 3, 4 &amp; 5 Entry</a></li>
           <li><a href="/payment/">&rsaquo; School Fee Structures</a></li>
+        </ul>
+      </div>
+
+      <div class="footer-col">
+        <h3>Academics &amp; Portal</h3>
+        <ul class="footer-links">
+          <li><a href="/portal/">&rsaquo; Student &amp; Staff Portal</a></li>
+          <li><a href="/academics/">&rsaquo; Networking &amp; IT (NIT)</a></li>
+          <li><a href="/academics/">&rsaquo; Computer Systems (CSA)</a></li>
+          <li><a href="/academics/">&rsaquo; Accounting &amp; Finance</a></li>
         </ul>
       </div>
 
@@ -549,16 +558,18 @@
       var navLinks = document.getElementById('navLinks');
       var menuIcon = document.getElementById('menuIcon');
 
-      menuToggle.addEventListener('click', function() {
-        navLinks.classList.toggle('active-menu');
-        if (navLinks.classList.contains('active-menu')) {
-          menuIcon.classList.remove('fa-bars');
-          menuIcon.classList.add('fa-xmark');
-        } else {
-          menuIcon.classList.remove('fa-xmark');
-          menuIcon.classList.add('fa-bars');
-        }
-      });
+      if (menuToggle && navLinks) {
+        menuToggle.addEventListener('click', function() {
+          navLinks.classList.toggle('active-menu');
+          if (navLinks.classList.contains('active-menu')) {
+            menuIcon.classList.remove('fa-bars');
+            menuIcon.classList.add('fa-xmark');
+          } else {
+            menuIcon.classList.remove('fa-xmark');
+            menuIcon.classList.add('fa-bars');
+          }
+        });
+      }
     })();
   </script>
 
