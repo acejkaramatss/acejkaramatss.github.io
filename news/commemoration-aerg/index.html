@@ -5,8 +5,13 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Kwibuka &amp; AERG Itetero Remembrance | ACEJ KARAMA TSS</title>
   <meta name="description" content="ACEJ Karama TSS marks the 1994 Genocide against the Tutsi commemoration and AERG Itetero educational pilgrimage to Nyanza-Kicukiro Genocide Memorial.">
-  <link rel="icon" type="image/png" href="/logo.png">
+  
+  <!-- Official School Crest Favicon -->
+  <link rel="icon" type="image/png" href="/logo.png?v=3">
+  <link rel="shortcut icon" type="image/png" href="/logo.png?v=3">
+  <link rel="apple-touch-icon" href="/logo.png?v=3">
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+  
   <style>
     :root {
       --acej-blue: #0047AB;
@@ -73,6 +78,10 @@
       letter-spacing: 0.5px;
       transition: all 0.2s;
     }
+    .btn-apply:hover {
+      background: var(--acej-gold-hover);
+      transform: translateY(-2px);
+    }
     .btn-portal {
       background: var(--acej-blue);
       color: var(--white);
@@ -84,6 +93,11 @@
       display: flex;
       align-items: center;
       gap: 6px;
+      transition: all 0.2s;
+    }
+    .btn-portal:hover {
+      background: var(--acej-dark-blue);
+      transform: translateY(-2px);
     }
     .menu-toggle { display: none; background: none; border: none; color: var(--acej-blue); font-size: 1.6rem; cursor: pointer; }
 
@@ -329,7 +343,7 @@
         overflow: hidden;
         transition: max-height 0.35s ease-in-out;
       }
-      .nav-links.active-menu { max-height: 380px; border-bottom: 3px solid var(--acej-gold); }
+      .nav-links.active-menu { max-height: 440px; border-bottom: 3px solid var(--acej-gold); }
       .nav-links li { width: 100%; border-top: 1px solid #f1f5f9; }
       .nav-links a { display: block; padding: 15px 6%; color: var(--acej-dark-blue); }
       .featured-lead-image { height: 320px; }
@@ -368,13 +382,17 @@
       <li><a href="/about/">About</a></li>
       <li><a href="/academics/">Academics</a></li>
       <li><a href="/staff/">Staff</a></li>
+      <li><a href="/payment/">Fees &amp; Payment</a></li>
       <li><a href="/news/glf-rwanda/" class="active">News</a></li>
       <li><a href="/contact/">Contact</a></li>
+      <!-- Mobile Drawer Portal Access -->
+      <li><a href="/portal/"><i class="fa-solid fa-user-graduate"></i> Student &amp; Staff Portal</a></li>
     </ul>
 
     <div class="nav-actions">
       <a href="/contact/" class="btn-apply">Apply Now</a>
-      <a href="#" class="btn-portal"><i class="fa-solid fa-user"></i> Portal</a>
+      <!-- Desktop Direct Root Portal Route -->
+      <a href="/portal/" class="btn-portal"><i class="fa-solid fa-user"></i> Portal</a>
       <button class="menu-toggle" id="menuToggle" aria-label="Toggle navigation menu">
         <i class="fa-solid fa-bars" id="menuIcon"></i>
       </button>
@@ -493,11 +511,12 @@
       </div>
 
       <div class="footer-col">
-        <h3>Admissions</h3>
+        <h3>Admissions &amp; Portal</h3>
         <ul class="footer-links">
+          <li><a href="/portal/">&rsaquo; Student &amp; Staff Portal</a></li>
           <li><a href="/contact/">&rsaquo; New Student Registration</a></li>
           <li><a href="/academics/">&rsaquo; Levels 3, 4 &amp; 5 Entry</a></li>
-          <li><a href="/contact/">&rsaquo; School Fee Structures</a></li>
+          <li><a href="/payment/">&rsaquo; School Fee Structures</a></li>
         </ul>
       </div>
 
@@ -514,7 +533,7 @@
 
     <div class="footer-bottom">
       <div>&copy; 2026 ACEJ KARAMA TSS &bull; All Rights Reserved. Code: 0207030</div>
-      <div>Accredited by Rwanda TVET Board (RTQB)</div>
+      <div>Accredited by Rwanda TVET Board (RTB)</div>
     </div>
   </footer>
 
