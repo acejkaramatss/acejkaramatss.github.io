@@ -68,7 +68,7 @@
     .brand-text h1 { font-size: 1.25rem; color: var(--acej-blue); font-weight: 800; line-height: 1.1; }
     .brand-text p { font-size: 0.65rem; color: #b45309; font-weight: 700; letter-spacing: 1px; text-transform: uppercase; }
 
-    .nav-user-meta { display: flex; align-items: center; gap: 14px; }
+    .nav-user-meta { display: flex; align-items: center; gap: 12px; }
     .role-badge-pill {
       background: #eff6ff;
       color: #1d4ed8;
@@ -110,12 +110,52 @@
       font-weight: 700;
       border: 1px solid var(--border-color);
       cursor: pointer;
+      transition: all 0.2s;
     }
     .btn-nav-act:hover { background: #e2e8f0; }
 
     .portal-main-area { max-width: 1240px; margin: 25px auto 60px; padding: 0 20px; width: 100%; flex-grow: 1; }
 
-    /* AUTHENTICATION FORM WITH INLINE VALIDATION */
+    /* EMBEDDED PUSH NOTIFICATION BANNER */
+    .embedded-notice-card {
+      display: none;
+      background: #fffbeb;
+      border: 1.5px solid #fde68a;
+      border-left: 6px solid #f59e0b;
+      border-radius: 14px;
+      padding: 18px 22px;
+      margin-bottom: 25px;
+      box-shadow: var(--shadow-sm);
+      animation: fadeIn 0.3s ease-out;
+    }
+    .notice-header-row {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-bottom: 6px;
+    }
+    .notice-header-row h4 {
+      color: #92400e;
+      font-size: 1.05rem;
+      font-weight: 800;
+      display: flex;
+      align-items: center;
+      gap: 10px;
+    }
+    .notice-badge {
+      background: #fef3c7;
+      color: #b45309;
+      font-size: 0.72rem;
+      font-weight: 800;
+      padding: 3px 8px;
+      border-radius: 6px;
+      text-transform: uppercase;
+      letter-spacing: 0.5px;
+    }
+    .notice-body-text { color: #78350f; font-size: 0.94rem; line-height: 1.5; }
+    .notice-footer-meta { font-size: 0.78rem; color: #b45309; margin-top: 8px; font-weight: 600; }
+
+    /* AUTHENTICATION FORM (FACEBOOK-STYLE ERROR VALIDATION) */
     .login-container {
       max-width: 460px;
       margin: 30px auto;
@@ -171,7 +211,6 @@
     }
     .input-control:focus { border-color: var(--acej-blue); box-shadow: 0 0 0 3px rgba(30, 58, 138, 0.1); }
     
-    /* FACEBOOK INLINE ERROR STYLING */
     .input-control.has-error { border-color: #dc2626 !important; background-color: #fffafb; }
     .inline-error-message {
       display: none;
@@ -217,7 +256,7 @@
       padding: 0;
     }
 
-    /* EDTECH DASHBOARD STYLING */
+    /* EDTECH DASHBOARD STYLES */
     .edtech-welcome-banner {
       background: var(--edtech-gradient);
       color: var(--white);
@@ -225,9 +264,30 @@
       padding: 32px 35px;
       margin-bottom: 25px;
       box-shadow: var(--shadow-md);
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      flex-wrap: wrap;
+      gap: 15px;
     }
     .edtech-welcome-banner h2 { font-size: 2.1rem; font-weight: 900; letter-spacing: -0.5px; }
     .edtech-welcome-banner p { font-size: 1rem; color: #e0e7ff; margin-top: 4px; }
+    
+    .btn-edit-profile-hero {
+      background: rgba(255, 255, 255, 0.2);
+      color: #ffffff;
+      border: 1.5px solid rgba(255, 255, 255, 0.4);
+      padding: 9px 18px;
+      border-radius: 20px;
+      font-weight: 700;
+      font-size: 0.88rem;
+      cursor: pointer;
+      display: inline-flex;
+      align-items: center;
+      gap: 8px;
+      transition: all 0.2s;
+    }
+    .btn-edit-profile-hero:hover { background: #ffffff; color: var(--acej-blue); }
 
     .edtech-tiles-grid {
       display: grid;
@@ -263,7 +323,6 @@
       font-size: 1.3rem;
     }
 
-    /* EDTECH QUICK ACTIONS */
     .edtech-quick-actions-panel {
       background: var(--white);
       border: 1px solid var(--border-color);
@@ -299,7 +358,6 @@
     .btn-quick-action.qa-blue i { color: #2563eb; font-size: 1.5rem; }
     .btn-quick-action.qa-purple i { color: #8b5cf6; font-size: 1.5rem; }
 
-    /* PANELS & TABLES */
     .content-panel {
       background: var(--white);
       border: 1px solid var(--border-color);
@@ -339,7 +397,6 @@
     
     .grade-badge { display: inline-block; padding: 4px 10px; border-radius: 6px; font-weight: 800; font-size: 0.78rem; }
     .grade-competent { background: #ecfdf5; color: #047857; }
-    .grade-pending { background: #fffbeb; color: #b45309; }
 
     .grade-input {
       width: 65px;
@@ -361,10 +418,11 @@
     }
     .modal-card {
       background: var(--white);
-      max-width: 560px; width: 100%;
+      max-width: 540px; width: 100%;
       border-radius: 16px; padding: 28px;
       box-shadow: var(--shadow-lg);
       max-height: 90vh; overflow-y: auto;
+      animation: popIn 0.3s ease-out;
     }
     .modal-card h3 { font-size: 1.35rem; font-weight: 800; color: var(--acej-dark-blue); margin-bottom: 15px; }
 
@@ -391,6 +449,24 @@
       font-size: 0.88rem;
     }
 
+    /* SYSTEM SIMULATION TOAST */
+    .otp-toast-banner {
+      position: fixed;
+      top: 25px;
+      right: 25px;
+      background: #0f172a;
+      color: #ffffff;
+      border-left: 5px solid var(--acej-gold);
+      padding: 16px 20px;
+      border-radius: 12px;
+      box-shadow: var(--shadow-lg);
+      z-index: 4000;
+      display: none;
+      animation: popIn 0.3s ease-out;
+      max-width: 360px;
+    }
+    .otp-toast-banner strong { color: var(--acej-gold); }
+
     .portal-footer {
       background: var(--acej-dark-blue);
       color: #94a3b8;
@@ -400,6 +476,9 @@
       border-top: 3px solid var(--acej-gold);
       margin-top: auto;
     }
+
+    @keyframes fadeIn { from { opacity: 0; transform: translateY(8px); } to { opacity: 1; transform: translateY(0); } }
+    @keyframes popIn { from { opacity: 0; transform: scale(0.95); } to { opacity: 1; transform: scale(1); } }
   </style>
 </head>
 <body>
@@ -443,7 +522,7 @@
 
   <main class="portal-main-area">
 
-    <!-- 1. LOGIN FORM WITH INLINE VALIDATION -->
+    <!-- 1. LOGIN CONTAINER -->
     <div class="login-container" id="loginBox">
       <div class="login-header">
         <h2>Institutional Portal</h2>
@@ -484,8 +563,8 @@
           </button>
 
           <div class="login-helper-row">
-            <button type="button" class="forgot-pwd-link" onclick="openForgotModal()">
-              <i class="fa-solid fa-key"></i> Forgot Password / Request Reset?
+            <button type="button" class="forgot-pwd-link" onclick="openSelfServiceOtpModal()">
+              <i class="fa-solid fa-key"></i> Forgot Password / Reset PIN?
             </button>
             <span style="color: var(--text-muted); font-size: 0.8rem;">RTB CBT/CBA System</span>
           </div>
@@ -493,13 +572,28 @@
       </div>
     </div>
 
-    <!-- 2. TEACHER DASHBOARD (EDTECH LAYOUT + COHORT MANAGEMENT) -->
+    <!-- 2. TEACHER DASHBOARD -->
     <div id="staffDashboard" style="display: none;">
       
-      <!-- HERO WELCOME BANNER -->
+      <!-- BROADCAST CARD EMBEDDED INSIDE TRAINER VIEW -->
+      <div class="embedded-notice-card" id="staffNoticeBanner">
+        <div class="notice-header-row">
+          <h4><i class="fa-solid fa-bullhorn" style="color: #d97706;"></i> <span id="staffNoticeTitle">Campus Announcement</span></h4>
+          <span class="notice-badge">Official Admin Notice</span>
+        </div>
+        <div class="notice-body-text" id="staffNoticeBody"></div>
+        <div class="notice-footer-meta" id="staffNoticeMeta"></div>
+      </div>
+
+      <!-- HERO BANNER -->
       <div class="edtech-welcome-banner">
-        <h2 id="trainerHeroTitle">Welcome, Trainer!</h2>
-        <p id="trainerHeroSub">Managing classes, students, and course deployments.</p>
+        <div>
+          <h2 id="trainerHeroTitle">Welcome, Trainer!</h2>
+          <p id="trainerHeroSub">Managing classes, students, and course deployments.</p>
+        </div>
+        <button class="btn-edit-profile-hero" onclick="openProfileUpdateModal()">
+          <i class="fa-solid fa-user-pen"></i> Edit Profile &amp; Password
+        </button>
       </div>
 
       <!-- STATUS TILES -->
@@ -560,7 +654,7 @@
         </div>
       </div>
 
-      <!-- SECTION 1: DYNAMIC CLASS STUDENTS, MARKS & ATTENDANCE -->
+      <!-- SECTION: STUDENT ROSTER, MARKS & ATTENDANCE -->
       <div class="content-panel" id="gradebookSection">
         <div class="panel-header-row">
           <h3>
@@ -584,14 +678,12 @@
                 <th>Status</th>
               </tr>
             </thead>
-            <tbody id="trainerGradebookTbody">
-              <!-- Dynamically populated from ACEJ_PORTAL_USERS_DB -->
-            </tbody>
+            <tbody id="trainerGradebookTbody"></tbody>
           </table>
         </div>
       </div>
 
-      <!-- SECTION 2: PUBLISHED COURSES & NOTES (SAVED TO PORTAL) -->
+      <!-- SECTION: PUBLISHED COURSES & NOTES -->
       <div class="content-panel">
         <div class="panel-header-row">
           <h3><i class="fa-solid fa-folder-open" style="color: #2563eb;"></i> Published Courses &amp; Learning Materials</h3>
@@ -611,9 +703,7 @@
                 <th>Action</th>
               </tr>
             </thead>
-            <tbody id="trainerCoursesTbody">
-              <!-- Dynamically populated from ACEJ_PORTAL_COURSES_DB -->
-            </tbody>
+            <tbody id="trainerCoursesTbody"></tbody>
           </table>
         </div>
       </div>
@@ -623,13 +713,28 @@
     <!-- 3. STUDENT DASHBOARD -->
     <div id="studentDashboard" style="display: none;">
       
-      <!-- STUDENT WELCOME BANNER -->
-      <div class="edtech-welcome-banner" style="background: linear-gradient(135deg, #0f2847 0%, #1e3a8a 100%);">
-        <h2 id="studentHeroTitle">Welcome Student!</h2>
-        <p id="studentHeroSub">Level 5 • NIT &bull; Reg: ID</p>
+      <!-- BROADCAST CARD EMBEDDED INSIDE STUDENT VIEW -->
+      <div class="embedded-notice-card" id="studentNoticeBanner">
+        <div class="notice-header-row">
+          <h4><i class="fa-solid fa-bullhorn" style="color: #d97706;"></i> <span id="studentNoticeTitle">Campus Announcement</span></h4>
+          <span class="notice-badge">Official Admin Notice</span>
+        </div>
+        <div class="notice-body-text" id="studentNoticeBody"></div>
+        <div class="notice-footer-meta" id="studentNoticeMeta"></div>
       </div>
 
-      <!-- STUDENT ATTENDANCE & SUMMARY TILES -->
+      <!-- HERO BANNER -->
+      <div class="edtech-welcome-banner" style="background: linear-gradient(135deg, #0f2847 0%, #1e3a8a 100%);">
+        <div>
+          <h2 id="studentHeroTitle">Welcome Student!</h2>
+          <p id="studentHeroSub">Level 5 • NIT &bull; Reg: ID</p>
+        </div>
+        <button class="btn-edit-profile-hero" onclick="openProfileUpdateModal()">
+          <i class="fa-solid fa-user-pen"></i> Edit Profile &amp; Password
+        </button>
+      </div>
+
+      <!-- SUMMARY TILES -->
       <div class="edtech-tiles-grid">
         <div class="edtech-card edtech-card-green">
           <div class="edtech-card-info">
@@ -659,7 +764,7 @@
         </div>
       </div>
 
-      <!-- STUDENT MODULE MARKS TABLE -->
+      <!-- MODULE MARKS TABLE -->
       <div class="content-panel">
         <div class="panel-header-row">
           <h3><i class="fa-solid fa-book-bookmark" style="color: #2563eb;"></i> Module Marks &amp; Assessment</h3>
@@ -676,14 +781,12 @@
                 <th>Total / Status</th>
               </tr>
             </thead>
-            <tbody id="studentMarksTbody">
-              <!-- Dynamically populated from ACEJ_STUDENT_GRADES_DB -->
-            </tbody>
+            <tbody id="studentMarksTbody"></tbody>
           </table>
         </div>
       </div>
 
-      <!-- STUDENT SHARED NOTES & MATERIALS FROM TEACHERS -->
+      <!-- SHARED NOTES & MATERIALS FROM TEACHERS -->
       <div class="content-panel">
         <div class="panel-header-row">
           <h3><i class="fa-solid fa-download" style="color: #2563eb;"></i> Shared Notes &amp; Course Materials from Teachers</h3>
@@ -699,9 +802,7 @@
                 <th>Action</th>
               </tr>
             </thead>
-            <tbody id="studentSharedNotesTbody">
-              <!-- Dynamically shown from ACEJ_PORTAL_COURSES_DB matching class -->
-            </tbody>
+            <tbody id="studentSharedNotesTbody"></tbody>
           </table>
         </div>
       </div>
@@ -709,6 +810,92 @@
     </div>
 
   </main>
+
+  <!-- MODAL: ON-DEMAND PROFILE & PASSWORD UPDATE -->
+  <div class="modal-backdrop" id="profileUpdateModal">
+    <div class="modal-card">
+      <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:15px;">
+        <h3><i class="fa-solid fa-user-gear" style="color: #2563eb;"></i> Account Profile &amp; Security</h3>
+        <button onclick="closeProfileUpdateModal()" style="background:none; border:none; font-size:1.5rem; cursor:pointer;">&times;</button>
+      </div>
+
+      <form onsubmit="handleSaveOwnProfile(event)">
+        <div class="form-group">
+          <label>Full Name</label>
+          <input type="text" id="profFullName" class="input-control" required>
+        </div>
+
+        <div class="form-group">
+          <label>Mobile Telephone (For verification &amp; alerts)</label>
+          <input type="tel" id="profPhone" class="input-control" placeholder="e.g. 0788123456" required>
+        </div>
+
+        <div class="form-group">
+          <label>Email Address</label>
+          <input type="email" id="profEmail" class="input-control" placeholder="e.g. user@domain.rw">
+        </div>
+
+        <div class="form-group">
+          <label>Update Password (Leave blank to keep current password)</label>
+          <input type="password" id="profNewPass" class="input-control" placeholder="Type new password">
+        </div>
+
+        <button type="submit" class="btn-login-submit">
+          <i class="fa-solid fa-floppy-disk"></i> Save Profile Changes
+        </button>
+      </form>
+    </div>
+  </div>
+
+  <!-- MODAL: SELF-SERVICE OTP PASSWORD RESET -->
+  <div class="modal-backdrop" id="selfOtpModal">
+    <div class="modal-card">
+      <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:15px;">
+        <h3><i class="fa-solid fa-shield-halved" style="color: #2563eb;"></i> Self-Service Password Reset</h3>
+        <button onclick="closeSelfOtpModal()" style="background:none; border:none; font-size:1.5rem; cursor:pointer;">&times;</button>
+      </div>
+
+      <!-- STEP 1: ENTER USER IDENTIFIER -->
+      <div id="otpStep1">
+        <p style="font-size:0.9rem; color:#475569; margin-bottom:15px;">
+          Enter your Registration ID, Email, or Telephone number to receive a 6-digit one-time verification code (OTP).
+        </p>
+        <div class="form-group">
+          <label>Account ID / Phone / Email</label>
+          <input type="text" id="otpAccountInput" class="input-control" placeholder="e.g. noheri or 0788..." required>
+          <div class="inline-error-message" id="otpStep1Error">
+            <i class="fa-solid fa-circle-exclamation"></i>
+            <span>No account found matching this identifier. Please verify and try again.</span>
+          </div>
+        </div>
+        <button type="button" class="btn-login-submit" onclick="requestOtpCode()">
+          <i class="fa-solid fa-paper-plane"></i> Send OTP Verification Code
+        </button>
+      </div>
+
+      <!-- STEP 2: VERIFY OTP & ENTER NEW PASSWORD -->
+      <div id="otpStep2" style="display: none;">
+        <p style="font-size:0.9rem; color:#475569; margin-bottom:15px;">
+          A 6-digit OTP code has been dispatched. Enter the code along with your new password below.
+        </p>
+        <div class="form-group">
+          <label>6-Digit OTP Code</label>
+          <input type="text" id="otpCodeInput" class="input-control" placeholder="e.g. 583921" maxlength="6" required>
+          <div class="inline-error-message" id="otpCodeError">
+            <i class="fa-solid fa-circle-exclamation"></i>
+            <span>Invalid OTP code. Please verify the 6 digits.</span>
+          </div>
+        </div>
+        <div class="form-group">
+          <label>Set New Password</label>
+          <input type="password" id="otpNewPassInput" class="input-control" placeholder="Minimum 6 characters" required>
+        </div>
+        <button type="button" class="btn-login-submit" onclick="verifyAndResetPassword()">
+          <i class="fa-solid fa-check"></i> Set New Password &amp; Log In
+        </button>
+      </div>
+    </div>
+  </div>
 
   <!-- MODAL: PUBLISH NEW NOTES / COURSE -->
   <div class="modal-backdrop" id="publishModal">
@@ -757,32 +944,12 @@
     </div>
   </div>
 
-  <!-- PASSWORD RESET REQUEST MODAL -->
-  <div class="modal-backdrop" id="forgotModal">
-    <div class="modal-card">
-      <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:15px;">
-        <h3><i class="fa-solid fa-key" style="color: #2563eb;"></i> Password Reset Request</h3>
-        <button onclick="closeForgotModal()" style="background:none; border:none; font-size:1.5rem; cursor:pointer;">&times;</button>
-      </div>
-
-      <form onsubmit="handleSendResetRequest(event)">
-        <div class="form-group">
-          <label>Registration ID or Username</label>
-          <input type="text" id="resetReqUser" class="input-control" placeholder="e.g. noheri" required>
-        </div>
-        <div class="form-group">
-          <label>Contact Mobile Phone</label>
-          <input type="tel" id="resetReqPhone" class="input-control" placeholder="e.g. 0788123456" required>
-        </div>
-        <div class="form-group">
-          <label>Reason</label>
-          <input type="text" id="resetReqReason" class="input-control" placeholder="Forgot password" required>
-        </div>
-        <button type="submit" class="btn-login-submit">
-          <i class="fa-solid fa-paper-plane"></i> Submit to Administration
-        </button>
-      </form>
+  <!-- DISPATCH NOTIFICATION TOAST -->
+  <div class="otp-toast-banner" id="otpToast">
+    <div style="font-size:0.82rem; text-transform:uppercase; font-weight:800; letter-spacing:1px; margin-bottom:4px;">
+      <i class="fa-solid fa-mobile-screen"></i> SMS / Email Delivery Gateway
     </div>
+    <div id="otpToastText">Your verification OTP code is: <strong>583921</strong></div>
   </div>
 
   <footer class="portal-footer">
@@ -795,14 +962,24 @@
     var activeSessionUser = null;
     var selectedAttachmentName = "";
 
+    // OTP State Variables
+    var currentOtpTargetUser = null;
+    var generatedOtpCode = null;
+
     const DB_USERS_KEY = "ACEJ_PORTAL_USERS_DB";
     const DB_COURSES_KEY = "ACEJ_PORTAL_COURSES_DB";
     const DB_GRADES_KEY = "ACEJ_STUDENT_GRADES_DB";
+    const NOTICE_STORAGE_KEY = "ACEJ_PORTAL_BROADCAST";
+    const SESSION_STORAGE_KEY = "ACEJ_ACTIVE_SESSION";
 
     // 1. Storage Helpers
     function getUsersDB() {
       var stored = localStorage.getItem(DB_USERS_KEY);
       return stored ? JSON.parse(stored) : [];
+    }
+
+    function saveUsersDB(users) {
+      localStorage.setItem(DB_USERS_KEY, JSON.stringify(users));
     }
 
     function getCoursesDB() {
@@ -857,7 +1034,32 @@
       document.getElementById('passwordInlineError').style.display = 'none';
     }
 
-    // 3. Login Workflow
+    // 3. PERSISTENT SESSION AUTO-RESTORE (PREVENTS LOGOUT ON REFRESH)
+    window.addEventListener('DOMContentLoaded', function() {
+      // Check if user impersonated from Admin
+      var impersonated = localStorage.getItem("ACEJ_IMPERSONATE_USER");
+      if (impersonated) {
+        localStorage.removeItem("ACEJ_IMPERSONATE_USER");
+        var userObj = JSON.parse(impersonated);
+        sessionStorage.setItem(SESSION_STORAGE_KEY, JSON.stringify(userObj));
+        activeSessionUser = userObj;
+        showUserDashboard(userObj);
+        return;
+      }
+
+      // Check if session exists in sessionStorage
+      var existingSession = sessionStorage.getItem(SESSION_STORAGE_KEY);
+      if (existingSession) {
+        var userObj = JSON.parse(existingSession);
+        // Refresh with latest data from database
+        var currentDB = getUsersDB();
+        var refreshed = currentDB.find(function(u) { return u.id === userObj.id; });
+        activeSessionUser = refreshed || userObj;
+        showUserDashboard(activeSessionUser);
+      }
+    });
+
+    // 4. Login Workflow
     function handlePortalLogin(e) {
       e.preventDefault();
       clearInlineLoginErrors();
@@ -884,10 +1086,12 @@
       }
 
       activeSessionUser = userMatch;
+      // Persist to session storage so refresh does not log out
+      sessionStorage.setItem(SESSION_STORAGE_KEY, JSON.stringify(userMatch));
       showUserDashboard(userMatch);
     }
 
-    // 4. Dashboard View Rendering
+    // 5. Dashboard View Rendering
     function showUserDashboard(matched) {
       document.getElementById('loginBox').style.display = 'none';
       document.getElementById('btnSignOut').style.display = 'inline-flex';
@@ -897,10 +1101,39 @@
       document.getElementById('navUserAvatar').innerText = matched.name.charAt(0).toUpperCase();
       document.getElementById('navUserName').innerText = matched.name;
 
+      // Render Broadcast Announcement directly into the active dashboard
+      renderActiveBroadcastForUser();
+
       if (matched.role === 'student') {
         renderStudentView(matched);
       } else {
         renderTrainerView(matched);
+      }
+    }
+
+    // RENDER EMBEDDED BROADCAST BANNER INSIDE ACTIVE VIEW
+    function renderActiveBroadcastForUser() {
+      var stored = localStorage.getItem(NOTICE_STORAGE_KEY);
+      var staffBanner = document.getElementById('staffNoticeBanner');
+      var studentBanner = document.getElementById('studentNoticeBanner');
+
+      if (stored) {
+        var n = JSON.parse(stored);
+        
+        // Staff banner setup
+        document.getElementById('staffNoticeTitle').innerText = n.title;
+        document.getElementById('staffNoticeBody').innerText = n.body;
+        document.getElementById('staffNoticeMeta').innerText = 'Published by ' + (n.author || 'School Administration') + ' • ' + (n.date || 'Recent');
+        staffBanner.style.display = 'block';
+
+        // Student banner setup
+        document.getElementById('studentNoticeTitle').innerText = n.title;
+        document.getElementById('studentNoticeBody').innerText = n.body;
+        document.getElementById('studentNoticeMeta').innerText = 'Published by ' + (n.author || 'School Administration') + ' • ' + (n.date || 'Recent');
+        studentBanner.style.display = 'block';
+      } else {
+        staffBanner.style.display = 'none';
+        studentBanner.style.display = 'none';
       }
     }
 
@@ -917,8 +1150,8 @@
       var gradesDB = getGradesDB();
       var studentRecord = gradesDB[student.username.toLowerCase()] || {
         attendance: "Present",
-        continuous: 38,
-        practical: 54
+        continuous: 40,
+        practical: 55
       };
 
       document.getElementById('studentAttDisplay').innerText = studentRecord.attendance;
@@ -929,7 +1162,7 @@
       marksTbody.innerHTML = `
         <tr>
           <td><strong>${student.dept || 'NIT'}-501</strong></td>
-          <td>Telcom & Advanced Routing Lab</td>
+          <td>Telcom &amp; Advanced Routing Lab</td>
           <td>15</td>
           <td>${studentRecord.continuous} / 40</td>
           <td>${studentRecord.practical} / 60</td>
@@ -977,7 +1210,6 @@
 
       document.getElementById('trainerHeroTitle').innerText = "Welcome, " + trainer.name + "!";
       
-      // Determine trainer class cohort (Default to Level 5 NIT)
       var targetClass = (trainer.level && trainer.level !== 'Faculty' ? trainer.level : "Level 5") + " " + (trainer.dept || "NIT");
       document.getElementById('statClassTitle').innerText = targetClass;
       document.getElementById('gradebookClassHeader').innerText = targetClass;
@@ -1051,7 +1283,7 @@
       });
     }
 
-    // 5. Save Class Marks & Attendance by Teacher
+    // 6. Save Class Marks & Attendance by Teacher
     function saveClassMarksAndAttendance() {
       var rows = document.querySelectorAll('#trainerGradebookTbody tr');
       var gradesDB = getGradesDB();
@@ -1072,10 +1304,10 @@
       });
 
       saveGradesDB(gradesDB);
-      alert("Class marks and attendance have been saved and synced directly to students' portals!");
+      showSystemToast("Class marks and attendance updated and synced to students!");
     }
 
-    // 6. Publish Course Notes
+    // 7. Publish Course Notes
     function openPublishCourseModal() {
       document.getElementById('publishModal').style.display = 'flex';
     }
@@ -1097,7 +1329,7 @@
       e.preventDefault();
       var cohort = document.getElementById('pubClassTarget').value;
       var title = document.getElementById('pubCourseTitle').value.trim();
-      var fileName = selectedAttachmentName || "Class_Lecture_Notes.pdf";
+      var fileName = selectedAttachmentName || "Lecture_Notes_Presentation.pptx";
 
       var courses = getCoursesDB();
       courses.unshift({
@@ -1112,8 +1344,147 @@
       saveCoursesDB(courses);
       closePublishModal();
       renderTrainerPublishedNotes();
-      alert("New course notes saved and dispatched to all enrolled students!");
+      showSystemToast("Course notes published and delivered to student portal!");
       e.target.reset();
+    }
+
+    // 8. ON-DEMAND PROFILE & PASSWORD UPDATE LOGIC
+    function openProfileUpdateModal() {
+      if (!activeSessionUser) return;
+      document.getElementById('profFullName').value = activeSessionUser.name;
+      document.getElementById('profPhone').value = activeSessionUser.phone || "";
+      document.getElementById('profEmail').value = activeSessionUser.email || "";
+      document.getElementById('profNewPass').value = "";
+      document.getElementById('profileUpdateModal').style.display = 'flex';
+    }
+
+    function closeProfileUpdateModal() {
+      document.getElementById('profileUpdateModal').style.display = 'none';
+    }
+
+    function handleSaveOwnProfile(e) {
+      e.preventDefault();
+      var name = document.getElementById('profFullName').value.trim();
+      var phone = document.getElementById('profPhone').value.trim();
+      var email = document.getElementById('profEmail').value.trim();
+      var newPass = document.getElementById('profNewPass').value.trim();
+
+      var users = getUsersDB();
+      var idx = users.findIndex(function(u) { return u.id === activeSessionUser.id; });
+
+      if (idx !== -1) {
+        users[idx].name = name;
+        users[idx].phone = phone;
+        users[idx].email = email;
+        if (newPass) {
+          users[idx].pass = newPass;
+        }
+
+        saveUsersDB(users);
+        activeSessionUser = users[idx];
+        sessionStorage.setItem(SESSION_STORAGE_KEY, JSON.stringify(activeSessionUser));
+      }
+
+      closeProfileUpdateModal();
+      showSystemToast("Your profile and security credentials have been updated!");
+      showUserDashboard(activeSessionUser);
+    }
+
+    // 9. SELF-SERVICE OTP PASSWORD RESET WORKFLOW
+    function openSelfServiceOtpModal() {
+      currentOtpTargetUser = null;
+      generatedOtpCode = null;
+      document.getElementById('otpAccountInput').value = "";
+      document.getElementById('otpCodeInput').value = "";
+      document.getElementById('otpNewPassInput').value = "";
+      document.getElementById('otpStep1Error').style.display = "none";
+      document.getElementById('otpCodeError').style.display = "none";
+      document.getElementById('otpStep1').style.display = "block";
+      document.getElementById('otpStep2').style.display = "none";
+      document.getElementById('selfOtpModal').style.display = "flex";
+    }
+
+    function closeSelfOtpModal() {
+      document.getElementById('selfOtpModal').style.display = "none";
+    }
+
+    function requestOtpCode() {
+      var query = document.getElementById('otpAccountInput').value.trim().toLowerCase();
+      document.getElementById('otpStep1Error').style.display = "none";
+
+      if (!query) {
+        document.getElementById('otpStep1Error').style.display = "flex";
+        return;
+      }
+
+      var users = getUsersDB();
+      var match = users.find(function(u) {
+        return (u.username.toLowerCase() === query) || 
+               (u.phone && u.phone.includes(query)) || 
+               (u.email && u.email.toLowerCase() === query);
+      });
+
+      if (!match) {
+        document.getElementById('otpStep1Error').style.display = "flex";
+        return;
+      }
+
+      currentOtpTargetUser = match;
+      // Generate secure 6-digit random code
+      generatedOtpCode = Math.floor(100000 + Math.random() * 900000).toString();
+
+      // Dispatch to UI Toast
+      showOtpToastNotification("OTP Code sent to " + (match.phone || match.email || match.username) + ": " + generatedOtpCode);
+
+      // Switch to Step 2
+      document.getElementById('otpStep1').style.display = "none";
+      document.getElementById('otpStep2').style.display = "block";
+    }
+
+    function verifyAndResetPassword() {
+      var enteredCode = document.getElementById('otpCodeInput').value.trim();
+      var newPass = document.getElementById('otpNewPassInput').value.trim();
+      document.getElementById('otpCodeError').style.display = "none";
+
+      if (enteredCode !== generatedOtpCode) {
+        document.getElementById('otpCodeError').style.display = "flex";
+        return;
+      }
+
+      if (!newPass || newPass.length < 5) {
+        alert("Please choose a password with at least 5 characters.");
+        return;
+      }
+
+      // Update password in DB
+      var users = getUsersDB();
+      var idx = users.findIndex(function(u) { return u.id === currentOtpTargetUser.id; });
+      if (idx !== -1) {
+        users[idx].pass = newPass;
+        saveUsersDB(users);
+        currentOtpTargetUser = users[idx];
+      }
+
+      closeSelfOtpModal();
+      showSystemToast("Password successfully reset! Logging you in...");
+
+      // Automatically log the user in
+      activeSessionUser = currentOtpTargetUser;
+      sessionStorage.setItem(SESSION_STORAGE_KEY, JSON.stringify(currentOtpTargetUser));
+      showUserDashboard(currentOtpTargetUser);
+    }
+
+    function showOtpToastNotification(msg) {
+      var toast = document.getElementById('otpToast');
+      document.getElementById('otpToastText').innerHTML = msg;
+      toast.style.display = 'block';
+      setTimeout(function() {
+        toast.style.display = 'none';
+      }, 7000);
+    }
+
+    function showSystemToast(msg) {
+      showOtpToastNotification(msg);
     }
 
     function scrollToSection(id) {
@@ -1122,39 +1493,13 @@
 
     function logoutPortal() {
       activeSessionUser = null;
+      sessionStorage.removeItem(SESSION_STORAGE_KEY);
       document.getElementById('studentDashboard').style.display = 'none';
       document.getElementById('staffDashboard').style.display = 'none';
       document.getElementById('navUserBadgeGroup').style.display = 'none';
       document.getElementById('btnSignOut').style.display = 'none';
       document.getElementById('loginBox').style.display = 'block';
       document.getElementById('portalPassword').value = '';
-    }
-
-    // Reset Request Modal
-    function openForgotModal() { document.getElementById('forgotModal').style.display = 'flex'; }
-    function closeForgotModal() { document.getElementById('forgotModal').style.display = 'none'; }
-
-    function handleSendResetRequest(e) {
-      e.preventDefault();
-      var username = document.getElementById('resetReqUser').value.trim();
-      var phone = document.getElementById('resetReqPhone').value.trim();
-      var reason = document.getElementById('resetReqReason').value.trim();
-
-      var storedReqs = localStorage.getItem("ACEJ_RESET_REQUESTS_DB");
-      var reqList = storedReqs ? JSON.parse(storedReqs) : [];
-
-      reqList.push({
-        id: Date.now().toString(),
-        username: username,
-        phone: phone,
-        reason: reason,
-        date: new Date().toLocaleDateString()
-      });
-
-      localStorage.setItem("ACEJ_RESET_REQUESTS_DB", JSON.stringify(reqList));
-      closeForgotModal();
-      alert("Reset inquiry submitted to administration. An administrator will contact you at " + phone + ".");
-      e.target.reset();
     }
   </script>
 </body>
