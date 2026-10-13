@@ -7,6 +7,8 @@
   <meta name="description" content="Super Admin user and credential management console for ACEJ Karama TSS portal.">
   
   <link rel="icon" type="image/png" href="/logo.png?v=3">
+  <link rel="shortcut icon" type="image/png" href="/logo.png?v=3">
+  <link rel="apple-touch-icon" href="/logo.png?v=3">
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
   
   <style>
@@ -32,13 +34,14 @@
     .admin-header {
       background: var(--navy);
       color: var(--white);
-      padding: 14px 5%;
+      padding: 12px 5%;
       display: flex;
       justify-content: space-between;
       align-items: center;
       border-bottom: 3px solid var(--gold);
     }
     .brand-title { display: flex; align-items: center; gap: 12px; font-weight: 800; font-size: 1.15rem; }
+    .brand-logo-img { height: 42px; width: 42px; object-fit: contain; }
     .brand-title span { color: var(--gold); }
     .header-controls { display: flex; align-items: center; gap: 12px; }
     .btn-action {
@@ -91,7 +94,7 @@
       font-size: 1rem;
     }
 
-    .admin-console { display: none; max-width: 1300px; margin: 30px auto; padding: 0 20px; width: 100%; }
+    .admin-console { display: none; max-width: 1340px; margin: 30px auto; padding: 0 20px; width: 100%; }
 
     .stats-row {
       display: grid;
@@ -105,7 +108,7 @@
 
     .grid-forms-tables {
       display: grid;
-      grid-template-columns: 380px 1fr;
+      grid-template-columns: 400px 1fr;
       gap: 25px;
       align-items: start;
     }
@@ -122,7 +125,7 @@
     
     .form-ctrl { margin-bottom: 14px; }
     .form-ctrl label { display: block; font-size: 0.85rem; font-weight: 700; color: #334155; margin-bottom: 5px; }
-    .form-ctrl input, .form-ctrl select {
+    .form-ctrl input, .form-ctrl select, .form-ctrl textarea {
       width: 100%;
       padding: 10px 12px;
       border: 1.5px solid var(--border);
@@ -131,7 +134,6 @@
       outline: none;
     }
 
-    /* PRIVILEGE CHECKBOXES */
     .privilege-box {
       background: #f8fafc;
       border: 1.5px solid var(--border);
@@ -169,18 +171,29 @@
     .role-student { background: #eff6ff; color: #1d4ed8; }
     .role-staff { background: #fef3c7; color: #b45309; }
     .role-admin { background: #f5f3ff; color: var(--purple); }
-    .role-super { background: #fee2e2; color: #b91c1c; }
     
     .badge-status { display: inline-block; padding: 3px 8px; border-radius: 4px; font-size: 0.72rem; font-weight: 800; }
     .status-active { background: #ecfdf5; color: #047857; }
     .status-disabled { background: #fef2f2; color: #b91c1c; }
 
+    .group-pill {
+      display: inline-block;
+      background: #e2e8f0;
+      color: #334155;
+      font-size: 0.72rem;
+      font-weight: 700;
+      padding: 2px 6px;
+      border-radius: 4px;
+      margin: 2px;
+    }
+
     .btn-tbl { padding: 5px 8px; border-radius: 4px; font-size: 0.78rem; font-weight: 700; border: 1px solid var(--border); background: var(--white); cursor: pointer; }
+    .btn-tbl-login { color: #047857; }
+    .btn-tbl-login:hover { background: #ecfdf5; border-color: #10b981; }
     .btn-tbl-edit { color: var(--blue); }
     .btn-tbl-edit:hover { background: #eff6ff; border-color: var(--blue); }
     .btn-tbl-del:hover { background: #fee2e2; color: #b91c1c; border-color: #fca5a5; }
 
-    /* EDIT MODAL */
     .modal-backdrop {
       position: fixed;
       top: 0; left: 0; width: 100%; height: 100%;
@@ -190,10 +203,12 @@
     }
     .modal-content {
       background: var(--white);
-      max-width: 520px; width: 100%;
+      max-width: 540px; width: 100%;
       border-radius: 14px; padding: 28px;
       box-shadow: var(--shadow-lg);
       border: 2px solid var(--gold);
+      max-height: 90vh;
+      overflow-y: auto;
     }
 
     @media (max-width: 960px) { .grid-forms-tables { grid-template-columns: 1fr; } }
@@ -201,10 +216,11 @@
 </head>
 <body>
 
+  <!-- ADMIN HEADER WITH ACEJ LOGO -->
   <header class="admin-header">
     <div class="brand-title">
-      <i class="fa-solid fa-shield-halved" style="color: var(--gold);"></i>
-      ACEJ KARAMA TSS &bull; <span>Super Admin Console</span>
+      <img src="/logo.png?v=3" alt="ACEJ Crest" class="brand-logo-img">
+      <div>ACEJ KARAMA TSS &bull; <span id="adminHeaderBadge">Super Admin Console</span></div>
     </div>
     <div class="header-controls">
       <a href="/portal/" target="_blank" class="btn-action">
@@ -221,11 +237,11 @@
     <div style="font-size: 2.4rem; color: var(--navy); margin-bottom: 12px;">
       <i class="fa-solid fa-user-shield"></i>
     </div>
-    <h2>Super Admin Portal</h2>
-    <p>Sign in with your master administrative credentials to manage accounts, privileges, and edit user profiles.</p>
+    <h2>Administrative Portal</h2>
+    <p>Sign in with your Super Admin or Assigned Officer credentials to manage users, groups, and notices.</p>
     <form onsubmit="handleAdminLogin(event)">
-      <input type="text" id="adminUser" class="auth-input" placeholder="Super Admin Username" required>
-      <input type="password" id="adminPass" class="auth-input" placeholder="Master Password" required>
+      <input type="text" id="adminUser" class="auth-input" placeholder="Admin Username" required>
+      <input type="password" id="adminPass" class="auth-input" placeholder="Password" required>
       <button type="submit" class="btn-auth-submit">
         <i class="fa-solid fa-unlock"></i> Unlock Management Console
       </button>
@@ -253,15 +269,33 @@
         <div class="stat-digit" id="statTotalAdmins" style="color: var(--purple);">0</div>
       </div>
       <div class="stat-box">
-        <div class="stat-label">Password Reset Requests</div>
+        <div class="stat-label">Password Reset Inquiries</div>
         <div class="stat-digit" id="statTotalRequests" style="color: var(--red);">0</div>
       </div>
+    </div>
+
+    <!-- BROADCAST NOTIFICATION PANEL -->
+    <div class="card-panel" style="border-left: 5px solid var(--gold);">
+      <div class="card-title" style="color: var(--navy);">
+        <i class="fa-solid fa-bullhorn" style="color: var(--gold-dark);"></i> Broadcast Announcement to All Users
+      </div>
+      <p style="font-size: 0.85rem; color: #64748b; margin-bottom: 12px;">
+        Publish an official announcement that will appear prominently on student, staff, and parent dashboards upon login.
+      </p>
+      <form onsubmit="handleSendBroadcast(event)" style="display: flex; gap: 10px; flex-wrap: wrap;">
+        <input type="text" id="broadcastTitle" placeholder="Announcement Title (e.g., Term 2 Exam Timetable Released)" style="flex: 1 1 250px; padding: 10px 12px; border: 1.5px solid var(--border); border-radius: 6px;" required>
+        <input type="text" id="broadcastBody" placeholder="Message details for students &amp; teachers..." style="flex: 2 1 350px; padding: 10px 12px; border: 1.5px solid var(--border); border-radius: 6px;" required>
+        <button type="submit" class="btn-create" style="width: auto; padding: 10px 20px;">
+          <i class="fa-solid fa-paper-plane"></i> Publish Notice
+        </button>
+      </form>
+      <div id="activeBroadcastDisplay" style="margin-top: 12px; font-size: 0.85rem;"></div>
     </div>
 
     <!-- PENDING RESET REQUESTS INBOX -->
     <div class="card-panel" style="border-left: 5px solid var(--red);">
       <div class="card-title" style="color: var(--red);">
-        <i class="fa-solid fa-bell"></i> User Password Reset Requests
+        <i class="fa-solid fa-bell"></i> Password Reset &amp; Unlock Inquiries
       </div>
       <div class="table-container">
         <table class="user-table">
@@ -281,36 +315,36 @@
 
     <div class="grid-forms-tables">
       
-      <!-- REGISTER USER FORM WITH ROLE PERMISSIONS -->
+      <!-- REGISTER USER FORM WITH MULTI-GROUP ASSIGNMENT -->
       <div>
         <div class="card-panel">
           <div class="card-title">
-            <i class="fa-solid fa-user-plus" style="color: var(--blue);"></i> Register Account &amp; Assign Role
+            <i class="fa-solid fa-user-plus" style="color: var(--blue);"></i> Register Account &amp; Groups
           </div>
           <form onsubmit="handleCreateUser(event)">
             
             <div class="form-ctrl">
               <label>Role &amp; Privilege Level</label>
               <select id="newRole" onchange="toggleFormRoleFields()">
-                <option value="student">Student / Parent (Marks &amp; Fees View)</option>
-                <option value="staff">Trainer / Teacher (Gradebook &amp; Attendance)</option>
+                <option value="student">Student / Parent (Marks &amp; Clearance)</option>
+                <option value="staff">Trainer / Teacher (Courses, Marks &amp; Tasks)</option>
                 <option value="admin">Sub-Admin / Registrar (User Management)</option>
               </select>
             </div>
 
             <div class="form-ctrl">
               <label>Full Name</label>
-              <input type="text" id="newName" placeholder="e.g. Dufitimana Clebert" required>
+              <input type="text" id="newName" placeholder="e.g., Dufitimana Clebert" required>
             </div>
 
             <div class="form-ctrl">
               <label id="lblNewUsername">Student Reg ID / Username</label>
-              <input type="text" id="newUsername" placeholder="e.g. Acej/2026/0100" required>
+              <input type="text" id="newUsername" placeholder="e.g., Acej/2026/0100" required>
             </div>
 
             <div class="form-ctrl">
               <label>Initial Temporary Password</label>
-              <input type="text" id="newPassword" placeholder="e.g. Acej#2026" required>
+              <input type="text" id="newPassword" placeholder="e.g., Acej#2026" required>
             </div>
 
             <div class="form-ctrl" id="deptGroup">
@@ -329,27 +363,32 @@
                 <option value="Level 3">Level 3 (Senior 4)</option>
                 <option value="Level 4">Level 4 (Senior 5)</option>
                 <option value="Level 5" selected>Level 5 (Senior 6 Finalist)</option>
+                <option value="Faculty">Faculty / Staff</option>
               </select>
             </div>
 
-            <!-- PRIVILEGE CHECKS -->
-            <div class="privilege-box" id="privilegeBox">
-              <div class="privilege-title"><i class="fa-solid fa-sliders"></i> Role Privileges &amp; Permissions</div>
+            <!-- MULTI-GROUP SELECTION -->
+            <div class="privilege-box">
+              <div class="privilege-title"><i class="fa-solid fa-users"></i> Assigned Groups / Associations</div>
               <div class="priv-item">
-                <input type="checkbox" id="privViewMarks" checked disabled>
-                <label for="privViewMarks">View Academic Marks &amp; Transcripts</label>
+                <input type="checkbox" id="grpClass" checked>
+                <label for="grpClass">Core Academic Class</label>
               </div>
               <div class="priv-item">
-                <input type="checkbox" id="privEnterMarks">
-                <label for="privEnterMarks">Enter &amp; Edit Module Gradebooks (Teachers)</label>
+                <input type="checkbox" id="grpAerg">
+                <label for="grpAerg">AERG Itetero Member</label>
               </div>
               <div class="priv-item">
-                <input type="checkbox" id="privManageUsers">
-                <label for="privManageUsers">Create &amp; Manage Accounts (Admins)</label>
+                <input type="checkbox" id="grpPrefect">
+                <label for="grpPrefect">Prefect / Student Leadership Council</label>
               </div>
               <div class="priv-item">
-                <input type="checkbox" id="privApproveResets">
-                <label for="privApproveResets">Reset &amp; Approve User Passwords</label>
+                <input type="checkbox" id="grpClubs">
+                <label for="grpClubs">Tech &amp; Innovation Club</label>
+              </div>
+              <div class="priv-item">
+                <input type="checkbox" id="grpBoard">
+                <label for="grpBoard">Faculty Exam &amp; Discipline Board</label>
               </div>
             </div>
 
@@ -360,11 +399,11 @@
         </div>
       </div>
 
-      <!-- USERS DIRECTORY WITH EDIT ACTION -->
+      <!-- USERS DIRECTORY WITH 1-CLICK IMPERSONATION -->
       <div class="card-panel">
         <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 15px; flex-wrap: wrap; gap: 10px;">
           <div class="card-title" style="margin-bottom: 0;">
-            <i class="fa-solid fa-users-gear" style="color: var(--blue);"></i> Registered Accounts &amp; Profiles
+            <i class="fa-solid fa-users-gear" style="color: var(--blue);"></i> Registered Accounts &amp; Folders
           </div>
           <input type="text" id="searchUser" placeholder="Search name or ID..." onkeyup="filterUsersTable()" style="padding: 7px 12px; border: 1.5px solid var(--border); border-radius: 6px; font-size: 0.85rem; width: 220px;">
         </div>
@@ -376,10 +415,9 @@
                 <th>Role</th>
                 <th>Full Name</th>
                 <th>Username</th>
-                <th>Current Password</th>
-                <th>Trade &bull; Level</th>
+                <th>Password</th>
+                <th>Assigned Groups</th>
                 <th>Status</th>
-                <th>First Login</th>
                 <th>Actions</th>
               </tr>
             </thead>
@@ -396,7 +434,7 @@
     <div class="modal-content">
       <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:15px;">
         <h3 style="color:var(--navy); font-size:1.2rem; font-weight:800;">
-          <i class="fa-solid fa-user-pen"></i> Edit User Profile &amp; Rules
+          <i class="fa-solid fa-user-pen"></i> Edit Profile &amp; Groups
         </h3>
         <button onclick="closeEditModal()" style="border:none; background:none; font-size:1.4rem; cursor:pointer;">&times;</button>
       </div>
@@ -448,6 +486,11 @@
           </select>
         </div>
 
+        <div class="form-ctrl">
+          <label>Assigned Groups (Comma Separated)</label>
+          <input type="text" id="editGroups" placeholder="e.g., Core Class, AERG, Prefect">
+        </div>
+
         <button type="submit" class="btn-create" style="margin-top:10px;">
           <i class="fa-solid fa-floppy-disk"></i> Save Changes to Database
         </button>
@@ -460,14 +503,14 @@
     const MASTER_ADMIN_PASS = "AcejAdmin@2026";
     const DB_STORAGE_KEY = "ACEJ_PORTAL_USERS_DB";
     const REQ_STORAGE_KEY = "ACEJ_RESET_REQUESTS_DB";
+    const NOTICE_STORAGE_KEY = "ACEJ_PORTAL_BROADCAST";
 
-    // Master initial database with default roles
     function getDatabase() {
       const stored = localStorage.getItem(DB_STORAGE_KEY);
       return stored ? JSON.parse(stored) : [
-        { id: "1", role: "student", name: "Dufitimana Clebert", username: "Acej/2026/0100", pass: "Dufizo@123", dept: "NIT", level: "Level 5", status: "active", phone: "0788000000", firstLogin: false, privs: { enterMarks: false, manageUsers: false, approveResets: false } },
-        { id: "2", role: "staff", name: "Muneza Germain", username: "trainer.muneza", pass: "staff123", dept: "NIT", level: "Faculty", status: "active", phone: "0783125100", firstLogin: false, privs: { enterMarks: true, manageUsers: false, approveResets: false } },
-        { id: "3", role: "staff", name: "Barihamwe Jean D'Amour", username: "trainer.barihamwe", pass: "staff123", dept: "CSA", level: "Faculty", status: "active", phone: "0788410314", firstLogin: false, privs: { enterMarks: true, manageUsers: false, approveResets: false } }
+        { id: "1", role: "student", name: "Dufitimana Clebert", username: "Acej/2026/0100", pass: "Dufizo@123", dept: "NIT", level: "Level 5", status: "active", groups: ["Core Class", "Tech Club"], firstLogin: false },
+        { id: "2", role: "staff", name: "Muneza Germain", username: "trainer.muneza", pass: "staff123", dept: "NIT", level: "Faculty", status: "active", groups: ["Exam Board", "Faculty"], firstLogin: false },
+        { id: "3", role: "staff", name: "Barihamwe Jean D'Amour", username: "trainer.barihamwe", pass: "staff123", dept: "CSA", level: "Faculty", status: "active", groups: ["Pedagogy Lead", "Faculty"], firstLogin: false }
       ];
     }
 
@@ -486,28 +529,30 @@
       renderData();
     }
 
-    // LOGIN & AUTH
     function handleAdminLogin(e) {
       e.preventDefault();
       const user = document.getElementById('adminUser').value.trim();
       const pass = document.getElementById('adminPass').value.trim();
 
-      // Check Super Admin Master or Created Sub-Admins with manageUsers privilege
       const db = getDatabase();
       const matchedAdmin = db.find(u => u.username.toLowerCase() === user.toLowerCase() && u.pass === pass && (u.role === 'admin' || u.role === 'super'));
 
-      if ((user === MASTER_ADMIN_USER && pass === MASTER_ADMIN_PASS) || (matchedAdmin && matchedAdmin.status === 'active')) {
+      if (user === MASTER_ADMIN_USER && pass === MASTER_ADMIN_PASS) {
         sessionStorage.setItem("ACEJ_ADMIN_AUTH", "true");
-        sessionStorage.setItem("ACEJ_ADMIN_IS_SUPER", (user === MASTER_ADMIN_USER).toString());
+        sessionStorage.setItem("ACEJ_ADMIN_ROLE", "Super Admin");
+        showAdminConsole();
+      } else if (matchedAdmin && matchedAdmin.status === 'active') {
+        sessionStorage.setItem("ACEJ_ADMIN_AUTH", "true");
+        sessionStorage.setItem("ACEJ_ADMIN_ROLE", "Sub-Admin (" + matchedAdmin.name + ")");
         showAdminConsole();
       } else {
-        alert("Invalid Admin credentials or unauthorized access.");
+        alert("Invalid credentials or unauthorized administrative access.");
       }
     }
 
     function adminLogout() {
       sessionStorage.removeItem("ACEJ_ADMIN_AUTH");
-      sessionStorage.removeItem("ACEJ_ADMIN_IS_SUPER");
+      sessionStorage.removeItem("ACEJ_ADMIN_ROLE");
       document.getElementById('adminDashboard').style.display = "none";
       document.getElementById('adminLoginBox').style.display = "block";
       document.getElementById('btnAdminLogout').style.display = "none";
@@ -517,41 +562,23 @@
       document.getElementById('adminLoginBox').style.display = "none";
       document.getElementById('adminDashboard').style.display = "block";
       document.getElementById('btnAdminLogout').style.display = "inline-flex";
+      document.getElementById('adminHeaderBadge').innerText = sessionStorage.getItem("ACEJ_ADMIN_ROLE") || "Super Admin";
       renderData();
     }
 
-    // TOGGLE ROLE PRIVILEGES AUTO-CHECK
     function toggleFormRoleFields() {
       const role = document.getElementById('newRole').value;
       const levelGroup = document.getElementById('levelGroup');
       const lblUser = document.getElementById('lblNewUsername');
-      
-      const privEnterMarks = document.getElementById('privEnterMarks');
-      const privManageUsers = document.getElementById('privManageUsers');
-      const privApproveResets = document.getElementById('privApproveResets');
-
       if (role === 'student') {
         lblUser.innerText = "Student Reg ID";
         levelGroup.style.display = "block";
-        privEnterMarks.checked = false;
-        privManageUsers.checked = false;
-        privApproveResets.checked = false;
-      } else if (role === 'staff') {
-        lblUser.innerText = "Staff Username";
+      } else {
+        lblUser.innerText = "Staff / Admin Username";
         levelGroup.style.display = "none";
-        privEnterMarks.checked = true;
-        privManageUsers.checked = false;
-        privApproveResets.checked = false;
-      } else if (role === 'admin') {
-        lblUser.innerText = "Admin Username";
-        levelGroup.style.display = "none";
-        privEnterMarks.checked = true;
-        privManageUsers.checked = true;
-        privApproveResets.checked = true;
       }
     }
 
-    // CREATE USER
     function handleCreateUser(e) {
       e.preventDefault();
       const db = getDatabase();
@@ -567,6 +594,13 @@
         return;
       }
 
+      const assignedGroups = [];
+      if (document.getElementById('grpClass').checked) assignedGroups.push("Core Class");
+      if (document.getElementById('grpAerg').checked) assignedGroups.push("AERG");
+      if (document.getElementById('grpPrefect').checked) assignedGroups.push("Prefect");
+      if (document.getElementById('grpClubs').checked) assignedGroups.push("Tech Club");
+      if (document.getElementById('grpBoard').checked) assignedGroups.push("Board");
+
       db.push({
         id: Date.now().toString(),
         role: role,
@@ -576,22 +610,26 @@
         dept: dept,
         level: level,
         status: "active",
-        phone: "",
-        firstLogin: true,
-        privs: {
-          enterMarks: document.getElementById('privEnterMarks').checked,
-          manageUsers: document.getElementById('privManageUsers').checked,
-          approveResets: document.getElementById('privApproveResets').checked
-        }
+        groups: assignedGroups,
+        firstLogin: true
       });
 
       saveDatabase(db);
-      alert(`User ${name} registered successfully with ${role.toUpperCase()} privileges!`);
+      alert(`User ${name} registered successfully with ${assignedGroups.length} assigned groups.`);
       e.target.reset();
       toggleFormRoleFields();
     }
 
-    // EDIT USER MODAL LOGIC
+    // 1-CLICK IMPERSONATION (OPEN USER VIEW)
+    function impersonateUser(username) {
+      const db = getDatabase();
+      const user = db.find(u => u.username.toLowerCase() === username.toLowerCase());
+      if (user) {
+        localStorage.setItem("ACEJ_IMPERSONATE_USER", JSON.stringify(user));
+        window.open("/portal/", "_blank");
+      }
+    }
+
     function openEditModal(userId) {
       const db = getDatabase();
       const user = db.find(u => u.id === userId);
@@ -604,6 +642,7 @@
       document.getElementById('editDepartment').value = user.dept || "NIT";
       document.getElementById('editLevel').value = user.level || "Level 4";
       document.getElementById('editRole').value = user.role || "student";
+      document.getElementById('editGroups').value = (user.groups || []).join(", ");
 
       document.getElementById('editModal').style.display = "flex";
     }
@@ -625,9 +664,10 @@
         user.dept = document.getElementById('editDepartment').value;
         user.level = document.getElementById('editLevel').value;
         user.role = document.getElementById('editRole').value;
+        user.groups = document.getElementById('editGroups').value.split(",").map(g => g.trim()).filter(Boolean);
 
         saveDatabase(db);
-        alert(`User ${user.name} updated successfully!`);
+        alert(`Account ${user.name} updated successfully!`);
         closeEditModal();
       }
     }
@@ -642,11 +682,46 @@
     }
 
     function deleteUser(id) {
-      if (confirm("Are you sure you want to delete this user?")) {
+      if (confirm("Delete this user permanently?")) {
         let db = getDatabase();
         db = db.filter(u => u.id !== id);
         saveDatabase(db);
       }
+    }
+
+    // BROADCAST NOTIFICATIONS
+    function handleSendBroadcast(e) {
+      e.preventDefault();
+      const title = document.getElementById('broadcastTitle').value.trim();
+      const body = document.getElementById('broadcastBody').value.trim();
+
+      const notice = {
+        title: title,
+        body: body,
+        date: new Date().toLocaleDateString(),
+        author: sessionStorage.getItem("ACEJ_ADMIN_ROLE") || "Super Admin"
+      };
+
+      localStorage.setItem(NOTICE_STORAGE_KEY, JSON.stringify(notice));
+      alert("Broadcast notice published! All users will see this on their dashboard.");
+      e.target.reset();
+      renderBroadcastDisplay();
+    }
+
+    function renderBroadcastDisplay() {
+      const stored = localStorage.getItem(NOTICE_STORAGE_KEY);
+      const disp = document.getElementById('activeBroadcastDisplay');
+      if (stored) {
+        const n = JSON.parse(stored);
+        disp.innerHTML = `<strong>Current Active Notice:</strong> <em>"${n.title}"</em> — ${n.body} <button onclick="clearBroadcast()" style="margin-left:8px; padding:2px 6px; font-size:0.75rem; border-radius:4px; border:1px solid #cbd5e1; cursor:pointer;">Dismiss Notice</button>`;
+      } else {
+        disp.innerHTML = `<span style="color:#94a3b8;">No active broadcast announcement.</span>`;
+      }
+    }
+
+    function clearBroadcast() {
+      localStorage.removeItem(NOTICE_STORAGE_KEY);
+      renderBroadcastDisplay();
     }
 
     function resolveRequest(reqId, username) {
@@ -657,6 +732,7 @@
       const u = db.find(user => user.username.toLowerCase() === username.toLowerCase());
       if (u) {
         u.pass = newPass;
+        u.status = "active";
         saveDatabase(db);
       }
 
@@ -670,7 +746,6 @@
       saveRequests(reqs);
     }
 
-    // RENDER DATA TABLE & COUNTERS
     function renderData() {
       const db = getDatabase();
       const reqs = getRequests();
@@ -688,25 +763,34 @@
         if (u.role === 'staff') roleBadgeClass = 'role-staff';
         if (u.role === 'admin') roleBadgeClass = 'role-admin';
 
+        const groupsHtml = (u.groups || []).map(g => `<span class="group-pill">${g}</span>`).join("");
+
         const tr = document.createElement('tr');
         tr.innerHTML = `
           <td><span class="badge-role ${roleBadgeClass}">${u.role}</span></td>
           <td><strong>${u.name}</strong></td>
           <td><code>${u.username}</code></td>
           <td><code>${u.pass}</code></td>
-          <td>${u.dept || ''} &bull; ${u.level || ''}</td>
+          <td>${groupsHtml || '<em>General</em>'}</td>
           <td><span class="badge-status ${u.status === 'active' ? 'status-active' : 'status-disabled'}">${u.status}</span></td>
-          <td>${u.firstLogin ? '<span style="color:var(--gold-dark); font-weight:700;">Pending</span>' : '<span style="color:var(--green); font-weight:700;">Done</span>'}</td>
           <td>
-            <button class="btn-tbl btn-tbl-edit" title="Edit User" onclick="openEditModal('${u.id}')"><i class="fa-solid fa-pen-to-square"></i></button>
-            <button class="btn-tbl" title="Toggle Status" onclick="toggleUserStatus('${u.id}')"><i class="fa-solid fa-power-off"></i></button>
-            <button class="btn-tbl btn-tbl-del" title="Delete User" onclick="deleteUser('${u.id}')"><i class="fa-solid fa-trash"></i></button>
+            <button class="btn-tbl btn-tbl-login" title="1-Click Open User Portal" onclick="impersonateUser('${u.username}')">
+              <i class="fa-solid fa-arrow-right-to-bracket"></i>
+            </button>
+            <button class="btn-tbl btn-tbl-edit" title="Edit User" onclick="openEditModal('${u.id}')">
+              <i class="fa-solid fa-pen-to-square"></i>
+            </button>
+            <button class="btn-tbl" title="Toggle Status" onclick="toggleUserStatus('${u.id}')">
+              <i class="fa-solid fa-power-off"></i>
+            </button>
+            <button class="btn-tbl btn-tbl-del" title="Delete User" onclick="deleteUser('${u.id}')">
+              <i class="fa-solid fa-trash"></i>
+            </button>
           </td>
         `;
         userTbody.appendChild(tr);
       });
 
-      // Render Reset Requests
       const reqTbody = document.getElementById('resetReqTableBody');
       reqTbody.innerHTML = "";
       if (reqs.length === 0) {
@@ -720,7 +804,7 @@
             <td><a href="tel:${r.phone}">${r.phone}</a></td>
             <td>${r.reason}</td>
             <td>
-              <button class="btn-tbl" style="background:#eff6ff; color:var(--blue); font-weight:700;" onclick="resolveRequest('${r.id}', '${r.username}')">Approve &amp; Set Password</button>
+              <button class="btn-tbl" style="background:#eff6ff; color:var(--blue); font-weight:700;" onclick="resolveRequest('${r.id}', '${r.username}')">Unlock &amp; Set Password</button>
               <button class="btn-tbl btn-tbl-del" onclick="dismissRequest('${r.id}')">Dismiss</button>
             </td>
           `;
@@ -733,6 +817,8 @@
       document.getElementById('statTotalStaff').innerText = countStaff;
       document.getElementById('statTotalAdmins').innerText = countAdmins;
       document.getElementById('statTotalRequests').innerText = reqs.length;
+
+      renderBroadcastDisplay();
     }
 
     function filterUsersTable() {
@@ -742,7 +828,6 @@
       });
     }
 
-    // Auto-restore session
     if (sessionStorage.getItem("ACEJ_ADMIN_AUTH") === "true") {
       showAdminConsole();
     }
