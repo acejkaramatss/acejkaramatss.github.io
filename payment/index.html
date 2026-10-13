@@ -9,7 +9,9 @@
   <meta name="google-site-verification" content="_2E72En-E2s2izExfWQNHzHOVy7NJ30LTv33ufi-tvk" />
   
   <!-- Crest & External Assets -->
-  <link rel="icon" type="image/png" href="/logo.png">
+  <link rel="icon" type="image/png" href="/logo.png?v=3">
+  <link rel="shortcut icon" type="image/png" href="/logo.png?v=3">
+  <link rel="apple-touch-icon" href="/logo.png?v=3">
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
@@ -1089,7 +1091,7 @@
         transition: max-height 0.35s ease-in-out;
       }
       .nav-links.active-menu {
-        max-height: 440px;
+        max-height: 480px;
         box-shadow: 0 12px 25px rgba(0, 45, 110, 0.15);
         border-bottom: 3px solid var(--acej-gold);
       }
@@ -1149,7 +1151,7 @@
   <!-- NAVBAR -->
   <header class="navbar">
     <a href="/" class="brand">
-      <img src="/logo.png" alt="ACEJ Karama Crest" class="brand-logo-img" onerror="this.src='https://blogger.googleusercontent.com/img/b/R29vZ2xl/AVvXsEj7G8n1Z3Q5z90_LOGO/s400/acej-logo.png';">
+      <img src="/logo.png" alt="ACEJ Karama Crest" class="brand-logo-img">
       <div class="brand-text">
         <h1>ACEJ KARAMA TSS</h1>
         <p>Uburerere &bull; Ubumenyi</p>
@@ -1164,11 +1166,14 @@
       <li><a href="/payment/" class="active">Fees &amp; Payment</a></li>
       <li><a href="/news/glf-rwanda/">News</a></li>
       <li><a href="/contact/">Contact</a></li>
+      <!-- Mobile Drawer Portal Access -->
+      <li><a href="/portal/"><i class="fa-solid fa-user-graduate"></i> Student &amp; Staff Portal</a></li>
     </ul>
 
     <div class="nav-actions">
       <a href="/contact/" class="btn-apply">Apply Now</a>
-      <a href="#" class="btn-portal"><i class="fa-solid fa-user"></i> Portal</a>
+      <!-- Desktop Direct Root Portal Route -->
+      <a href="/portal/" class="btn-portal"><i class="fa-solid fa-user"></i> Portal</a>
       <button class="menu-toggle" id="menuToggle" aria-label="Toggle navigation menu">
         <i class="fa-solid fa-bars" id="menuIcon"></i>
       </button>
@@ -1260,7 +1265,7 @@
               </select>
             </div>
             <div class="form-group-item">
-              <label for="calcLevel">RTQB Level / Class <span>*</span></label>
+              <label for="calcLevel">RTB Level / Class <span>*</span></label>
               <select id="calcLevel" class="input-field" onchange="runFeeCalculation()">
                 <option value="Level 3 (Senior 4 Technical)">Level 3 (Senior 4 Technical)</option>
                 <option value="Level 4 (Senior 5 Technical)" selected>Level 4 (Senior 5 Technical)</option>
@@ -1681,8 +1686,9 @@
       </div>
 
       <div class="footer-col">
-        <h3>Admissions &amp; Fees</h3>
+        <h3>Admissions &amp; Portal</h3>
         <ul class="footer-links">
+          <li><a href="/portal/">&rsaquo; Student &amp; Staff Portal</a></li>
           <li><a href="/payment/">&rsaquo; Fees Portal &amp; 95,500 RWF Rate</a></li>
           <li><a href="/payment/#urubutoSection">&rsaquo; UrubutoPay (*775#)</a></li>
           <li><a href="/payment/#bankSection">&rsaquo; Bank of Kigali Accounts</a></li>
