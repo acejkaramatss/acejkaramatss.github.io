@@ -4,7 +4,7 @@
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Student &amp; Staff Portal | ACEJ KARAMA TSS</title>
-  <meta name="description" content="Official Academic Portal of ACEJ Karama TSS. Access student report cards, module marks, fee clearance, and EdTech trainer management.">
+  <meta name="description" content="Official Academic Portal of ACEJ Karama TSS. Access student report cards, module marks, notes download, and EdTech trainer class management.">
   
   <link rel="icon" type="image/png" href="/logo.png?v=3">
   <link rel="shortcut icon" type="image/png" href="/logo.png?v=3">
@@ -22,7 +22,7 @@
       --white: #ffffff;
       --border-color: #e2e8f0;
       
-      /* EdTech Color Palette */
+      /* EdTech Theme */
       --edtech-blue: #1d3557;
       --edtech-red: #e63946;
       --edtech-green: #2a9d8f;
@@ -51,7 +51,7 @@
     .top-bar a { color: #e2e8f0; text-decoration: none; margin-left: 15px; }
     .top-bar a:hover { color: var(--acej-gold); }
 
-    /* GLOBAL PORTAL NAVBAR */
+    /* NAVBAR */
     .portal-nav {
       background: var(--white);
       display: flex;
@@ -68,18 +68,15 @@
     .brand-text h1 { font-size: 1.25rem; color: var(--acej-blue); font-weight: 800; line-height: 1.1; }
     .brand-text p { font-size: 0.65rem; color: #b45309; font-weight: 700; letter-spacing: 1px; text-transform: uppercase; }
 
-    .nav-user-meta { display: flex; align-items: center; gap: 16px; }
+    .nav-user-meta { display: flex; align-items: center; gap: 14px; }
     .role-badge-pill {
       background: #eff6ff;
       color: #1d4ed8;
       border: 1px solid #bfdbfe;
-      padding: 5px 12px;
+      padding: 4px 12px;
       border-radius: 20px;
       font-size: 0.82rem;
       font-weight: 700;
-      display: flex;
-      align-items: center;
-      gap: 6px;
     }
     .user-profile-chip {
       display: flex;
@@ -90,8 +87,8 @@
       color: var(--text-dark);
     }
     .user-avatar-circle {
-      width: 38px;
-      height: 38px;
+      width: 36px;
+      height: 36px;
       border-radius: 50%;
       background: #e2e8f0;
       display: flex;
@@ -100,39 +97,25 @@
       font-weight: 800;
       color: var(--acej-blue);
     }
-    .btn-return-home {
+    .btn-nav-act {
       display: inline-flex;
       align-items: center;
       gap: 6px;
       background: #f1f5f9;
       color: var(--acej-dark-blue);
       text-decoration: none;
-      padding: 8px 16px;
+      padding: 7px 15px;
       border-radius: 20px;
       font-size: 0.84rem;
       font-weight: 700;
       border: 1px solid var(--border-color);
-      transition: all 0.2s;
+      cursor: pointer;
     }
-    .btn-return-home:hover { background: #e2e8f0; }
+    .btn-nav-act:hover { background: #e2e8f0; }
 
     .portal-main-area { max-width: 1240px; margin: 25px auto 60px; padding: 0 20px; width: 100%; flex-grow: 1; }
 
-    /* BROADCAST BANNER */
-    .broadcast-banner-view {
-      display: none;
-      background: #fffbeb;
-      border-left: 5px solid var(--acej-gold);
-      border-radius: 10px;
-      padding: 16px 20px;
-      margin-bottom: 25px;
-      box-shadow: var(--shadow-sm);
-      animation: fadeIn 0.4s ease-out;
-    }
-    .broadcast-banner-view h4 { color: #92400e; font-size: 1rem; font-weight: 800; display: flex; align-items: center; gap: 8px; }
-    .broadcast-banner-view p { color: #78350f; font-size: 0.9rem; margin-top: 4px; }
-
-    /* AUTHENTICATION FORM (FACEBOOK-STYLE ERROR NOTIFICATION) */
+    /* AUTHENTICATION FORM WITH INLINE VALIDATION */
     .login-container {
       max-width: 460px;
       margin: 30px auto;
@@ -188,11 +171,8 @@
     }
     .input-control:focus { border-color: var(--acej-blue); box-shadow: 0 0 0 3px rgba(30, 58, 138, 0.1); }
     
-    /* FACEBOOK-STYLE INLINE ERROR STYLING */
-    .input-control.has-error {
-      border-color: #dc2626 !important;
-      background-color: #fffafb;
-    }
+    /* FACEBOOK INLINE ERROR STYLING */
+    .input-control.has-error { border-color: #dc2626 !important; background-color: #fffafb; }
     .inline-error-message {
       display: none;
       align-items: flex-start;
@@ -201,9 +181,7 @@
       font-size: 0.84rem;
       margin-top: 6px;
       font-weight: 500;
-      animation: fadeIn 0.25s ease-out;
     }
-    .inline-error-message i { margin-top: 2px; }
     
     .btn-login-submit {
       width: 100%;
@@ -219,7 +197,6 @@
       align-items: center;
       justify-content: center;
       gap: 8px;
-      transition: background 0.2s;
     }
     .btn-login-submit:hover { background: #1e40af; }
 
@@ -240,21 +217,18 @@
       padding: 0;
     }
 
-    /* EDTECH TRAINER HERO BANNER */
+    /* EDTECH DASHBOARD STYLING */
     .edtech-welcome-banner {
       background: var(--edtech-gradient);
       color: var(--white);
       border-radius: 18px;
-      padding: 35px 35px;
+      padding: 32px 35px;
       margin-bottom: 25px;
       box-shadow: var(--shadow-md);
-      position: relative;
-      overflow: hidden;
     }
     .edtech-welcome-banner h2 { font-size: 2.1rem; font-weight: 900; letter-spacing: -0.5px; }
     .edtech-welcome-banner p { font-size: 1rem; color: #e0e7ff; margin-top: 4px; }
 
-    /* EDTECH 4-COLOR STATUS CARDS */
     .edtech-tiles-grid {
       display: grid;
       grid-template-columns: repeat(auto-fit, minmax(230px, 1fr));
@@ -269,15 +243,13 @@
       justify-content: space-between;
       align-items: center;
       box-shadow: var(--shadow-sm);
-      transition: transform 0.2s;
     }
-    .edtech-card:hover { transform: translateY(-3px); }
     .edtech-card-navy { background: var(--edtech-blue); }
     .edtech-card-red { background: var(--edtech-red); }
     .edtech-card-green { background: var(--edtech-green); }
     .edtech-card-amber { background: var(--edtech-amber); }
     
-    .edtech-card-info h4 { font-size: 0.85rem; font-weight: 700; opacity: 0.9; text-transform: capitalize; }
+    .edtech-card-info h4 { font-size: 0.85rem; font-weight: 700; opacity: 0.9; }
     .edtech-card-info .digit { font-size: 2.3rem; font-weight: 900; line-height: 1.1; margin: 4px 0 2px; }
     .edtech-card-info p { font-size: 0.78rem; opacity: 0.85; }
     .edtech-card-icon {
@@ -291,7 +263,7 @@
       font-size: 1.3rem;
     }
 
-    /* EDTECH QUICK ACTIONS PANEL */
+    /* EDTECH QUICK ACTIONS */
     .edtech-quick-actions-panel {
       background: var(--white);
       border: 1px solid var(--border-color);
@@ -300,12 +272,7 @@
       box-shadow: var(--shadow-sm);
       margin-bottom: 25px;
     }
-    .edtech-quick-actions-panel h3 {
-      font-size: 1.25rem;
-      font-weight: 800;
-      color: var(--acej-dark-blue);
-      margin-bottom: 18px;
-    }
+    .edtech-quick-actions-panel h3 { font-size: 1.25rem; font-weight: 800; color: var(--acej-dark-blue); margin-bottom: 16px; }
     .quick-actions-grid {
       display: grid;
       grid-template-columns: repeat(auto-fit, minmax(240px, 1fr));
@@ -315,10 +282,9 @@
       background: #f8fafc;
       border: 1.5px solid var(--border-color);
       border-radius: 12px;
-      padding: 20px;
+      padding: 18px;
       text-align: center;
       cursor: pointer;
-      text-decoration: none;
       color: var(--text-dark);
       font-weight: 700;
       font-size: 0.95rem;
@@ -328,18 +294,12 @@
       gap: 8px;
       transition: all 0.2s;
     }
-    .btn-quick-action i { font-size: 1.5rem; }
-    .btn-quick-action:hover {
-      background: var(--white);
-      border-color: #3b82f6;
-      box-shadow: var(--shadow-sm);
-      transform: translateY(-2px);
-    }
-    .btn-quick-action.qa-green i { color: #10b981; }
-    .btn-quick-action.qa-blue i { color: #2563eb; }
-    .btn-quick-action.qa-purple i { color: #8b5cf6; }
+    .btn-quick-action:hover { background: var(--white); border-color: #3b82f6; box-shadow: var(--shadow-sm); transform: translateY(-2px); }
+    .btn-quick-action.qa-green i { color: #10b981; font-size: 1.5rem; }
+    .btn-quick-action.qa-blue i { color: #2563eb; font-size: 1.5rem; }
+    .btn-quick-action.qa-purple i { color: #8b5cf6; font-size: 1.5rem; }
 
-    /* CONTENT PANELS */
+    /* PANELS & TABLES */
     .content-panel {
       background: var(--white);
       border: 1px solid var(--border-color);
@@ -356,14 +316,8 @@
       flex-wrap: wrap;
       gap: 12px;
     }
-    .panel-header-row h3 {
-      font-size: 1.2rem;
-      font-weight: 800;
-      color: var(--acej-dark-blue);
-      display: flex;
-      align-items: center;
-      gap: 8px;
-    }
+    .panel-header-row h3 { font-size: 1.2rem; font-weight: 800; color: var(--acej-dark-blue); display: flex; align-items: center; gap: 8px; }
+    
     .btn-publish-open {
       background: #1d4ed8;
       color: var(--white);
@@ -376,15 +330,26 @@
       display: inline-flex;
       align-items: center;
       gap: 8px;
-      transition: background 0.2s;
     }
     .btn-publish-open:hover { background: #1e40af; }
 
     .records-table { width: 100%; border-collapse: collapse; font-size: 0.92rem; }
     .records-table th, .records-table td { padding: 13px 14px; text-align: left; border-bottom: 1px solid #e2e8f0; }
     .records-table th { background: #f8fafc; color: #475569; font-weight: 700; }
+    
     .grade-badge { display: inline-block; padding: 4px 10px; border-radius: 6px; font-weight: 800; font-size: 0.78rem; }
     .grade-competent { background: #ecfdf5; color: #047857; }
+    .grade-pending { background: #fffbeb; color: #b45309; }
+
+    .grade-input {
+      width: 65px;
+      padding: 6px 8px;
+      border: 1.5px solid var(--border-color);
+      border-radius: 6px;
+      font-size: 0.9rem;
+      text-align: center;
+      font-weight: 700;
+    }
 
     /* MODAL WINDOWS */
     .modal-backdrop {
@@ -396,15 +361,13 @@
     }
     .modal-card {
       background: var(--white);
-      max-width: 540px; width: 100%;
+      max-width: 560px; width: 100%;
       border-radius: 16px; padding: 28px;
       box-shadow: var(--shadow-lg);
       max-height: 90vh; overflow-y: auto;
-      animation: popIn 0.3s ease-out;
     }
     .modal-card h3 { font-size: 1.35rem; font-weight: 800; color: var(--acej-dark-blue); margin-bottom: 15px; }
 
-    /* FILE PICKER ATTACHMENT BOX */
     .file-attachment-box {
       border: 2px dashed #cbd5e1;
       border-radius: 10px;
@@ -413,9 +376,9 @@
       background: #fafaf9;
       cursor: pointer;
       margin-bottom: 16px;
-      transition: border-color 0.2s;
     }
     .file-attachment-box:hover { border-color: #3b82f6; background: #f0f7ff; }
+
     .file-preview-strip {
       display: none;
       align-items: center;
@@ -437,9 +400,6 @@
       border-top: 3px solid var(--acej-gold);
       margin-top: auto;
     }
-
-    @keyframes fadeIn { from { opacity: 0; transform: translateY(8px); } to { opacity: 1; transform: translateY(0); } }
-    @keyframes popIn { from { opacity: 0; transform: scale(0.95); } to { opacity: 1; transform: scale(1); } }
   </style>
 </head>
 <body>
@@ -470,9 +430,12 @@
       <div id="navUserBadgeGroup" style="display: none;" class="user-profile-chip">
         <div class="role-badge-pill" id="navRolePill">Trainer</div>
         <div class="user-avatar-circle" id="navUserAvatar">K</div>
-        <span id="navUserName">KUBANA Ismael</span>
+        <span id="navUserName">Trainer Name</span>
       </div>
-      <a href="/" class="btn-return-home">
+      <button id="btnSignOut" style="display: none;" class="btn-nav-act" onclick="logoutPortal()">
+        <i class="fa-solid fa-power-off"></i> Sign Out
+      </button>
+      <a href="/" class="btn-nav-act">
         <i class="fa-solid fa-arrow-left"></i> Back to Website
       </a>
     </div>
@@ -480,13 +443,7 @@
 
   <main class="portal-main-area">
 
-    <!-- BROADCAST NOTIFICATION BANNER -->
-    <div class="broadcast-banner-view" id="portalBroadcastBanner">
-      <h4 id="portalBroadcastTitle"><i class="fa-solid fa-bullhorn"></i> Official School Notice</h4>
-      <p id="portalBroadcastBody"></p>
-    </div>
-
-    <!-- 1. LOGIN CONTAINER -->
+    <!-- 1. LOGIN FORM WITH INLINE VALIDATION -->
     <div class="login-container" id="loginBox">
       <div class="login-header">
         <h2>Institutional Portal</h2>
@@ -506,7 +463,7 @@
         <form id="portalLoginForm" onsubmit="handlePortalLogin(event)" novalidate>
           <div class="form-group">
             <label id="lblUsername" for="portalUsername">Student Roll / Reg ID Number</label>
-            <input type="text" id="portalUsername" class="input-control" placeholder="e.g. Acej/2026/0100" oninput="clearInlineLoginErrors()">
+            <input type="text" id="portalUsername" class="input-control" placeholder="e.g. noheri" oninput="clearInlineLoginErrors()">
             <div class="inline-error-message" id="usernameInlineError">
               <i class="fa-solid fa-circle-exclamation"></i>
               <span>The username or ID you entered isn't connected to an account.</span>
@@ -536,31 +493,31 @@
       </div>
     </div>
 
-    <!-- 2. EDTECH-STYLE TRAINER / STAFF DASHBOARD -->
+    <!-- 2. TEACHER DASHBOARD (EDTECH LAYOUT + COHORT MANAGEMENT) -->
     <div id="staffDashboard" style="display: none;">
       
-      <!-- EDTECH BLUE HERO BANNER -->
+      <!-- HERO WELCOME BANNER -->
       <div class="edtech-welcome-banner">
         <h2 id="trainerHeroTitle">Welcome, Trainer!</h2>
-        <p>Here's an overview of your classes, student attendance, and course material deployments.</p>
+        <p id="trainerHeroSub">Managing classes, students, and course deployments.</p>
       </div>
 
-      <!-- EDTECH 4-COLOR STATUS CARDS -->
+      <!-- STATUS TILES -->
       <div class="edtech-tiles-grid">
         <div class="edtech-card edtech-card-navy">
           <div class="edtech-card-info">
-            <h4>My Classes</h4>
-            <div class="digit" id="statClassesDigit">3</div>
-            <p>Active Combinations</p>
+            <h4>My Class</h4>
+            <div class="digit" id="statClassTitle">Level 5 NIT</div>
+            <p id="statClassSub">Active Combination</p>
           </div>
           <div class="edtech-card-icon"><i class="fa-solid fa-book-open"></i></div>
         </div>
 
         <div class="edtech-card edtech-card-red">
           <div class="edtech-card-info">
-            <h4>My Students</h4>
-            <div class="digit" id="statStudentsDigit">124</div>
-            <p>Enrolled Cohort</p>
+            <h4>Registered Students</h4>
+            <div class="digit" id="statEnrolledCount">0</div>
+            <p>In Your Cohort</p>
           </div>
           <div class="edtech-card-icon"><i class="fa-solid fa-users"></i></div>
         </div>
@@ -568,7 +525,7 @@
         <div class="edtech-card edtech-card-green">
           <div class="edtech-card-info">
             <h4>Today's Attendance</h4>
-            <div class="digit">96%</div>
+            <div class="digit" id="statAttPercentage">100%</div>
             <p>Class Check-in</p>
           </div>
           <div class="edtech-card-icon"><i class="fa-solid fa-clipboard-check"></i></div>
@@ -576,34 +533,65 @@
 
         <div class="edtech-card edtech-card-amber">
           <div class="edtech-card-info">
-            <h4>Active Modules</h4>
-            <div class="digit">4</div>
-            <p>This Term</p>
+            <h4>Course Notes</h4>
+            <div class="digit" id="statNotesCount">0</div>
+            <p>Published Materials</p>
           </div>
-          <div class="edtech-card-icon"><i class="fa-solid fa-calendar-days"></i></div>
+          <div class="edtech-card-icon"><i class="fa-solid fa-folder-open"></i></div>
         </div>
       </div>
 
-      <!-- EDTECH QUICK ACTIONS BAR -->
+      <!-- QUICK ACTIONS -->
       <div class="edtech-quick-actions-panel">
         <h3>Quick Actions</h3>
         <div class="quick-actions-grid">
-          <div class="btn-quick-action qa-green" onclick="handleQuickAction('attendance')">
+          <div class="btn-quick-action qa-green" onclick="scrollToSection('gradebookSection')">
             <i class="fa-solid fa-calendar-check"></i>
             <span>Mark Attendance</span>
           </div>
-          <div class="btn-quick-action qa-blue" onclick="handleQuickAction('marks')">
+          <div class="btn-quick-action qa-blue" onclick="scrollToSection('gradebookSection')">
             <i class="fa-solid fa-chart-column"></i>
-            <span>Enter Marks</span>
+            <span>Enter &amp; Edit Marks</span>
           </div>
           <div class="btn-quick-action qa-purple" onclick="openPublishCourseModal()">
-            <i class="fa-solid fa-book-bookmark"></i>
-            <span>Training Materials &amp; Notes</span>
+            <i class="fa-solid fa-cloud-arrow-up"></i>
+            <span>Publish New Notes</span>
           </div>
         </div>
       </div>
 
-      <!-- PUBLISHED COURSES & NOTES TABLE -->
+      <!-- SECTION 1: DYNAMIC CLASS STUDENTS, MARKS & ATTENDANCE -->
+      <div class="content-panel" id="gradebookSection">
+        <div class="panel-header-row">
+          <h3>
+            <i class="fa-solid fa-users-viewfinder" style="color: #2563eb;"></i> 
+            Student Roster, Attendance &amp; Marks (<span id="gradebookClassHeader">Level 5 NIT</span>)
+          </h3>
+          <button class="btn-publish-open" onclick="saveClassMarksAndAttendance()">
+            <i class="fa-solid fa-floppy-disk"></i> Save Marks &amp; Attendance
+          </button>
+        </div>
+
+        <div style="overflow-x: auto;">
+          <table class="records-table">
+            <thead>
+              <tr>
+                <th>Student Full Name</th>
+                <th>Reg ID / Roll No</th>
+                <th>Attendance Status</th>
+                <th>Continuous (40)</th>
+                <th>Practical (60)</th>
+                <th>Status</th>
+              </tr>
+            </thead>
+            <tbody id="trainerGradebookTbody">
+              <!-- Dynamically populated from ACEJ_PORTAL_USERS_DB -->
+            </tbody>
+          </table>
+        </div>
+      </div>
+
+      <!-- SECTION 2: PUBLISHED COURSES & NOTES (SAVED TO PORTAL) -->
       <div class="content-panel">
         <div class="panel-header-row">
           <h3><i class="fa-solid fa-folder-open" style="color: #2563eb;"></i> Published Courses &amp; Learning Materials</h3>
@@ -618,26 +606,13 @@
               <tr>
                 <th>Target Class</th>
                 <th>Course / Module Title</th>
-                <th>Uploaded File / Note Material</th>
+                <th>Uploaded Note Material</th>
                 <th>Date Published</th>
                 <th>Action</th>
               </tr>
             </thead>
             <tbody id="trainerCoursesTbody">
-              <tr>
-                <td><strong>Level 5 NIT</strong></td>
-                <td>Enterprise Cisco Routing &amp; VLAN Setup</td>
-                <td><i class="fa-solid fa-file-pdf" style="color:#ef4444;"></i> Cisco_VLAN_Manual.pkt</td>
-                <td>12 Oct 2026</td>
-                <td><span class="grade-badge grade-competent">Available</span></td>
-              </tr>
-              <tr>
-                <td><strong>Level 4 CSA</strong></td>
-                <td>Motherboard Repair &amp; Troubleshooting Guide</td>
-                <td><i class="fa-solid fa-file-word" style="color:#2563eb;"></i> Hardware_Architecture_Notes.docx</td>
-                <td>08 Oct 2026</td>
-                <td><span class="grade-badge grade-competent">Available</span></td>
-              </tr>
+              <!-- Dynamically populated from ACEJ_PORTAL_COURSES_DB -->
             </tbody>
           </table>
         </div>
@@ -647,11 +622,44 @@
 
     <!-- 3. STUDENT DASHBOARD -->
     <div id="studentDashboard" style="display: none;">
+      
+      <!-- STUDENT WELCOME BANNER -->
       <div class="edtech-welcome-banner" style="background: linear-gradient(135deg, #0f2847 0%, #1e3a8a 100%);">
         <h2 id="studentHeroTitle">Welcome Student!</h2>
-        <p id="studentHeroSub">Level 5 Networking &bull; Reg: Acej/2026/0100</p>
+        <p id="studentHeroSub">Level 5 • NIT &bull; Reg: ID</p>
       </div>
 
+      <!-- STUDENT ATTENDANCE & SUMMARY TILES -->
+      <div class="edtech-tiles-grid">
+        <div class="edtech-card edtech-card-green">
+          <div class="edtech-card-info">
+            <h4>My Attendance</h4>
+            <div class="digit" id="studentAttDisplay">Present</div>
+            <p>Daily Academic Status</p>
+          </div>
+          <div class="edtech-card-icon"><i class="fa-solid fa-calendar-check"></i></div>
+        </div>
+
+        <div class="edtech-card edtech-card-navy">
+          <div class="edtech-card-info">
+            <h4>Total Term Average</h4>
+            <div class="digit" id="studentAvgDisplay">88.5%</div>
+            <p>Continuous &amp; Practical</p>
+          </div>
+          <div class="edtech-card-icon"><i class="fa-solid fa-award"></i></div>
+        </div>
+
+        <div class="edtech-card edtech-card-amber">
+          <div class="edtech-card-info">
+            <h4>Study Notes Available</h4>
+            <div class="digit" id="studentNotesAvailableCount">0</div>
+            <p>From Class Teachers</p>
+          </div>
+          <div class="edtech-card-icon"><i class="fa-solid fa-book"></i></div>
+        </div>
+      </div>
+
+      <!-- STUDENT MODULE MARKS TABLE -->
       <div class="content-panel">
         <div class="panel-header-row">
           <h3><i class="fa-solid fa-book-bookmark" style="color: #2563eb;"></i> Module Marks &amp; Assessment</h3>
@@ -661,22 +669,48 @@
             <thead>
               <tr>
                 <th>Module Code</th>
-                <th>Module Name</th>
+                <th>Module Title</th>
                 <th>Credits</th>
                 <th>Continuous (40)</th>
                 <th>Practical (60)</th>
-                <th>Status</th>
+                <th>Total / Status</th>
               </tr>
             </thead>
-            <tbody id="studentMarksTbody"></tbody>
+            <tbody id="studentMarksTbody">
+              <!-- Dynamically populated from ACEJ_STUDENT_GRADES_DB -->
+            </tbody>
           </table>
         </div>
       </div>
+
+      <!-- STUDENT SHARED NOTES & MATERIALS FROM TEACHERS -->
+      <div class="content-panel">
+        <div class="panel-header-row">
+          <h3><i class="fa-solid fa-download" style="color: #2563eb;"></i> Shared Notes &amp; Course Materials from Teachers</h3>
+        </div>
+        <div style="overflow-x: auto;">
+          <table class="records-table">
+            <thead>
+              <tr>
+                <th>Module / Course Title</th>
+                <th>Note / File Attachment</th>
+                <th>Instructor</th>
+                <th>Date Posted</th>
+                <th>Action</th>
+              </tr>
+            </thead>
+            <tbody id="studentSharedNotesTbody">
+              <!-- Dynamically shown from ACEJ_PORTAL_COURSES_DB matching class -->
+            </tbody>
+          </table>
+        </div>
+      </div>
+
     </div>
 
   </main>
 
-  <!-- MODAL: PUBLISH NEW NOTES / COURSE (FILE PICKER EMBEDDED) -->
+  <!-- MODAL: PUBLISH NEW NOTES / COURSE -->
   <div class="modal-backdrop" id="publishModal">
     <div class="modal-card">
       <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:15px;">
@@ -686,7 +720,7 @@
 
       <form onsubmit="handlePublishCourseSubmit(event)">
         <div class="form-group">
-          <label>Target Cohort / Combination</label>
+          <label>Target Class / Combination</label>
           <select id="pubClassTarget" class="input-control">
             <option value="Level 5 NIT">Level 5 Networking &amp; Internet Tech (NIT)</option>
             <option value="Level 4 NIT">Level 4 Networking &amp; Internet Tech (NIT)</option>
@@ -698,31 +732,26 @@
 
         <div class="form-group">
           <label>Course / Module Title</label>
-          <input type="text" id="pubCourseTitle" class="input-control" placeholder="e.g. Linux Kernel &amp; Tailscale Routing" required>
+          <input type="text" id="pubCourseTitle" class="input-control" placeholder="e.g. Telcom" required>
         </div>
 
         <div class="form-group">
-          <label>Attach Material File (PDF, DOCX, PPT, PKT from phone or PC)</label>
+          <label>Select Note Material from Phone or PC (PPT, PDF, DOCX, PKT)</label>
           <div class="file-attachment-box" onclick="document.getElementById('pubFileInput').click()">
             <i class="fa-solid fa-cloud-arrow-up" style="font-size:2rem; color:#2563eb; margin-bottom:6px;"></i>
-            <div style="font-weight:700; font-size:0.92rem;">Click to browse device file</div>
-            <div style="font-size:0.78rem; color:#64748b;">PDF, Word, PacketTracer up to 25MB</div>
+            <div style="font-weight:700; font-size:0.92rem;">Click to choose file from device</div>
+            <div style="font-size:0.78rem; color:#64748b;">Slides, Word, PDFs up to 25MB</div>
             <input type="file" id="pubFileInput" style="display:none;" onchange="handleFileSelected(this)">
           </div>
 
           <div class="file-preview-strip" id="filePreviewStrip">
             <i class="fa-solid fa-file-circle-check" style="color:#10b981; font-size:1.2rem;"></i>
-            <span id="attachedFileName" style="font-weight:700;">file.pdf</span>
+            <span id="attachedFileName" style="font-weight:700;">3.TELECOMMUNICATIONS'APPLICATIONS.pptx</span>
           </div>
         </div>
 
-        <div class="form-group">
-          <label>Module Brief / Instructions (Optional)</label>
-          <textarea id="pubCourseNotes" class="input-control" rows="3" placeholder="Read Chapter 2 before Thursday lab..."></textarea>
-        </div>
-
         <button type="submit" class="btn-login-submit">
-          <i class="fa-solid fa-paper-plane"></i> Publish to Student Portal
+          <i class="fa-solid fa-paper-plane"></i> Publish &amp; Make Available to Students
         </button>
       </form>
     </div>
@@ -739,10 +768,10 @@
       <form onsubmit="handleSendResetRequest(event)">
         <div class="form-group">
           <label>Registration ID or Username</label>
-          <input type="text" id="resetReqUser" class="input-control" placeholder="e.g. Acej/2026/0100" required>
+          <input type="text" id="resetReqUser" class="input-control" placeholder="e.g. noheri" required>
         </div>
         <div class="form-group">
-          <label>Contact Mobile Telephone</label>
+          <label>Contact Mobile Phone</label>
           <input type="tel" id="resetReqPhone" class="input-control" placeholder="e.g. 0788123456" required>
         </div>
         <div class="form-group">
@@ -766,13 +795,59 @@
     var activeSessionUser = null;
     var selectedAttachmentName = "";
 
+    const DB_USERS_KEY = "ACEJ_PORTAL_USERS_DB";
+    const DB_COURSES_KEY = "ACEJ_PORTAL_COURSES_DB";
+    const DB_GRADES_KEY = "ACEJ_STUDENT_GRADES_DB";
+
+    // 1. Storage Helpers
+    function getUsersDB() {
+      var stored = localStorage.getItem(DB_USERS_KEY);
+      return stored ? JSON.parse(stored) : [];
+    }
+
+    function getCoursesDB() {
+      var stored = localStorage.getItem(DB_COURSES_KEY);
+      return stored ? JSON.parse(stored) : [
+        {
+          id: "c1",
+          cohort: "Level 5 NIT",
+          title: "Telcom",
+          fileName: "3.TELECOMMUNICATIONS'APPLICATIONS.pptx",
+          teacher: "Dufitimana Clebert",
+          date: "13 Oct 2026"
+        },
+        {
+          id: "c2",
+          cohort: "Level 5 NIT",
+          title: "Enterprise Cisco Routing & VLAN Setup",
+          fileName: "Cisco_VLAN_Manual.pkt",
+          teacher: "Muneza Germain",
+          date: "12 Oct 2026"
+        }
+      ];
+    }
+
+    function saveCoursesDB(courses) {
+      localStorage.setItem(DB_COURSES_KEY, JSON.stringify(courses));
+    }
+
+    function getGradesDB() {
+      var stored = localStorage.getItem(DB_GRADES_KEY);
+      return stored ? JSON.parse(stored) : {};
+    }
+
+    function saveGradesDB(grades) {
+      localStorage.setItem(DB_GRADES_KEY, JSON.stringify(grades));
+    }
+
+    // 2. Role Switching & Inline Validation
     function switchLoginRole(role) {
       currentRole = role;
       clearInlineLoginErrors();
       document.getElementById('tabStudent').classList.toggle('active-tab', role === 'student');
       document.getElementById('tabStaff').classList.toggle('active-tab', role === 'staff');
       document.getElementById('lblUsername').innerText = (role === 'student') ? 'Student Roll / Reg ID Number' : 'Staff Username or Email';
-      document.getElementById('portalUsername').placeholder = (role === 'student') ? 'e.g. Acej/2026/0100' : 'e.g. trainer.muneza';
+      document.getElementById('portalUsername').placeholder = (role === 'student') ? 'e.g. noheri' : 'e.g. trainer.muneza';
     }
 
     function clearInlineLoginErrors() {
@@ -782,6 +857,7 @@
       document.getElementById('passwordInlineError').style.display = 'none';
     }
 
+    // 3. Login Workflow
     function handlePortalLogin(e) {
       e.preventDefault();
       clearInlineLoginErrors();
@@ -789,27 +865,19 @@
       var user = document.getElementById('portalUsername').value.trim();
       var pass = document.getElementById('portalPassword').value.trim();
 
-      var storedDB = localStorage.getItem("ACEJ_PORTAL_USERS_DB");
-      var userList = storedDB ? JSON.parse(storedDB) : [
-        { id: "1", role: "student", name: "Dufitimana Clebert", username: "Acej/2026/0100", pass: "Dufizo@123", dept: "NIT", level: "Level 5", status: "active" },
-        { id: "2", role: "staff", name: "Muneza Germain", username: "trainer.muneza", pass: "staff123", dept: "NIT", level: "Faculty", status: "active" }
-      ];
+      var userList = getUsersDB();
 
-      // 1. Check if user ID exists
       var userMatch = userList.find(function(u) {
         return u.username.toLowerCase() === user.toLowerCase() && u.role === currentRole;
       });
 
       if (!userMatch) {
-        // Facebook-style inline error for username
         document.getElementById('portalUsername').classList.add('has-error');
         document.getElementById('usernameInlineError').style.display = 'flex';
         return;
       }
 
-      // 2. Check if password matches
       if (userMatch.pass !== pass) {
-        // Facebook-style inline error for password
         document.getElementById('portalPassword').classList.add('has-error');
         document.getElementById('passwordInlineError').style.display = 'flex';
         return;
@@ -819,49 +887,195 @@
       showUserDashboard(userMatch);
     }
 
+    // 4. Dashboard View Rendering
     function showUserDashboard(matched) {
       document.getElementById('loginBox').style.display = 'none';
+      document.getElementById('btnSignOut').style.display = 'inline-flex';
       
-      // Setup Top Bar Profile info
       document.getElementById('navUserBadgeGroup').style.display = 'flex';
       document.getElementById('navRolePill').innerText = (matched.role === 'student') ? 'Student' : 'Trainer';
       document.getElementById('navUserAvatar').innerText = matched.name.charAt(0).toUpperCase();
       document.getElementById('navUserName').innerText = matched.name;
 
       if (matched.role === 'student') {
-        document.getElementById('studentDashboard').style.display = 'block';
-        document.getElementById('staffDashboard').style.display = 'none';
-
-        document.getElementById('studentHeroTitle').innerText = "Welcome, " + matched.name + "!";
-        document.getElementById('studentHeroSub').innerText = (matched.level || "Level 5") + " • " + (matched.dept || "NIT") + " • Reg: " + matched.username;
-
-        var marksTbody = document.getElementById('studentMarksTbody');
-        marksTbody.innerHTML = 
-          '<tr>' +
-            '<td><strong>NIT-L501</strong></td><td>Advanced Routing &amp; VLANs</td><td>15</td><td>38 / 40</td><td>54 / 60</td><td><span class="grade-badge grade-competent">Competent</span></td>' +
-          '</tr>' +
-          '<tr>' +
-            '<td><strong>NIT-L502</strong></td><td>Server Administration</td><td>12</td><td>36 / 40</td><td>52 / 60</td><td><span class="grade-badge grade-competent">Competent</span></td>' +
-          '</tr>';
+        renderStudentView(matched);
       } else {
-        // EdTech Trainer View
-        document.getElementById('staffDashboard').style.display = 'block';
-        document.getElementById('studentDashboard').style.display = 'none';
-
-        document.getElementById('trainerHeroTitle').innerText = "Welcome, " + matched.name.split(' ')[0] + "!";
+        renderTrainerView(matched);
       }
     }
 
-    /* QUICK ACTIONS */
-    function handleQuickAction(type) {
-      if (type === 'attendance') {
-        alert("Attendance Register: All 38 students in " + (activeSessionUser.dept || "NIT") + " marked present for today.");
-      } else if (type === 'marks') {
-        alert("Gradebook active. Input continuous assessment marks directly in the module sheet.");
+    // --- STUDENT VIEW LOGIC ---
+    function renderStudentView(student) {
+      document.getElementById('studentDashboard').style.display = 'block';
+      document.getElementById('staffDashboard').style.display = 'none';
+
+      document.getElementById('studentHeroTitle').innerText = "Welcome, " + student.name + "!";
+      var cohortStr = (student.level || "Level 5") + " • " + (student.dept || "NIT");
+      document.getElementById('studentHeroSub').innerText = cohortStr + " • Reg: " + student.username;
+
+      // Render Marks & Attendance from DB
+      var gradesDB = getGradesDB();
+      var studentRecord = gradesDB[student.username.toLowerCase()] || {
+        attendance: "Present",
+        continuous: 38,
+        practical: 54
+      };
+
+      document.getElementById('studentAttDisplay').innerText = studentRecord.attendance;
+      var total = studentRecord.continuous + studentRecord.practical;
+      document.getElementById('studentAvgDisplay').innerText = total + "%";
+
+      var marksTbody = document.getElementById('studentMarksTbody');
+      marksTbody.innerHTML = `
+        <tr>
+          <td><strong>${student.dept || 'NIT'}-501</strong></td>
+          <td>Telcom & Advanced Routing Lab</td>
+          <td>15</td>
+          <td>${studentRecord.continuous} / 40</td>
+          <td>${studentRecord.practical} / 60</td>
+          <td><span class="grade-badge grade-competent">${total >= 70 ? 'Competent' : 'In Progress'}</span></td>
+        </tr>
+      `;
+
+      // Filter and Show Courses/Notes uploaded for this student's class
+      var studentClassKey = (student.level || "Level 5") + " " + (student.dept || "NIT");
+      var allCourses = getCoursesDB();
+      var matchingCourses = allCourses.filter(function(c) {
+        return c.cohort.toLowerCase() === studentClassKey.toLowerCase();
+      });
+
+      document.getElementById('studentNotesAvailableCount').innerText = matchingCourses.length;
+
+      var notesTbody = document.getElementById('studentSharedNotesTbody');
+      notesTbody.innerHTML = "";
+
+      if (matchingCourses.length === 0) {
+        notesTbody.innerHTML = `<tr><td colspan="5" style="text-align:center; color:#94a3b8;">No notes uploaded for ${studentClassKey} yet.</td></tr>`;
+      } else {
+        matchingCourses.forEach(function(c) {
+          var tr = document.createElement('tr');
+          tr.innerHTML = `
+            <td><strong>${c.title}</strong></td>
+            <td><i class="fa-solid fa-file-lines" style="color:#2563eb;"></i> ${c.fileName}</td>
+            <td>${c.teacher}</td>
+            <td>${c.date}</td>
+            <td>
+              <a href="#" onclick="alert('Downloading: ' + '${c.fileName}'); return false;" class="btn-publish-open" style="padding:4px 10px; font-size:0.78rem;">
+                <i class="fa-solid fa-download"></i> Download
+              </a>
+            </td>
+          `;
+          notesTbody.appendChild(tr);
+        });
       }
     }
 
-    /* MODAL: PUBLISH NEW COURSE NOTES */
+    // --- TRAINER VIEW LOGIC ---
+    function renderTrainerView(trainer) {
+      document.getElementById('staffDashboard').style.display = 'block';
+      document.getElementById('studentDashboard').style.display = 'none';
+
+      document.getElementById('trainerHeroTitle').innerText = "Welcome, " + trainer.name + "!";
+      
+      // Determine trainer class cohort (Default to Level 5 NIT)
+      var targetClass = (trainer.level && trainer.level !== 'Faculty' ? trainer.level : "Level 5") + " " + (trainer.dept || "NIT");
+      document.getElementById('statClassTitle').innerText = targetClass;
+      document.getElementById('gradebookClassHeader').innerText = targetClass;
+
+      // 1. Query all students registered in this exact class from ACEJ_PORTAL_USERS_DB
+      var allUsers = getUsersDB();
+      var enrolledStudents = allUsers.filter(function(u) {
+        if (u.role !== 'student') return false;
+        var uClass = (u.level || "Level 5") + " " + (u.dept || "NIT");
+        return uClass.toLowerCase() === targetClass.toLowerCase();
+      });
+
+      document.getElementById('statEnrolledCount').innerText = enrolledStudents.length;
+
+      // 2. Render Roster with Marks & Attendance Inputs
+      var gradesDB = getGradesDB();
+      var gradebookTbody = document.getElementById('trainerGradebookTbody');
+      gradebookTbody.innerHTML = "";
+
+      if (enrolledStudents.length === 0) {
+        gradebookTbody.innerHTML = `<tr><td colspan="6" style="text-align:center; color:#94a3b8;">No students registered in ${targetClass} yet.</td></tr>`;
+      } else {
+        enrolledStudents.forEach(function(s) {
+          var sRecord = gradesDB[s.username.toLowerCase()] || {
+            attendance: "Present",
+            continuous: 38,
+            practical: 54
+          };
+
+          var tr = document.createElement('tr');
+          tr.dataset.username = s.username.toLowerCase();
+          tr.innerHTML = `
+            <td><strong>${s.name}</strong></td>
+            <td><code>${s.username}</code></td>
+            <td>
+              <select class="input-control att-select" style="padding:6px; font-size:0.85rem; width:110px;">
+                <option value="Present" ${sRecord.attendance === 'Present' ? 'selected' : ''}>Present</option>
+                <option value="Absent" ${sRecord.attendance === 'Absent' ? 'selected' : ''}>Absent</option>
+                <option value="Excused" ${sRecord.attendance === 'Excused' ? 'selected' : ''}>Excused</option>
+              </select>
+            </td>
+            <td><input type="number" class="grade-input mark-cont" value="${sRecord.continuous}" min="0" max="40"></td>
+            <td><input type="number" class="grade-input mark-prac" value="${sRecord.practical}" min="0" max="60"></td>
+            <td><span class="grade-badge grade-competent">Active</span></td>
+          `;
+          gradebookTbody.appendChild(tr);
+        });
+      }
+
+      // 3. Render Published Notes for this Teacher
+      renderTrainerPublishedNotes();
+    }
+
+    function renderTrainerPublishedNotes() {
+      var courses = getCoursesDB();
+      document.getElementById('statNotesCount').innerText = courses.length;
+
+      var tbody = document.getElementById('trainerCoursesTbody');
+      tbody.innerHTML = "";
+
+      courses.forEach(function(c) {
+        var tr = document.createElement('tr');
+        tr.innerHTML = `
+          <td><strong>${c.cohort}</strong></td>
+          <td>${c.title}</td>
+          <td><i class="fa-solid fa-file-lines" style="color:#2563eb;"></i> ${c.fileName}</td>
+          <td>${c.date}</td>
+          <td><span class="grade-badge grade-competent">Active</span></td>
+        `;
+        tbody.appendChild(tr);
+      });
+    }
+
+    // 5. Save Class Marks & Attendance by Teacher
+    function saveClassMarksAndAttendance() {
+      var rows = document.querySelectorAll('#trainerGradebookTbody tr');
+      var gradesDB = getGradesDB();
+
+      rows.forEach(function(row) {
+        var username = row.dataset.username;
+        if (!username) return;
+
+        var att = row.querySelector('.att-select').value;
+        var cont = parseInt(row.querySelector('.mark-cont').value) || 0;
+        var prac = parseInt(row.querySelector('.mark-prac').value) || 0;
+
+        gradesDB[username] = {
+          attendance: att,
+          continuous: cont,
+          practical: prac
+        };
+      });
+
+      saveGradesDB(gradesDB);
+      alert("Class marks and attendance have been saved and synced directly to students' portals!");
+    }
+
+    // 6. Publish Course Notes
     function openPublishCourseModal() {
       document.getElementById('publishModal').style.display = 'flex';
     }
@@ -883,23 +1097,40 @@
       e.preventDefault();
       var cohort = document.getElementById('pubClassTarget').value;
       var title = document.getElementById('pubCourseTitle').value.trim();
-      var fileName = selectedAttachmentName || "Lecture_Notes_Unit1.pdf";
+      var fileName = selectedAttachmentName || "Class_Lecture_Notes.pdf";
 
-      var tbody = document.getElementById('trainerCoursesTbody');
-      var tr = document.createElement('tr');
-      tr.innerHTML = 
-        '<td><strong>' + cohort + '</strong></td>' +
-        '<td>' + title + '</td>' +
-        '<td><i class="fa-solid fa-file-lines" style="color:#2563eb;"></i> ' + fileName + '</td>' +
-        '<td>Just now</td>' +
-        '<td><span class="grade-badge grade-competent">Available</span></td>';
-      tbody.prepend(tr);
+      var courses = getCoursesDB();
+      courses.unshift({
+        id: "c_" + Date.now(),
+        cohort: cohort,
+        title: title,
+        fileName: fileName,
+        teacher: activeSessionUser ? activeSessionUser.name : "Trainer",
+        date: new Date().toLocaleDateString('en-GB', { day: 'numeric', month: 'short', year: 'numeric' })
+      });
 
+      saveCoursesDB(courses);
       closePublishModal();
+      renderTrainerPublishedNotes();
+      alert("New course notes saved and dispatched to all enrolled students!");
       e.target.reset();
     }
 
-    /* PASSWORD RESET MODAL */
+    function scrollToSection(id) {
+      document.getElementById(id).scrollIntoView({ behavior: 'smooth' });
+    }
+
+    function logoutPortal() {
+      activeSessionUser = null;
+      document.getElementById('studentDashboard').style.display = 'none';
+      document.getElementById('staffDashboard').style.display = 'none';
+      document.getElementById('navUserBadgeGroup').style.display = 'none';
+      document.getElementById('btnSignOut').style.display = 'none';
+      document.getElementById('loginBox').style.display = 'block';
+      document.getElementById('portalPassword').value = '';
+    }
+
+    // Reset Request Modal
     function openForgotModal() { document.getElementById('forgotModal').style.display = 'flex'; }
     function closeForgotModal() { document.getElementById('forgotModal').style.display = 'none'; }
 
