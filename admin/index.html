@@ -21,7 +21,9 @@
       --border: #e2e8f0;
       --green: #10b981;
       --red: #ef4444;
+      --purple: #7e22ce;
       --shadow: 0 4px 14px rgba(0, 45, 110, 0.08);
+      --shadow-lg: 0 14px 30px rgba(0, 45, 110, 0.15);
     }
 
     * { box-sizing: border-box; margin: 0; padding: 0; font-family: 'Segoe UI', system-ui, sans-serif; }
@@ -89,13 +91,13 @@
       font-size: 1rem;
     }
 
-    .admin-console { display: none; max-width: 1240px; margin: 30px auto; padding: 0 20px; width: 100%; }
+    .admin-console { display: none; max-width: 1300px; margin: 30px auto; padding: 0 20px; width: 100%; }
 
     .stats-row {
       display: grid;
-      grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+      grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
       gap: 20px;
-      margin-bottom: 30px;
+      margin-bottom: 25px;
     }
     .stat-box { background: var(--white); border: 1px solid var(--border); border-radius: 12px; padding: 20px; box-shadow: var(--shadow); }
     .stat-label { font-size: 0.78rem; text-transform: uppercase; font-weight: 800; color: #64748b; letter-spacing: 1px; }
@@ -103,7 +105,7 @@
 
     .grid-forms-tables {
       display: grid;
-      grid-template-columns: 360px 1fr;
+      grid-template-columns: 380px 1fr;
       gap: 25px;
       align-items: start;
     }
@@ -128,6 +130,19 @@
       font-size: 0.9rem;
       outline: none;
     }
+
+    /* PRIVILEGE CHECKBOXES */
+    .privilege-box {
+      background: #f8fafc;
+      border: 1.5px solid var(--border);
+      border-radius: 8px;
+      padding: 12px 14px;
+      margin-bottom: 16px;
+    }
+    .privilege-title { font-size: 0.8rem; font-weight: 800; text-transform: uppercase; color: var(--navy); margin-bottom: 8px; }
+    .priv-item { display: flex; align-items: center; gap: 8px; font-size: 0.85rem; color: #334155; margin-bottom: 6px; }
+    .priv-item input { accent-color: var(--blue); width: 16px; height: 16px; }
+
     .btn-create {
       width: 100%;
       background: var(--blue);
@@ -143,6 +158,7 @@
       justify-content: center;
       gap: 8px;
     }
+    .btn-create:hover { background: var(--navy); }
 
     .table-container { overflow-x: auto; }
     .user-table { width: 100%; border-collapse: collapse; font-size: 0.88rem; }
@@ -152,15 +168,35 @@
     .badge-role { display: inline-block; padding: 3px 8px; border-radius: 4px; font-size: 0.72rem; font-weight: 800; text-transform: uppercase; }
     .role-student { background: #eff6ff; color: #1d4ed8; }
     .role-staff { background: #fef3c7; color: #b45309; }
+    .role-admin { background: #f5f3ff; color: var(--purple); }
+    .role-super { background: #fee2e2; color: #b91c1c; }
     
     .badge-status { display: inline-block; padding: 3px 8px; border-radius: 4px; font-size: 0.72rem; font-weight: 800; }
     .status-active { background: #ecfdf5; color: #047857; }
     .status-disabled { background: #fef2f2; color: #b91c1c; }
 
     .btn-tbl { padding: 5px 8px; border-radius: 4px; font-size: 0.78rem; font-weight: 700; border: 1px solid var(--border); background: var(--white); cursor: pointer; }
+    .btn-tbl-edit { color: var(--blue); }
+    .btn-tbl-edit:hover { background: #eff6ff; border-color: var(--blue); }
     .btn-tbl-del:hover { background: #fee2e2; color: #b91c1c; border-color: #fca5a5; }
 
-    @media (max-width: 900px) { .grid-forms-tables { grid-template-columns: 1fr; } }
+    /* EDIT MODAL */
+    .modal-backdrop {
+      position: fixed;
+      top: 0; left: 0; width: 100%; height: 100%;
+      background: rgba(15, 23, 42, 0.7);
+      display: none; align-items: center; justify-content: center;
+      z-index: 2000; padding: 20px; backdrop-filter: blur(4px);
+    }
+    .modal-content {
+      background: var(--white);
+      max-width: 520px; width: 100%;
+      border-radius: 14px; padding: 28px;
+      box-shadow: var(--shadow-lg);
+      border: 2px solid var(--gold);
+    }
+
+    @media (max-width: 960px) { .grid-forms-tables { grid-template-columns: 1fr; } }
   </style>
 </head>
 <body>
@@ -168,11 +204,11 @@
   <header class="admin-header">
     <div class="brand-title">
       <i class="fa-solid fa-shield-halved" style="color: var(--gold);"></i>
-      ACEJ KARAMA TSS &bull; <span>Portal Management</span>
+      ACEJ KARAMA TSS &bull; <span>Super Admin Console</span>
     </div>
     <div class="header-controls">
       <a href="/portal/" target="_blank" class="btn-action">
-        <i class="fa-solid fa-arrow-up-right-from-square"></i> Open Portal
+        <i class="fa-solid fa-arrow-up-right-from-square"></i> Student &amp; Staff Portal
       </a>
       <button class="btn-action" id="btnAdminLogout" style="display: none;" onclick="adminLogout()">
         <i class="fa-solid fa-power-off"></i> Exit Admin
@@ -180,13 +216,13 @@
     </div>
   </header>
 
-  <!-- ADMIN AUTH -->
+  <!-- ADMIN AUTH LOCK -->
   <main class="auth-overlay" id="adminLoginBox">
     <div style="font-size: 2.4rem; color: var(--navy); margin-bottom: 12px;">
       <i class="fa-solid fa-user-shield"></i>
     </div>
     <h2>Super Admin Portal</h2>
-    <p>Sign in with your master administrative credentials to manage accounts and requests.</p>
+    <p>Sign in with your master administrative credentials to manage accounts, privileges, and edit user profiles.</p>
     <form onsubmit="handleAdminLogin(event)">
       <input type="text" id="adminUser" class="auth-input" placeholder="Super Admin Username" required>
       <input type="password" id="adminPass" class="auth-input" placeholder="Master Password" required>
@@ -209,15 +245,23 @@
         <div class="stat-digit" id="statTotalStudents" style="color: var(--blue);">0</div>
       </div>
       <div class="stat-box">
-        <div class="stat-label">Pending Reset Requests</div>
+        <div class="stat-label">Faculty / Teachers</div>
+        <div class="stat-digit" id="statTotalStaff" style="color: var(--gold-dark);">0</div>
+      </div>
+      <div class="stat-box">
+        <div class="stat-label">Admins / Officers</div>
+        <div class="stat-digit" id="statTotalAdmins" style="color: var(--purple);">0</div>
+      </div>
+      <div class="stat-box">
+        <div class="stat-label">Password Reset Requests</div>
         <div class="stat-digit" id="statTotalRequests" style="color: var(--red);">0</div>
       </div>
     </div>
 
-    <!-- PENDING PASSWORD RESET REQUESTS INBOX -->
+    <!-- PENDING RESET REQUESTS INBOX -->
     <div class="card-panel" style="border-left: 5px solid var(--red);">
       <div class="card-title" style="color: var(--red);">
-        <i class="fa-solid fa-bell"></i> Pending Password Reset Requests
+        <i class="fa-solid fa-bell"></i> User Password Reset Requests
       </div>
       <div class="table-container">
         <table class="user-table">
@@ -237,40 +281,48 @@
 
     <div class="grid-forms-tables">
       
-      <!-- CREATE USER FORM -->
+      <!-- REGISTER USER FORM WITH ROLE PERMISSIONS -->
       <div>
         <div class="card-panel">
           <div class="card-title">
-            <i class="fa-solid fa-user-plus" style="color: var(--blue);"></i> Register Account
+            <i class="fa-solid fa-user-plus" style="color: var(--blue);"></i> Register Account &amp; Assign Role
           </div>
           <form onsubmit="handleCreateUser(event)">
+            
             <div class="form-ctrl">
-              <label>Role</label>
+              <label>Role &amp; Privilege Level</label>
               <select id="newRole" onchange="toggleFormRoleFields()">
-                <option value="student">Student / Parent</option>
-                <option value="staff">Trainer / Staff</option>
+                <option value="student">Student / Parent (Marks &amp; Fees View)</option>
+                <option value="staff">Trainer / Teacher (Gradebook &amp; Attendance)</option>
+                <option value="admin">Sub-Admin / Registrar (User Management)</option>
               </select>
             </div>
+
             <div class="form-ctrl">
               <label>Full Name</label>
               <input type="text" id="newName" placeholder="e.g. Dufitimana Clebert" required>
             </div>
+
             <div class="form-ctrl">
-              <label id="lblNewUsername">Student Reg ID</label>
+              <label id="lblNewUsername">Student Reg ID / Username</label>
               <input type="text" id="newUsername" placeholder="e.g. Acej/2026/0100" required>
             </div>
+
             <div class="form-ctrl">
               <label>Initial Temporary Password</label>
               <input type="text" id="newPassword" placeholder="e.g. Acej#2026" required>
             </div>
-            <div class="form-ctrl">
+
+            <div class="form-ctrl" id="deptGroup">
               <label>Trade / Combination</label>
               <select id="newDepartment">
                 <option value="NIT">Networking &amp; Internet Tech (NIT)</option>
                 <option value="CSA">Computer Systems &amp; Arch (CSA)</option>
                 <option value="ACC">Accounting &amp; Finance</option>
+                <option value="GEN">General Administration</option>
               </select>
             </div>
+
             <div class="form-ctrl" id="levelGroup">
               <label>Class Level</label>
               <select id="newLevel">
@@ -279,6 +331,28 @@
                 <option value="Level 5" selected>Level 5 (Senior 6 Finalist)</option>
               </select>
             </div>
+
+            <!-- PRIVILEGE CHECKS -->
+            <div class="privilege-box" id="privilegeBox">
+              <div class="privilege-title"><i class="fa-solid fa-sliders"></i> Role Privileges &amp; Permissions</div>
+              <div class="priv-item">
+                <input type="checkbox" id="privViewMarks" checked disabled>
+                <label for="privViewMarks">View Academic Marks &amp; Transcripts</label>
+              </div>
+              <div class="priv-item">
+                <input type="checkbox" id="privEnterMarks">
+                <label for="privEnterMarks">Enter &amp; Edit Module Gradebooks (Teachers)</label>
+              </div>
+              <div class="priv-item">
+                <input type="checkbox" id="privManageUsers">
+                <label for="privManageUsers">Create &amp; Manage Accounts (Admins)</label>
+              </div>
+              <div class="priv-item">
+                <input type="checkbox" id="privApproveResets">
+                <label for="privApproveResets">Reset &amp; Approve User Passwords</label>
+              </div>
+            </div>
+
             <button type="submit" class="btn-create">
               <i class="fa-solid fa-check"></i> Register Account
             </button>
@@ -286,11 +360,15 @@
         </div>
       </div>
 
-      <!-- ALL USERS DIRECTORY -->
+      <!-- USERS DIRECTORY WITH EDIT ACTION -->
       <div class="card-panel">
-        <div class="card-title">
-          <i class="fa-solid fa-users-gear" style="color: var(--blue);"></i> Registered Users &amp; Profiles
+        <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 15px; flex-wrap: wrap; gap: 10px;">
+          <div class="card-title" style="margin-bottom: 0;">
+            <i class="fa-solid fa-users-gear" style="color: var(--blue);"></i> Registered Accounts &amp; Profiles
+          </div>
+          <input type="text" id="searchUser" placeholder="Search name or ID..." onkeyup="filterUsersTable()" style="padding: 7px 12px; border: 1.5px solid var(--border); border-radius: 6px; font-size: 0.85rem; width: 220px;">
         </div>
+
         <div class="table-container">
           <table class="user-table">
             <thead>
@@ -299,9 +377,9 @@
                 <th>Full Name</th>
                 <th>Username</th>
                 <th>Current Password</th>
-                <th>Phone / Parent</th>
+                <th>Trade &bull; Level</th>
                 <th>Status</th>
-                <th>First Login?</th>
+                <th>First Login</th>
                 <th>Actions</th>
               </tr>
             </thead>
@@ -313,17 +391,83 @@
     </div>
   </div>
 
+  <!-- EDIT USER MODAL -->
+  <div class="modal-backdrop" id="editModal">
+    <div class="modal-content">
+      <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:15px;">
+        <h3 style="color:var(--navy); font-size:1.2rem; font-weight:800;">
+          <i class="fa-solid fa-user-pen"></i> Edit User Profile &amp; Rules
+        </h3>
+        <button onclick="closeEditModal()" style="border:none; background:none; font-size:1.4rem; cursor:pointer;">&times;</button>
+      </div>
+
+      <form onsubmit="handleSaveUserEdit(event)">
+        <input type="hidden" id="editUserId">
+
+        <div class="form-ctrl">
+          <label>Full Name</label>
+          <input type="text" id="editName" required>
+        </div>
+
+        <div class="form-ctrl">
+          <label>Username / Reg ID</label>
+          <input type="text" id="editUsername" required>
+        </div>
+
+        <div class="form-ctrl">
+          <label>Password</label>
+          <input type="text" id="editPassword" required>
+        </div>
+
+        <div class="form-ctrl">
+          <label>Trade / Department</label>
+          <select id="editDepartment">
+            <option value="NIT">Networking &amp; Internet Tech (NIT)</option>
+            <option value="CSA">Computer Systems &amp; Arch (CSA)</option>
+            <option value="ACC">Accounting &amp; Finance</option>
+            <option value="GEN">General Administration</option>
+          </select>
+        </div>
+
+        <div class="form-ctrl">
+          <label>Class Level</label>
+          <select id="editLevel">
+            <option value="Level 3">Level 3 (Senior 4)</option>
+            <option value="Level 4">Level 4 (Senior 5)</option>
+            <option value="Level 5">Level 5 (Senior 6)</option>
+            <option value="Faculty">Faculty / Staff</option>
+          </select>
+        </div>
+
+        <div class="form-ctrl">
+          <label>Account Role</label>
+          <select id="editRole">
+            <option value="student">Student / Parent</option>
+            <option value="staff">Trainer / Teacher</option>
+            <option value="admin">Sub-Admin / Registrar</option>
+          </select>
+        </div>
+
+        <button type="submit" class="btn-create" style="margin-top:10px;">
+          <i class="fa-solid fa-floppy-disk"></i> Save Changes to Database
+        </button>
+      </form>
+    </div>
+  </div>
+
   <script>
     const MASTER_ADMIN_USER = "superadmin";
     const MASTER_ADMIN_PASS = "AcejAdmin@2026";
     const DB_STORAGE_KEY = "ACEJ_PORTAL_USERS_DB";
     const REQ_STORAGE_KEY = "ACEJ_RESET_REQUESTS_DB";
 
+    // Master initial database with default roles
     function getDatabase() {
       const stored = localStorage.getItem(DB_STORAGE_KEY);
       return stored ? JSON.parse(stored) : [
-        { id: "1", role: "student", name: "Dufitimana Clebert", username: "Acej/2026/0100", pass: "Acej#2026", dept: "NIT", level: "Level 5", status: "active", phone: "0788000000", firstLogin: false },
-        { id: "2", role: "student", name: "Habimana Jean Pierre", username: "ACEJ/2024/0182", pass: "student123", dept: "NIT", level: "Level 4", status: "active", phone: "0788111111", firstLogin: false }
+        { id: "1", role: "student", name: "Dufitimana Clebert", username: "Acej/2026/0100", pass: "Dufizo@123", dept: "NIT", level: "Level 5", status: "active", phone: "0788000000", firstLogin: false, privs: { enterMarks: false, manageUsers: false, approveResets: false } },
+        { id: "2", role: "staff", name: "Muneza Germain", username: "trainer.muneza", pass: "staff123", dept: "NIT", level: "Faculty", status: "active", phone: "0783125100", firstLogin: false, privs: { enterMarks: true, manageUsers: false, approveResets: false } },
+        { id: "3", role: "staff", name: "Barihamwe Jean D'Amour", username: "trainer.barihamwe", pass: "staff123", dept: "CSA", level: "Faculty", status: "active", phone: "0788410314", firstLogin: false, privs: { enterMarks: true, manageUsers: false, approveResets: false } }
       ];
     }
 
@@ -342,21 +486,28 @@
       renderData();
     }
 
+    // LOGIN & AUTH
     function handleAdminLogin(e) {
       e.preventDefault();
       const user = document.getElementById('adminUser').value.trim();
       const pass = document.getElementById('adminPass').value.trim();
 
-      if (user === MASTER_ADMIN_USER && pass === MASTER_ADMIN_PASS) {
+      // Check Super Admin Master or Created Sub-Admins with manageUsers privilege
+      const db = getDatabase();
+      const matchedAdmin = db.find(u => u.username.toLowerCase() === user.toLowerCase() && u.pass === pass && (u.role === 'admin' || u.role === 'super'));
+
+      if ((user === MASTER_ADMIN_USER && pass === MASTER_ADMIN_PASS) || (matchedAdmin && matchedAdmin.status === 'active')) {
         sessionStorage.setItem("ACEJ_ADMIN_AUTH", "true");
+        sessionStorage.setItem("ACEJ_ADMIN_IS_SUPER", (user === MASTER_ADMIN_USER).toString());
         showAdminConsole();
       } else {
-        alert("Invalid Super Admin credentials.");
+        alert("Invalid Admin credentials or unauthorized access.");
       }
     }
 
     function adminLogout() {
       sessionStorage.removeItem("ACEJ_ADMIN_AUTH");
+      sessionStorage.removeItem("ACEJ_ADMIN_IS_SUPER");
       document.getElementById('adminDashboard').style.display = "none";
       document.getElementById('adminLoginBox').style.display = "block";
       document.getElementById('btnAdminLogout').style.display = "none";
@@ -369,19 +520,38 @@
       renderData();
     }
 
+    // TOGGLE ROLE PRIVILEGES AUTO-CHECK
     function toggleFormRoleFields() {
       const role = document.getElementById('newRole').value;
       const levelGroup = document.getElementById('levelGroup');
       const lblUser = document.getElementById('lblNewUsername');
+      
+      const privEnterMarks = document.getElementById('privEnterMarks');
+      const privManageUsers = document.getElementById('privManageUsers');
+      const privApproveResets = document.getElementById('privApproveResets');
+
       if (role === 'student') {
         lblUser.innerText = "Student Reg ID";
         levelGroup.style.display = "block";
-      } else {
+        privEnterMarks.checked = false;
+        privManageUsers.checked = false;
+        privApproveResets.checked = false;
+      } else if (role === 'staff') {
         lblUser.innerText = "Staff Username";
         levelGroup.style.display = "none";
+        privEnterMarks.checked = true;
+        privManageUsers.checked = false;
+        privApproveResets.checked = false;
+      } else if (role === 'admin') {
+        lblUser.innerText = "Admin Username";
+        levelGroup.style.display = "none";
+        privEnterMarks.checked = true;
+        privManageUsers.checked = true;
+        privApproveResets.checked = true;
       }
     }
 
+    // CREATE USER
     function handleCreateUser(e) {
       e.preventDefault();
       const db = getDatabase();
@@ -407,13 +577,59 @@
         level: level,
         status: "active",
         phone: "",
-        guardian: "",
-        firstLogin: true // Requires user to update password & profile on first login!
+        firstLogin: true,
+        privs: {
+          enterMarks: document.getElementById('privEnterMarks').checked,
+          manageUsers: document.getElementById('privManageUsers').checked,
+          approveResets: document.getElementById('privApproveResets').checked
+        }
       });
 
       saveDatabase(db);
-      alert(`User ${name} registered! On their first login, they will be prompted to update their profile and personal password.`);
+      alert(`User ${name} registered successfully with ${role.toUpperCase()} privileges!`);
       e.target.reset();
+      toggleFormRoleFields();
+    }
+
+    // EDIT USER MODAL LOGIC
+    function openEditModal(userId) {
+      const db = getDatabase();
+      const user = db.find(u => u.id === userId);
+      if (!user) return;
+
+      document.getElementById('editUserId').value = user.id;
+      document.getElementById('editName').value = user.name;
+      document.getElementById('editUsername').value = user.username;
+      document.getElementById('editPassword').value = user.pass;
+      document.getElementById('editDepartment').value = user.dept || "NIT";
+      document.getElementById('editLevel').value = user.level || "Level 4";
+      document.getElementById('editRole').value = user.role || "student";
+
+      document.getElementById('editModal').style.display = "flex";
+    }
+
+    function closeEditModal() {
+      document.getElementById('editModal').style.display = "none";
+    }
+
+    function handleSaveUserEdit(e) {
+      e.preventDefault();
+      const db = getDatabase();
+      const id = document.getElementById('editUserId').value;
+      const user = db.find(u => u.id === id);
+
+      if (user) {
+        user.name = document.getElementById('editName').value.trim();
+        user.username = document.getElementById('editUsername').value.trim();
+        user.pass = document.getElementById('editPassword').value.trim();
+        user.dept = document.getElementById('editDepartment').value;
+        user.level = document.getElementById('editLevel').value;
+        user.role = document.getElementById('editRole').value;
+
+        saveDatabase(db);
+        alert(`User ${user.name} updated successfully!`);
+        closeEditModal();
+      }
     }
 
     function toggleUserStatus(id) {
@@ -426,7 +642,7 @@
     }
 
     function deleteUser(id) {
-      if (confirm("Delete this user permanently?")) {
+      if (confirm("Are you sure you want to delete this user?")) {
         let db = getDatabase();
         db = db.filter(u => u.id !== id);
         saveDatabase(db);
@@ -434,7 +650,7 @@
     }
 
     function resolveRequest(reqId, username) {
-      const newPass = prompt(`Set new password for ${username}:`, "Acej#2026");
+      const newPass = prompt(`Assign new password for ${username}:`, "Acej#2026");
       if (!newPass) return;
 
       const db = getDatabase();
@@ -446,7 +662,7 @@
 
       let reqs = getRequests().filter(r => r.id !== reqId);
       saveRequests(reqs);
-      alert(`Password updated to "${newPass}" and request resolved!`);
+      alert(`Password updated to "${newPass}" and resolved!`);
     }
 
     function dismissRequest(reqId) {
@@ -454,29 +670,37 @@
       saveRequests(reqs);
     }
 
+    // RENDER DATA TABLE & COUNTERS
     function renderData() {
       const db = getDatabase();
       const reqs = getRequests();
 
-      // Render Users Table
       const userTbody = document.getElementById('userTableBody');
       userTbody.innerHTML = "";
-      let countStudents = 0;
+      let countStudents = 0, countStaff = 0, countAdmins = 0;
 
       db.forEach(u => {
         if (u.role === 'student') countStudents++;
+        else if (u.role === 'staff') countStaff++;
+        else if (u.role === 'admin' || u.role === 'super') countAdmins++;
+
+        let roleBadgeClass = 'role-student';
+        if (u.role === 'staff') roleBadgeClass = 'role-staff';
+        if (u.role === 'admin') roleBadgeClass = 'role-admin';
+
         const tr = document.createElement('tr');
         tr.innerHTML = `
-          <td><span class="badge-role ${u.role === 'student' ? 'role-student' : 'role-staff'}">${u.role}</span></td>
+          <td><span class="badge-role ${roleBadgeClass}">${u.role}</span></td>
           <td><strong>${u.name}</strong></td>
           <td><code>${u.username}</code></td>
           <td><code>${u.pass}</code></td>
-          <td>${u.phone || '<em>Not set</em>'}</td>
+          <td>${u.dept || ''} &bull; ${u.level || ''}</td>
           <td><span class="badge-status ${u.status === 'active' ? 'status-active' : 'status-disabled'}">${u.status}</span></td>
-          <td>${u.firstLogin ? '<span style="color:var(--gold-dark); font-weight:700;">Pending</span>' : '<span style="color:var(--green); font-weight:700;">Completed</span>'}</td>
+          <td>${u.firstLogin ? '<span style="color:var(--gold-dark); font-weight:700;">Pending</span>' : '<span style="color:var(--green); font-weight:700;">Done</span>'}</td>
           <td>
+            <button class="btn-tbl btn-tbl-edit" title="Edit User" onclick="openEditModal('${u.id}')"><i class="fa-solid fa-pen-to-square"></i></button>
             <button class="btn-tbl" title="Toggle Status" onclick="toggleUserStatus('${u.id}')"><i class="fa-solid fa-power-off"></i></button>
-            <button class="btn-tbl btn-tbl-del" title="Delete" onclick="deleteUser('${u.id}')"><i class="fa-solid fa-trash"></i></button>
+            <button class="btn-tbl btn-tbl-del" title="Delete User" onclick="deleteUser('${u.id}')"><i class="fa-solid fa-trash"></i></button>
           </td>
         `;
         userTbody.appendChild(tr);
@@ -496,7 +720,7 @@
             <td><a href="tel:${r.phone}">${r.phone}</a></td>
             <td>${r.reason}</td>
             <td>
-              <button class="btn-tbl" style="background:#eff6ff; color:var(--blue); font-weight:700;" onclick="resolveRequest('${r.id}', '${r.username}')">Set Password</button>
+              <button class="btn-tbl" style="background:#eff6ff; color:var(--blue); font-weight:700;" onclick="resolveRequest('${r.id}', '${r.username}')">Approve &amp; Set Password</button>
               <button class="btn-tbl btn-tbl-del" onclick="dismissRequest('${r.id}')">Dismiss</button>
             </td>
           `;
@@ -506,9 +730,19 @@
 
       document.getElementById('statTotalUsers').innerText = db.length;
       document.getElementById('statTotalStudents').innerText = countStudents;
+      document.getElementById('statTotalStaff').innerText = countStaff;
+      document.getElementById('statTotalAdmins').innerText = countAdmins;
       document.getElementById('statTotalRequests').innerText = reqs.length;
     }
 
+    function filterUsersTable() {
+      const q = document.getElementById('searchUser').value.toLowerCase();
+      document.querySelectorAll('#userTableBody tr').forEach(r => {
+        r.style.display = r.innerText.toLowerCase().includes(q) ? '' : 'none';
+      });
+    }
+
+    // Auto-restore session
     if (sessionStorage.getItem("ACEJ_ADMIN_AUTH") === "true") {
       showAdminConsole();
     }
