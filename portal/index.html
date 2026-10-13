@@ -1,0 +1,759 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Academic & Staff Portal | ACEJ KARAMA TSS</title>
+  <meta name="description" content="Official Student and Teacher Portal for ACEJ Karama TSS - Access academic records, attendance, teaching schedules, and submissions.">
+
+  <!-- Official School Crest Favicon -->
+  <link rel="icon" type="image/png" href="/logo.png?v=3">
+  <link rel="shortcut icon" type="image/png" href="/logo.png?v=3">
+  <link rel="apple-touch-icon" href="/logo.png?v=3">
+
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+  <style>
+    :root {
+      --primary-navy: #0d2047;
+      --secondary-blue: #1e3a8a;
+      --accent-gold: #c59b27;
+      --accent-gold-hover: #b0891e;
+      --text-dark: #1e293b;
+      --text-muted: #64748b;
+      --bg-light: #f8fafc;
+      --white: #ffffff;
+      --border-color: #e2e8f0;
+      --emerald-green: #059669;
+      --shadow-sm: 0 4px 14px rgba(0, 0, 0, 0.04);
+      --shadow-md: 0 10px 25px rgba(13, 32, 71, 0.08);
+      --shadow-lg: 0 18px 36px rgba(13, 32, 71, 0.12);
+      --font-mono: 'SFMono-Regular', Consolas, 'Liberation Mono', Menlo, Courier, monospace;
+    }
+
+    * {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+      font-family: 'Segoe UI', -apple-system, BlinkMacSystemFont, Roboto, sans-serif;
+    }
+
+    body {
+      background-color: var(--bg-light);
+      color: var(--text-dark);
+      line-height: 1.6;
+      min-height: 100vh;
+      display: flex;
+      flex-direction: column;
+    }
+
+    a {
+      text-decoration: none;
+      color: inherit;
+    }
+
+    /* TOP NAV */
+    .top-strip {
+      background: var(--primary-navy);
+      color: #cbd5e1;
+      padding: 8px 5%;
+      font-size: 0.8rem;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+    }
+
+    .top-strip a {
+      color: var(--accent-gold);
+      font-weight: 600;
+    }
+
+    .portal-nav {
+      background: var(--white);
+      border-bottom: 1px solid var(--border-color);
+      padding: 14px 5%;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      box-shadow: var(--shadow-sm);
+    }
+
+    .brand-wrap {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+    }
+
+    .brand-logo {
+      width: 44px;
+      height: 44px;
+      object-fit: contain;
+    }
+
+    .brand-title h1 {
+      font-size: 1.1rem;
+      color: var(--primary-navy);
+      font-weight: 800;
+      line-height: 1.2;
+    }
+
+    .brand-title p {
+      font-size: 0.75rem;
+      color: var(--accent-gold);
+      font-weight: 600;
+      text-transform: uppercase;
+      letter-spacing: 0.5px;
+    }
+
+    .back-home {
+      font-size: 0.85rem;
+      font-weight: 600;
+      color: var(--secondary-blue);
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+    }
+
+    /* PORTAL CONTAINER */
+    .portal-wrapper {
+      max-width: 1000px;
+      margin: 40px auto;
+      padding: 0 20px;
+      flex: 1;
+      width: 100%;
+    }
+
+    /* ROLE SWITCHER TABS */
+    .portal-switch {
+      display: flex;
+      background: #e2e8f0;
+      padding: 4px;
+      border-radius: 12px;
+      margin-bottom: 30px;
+      max-width: 420px;
+      margin-left: auto;
+      margin-right: auto;
+    }
+
+    .switch-btn {
+      flex: 1;
+      padding: 12px 20px;
+      border: none;
+      background: transparent;
+      font-weight: 700;
+      font-size: 0.95rem;
+      color: var(--text-muted);
+      border-radius: 10px;
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 8px;
+      transition: all 0.2s ease;
+    }
+
+    .switch-btn.active {
+      background: var(--white);
+      color: var(--primary-navy);
+      box-shadow: 0 4px 12px rgba(0, 0, 0, 0.08);
+    }
+
+    /* AUTH CARD */
+    .auth-card {
+      background: var(--white);
+      border: 1px solid var(--border-color);
+      border-radius: 20px;
+      box-shadow: var(--shadow-md);
+      overflow: hidden;
+      max-width: 520px;
+      margin: 0 auto;
+    }
+
+    .auth-header {
+      background: linear-gradient(135deg, var(--primary-navy), var(--secondary-blue));
+      color: var(--white);
+      padding: 30px;
+      text-align: center;
+    }
+
+    .auth-header i {
+      font-size: 2.2rem;
+      color: var(--accent-gold);
+      margin-bottom: 10px;
+    }
+
+    .auth-header h2 {
+      font-size: 1.4rem;
+      font-weight: 800;
+    }
+
+    .auth-header p {
+      font-size: 0.85rem;
+      color: #cbd5e1;
+      margin-top: 4px;
+    }
+
+    .auth-body {
+      padding: 32px;
+    }
+
+    .form-group {
+      margin-bottom: 20px;
+    }
+
+    .form-label {
+      display: block;
+      font-size: 0.82rem;
+      font-weight: 700;
+      color: var(--text-dark);
+      text-transform: uppercase;
+      letter-spacing: 0.5px;
+      margin-bottom: 8px;
+    }
+
+    .input-wrap {
+      position: relative;
+    }
+
+    .input-wrap i {
+      position: absolute;
+      left: 14px;
+      top: 50%;
+      transform: translateY(-50%);
+      color: #94a3b8;
+    }
+
+    .form-input {
+      width: 100%;
+      padding: 12px 14px 12px 42px;
+      border: 1.5px solid var(--border-color);
+      border-radius: 10px;
+      font-size: 0.95rem;
+      color: var(--text-dark);
+      outline: none;
+      transition: border-color 0.2s;
+    }
+
+    .form-input:focus {
+      border-color: var(--secondary-blue);
+      box-shadow: 0 0 0 3px rgba(30, 58, 138, 0.1);
+    }
+
+    .btn-submit {
+      width: 100%;
+      background: var(--primary-navy);
+      color: var(--white);
+      border: none;
+      padding: 14px;
+      border-radius: 10px;
+      font-size: 1rem;
+      font-weight: 700;
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 10px;
+      transition: background 0.2s;
+    }
+
+    .btn-submit:hover {
+      background: var(--secondary-blue);
+    }
+
+    .auth-help {
+      margin-top: 18px;
+      font-size: 0.82rem;
+      color: var(--text-muted);
+      text-align: center;
+    }
+
+    .auth-help a {
+      color: var(--secondary-blue);
+      font-weight: 700;
+    }
+
+    /* DASHBOARD PREVIEWS (HIDDEN UNTIL LOGIN) */
+    .dashboard-view {
+      display: none;
+      background: var(--white);
+      border-radius: 20px;
+      border: 1px solid var(--border-color);
+      box-shadow: var(--shadow-md);
+      overflow: hidden;
+    }
+
+    .dash-header {
+      background: var(--primary-navy);
+      color: var(--white);
+      padding: 24px 30px;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      flex-wrap: wrap;
+      gap: 15px;
+    }
+
+    .dash-user {
+      display: flex;
+      align-items: center;
+      gap: 15px;
+    }
+
+    .user-avatar-badge {
+      width: 50px;
+      height: 50px;
+      border-radius: 12px;
+      background: var(--secondary-blue);
+      border: 2px solid var(--accent-gold);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 1.4rem;
+      color: var(--accent-gold);
+    }
+
+    .dash-user h3 {
+      font-size: 1.15rem;
+      font-weight: 800;
+    }
+
+    .dash-user p {
+      font-size: 0.8rem;
+      color: #94a3b8;
+      font-family: var(--font-mono);
+    }
+
+    .btn-logout {
+      background: rgba(255, 255, 255, 0.1);
+      border: 1px solid rgba(255, 255, 255, 0.2);
+      color: var(--white);
+      padding: 8px 16px;
+      border-radius: 8px;
+      font-size: 0.82rem;
+      font-weight: 700;
+      cursor: pointer;
+    }
+
+    .dash-body {
+      padding: 30px;
+    }
+
+    .grid-cards {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(260px, 1fr));
+      gap: 20px;
+      margin-bottom: 30px;
+    }
+
+    .dash-card {
+      background: #f8fafc;
+      border: 1px solid var(--border-color);
+      border-radius: 12px;
+      padding: 20px;
+    }
+
+    .dash-card-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-bottom: 12px;
+    }
+
+    .dash-card-header h4 {
+      font-size: 0.95rem;
+      font-weight: 700;
+      color: var(--primary-navy);
+    }
+
+    .dash-card-header i {
+      color: var(--secondary-blue);
+    }
+
+    .dash-table {
+      width: 100%;
+      border-collapse: collapse;
+      font-size: 0.88rem;
+    }
+
+    .dash-table th, .dash-table td {
+      padding: 10px 12px;
+      border-bottom: 1px solid var(--border-color);
+      text-align: left;
+    }
+
+    .dash-table th {
+      background: #f1f5f9;
+      color: var(--text-dark);
+      font-weight: 700;
+    }
+
+    .status-pill {
+      font-family: var(--font-mono);
+      font-size: 0.75rem;
+      font-weight: 700;
+      padding: 3px 8px;
+      border-radius: 20px;
+      display: inline-block;
+    }
+
+    .status-good {
+      background: #d1fae5;
+      color: #065f46;
+    }
+
+    .status-pending {
+      background: #fef3c7;
+      color: #92400e;
+    }
+
+    /* FOOTER */
+    .portal-footer {
+      background: var(--white);
+      border-top: 1px solid var(--border-color);
+      padding: 24px 5%;
+      text-align: center;
+      font-size: 0.85rem;
+      color: var(--text-muted);
+      margin-top: auto;
+    }
+  </style>
+</head>
+<body>
+
+  <!-- TOP STRIP -->
+  <div class="top-strip">
+    <div>
+      <i class="fa-solid fa-graduation-cap"></i> ACEJ KARAMA TSS &bull; Unified Academic Information System (UAIS)
+    </div>
+    <div>
+      School Hotline: <a href="tel:0788607924">0788607924</a>[cite: 3]
+    </div>
+  </div>
+
+  <!-- HEADER -->
+  <nav class="portal-nav">
+    <div class="brand-wrap">
+      <img src="/logo.png" alt="ACEJ Karama Logo" class="brand-logo" onerror="this.src='https://via.placeholder.com/44?text=ACEJ'">
+      <div class="brand-title">
+        <h1>ACEJ KARAMA TSS</h1>
+        <p>Institutional Portal</p>
+      </div>
+    </div>
+    <a href="/" class="back-home">
+      <i class="fa-solid fa-arrow-left"></i> Return to Main Website
+    </a>
+  </nav>
+
+  <!-- CONTENT -->
+  <div class="portal-wrapper">
+
+    <!-- ROLE SWITCHER -->
+    <div class="portal-switch" id="roleSwitch">
+      <button class="switch-btn active" id="btnStudentRole" onclick="switchRole('student')">
+        <i class="fa-solid fa-user-graduate"></i> Student Portal
+      </button>
+      <button class="switch-btn" id="btnStaffRole" onclick="switchRole('staff')">
+        <i class="fa-solid fa-chalkboard-user"></i> Teacher & Staff
+      </button>
+    </div>
+
+    <!-- STUDENT LOGIN VIEW -->
+    <div class="auth-card" id="studentLoginCard">
+      <div class="auth-header">
+        <i class="fa-solid fa-user-graduate"></i>
+        <h2>Student Academic Portal</h2>
+        <p>Access term grades, report slips, fee balance, and class timetables</p>
+      </div>
+      <div class="auth-body">
+        <form onsubmit="handleStudentLogin(event)">
+          <div class="form-group">
+            <label class="form-label">Student Reg Number / Roll ID</label>
+            <div class="input-wrap">
+              <i class="fa-solid fa-id-card"></i>
+              <input type="text" id="studId" class="form-input" placeholder="e.g., ACEJ/2026/NIT/042" required>
+            </div>
+          </div>
+          <div class="form-group">
+            <label class="form-label">Portal PIN / Password</label>
+            <div class="input-wrap">
+              <i class="fa-solid fa-lock"></i>
+              <input type="password" id="studPin" class="form-input" placeholder="Enter student PIN" required>
+            </div>
+          </div>
+          <button type="submit" class="btn-submit">
+            Enter Student Workspace <i class="fa-solid fa-arrow-right"></i>
+          </button>
+          <p class="auth-help">
+            Forgot your portal PIN? Contact your class patron or <a href="/payment/">check fees clearance</a>.
+          </p>
+        </form>
+      </div>
+    </div>
+
+    <!-- TEACHER LOGIN VIEW -->
+    <div class="auth-card" id="staffLoginCard" style="display: none;">
+      <div class="auth-header" style="background: linear-gradient(135deg, #1e3a8a, #0d2047);">
+        <i class="fa-solid fa-chalkboard-user"></i>
+        <h2>Teacher & Staff Workspace</h2>
+        <p>Curriculum records, marks entry, attendance registers, and teaching logs</p>
+      </div>
+      <div class="auth-body">
+        <form onsubmit="handleStaffLogin(event)">
+          <div class="form-group">
+            <label class="form-label">Official Staff ID / Phone</label>
+            <div class="input-wrap">
+              <i class="fa-solid fa-user-tie"></i>
+              <input type="text" id="staffId" class="form-input" placeholder="e.g., ST-NIT-01 or 0788..." required>
+            </div>
+          </div>
+          <div class="form-group">
+            <label class="form-label">Staff Security Key</label>
+            <div class="input-wrap">
+              <i class="fa-solid fa-key"></i>
+              <input type="password" id="staffKey" class="form-input" placeholder="Enter security passphrase" required>
+            </div>
+          </div>
+          <button type="submit" class="btn-submit" style="background: var(--secondary-blue);">
+            Staff Console Access <i class="fa-solid fa-arrow-right"></i>
+          </button>
+          <p class="auth-help">
+            New instructor? Reach out to Head of IT (BARIHAMWE J. d'Amour) for credential onboarding[cite: 3].
+          </p>
+        </form>
+      </div>
+    </div>
+
+    <!-- STUDENT DASHBOARD (POST-LOGIN) -->
+    <div class="dashboard-view" id="studentDashboard">
+      <div class="dash-header">
+        <div class="dash-user">
+          <div class="user-avatar-badge"><i class="fa-solid fa-user-graduate"></i></div>
+          <div>
+            <h3 id="dispStudentName">Student Record Workspace</h3>
+            <p id="dispStudentMeta">NIT Level 4 &bull; Roll: ACEJ/2026/042</p>
+          </div>
+        </div>
+        <button class="btn-logout" onclick="logout()"><i class="fa-solid fa-power-off"></i> Sign Out</button>
+      </div>
+      <div class="dash-body">
+        <div class="grid-cards">
+          <div class="dash-card">
+            <div class="dash-card-header">
+              <h4>Fee Status</h4>
+              <i class="fa-solid fa-receipt"></i>
+            </div>
+            <div style="font-size: 1.4rem; font-weight: 800; color: var(--emerald-green);">95,500 RWF</div>
+            <span class="status-pill status-good" style="margin-top: 6px;">Fully Cleared (Term 1)</span>
+          </div>
+          <div class="dash-card">
+            <div class="dash-card-header">
+              <h4>Attendance</h4>
+              <i class="fa-solid fa-clipboard-check"></i>
+            </div>
+            <div style="font-size: 1.4rem; font-weight: 800; color: var(--primary-navy);">98.4%</div>
+            <span class="status-pill status-good" style="margin-top: 6px;">Optimal Participation</span>
+          </div>
+          <div class="dash-card">
+            <div class="dash-card-header">
+              <h4>Academic Average</h4>
+              <i class="fa-solid fa-chart-line"></i>
+            </div>
+            <div style="font-size: 1.4rem; font-weight: 800; color: var(--accent-gold);">88.5%</div>
+            <span class="status-pill status-good" style="margin-top: 6px;">First Class Distinction</span>
+          </div>
+        </div>
+
+        <h4 style="margin-bottom: 15px; color: var(--primary-navy);"><i class="fa-solid fa-book"></i> Recent Term Modules & Practical Marks</h4>
+        <div style="overflow-x: auto;">
+          <table class="dash-table">
+            <thead>
+              <tr>
+                <th>Module / Subject</th>
+                <th>Trade</th>
+                <th>Instructor</th>
+                <th>Marks (%)</th>
+                <th>Status</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr>
+                <td>Routing & Switching Installation</td>
+                <td>Networking (NIT)</td>
+                <td>Mr. Barihamwe J.[cite: 3]</td>
+                <td><strong>92%</strong></td>
+                <td><span class="status-pill status-good">Passed (A)</span></td>
+              </tr>
+              <tr>
+                <td>LAN Setup & Maintenance</td>
+                <td>Networking (NIT)</td>
+                <td>Technical Dept[cite: 4]</td>
+                <td><strong>89%</strong></td>
+                <td><span class="status-pill status-good">Passed (A)</span></td>
+              </tr>
+              <tr>
+                <td>Computer Hardware Basics & Lab</td>
+                <td>Hardware Support</td>
+                <td>Lab Maintainer[cite: 3]</td>
+                <td><strong>94%</strong></td>
+                <td><span class="status-pill status-good">Passed (A)</span></td>
+              </tr>
+              <tr>
+                <td>Discrete Mathematics & Logic</td>
+                <td>General TVET</td>
+                <td>Academic Staff[cite: 3]</td>
+                <td><strong>84%</strong></td>
+                <td><span class="status-pill status-good">Passed (B+)</span></td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+      </div>
+    </div>
+
+    <!-- TEACHER DASHBOARD (POST-LOGIN) -->
+    <div class="dashboard-view" id="staffDashboard">
+      <div class="dash-header" style="background: #1e3a8a;">
+        <div class="dash-user">
+          <div class="user-avatar-badge" style="border-color: #60a5fa;"><i class="fa-solid fa-chalkboard-user"></i></div>
+          <div>
+            <h3 id="dispStaffName">Staff Workspace</h3>
+            <p id="dispStaffMeta">Instructor ID: ST-ACEJ-01 &bull; Technical Department</p>
+          </div>
+        </div>
+        <button class="btn-logout" onclick="logout()"><i class="fa-solid fa-power-off"></i> Sign Out</button>
+      </div>
+      <div class="dash-body">
+        <div class="grid-cards">
+          <div class="dash-card">
+            <div class="dash-card-header">
+              <h4>Allocated Classes</h4>
+              <i class="fa-solid fa-users"></i>
+            </div>
+            <div style="font-size: 1.4rem; font-weight: 800; color: var(--primary-navy);">4 Streams</div>
+            <span class="status-pill status-good" style="margin-top: 6px;">NIT L3, L4, L5 & CSA</span>
+          </div>
+          <div class="dash-card">
+            <div class="dash-card-header">
+              <h4>Pending Grading</h4>
+              <i class="fa-solid fa-pen-ruler"></i>
+            </div>
+            <div style="font-size: 1.4rem; font-weight: 800; color: #b45309;">1 Assessment</div>
+            <span class="status-pill status-pending" style="margin-top: 6px;">Due This Friday</span>
+          </div>
+          <div class="dash-card">
+            <div class="dash-card-header">
+              <h4>Weekly Hours</h4>
+              <i class="fa-solid fa-clock"></i>
+            </div>
+            <div style="font-size: 1.4rem; font-weight: 800; color: var(--emerald-green);">24 Hours</div>
+            <span class="status-pill status-good" style="margin-top: 6px;">On Schedule</span>
+          </div>
+        </div>
+
+        <h4 style="margin-bottom: 15px; color: var(--primary-navy);"><i class="fa-solid fa-calendar-days"></i> Teaching Timetable & Lab Sessions</h4>
+        <div style="overflow-x: auto;">
+          <table class="dash-table">
+            <thead>
+              <tr>
+                <th>Day & Period</th>
+                <th>Class / Level</th>
+                <th>Room / Lab</th>
+                <th>Module Topic</th>
+                <th>Action</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr>
+                <td>Monday 08:00 - 10:00</td>
+                <td>Level 4 Networking</td>
+                <td>Lab 1 (Cisco Racks)</td>
+                <td>VLAN Trunking & Switch Config</td>
+                <td><button style="padding: 4px 10px; font-size: 0.75rem; border-radius: 4px; border: 1px solid #cbd5e1; cursor: pointer;">Open Register</button></td>
+              </tr>
+              <tr>
+                <td>Tuesday 10:30 - 12:30</td>
+                <td>Level 5 Networking</td>
+                <td>Lab 2 (Server Unit)</td>
+                <td>Windows Server AD & DNS</td>
+                <td><button style="padding: 4px 10px; font-size: 0.75rem; border-radius: 4px; border: 1px solid #cbd5e1; cursor: pointer;">Open Register</button></td>
+              </tr>
+              <tr>
+                <td>Thursday 14:00 - 16:00</td>
+                <td>Level 3 CSA</td>
+                <td>Hardware Lab</td>
+                <td>Power Supplies & Motherboards</td>
+                <td><button style="padding: 4px 10px; font-size: 0.75rem; border-radius: 4px; border: 1px solid #cbd5e1; cursor: pointer;">Open Register</button></td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+      </div>
+    </div>
+
+  </div>
+
+  <!-- FOOTER -->
+  <footer class="portal-footer">
+    <div>
+      &copy; 2026 <strong>Collège ACEJ / KARAMA TSS</strong> &bull; P.O. Box 108 Muhanga, Rwanda[cite: 6]
+    </div>
+    <div style="margin-top: 6px; font-size: 0.78rem;">
+      Accredited by Rwanda TVET Board (RTB) & NESA &bull; Managed by ICT Directorate[cite: 3, 12]
+    </div>
+  </footer>
+
+  <script>
+    // Tab Switching
+    function switchRole(role) {
+      const btnStudent = document.getElementById('btnStudentRole');
+      const btnStaff = document.getElementById('btnStaffRole');
+      const studentCard = document.getElementById('studentLoginCard');
+      const staffCard = document.getElementById('staffLoginCard');
+      const studentDash = document.getElementById('studentDashboard');
+      const staffDash = document.getElementById('staffDashboard');
+
+      studentDash.style.display = 'none';
+      staffDash.style.display = 'none';
+
+      if (role === 'student') {
+        btnStudent.classList.add('active');
+        btnStaff.classList.remove('active');
+        studentCard.style.display = 'block';
+        staffCard.style.display = 'none';
+      } else {
+        btnStaff.classList.add('active');
+        btnStudent.classList.remove('active');
+        staffCard.style.display = 'block';
+        studentCard.style.display = 'none';
+      }
+    }
+
+    // Student Login
+    function handleStudentLogin(e) {
+      e.preventDefault();
+      const id = document.getElementById('studId').value.trim();
+      document.getElementById('dispStudentName').innerText = "Student Workspace: " + (id || "ACEJ Scholar");
+      document.getElementById('studentLoginCard').style.display = 'none';
+      document.getElementById('roleSwitch').style.display = 'none';
+      document.getElementById('studentDashboard').style.display = 'block';
+    }
+
+    // Staff Login
+    function handleStaffLogin(e) {
+      e.preventDefault();
+      const staffId = document.getElementById('staffId').value.trim();
+      document.getElementById('dispStaffName').innerText = "Staff Console: " + (staffId || "Instructor");
+      document.getElementById('staffLoginCard').style.display = 'none';
+      document.getElementById('roleSwitch').style.display = 'none';
+      document.getElementById('staffDashboard').style.display = 'block';
+    }
+
+    // Logout
+    function logout() {
+      document.getElementById('studentDashboard').style.display = 'none';
+      document.getElementById('staffDashboard').style.display = 'none';
+      document.getElementById('roleSwitch').style.display = 'flex';
+      switchRole('student');
+    }
+  </script>
+</body>
+</html>
