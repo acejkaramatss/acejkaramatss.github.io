@@ -533,8 +533,8 @@
       <div class="login-body">
         <form id="portalLoginForm" onsubmit="handlePortalLogin(event)" novalidate>
           <div class="form-group">
-            <label id="lblUsername" for="portalUsername">Student Roll / Reg ID Number</label>
-            <input type="text" id="portalUsername" class="input-control" placeholder="e.g. noheri" oninput="clearInlineLoginErrors()">
+            <label id="lblUsername" for="portalUsername">Staff Username or Email</label>
+            <input type="text" id="portalUsername" class="input-control" placeholder="e.g. Paul" oninput="clearInlineLoginErrors()">
             <div class="inline-error-message" id="usernameInlineError">
               <i class="fa-solid fa-circle-exclamation"></i>
               <span>The username or ID you entered isn't connected to an account.</span>
@@ -550,7 +550,7 @@
             </div>
           </div>
 
-          <button type="submit" class="btn-login-submit">
+          <button type="submit" id="btnPortalLoginSubmit" class="btn-login-submit">
             <i class="fa-solid fa-right-to-bracket"></i> Authenticate &amp; Open Portal
           </button>
 
@@ -842,7 +842,7 @@
         </p>
         <div class="form-group">
           <label>Account ID / Phone / Email</label>
-          <input type="text" id="otpAccountInput" class="input-control" placeholder="e.g. noheri or 0788..." required>
+          <input type="text" id="otpAccountInput" class="input-control" placeholder="e.g. Paul or 0788..." required>
           <div class="inline-error-message" id="otpStep1Error">
             <i class="fa-solid fa-circle-exclamation"></i>
             <span>No account found matching this identifier. Please verify and try again.</span>
@@ -912,7 +912,7 @@
 
           <div class="file-preview-strip" id="filePreviewStrip">
             <i class="fa-solid fa-file-circle-check" style="color:#10b981; font-size:1.2rem;"></i>
-            <span id="attachedFileName" style="font-weight:700;">3.TELECOMMUNICATIONS'APPLICATIONS.pptx</span>
+            <span id="attachedFileName" style="font-weight:700;">Lecture_Notes.pdf</span>
           </div>
         </div>
 
@@ -937,10 +937,11 @@
   </footer>
 
   <script>
-    // YOUR EXACT FIREBASE DATABASE URL
-    const FIREBASE_DB_URL = "https://acej-portal-default-rtdb.firebaseio.com";
+    // AUTOMATIC URL SANITIZATION (PREVENTS DOUBLE SLASH ERRORS)
+    const RAW_FIREBASE_URL = "https://acej-portal-default-rtdb.firebaseio.com";
+    const FIREBASE_DB_URL = RAW_FIREBASE_URL.replace(/\/+$/, '');
 
-    var currentRole = 'student';
+    var currentRole = 'staff'; // Default to Trainer / Staff
     var activeSessionUser = null;
     var selectedAttachmentName = "";
 
@@ -953,63 +954,43 @@
     const NOTICE_STORAGE_KEY = "ACEJ_PORTAL_BROADCAST";
     const SESSION_STORAGE_KEY = "ACEJ_ACTIVE_SESSION";
 
-    const SEED_USERS = [
-      { id: "1", role: "student", name: "Dufitimana Clebert", username: "Acej/2026/0100", pass: "Acej#2026", dept: "NIT", level: "Level 5", status: "active", groups: ["Core Class", "Tech Club"], firstLogin: false },
-      { id: "2", role: "student", name: "noheri", username: "noheri", pass: "Noheri@/2020", dept: "NIT", level: "Level 5", status: "active", groups: ["Core Class"], firstLogin: false },
-      { id: "3", role: "student", name: "Dangote", username: "dangote", pass: "Kigali@123", dept: "NIT", level: "Level 5", status: "active", groups: ["Board"], firstLogin: false },
-      { id: "4", role: "staff", name: "marlene", username: "Marlene", pass: "Marlene@123", dept: "NIT", level: "Level 5", status: "active", groups: ["Core Class"], firstLogin: false },
-      { id: "5", role: "staff", name: "Muneza Germain", username: "muneza", pass: "Muneza@2026", dept: "GEN", level: "Faculty", status: "active", groups: ["Exam Board", "Faculty"], firstLogin: false },
-      { id: "6", role: "staff", name: "Barihamwe Jean D'Amour", username: "trainer.barihamwe", pass: "staff123", dept: "CSA", level: "Faculty", status: "active", groups: ["Pedagogy Lead", "Faculty"], firstLogin: false },
-      { id: "7", role: "staff", name: "john", username: "john", pass: "john@123", dept: "NIT", level: "Faculty", status: "active", groups: ["General"], firstLogin: false }
-    ];
+    function parseCloudData(data) {
+      if (!data) return [];
+      if (Array.isArray(data)) return data.filter(Boolean);
+      if (typeof data === 'object') return Object.values(data).filter(Boolean);
+      return [];
+    }
 
     function getUsersDB() {
       var stored = localStorage.getItem(DB_USERS_KEY);
-      if (!stored) {
-        localStorage.setItem(DB_USERS_KEY, JSON.stringify(SEED_USERS));
-        return SEED_USERS;
-      }
-      return JSON.parse(stored);
+      return stored ? JSON.parse(stored) : [];
     }
 
-    function saveUsersDB(users) {
+    async function saveUsersDB(users) {
       localStorage.setItem(DB_USERS_KEY, JSON.stringify(users));
-      fetch(`${FIREBASE_DB_URL}/users.json`, {
-        method: "PUT",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify(users)
-      }).catch(function(e) {});
+      try {
+        await fetch(`${FIREBASE_DB_URL}/users.json`, {
+          method: "PUT",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify(users)
+        });
+      } catch (e) {}
     }
 
     function getCoursesDB() {
       var stored = localStorage.getItem(DB_COURSES_KEY);
-      return stored ? JSON.parse(stored) : [
-        {
-          id: "c1",
-          cohort: "Level 5 NIT",
-          title: "Telcom",
-          fileName: "3.TELECOMMUNICATIONS'APPLICATIONS.pptx",
-          teacher: "Dufitimana Clebert",
-          date: "13 Oct 2026"
-        },
-        {
-          id: "c2",
-          cohort: "Level 5 NIT",
-          title: "Enterprise Cisco Routing & VLAN Setup",
-          fileName: "Cisco_VLAN_Manual.pkt",
-          teacher: "Muneza Germain",
-          date: "12 Oct 2026"
-        }
-      ];
+      return stored ? JSON.parse(stored) : [];
     }
 
-    function saveCoursesDB(courses) {
+    async function saveCoursesDB(courses) {
       localStorage.setItem(DB_COURSES_KEY, JSON.stringify(courses));
-      fetch(`${FIREBASE_DB_URL}/courses.json`, {
-        method: "PUT",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify(courses)
-      }).catch(function(e) {});
+      try {
+        await fetch(`${FIREBASE_DB_URL}/courses.json`, {
+          method: "PUT",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify(courses)
+        });
+      } catch (e) {}
     }
 
     function getGradesDB() {
@@ -1017,13 +998,15 @@
       return stored ? JSON.parse(stored) : {};
     }
 
-    function saveGradesDB(grades) {
+    async function saveGradesDB(grades) {
       localStorage.setItem(DB_GRADES_KEY, JSON.stringify(grades));
-      fetch(`${FIREBASE_DB_URL}/grades.json`, {
-        method: "PUT",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify(grades)
-      }).catch(function(e) {});
+      try {
+        await fetch(`${FIREBASE_DB_URL}/grades.json`, {
+          method: "PUT",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify(grades)
+        });
+      } catch (e) {}
     }
 
     function switchLoginRole(role) {
@@ -1032,7 +1015,7 @@
       document.getElementById('tabStudent').classList.toggle('active-tab', role === 'student');
       document.getElementById('tabStaff').classList.toggle('active-tab', role === 'staff');
       document.getElementById('lblUsername').innerText = (role === 'student') ? 'Student Roll / Reg ID Number' : 'Staff Username or Email';
-      document.getElementById('portalUsername').placeholder = (role === 'student') ? 'e.g. noheri' : 'e.g. trainer.muneza';
+      document.getElementById('portalUsername').placeholder = (role === 'student') ? 'e.g. noheri' : 'e.g. Paul';
     }
 
     function clearInlineLoginErrors() {
@@ -1042,22 +1025,23 @@
       document.getElementById('passwordInlineError').style.display = 'none';
     }
 
-    // SESSION RESTORE ENGINE
+    // DIRECT CLOUD SYNC & SESSION RESTORE
     window.addEventListener('DOMContentLoaded', async function() {
+      // By default, activate the Trainer / Staff tab
+      switchLoginRole('staff');
+
       try {
         const uRes = await fetch(`${FIREBASE_DB_URL}/users.json`);
         if (uRes.ok) {
           const uCloud = await uRes.json();
-          if (uCloud && Array.isArray(uCloud) && uCloud.length > 0) {
-            localStorage.setItem(DB_USERS_KEY, JSON.stringify(uCloud));
-          }
+          const usersList = parseCloudData(uCloud);
+          localStorage.setItem(DB_USERS_KEY, JSON.stringify(usersList));
         }
         const cRes = await fetch(`${FIREBASE_DB_URL}/courses.json`);
         if (cRes.ok) {
           const cCloud = await cRes.json();
-          if (cCloud && Array.isArray(cCloud)) {
-            localStorage.setItem(DB_COURSES_KEY, JSON.stringify(cCloud));
-          }
+          const coursesList = parseCloudData(cCloud);
+          localStorage.setItem(DB_COURSES_KEY, JSON.stringify(coursesList));
         }
         const gRes = await fetch(`${FIREBASE_DB_URL}/grades.json`);
         if (gRes.ok) {
@@ -1071,6 +1055,8 @@
           const bCloud = await bRes.json();
           if (bCloud) {
             localStorage.setItem(NOTICE_STORAGE_KEY, JSON.stringify(bCloud));
+          } else {
+            localStorage.removeItem(NOTICE_STORAGE_KEY);
           }
         }
       } catch(e) {}
@@ -1090,20 +1076,46 @@
         var userObj = JSON.parse(existingSession);
         var currentDB = getUsersDB();
         var refreshed = currentDB.find(function(u) { return u.id === userObj.id || u.username.toLowerCase() === userObj.username.toLowerCase(); });
-        activeSessionUser = refreshed || userObj;
-        showUserDashboard(activeSessionUser);
+        if (refreshed) {
+          activeSessionUser = refreshed;
+          showUserDashboard(activeSessionUser);
+        } else {
+          logoutPortal();
+        }
       }
     });
 
-    function handlePortalLogin(e) {
+    // INSTANT CLOUD FETCH DURING LOGIN SUBMISSION
+    async function handlePortalLogin(e) {
       e.preventDefault();
       clearInlineLoginErrors();
 
       var user = document.getElementById('portalUsername').value.trim();
       var pass = document.getElementById('portalPassword').value.trim();
 
+      var submitBtn = document.getElementById('btnPortalLoginSubmit');
+      var origText = submitBtn.innerHTML;
+      submitBtn.disabled = true;
+      submitBtn.innerHTML = '<i class="fa-solid fa-spinner fa-spin"></i> Checking Cloud Database...';
+
+      // PULL LATEST LIVE CLOUD USERS RIGHT NOW BEFORE FAILING
+      try {
+        const uRes = await fetch(`${FIREBASE_DB_URL}/users.json`);
+        if (uRes.ok) {
+          const uCloud = await uRes.json();
+          const usersList = parseCloudData(uCloud);
+          localStorage.setItem(DB_USERS_KEY, JSON.stringify(usersList));
+        }
+      } catch (err) {
+        console.warn("Direct cloud fetch error:", err);
+      } finally {
+        submitBtn.disabled = false;
+        submitBtn.innerHTML = origText;
+      }
+
       var userList = getUsersDB();
 
+      // Find user (case-insensitive)
       var userMatch = userList.find(function(u) {
         return u.username.toLowerCase() === user.toLowerCase() && u.role === currentRole;
       });
@@ -1189,7 +1201,7 @@
       marksTbody.innerHTML = `
         <tr>
           <td><strong>${student.dept || 'NIT'}-501</strong></td>
-          <td>Telcom &amp; Advanced Routing Lab</td>
+          <td>Telcom &amp; Practical Module Lab</td>
           <td>15</td>
           <td>${studentRecord.continuous} / 40</td>
           <td>${studentRecord.practical} / 60</td>
@@ -1305,7 +1317,7 @@
       });
     }
 
-    function saveClassMarksAndAttendance() {
+    async function saveClassMarksAndAttendance() {
       var rows = document.querySelectorAll('#trainerGradebookTbody tr');
       var gradesDB = getGradesDB();
 
@@ -1324,7 +1336,7 @@
         };
       });
 
-      saveGradesDB(gradesDB);
+      await saveGradesDB(gradesDB);
       showSystemToast("Class marks and attendance updated and synced to cloud!");
     }
 
@@ -1345,7 +1357,7 @@
       }
     }
 
-    function handlePublishCourseSubmit(e) {
+    async function handlePublishCourseSubmit(e) {
       e.preventDefault();
       var cohort = document.getElementById('pubClassTarget').value;
       var title = document.getElementById('pubCourseTitle').value.trim();
@@ -1361,7 +1373,7 @@
         date: new Date().toLocaleDateString('en-GB', { day: 'numeric', month: 'short', year: 'numeric' })
       });
 
-      saveCoursesDB(courses);
+      await saveCoursesDB(courses);
       closePublishModal();
       renderTrainerPublishedNotes();
       showSystemToast("Course notes published and synced to student portal!");
@@ -1381,7 +1393,7 @@
       document.getElementById('profileUpdateModal').style.display = 'none';
     }
 
-    function handleSaveOwnProfile(e) {
+    async function handleSaveOwnProfile(e) {
       e.preventDefault();
       var name = document.getElementById('profFullName').value.trim();
       var phone = document.getElementById('profPhone').value.trim();
@@ -1399,7 +1411,7 @@
           users[idx].pass = newPass;
         }
 
-        saveUsersDB(users);
+        await saveUsersDB(users);
         activeSessionUser = users[idx];
         sessionStorage.setItem(SESSION_STORAGE_KEY, JSON.stringify(activeSessionUser));
       }
@@ -1426,7 +1438,7 @@
       document.getElementById('selfOtpModal').style.display = 'none';
     }
 
-    function requestOtpCode() {
+    async function requestOtpCode() {
       var query = document.getElementById('otpAccountInput').value.trim().toLowerCase();
       document.getElementById('otpStep1Error').style.display = "none";
 
@@ -1434,6 +1446,15 @@
         document.getElementById('otpStep1Error').style.display = "flex";
         return;
       }
+
+      try {
+        const uRes = await fetch(`${FIREBASE_DB_URL}/users.json`);
+        if (uRes.ok) {
+          const uCloud = await uRes.json();
+          const usersList = parseCloudData(uCloud);
+          localStorage.setItem(DB_USERS_KEY, JSON.stringify(usersList));
+        }
+      } catch (e) {}
 
       var users = getUsersDB();
       var match = users.find(function(u) {
@@ -1456,7 +1477,7 @@
       document.getElementById('otpStep2').style.display = "block";
     }
 
-    function verifyAndResetPassword() {
+    async function verifyAndResetPassword() {
       var enteredCode = document.getElementById('otpCodeInput').value.trim();
       var newPass = document.getElementById('otpNewPassInput').value.trim();
       document.getElementById('otpCodeError').style.display = "none";
@@ -1475,7 +1496,7 @@
       var idx = users.findIndex(function(u) { return u.id === currentOtpTargetUser.id; });
       if (idx !== -1) {
         users[idx].pass = newPass;
-        saveUsersDB(users);
+        await saveUsersDB(users);
         currentOtpTargetUser = users[idx];
       }
 
