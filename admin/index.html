@@ -283,13 +283,14 @@
 </head>
 <body>
 
+  <!-- ADMIN HEADER -->
   <header class="admin-header">
     <div class="brand-title">
       <img src="/logo.png?v=3" alt="ACEJ Crest" class="brand-logo-img">
       <div>ACEJ KARAMA TSS &bull; <span id="adminHeaderBadge">Super Admin Console</span></div>
     </div>
     <div class="header-controls">
-      <div class="sync-status-indicator" id="cloudSyncStatus" onclick="pullFromCloud()" title="Click to force sync">
+      <div class="sync-status-indicator" id="cloudSyncStatus" onclick="pullFromCloud()" title="Click to refresh from Firebase">
         <i class="fa-solid fa-cloud"></i> <span>Live Cloud Sync</span>
       </div>
       <a href="/portal/" target="_blank" class="btn-action">
@@ -301,6 +302,7 @@
     </div>
   </header>
 
+  <!-- AUTH LOCK -->
   <main class="auth-overlay" id="adminLoginBox">
     <div style="font-size: 2.4rem; color: var(--navy); margin-bottom: 12px;">
       <i class="fa-solid fa-user-shield"></i>
@@ -316,6 +318,7 @@
     </form>
   </main>
 
+  <!-- DASHBOARD -->
   <div class="admin-console" id="adminDashboard">
     
     <div class="stats-row">
@@ -337,6 +340,7 @@
       </div>
     </div>
 
+    <!-- ANNOUNCEMENT BROADCASTER -->
     <div class="card-panel" style="border-left: 5px solid var(--gold);">
       <div class="card-title" style="color: var(--navy);">
         <i class="fa-solid fa-bullhorn" style="color: var(--gold-dark);"></i> Broadcast Announcement to All Devices
@@ -356,7 +360,9 @@
 
     <div class="grid-forms-tables">
       
+      <!-- LEFT -->
       <div>
+        <!-- FOLDERS MANAGER -->
         <div class="card-panel">
           <div class="card-title">
             <i class="fa-solid fa-folder-tree" style="color: var(--purple);"></i> User Groups &amp; Folders
@@ -376,6 +382,7 @@
           <div id="activeFoldersBadgeList" style="display: flex; flex-wrap: wrap; gap: 4px;"></div>
         </div>
 
+        <!-- CREATE USER -->
         <div class="card-panel">
           <div class="card-title">
             <i class="fa-solid fa-user-plus" style="color: var(--blue);"></i> Register Account &amp; Assign Groups
@@ -438,6 +445,7 @@
         </div>
       </div>
 
+      <!-- RIGHT: LIVE DIRECTORY -->
       <div class="card-panel">
         <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 12px; flex-wrap: wrap; gap: 10px;">
           <div class="card-title" style="margin-bottom: 0;">
@@ -472,6 +480,7 @@
     </div>
   </div>
 
+  <!-- EDIT USER MODAL -->
   <div class="modal-backdrop" id="editModal">
     <div class="modal-content">
       <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:15px;">
@@ -546,15 +555,15 @@
     const MASTER_ADMIN_USER = "Ismael";
     const MASTER_ADMIN_PASS = "Acej@84011";
 
-    const DB_STORAGE_KEY = "ACEJ_PORTAL_USERS_DB";
-    const GROUPS_STORAGE_KEY = "ACEJ_PORTAL_GROUPS_DB";
-    const NOTICE_STORAGE_KEY = "ACEJ_PORTAL_BROADCAST";
-
     const DEFAULT_GROUPS = ["Core Class", "Tech Club", "AERG Itetero", "Prefects", "Exam Board"];
+    let liveUsersList = [];
+    let liveGroupsList = DEFAULT_GROUPS;
     let activeFilterGroup = "all";
-    let isPerformingLocalMutation = false;
 
-    // Normalizes Firebase response whether it's an object with keys or an array
+    function cleanFirebaseKey(str) {
+      return String(str || '').trim().replace(/[.#$\[\]\/]/g, '_');
+    }
+
     function parseCloudUsers(data) {
       if (!data) return [];
       let list = [];
@@ -564,7 +573,7 @@
         Object.keys(data).forEach(key => {
           if (data[key] && typeof data[key] === 'object') {
             let item = data[key];
-            if (!item.id) item.id = key;
+            if (!item.username) item.username = key;
             list.push(item);
           }
         });
@@ -572,66 +581,14 @@
       return list;
     }
 
-    function getGroupsDB() {
-      const stored = localStorage.getItem(GROUPS_STORAGE_KEY);
-      return stored ? JSON.parse(stored) : DEFAULT_GROUPS;
-    }
-
-    async function saveGroupsDB(groups) {
-      localStorage.setItem(GROUPS_STORAGE_KEY, JSON.stringify(groups));
-      renderGroupControls();
-      try {
-        await fetch(`${FIREBASE_DB_URL}/groups.json`, {
-          method: "PUT",
-          headers: { "Content-Type": "application/json" },
-          body: JSON.stringify(groups)
-        });
-      } catch (e) {}
-    }
-
-    function getLocalDatabase() {
-      const stored = localStorage.getItem(DB_STORAGE_KEY);
-      return stored ? JSON.parse(stored) : [];
-    }
-
-    // Force strict array overwrite in Firebase
-    async function syncFullDatabaseToCloud(db) {
-      isPerformingLocalMutation = true;
-      localStorage.setItem(DB_STORAGE_KEY, JSON.stringify(db));
-      renderData();
-
-      try {
-        setSyncState(true);
-        // Save as indexed map object to prevent array-collapse bugs in Firebase
-        let payload = {};
-        db.forEach((u, idx) => {
-          let cleanId = u.id ? String(u.id).replace(/[.#$\[\]\/]/g, '_') : 'usr_' + idx;
-          payload[cleanId] = u;
-        });
-
-        await fetch(`${FIREBASE_DB_URL}/users.json`, {
-          method: "PUT",
-          headers: { "Content-Type": "application/json" },
-          body: JSON.stringify(payload)
-        });
-        setSyncState(false);
-      } catch (e) {
-        setSyncState(false);
-      } finally {
-        setTimeout(() => { isPerformingLocalMutation = false; }, 1200);
-      }
-    }
-
+    // STRICT CLOUD READ (NO STALE LOCAL STORAGE FALLBACK)
     async function pullFromCloud() {
-      if (isPerformingLocalMutation) return;
-
       try {
         setSyncState(true);
         const res = await fetch(`${FIREBASE_DB_URL}/users.json`);
         if (res.ok) {
           const cloudData = await res.json();
-          const usersList = parseCloudUsers(cloudData);
-          localStorage.setItem(DB_STORAGE_KEY, JSON.stringify(usersList));
+          liveUsersList = parseCloudUsers(cloudData);
           renderData();
         }
 
@@ -639,7 +596,7 @@
         if (gRes.ok) {
           const cloudGroups = await gRes.json();
           if (cloudGroups && Array.isArray(cloudGroups)) {
-            localStorage.setItem(GROUPS_STORAGE_KEY, JSON.stringify(cloudGroups));
+            liveGroupsList = cloudGroups;
             renderGroupControls();
           }
         }
@@ -662,8 +619,7 @@
       const user = document.getElementById('adminUser').value.trim();
       const pass = document.getElementById('adminPass').value.trim();
 
-      const db = getLocalDatabase();
-      const matchedAdmin = db.find(u => u.username.toLowerCase() === user.toLowerCase() && u.pass === pass && (u.role === 'admin' || u.role === 'super'));
+      const matchedAdmin = liveUsersList.find(u => u.username.toLowerCase() === user.toLowerCase() && u.pass === pass && (u.role === 'admin' || u.role === 'super'));
 
       if (user === MASTER_ADMIN_USER && pass === MASTER_ADMIN_PASS) {
         sessionStorage.setItem("ACEJ_ADMIN_AUTH", "true");
@@ -697,7 +653,7 @@
       pullFromCloud();
 
       if (!window.cloudPollInterval) {
-        window.cloudPollInterval = setInterval(pullFromCloud, 4000);
+        window.cloudPollInterval = setInterval(pullFromCloud, 2500);
       }
     }
 
@@ -707,49 +663,60 @@
       const gName = nameInput.value.trim();
       if (!gName) return;
 
-      const groups = getGroupsDB();
-      if (groups.some(g => g.toLowerCase() === gName.toLowerCase())) {
+      if (liveGroupsList.some(g => g.toLowerCase() === gName.toLowerCase())) {
         alert("A group with this name already exists!");
         return;
       }
 
-      groups.push(gName);
-      await saveGroupsDB(groups);
+      liveGroupsList.push(gName);
+      renderGroupControls();
       nameInput.value = "";
+
+      await fetch(`${FIREBASE_DB_URL}/groups.json`, {
+        method: "PUT",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify(liveGroupsList)
+      });
     }
 
     async function deleteGroup(gName) {
-      if (!confirm(`Delete folder/group "${gName}"? Users will stay registered, but this folder tag will be removed.`)) return;
+      if (!confirm(`Delete folder/group "${gName}"? Users will stay registered, but this tag will be removed.`)) return;
 
-      let groups = getGroupsDB().filter(g => g.toLowerCase() !== gName.toLowerCase());
-      await saveGroupsDB(groups);
+      liveGroupsList = liveGroupsList.filter(g => g.toLowerCase() !== gName.toLowerCase());
+      renderGroupControls();
 
-      let users = getLocalDatabase();
-      let changed = false;
-      users.forEach(u => {
+      // Clean from Firebase
+      await fetch(`${FIREBASE_DB_URL}/groups.json`, {
+        method: "PUT",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify(liveGroupsList)
+      });
+
+      // Remove from any users holding it
+      liveUsersList.forEach(u => {
         if (u.groups && u.groups.includes(gName)) {
           u.groups = u.groups.filter(g => g !== gName);
-          changed = true;
+          const uKey = cleanFirebaseKey(u.username);
+          fetch(`${FIREBASE_DB_URL}/users/${uKey}.json`, {
+            method: "PUT",
+            headers: { "Content-Type": "application/json" },
+            body: JSON.stringify(u)
+          });
         }
       });
-      if (changed) {
-        await syncFullDatabaseToCloud(users);
-      }
 
       if (activeFilterGroup.toLowerCase() === gName.toLowerCase()) {
         activeFilterGroup = "all";
       }
-      renderGroupControls();
       renderData();
     }
 
     function renderGroupControls() {
-      const groups = getGroupsDB();
-      document.getElementById('statTotalGroups').innerText = groups.length;
+      document.getElementById('statTotalGroups').innerText = liveGroupsList.length;
 
       const regList = document.getElementById('registerGroupsCheckboxList');
       regList.innerHTML = "";
-      groups.forEach((g, idx) => {
+      liveGroupsList.forEach((g, idx) => {
         const item = document.createElement('div');
         item.className = "priv-item";
         item.innerHTML = `
@@ -761,7 +728,7 @@
 
       const badgeList = document.getElementById('activeFoldersBadgeList');
       badgeList.innerHTML = "";
-      groups.forEach(g => {
+      liveGroupsList.forEach(g => {
         const pill = document.createElement('span');
         pill.className = "folder-item-pill";
         pill.innerHTML = `
@@ -776,7 +743,7 @@
         <span style="font-size:0.8rem; font-weight:800; color:#64748b; margin-right:4px;"><i class="fa-solid fa-filter"></i> Group Folder:</span>
         <button class="filter-btn ${activeFilterGroup === 'all' ? 'active' : ''}" onclick="setGroupFilter('all', this)">All Users</button>
       `;
-      groups.forEach(g => {
+      liveGroupsList.forEach(g => {
         const btn = document.createElement('button');
         btn.className = `filter-btn ${activeFilterGroup === g ? 'active' : ''}`;
         btn.innerText = g;
@@ -810,7 +777,6 @@
       const submitBtn = document.getElementById('btnRegisterSubmit');
       const origText = submitBtn.innerHTML;
 
-      const db = getLocalDatabase();
       const role = document.getElementById('newRole').value;
       const name = document.getElementById('newName').value.trim();
       const username = document.getElementById('newUsername').value.trim();
@@ -818,7 +784,7 @@
       const dept = document.getElementById('newDepartment').value;
       const level = role === 'student' ? document.getElementById('newLevel').value : 'Faculty';
 
-      if (db.some(u => u.username.toLowerCase() === username.toLowerCase())) {
+      if (liveUsersList.some(u => u.username.toLowerCase() === username.toLowerCase())) {
         alert("An account with this Reg ID or Username already exists!");
         return;
       }
@@ -829,7 +795,7 @@
       });
 
       submitBtn.disabled = true;
-      submitBtn.innerHTML = '<i class="fa-solid fa-spinner fa-spin"></i> Syncing to Cloud...';
+      submitBtn.innerHTML = '<i class="fa-solid fa-spinner fa-spin"></i> Saving to Firebase...';
 
       const newUser = {
         id: "usr_" + Date.now().toString(),
@@ -844,9 +810,16 @@
         firstLogin: false
       };
 
-      db.push(newUser);
-      await syncFullDatabaseToCloud(db);
+      const uKey = cleanFirebaseKey(username);
 
+      // Save directly under user key
+      await fetch(`${FIREBASE_DB_URL}/users/${uKey}.json`, {
+        method: "PUT",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify(newUser)
+      });
+
+      await pullFromCloud();
       alert(`User ${name} registered! Synced directly to cloud.`);
       submitBtn.disabled = false;
       submitBtn.innerHTML = origText;
@@ -854,63 +827,47 @@
       toggleFormRoleFields();
     }
 
-    // DIRECT DELETE: PURGES FROM FIREBASE AND OVERWRITES CLOUD
-    async function deleteUser(id) {
-      const db = getLocalDatabase();
-      const target = db.find(u => u.id === id);
-      const name = target ? target.name : "this user";
+    // ABSOLUTE DIRECT DELETION (CANNOT BE RESTORED BY REFRESH)
+    async function deleteUser(username) {
+      const target = liveUsersList.find(u => u.username.toLowerCase() === username.toLowerCase());
+      const name = target ? target.name : username;
 
-      if (!confirm(`Permanently delete ${name}? This will remove them immediately across all devices.`)) {
+      if (!confirm(`Permanently delete ${name}? This will remove them immediately across all devices and terminate any active session.`)) {
         return;
       }
 
-      isPerformingLocalMutation = true;
-      setSyncState(true);
+      const uKey = cleanFirebaseKey(username);
 
-      const updatedDb = db.filter(u => u.id !== id);
-      localStorage.setItem(DB_STORAGE_KEY, JSON.stringify(updatedDb));
+      // 1. Remove from local array immediately
+      liveUsersList = liveUsersList.filter(u => u.username.toLowerCase() !== username.toLowerCase());
       renderData();
 
+      // 2. HTTP DELETE to Firebase
       try {
-        // 1. Explicitly delete the child key in Firebase
-        const cleanId = String(id).replace(/[.#$\[\]\/]/g, '_');
-        await fetch(`${FIREBASE_DB_URL}/users/${cleanId}.json`, { method: "DELETE" });
-
-        // 2. Full PUT to ensure no dangling records remain
-        let payload = {};
-        updatedDb.forEach((u, idx) => {
-          let cid = u.id ? String(u.id).replace(/[.#$\[\]\/]/g, '_') : 'usr_' + idx;
-          payload[cid] = u;
+        await fetch(`${FIREBASE_DB_URL}/users/${uKey}.json`, {
+          method: "DELETE"
         });
-
-        await fetch(`${FIREBASE_DB_URL}/users.json`, {
-          method: "PUT",
-          headers: { "Content-Type": "application/json" },
-          body: JSON.stringify(payload)
-        });
-      } catch (e) {
-        console.error("Deletion sync error:", e);
-      } finally {
-        setSyncState(false);
-        setTimeout(() => { isPerformingLocalMutation = false; }, 1500);
+      } catch (err) {
+        console.error("Firebase DELETE error:", err);
       }
+
+      // 3. Refresh from cloud to confirm
+      await pullFromCloud();
     }
 
     function impersonateUser(username) {
-      const db = getLocalDatabase();
-      const user = db.find(u => u.username.toLowerCase() === username.toLowerCase());
+      const user = liveUsersList.find(u => u.username.toLowerCase() === username.toLowerCase());
       if (user) {
         localStorage.setItem("ACEJ_IMPERSONATE_USER", JSON.stringify(user));
         window.open("/portal/", "_blank");
       }
     }
 
-    function openEditModal(userId) {
-      const db = getLocalDatabase();
-      const user = db.find(u => u.id === userId);
+    function openEditModal(username) {
+      const user = liveUsersList.find(u => u.username.toLowerCase() === username.toLowerCase());
       if (!user) return;
 
-      document.getElementById('editUserId').value = user.id;
+      document.getElementById('editUserId').value = user.username;
       document.getElementById('editName').value = user.name;
       document.getElementById('editUsername').value = user.username;
       document.getElementById('editPassword').value = user.pass;
@@ -918,12 +875,11 @@
       document.getElementById('editLevel').value = user.level || "Level 4";
       document.getElementById('editRole').value = user.role || "student";
 
-      const groups = getGroupsDB();
       const editList = document.getElementById('editGroupsCheckboxList');
       editList.innerHTML = "";
       const userGroups = user.groups || [];
 
-      groups.forEach((g, idx) => {
+      liveGroupsList.forEach((g, idx) => {
         const item = document.createElement('div');
         item.className = "priv-item";
         item.innerHTML = `
@@ -942,9 +898,8 @@
 
     async function handleSaveUserEdit(e) {
       e.preventDefault();
-      const db = getLocalDatabase();
-      const id = document.getElementById('editUserId').value;
-      const user = db.find(u => u.id === id);
+      const originalUsername = document.getElementById('editUserId').value;
+      const user = liveUsersList.find(u => u.username.toLowerCase() === originalUsername.toLowerCase());
 
       if (user) {
         user.name = document.getElementById('editName').value.trim();
@@ -960,18 +915,30 @@
         });
         user.groups = updatedGroups;
 
-        await syncFullDatabaseToCloud(db);
+        const uKey = cleanFirebaseKey(user.username);
+        await fetch(`${FIREBASE_DB_URL}/users/${uKey}.json`, {
+          method: "PUT",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify(user)
+        });
+
         alert(`Account ${user.name} updated and synced across all devices!`);
         closeEditModal();
+        pullFromCloud();
       }
     }
 
-    async function toggleUserStatus(id) {
-      const db = getLocalDatabase();
-      const u = db.find(user => user.id === id);
+    async function toggleUserStatus(username) {
+      const u = liveUsersList.find(user => user.username.toLowerCase() === username.toLowerCase());
       if (u) {
         u.status = u.status === 'active' ? 'disabled' : 'active';
-        await syncFullDatabaseToCloud(db);
+        const uKey = cleanFirebaseKey(u.username);
+        await fetch(`${FIREBASE_DB_URL}/users/${uKey}.json`, {
+          method: "PUT",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify(u)
+        });
+        pullFromCloud();
       }
     }
 
@@ -987,7 +954,6 @@
         author: sessionStorage.getItem("ACEJ_ADMIN_ROLE") || "Super Admin"
       };
 
-      localStorage.setItem(NOTICE_STORAGE_KEY, JSON.stringify(notice));
       try {
         await fetch(`${FIREBASE_DB_URL}/broadcast.json`, {
           method: "PUT",
@@ -1001,19 +967,22 @@
       renderBroadcastDisplay();
     }
 
-    function renderBroadcastDisplay() {
-      const stored = localStorage.getItem(NOTICE_STORAGE_KEY);
+    async function renderBroadcastDisplay() {
       const disp = document.getElementById('activeBroadcastDisplay');
-      if (stored) {
-        const n = JSON.parse(stored);
-        disp.innerHTML = `<strong>Active:</strong> <em>"${n.title}"</em> — ${n.body} <button onclick="clearBroadcast()" style="margin-left:8px; padding:2px 6px; font-size:0.75rem; border-radius:4px; border:1px solid #cbd5e1; cursor:pointer;">Dismiss</button>`;
-      } else {
-        disp.innerHTML = `<span style="color:#94a3b8;">No active broadcast announcement.</span>`;
-      }
+      try {
+        const res = await fetch(`${FIREBASE_DB_URL}/broadcast.json`);
+        if (res.ok) {
+          const n = await res.json();
+          if (n) {
+            disp.innerHTML = `<strong>Active:</strong> <em>"${n.title}"</em> — ${n.body} <button onclick="clearBroadcast()" style="margin-left:8px; padding:2px 6px; font-size:0.75rem; border-radius:4px; border:1px solid #cbd5e1; cursor:pointer;">Dismiss</button>`;
+            return;
+          }
+        }
+      } catch (e) {}
+      disp.innerHTML = `<span style="color:#94a3b8;">No active broadcast announcement.</span>`;
     }
 
     async function clearBroadcast() {
-      localStorage.removeItem(NOTICE_STORAGE_KEY);
       try {
         await fetch(`${FIREBASE_DB_URL}/broadcast.json`, { method: "DELETE" });
       } catch (e) {}
@@ -1021,18 +990,16 @@
     }
 
     function renderData() {
-      const db = getLocalDatabase();
-
       const userTbody = document.getElementById('userTableBody');
       userTbody.innerHTML = "";
       let countStudents = 0, countStaff = 0, countAdmins = 0;
 
-      const filteredUsers = db.filter(u => {
+      const filteredUsers = liveUsersList.filter(u => {
         if (activeFilterGroup === "all") return true;
         return (u.groups || []).includes(activeFilterGroup);
       });
 
-      db.forEach(u => {
+      liveUsersList.forEach(u => {
         if (u.role === 'student') countStudents++;
         else if (u.role === 'staff') countStaff++;
         else if (u.role === 'admin' || u.role === 'super') countAdmins++;
@@ -1060,13 +1027,13 @@
               <button class="btn-tbl btn-tbl-login" title="1-Click Open User Portal" onclick="impersonateUser('${u.username}')">
                 <i class="fa-solid fa-arrow-right-to-bracket"></i>
               </button>
-              <button class="btn-tbl btn-tbl-edit" title="Edit User &amp; Groups" onclick="openEditModal('${u.id}')">
+              <button class="btn-tbl btn-tbl-edit" title="Edit User &amp; Groups" onclick="openEditModal('${u.username}')">
                 <i class="fa-solid fa-pen-to-square"></i>
               </button>
-              <button class="btn-tbl" title="Toggle Status" onclick="toggleUserStatus('${u.id}')">
+              <button class="btn-tbl" title="Toggle Status" onclick="toggleUserStatus('${u.username}')">
                 <i class="fa-solid fa-power-off"></i>
               </button>
-              <button class="btn-tbl btn-tbl-del" title="Delete User Permanently" onclick="deleteUser('${u.id}')">
+              <button class="btn-tbl btn-tbl-del" title="Delete User Permanently" onclick="deleteUser('${u.username}')">
                 <i class="fa-solid fa-trash"></i>
               </button>
             </td>
@@ -1075,7 +1042,7 @@
         });
       }
 
-      document.getElementById('statTotalUsers').innerText = db.length;
+      document.getElementById('statTotalUsers').innerText = liveUsersList.length;
       document.getElementById('statTotalStudents').innerText = countStudents;
       document.getElementById('statTotalStaff').innerText = countStaff;
       document.getElementById('statTotalAdmins').innerText = countAdmins;
