@@ -22,7 +22,6 @@
       --white: #ffffff;
       --border-color: #e2e8f0;
       
-      /* EdTech Theme */
       --edtech-blue: #1d3557;
       --edtech-red: #e63946;
       --edtech-green: #2a9d8f;
@@ -37,7 +36,6 @@
     * { box-sizing: border-box; margin: 0; padding: 0; font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif; }
     body { color: var(--text-dark); background-color: var(--bg-light); line-height: 1.6; min-height: 100vh; display: flex; flex-direction: column; }
 
-    /* TOP BAR */
     .top-bar {
       background: var(--acej-dark-blue);
       color: #cbd5e1;
@@ -51,7 +49,6 @@
     .top-bar a { color: #e2e8f0; text-decoration: none; margin-left: 15px; }
     .top-bar a:hover { color: var(--acej-gold); }
 
-    /* NAVBAR */
     .portal-nav {
       background: var(--white);
       display: flex;
@@ -116,7 +113,6 @@
 
     .portal-main-area { max-width: 1240px; margin: 25px auto 60px; padding: 0 20px; width: 100%; flex-grow: 1; }
 
-    /* EMBEDDED PUSH NOTIFICATION BANNER */
     .embedded-notice-card {
       display: none;
       background: #fffbeb;
@@ -155,7 +151,6 @@
     .notice-body-text { color: #78350f; font-size: 0.94rem; line-height: 1.5; }
     .notice-footer-meta { font-size: 0.78rem; color: #b45309; margin-top: 8px; font-weight: 600; }
 
-    /* AUTHENTICATION FORM (FACEBOOK-STYLE ERROR VALIDATION) */
     .login-container {
       max-width: 460px;
       margin: 30px auto;
@@ -256,7 +251,6 @@
       padding: 0;
     }
 
-    /* EDTECH DASHBOARD STYLES */
     .edtech-welcome-banner {
       background: var(--edtech-gradient);
       color: var(--white);
@@ -408,7 +402,6 @@
       font-weight: 700;
     }
 
-    /* MODAL WINDOWS */
     .modal-backdrop {
       position: fixed;
       top: 0; left: 0; width: 100%; height: 100%;
@@ -449,7 +442,6 @@
       font-size: 0.88rem;
     }
 
-    /* SYSTEM SIMULATION TOAST */
     .otp-toast-banner {
       position: fixed;
       top: 25px;
@@ -575,7 +567,6 @@
     <!-- 2. TEACHER DASHBOARD -->
     <div id="staffDashboard" style="display: none;">
       
-      <!-- BROADCAST CARD EMBEDDED INSIDE TRAINER VIEW -->
       <div class="embedded-notice-card" id="staffNoticeBanner">
         <div class="notice-header-row">
           <h4><i class="fa-solid fa-bullhorn" style="color: #d97706;"></i> <span id="staffNoticeTitle">Campus Announcement</span></h4>
@@ -585,7 +576,6 @@
         <div class="notice-footer-meta" id="staffNoticeMeta"></div>
       </div>
 
-      <!-- HERO BANNER -->
       <div class="edtech-welcome-banner">
         <div>
           <h2 id="trainerHeroTitle">Welcome, Trainer!</h2>
@@ -596,7 +586,6 @@
         </button>
       </div>
 
-      <!-- STATUS TILES -->
       <div class="edtech-tiles-grid">
         <div class="edtech-card edtech-card-navy">
           <div class="edtech-card-info">
@@ -635,7 +624,6 @@
         </div>
       </div>
 
-      <!-- QUICK ACTIONS -->
       <div class="edtech-quick-actions-panel">
         <h3>Quick Actions</h3>
         <div class="quick-actions-grid">
@@ -654,7 +642,6 @@
         </div>
       </div>
 
-      <!-- SECTION: STUDENT ROSTER, MARKS & ATTENDANCE -->
       <div class="content-panel" id="gradebookSection">
         <div class="panel-header-row">
           <h3>
@@ -683,7 +670,6 @@
         </div>
       </div>
 
-      <!-- SECTION: PUBLISHED COURSES & NOTES -->
       <div class="content-panel">
         <div class="panel-header-row">
           <h3><i class="fa-solid fa-folder-open" style="color: #2563eb;"></i> Published Courses &amp; Learning Materials</h3>
@@ -713,7 +699,6 @@
     <!-- 3. STUDENT DASHBOARD -->
     <div id="studentDashboard" style="display: none;">
       
-      <!-- BROADCAST CARD EMBEDDED INSIDE STUDENT VIEW -->
       <div class="embedded-notice-card" id="studentNoticeBanner">
         <div class="notice-header-row">
           <h4><i class="fa-solid fa-bullhorn" style="color: #d97706;"></i> <span id="studentNoticeTitle">Campus Announcement</span></h4>
@@ -723,7 +708,6 @@
         <div class="notice-footer-meta" id="studentNoticeMeta"></div>
       </div>
 
-      <!-- HERO BANNER -->
       <div class="edtech-welcome-banner" style="background: linear-gradient(135deg, #0f2847 0%, #1e3a8a 100%);">
         <div>
           <h2 id="studentHeroTitle">Welcome Student!</h2>
@@ -734,7 +718,6 @@
         </button>
       </div>
 
-      <!-- SUMMARY TILES -->
       <div class="edtech-tiles-grid">
         <div class="edtech-card edtech-card-green">
           <div class="edtech-card-info">
@@ -764,7 +747,6 @@
         </div>
       </div>
 
-      <!-- MODULE MARKS TABLE -->
       <div class="content-panel">
         <div class="panel-header-row">
           <h3><i class="fa-solid fa-book-bookmark" style="color: #2563eb;"></i> Module Marks &amp; Assessment</h3>
@@ -786,7 +768,6 @@
         </div>
       </div>
 
-      <!-- SHARED NOTES & MATERIALS FROM TEACHERS -->
       <div class="content-panel">
         <div class="panel-header-row">
           <h3><i class="fa-solid fa-download" style="color: #2563eb;"></i> Shared Notes &amp; Course Materials from Teachers</h3>
@@ -855,10 +836,9 @@
         <button onclick="closeSelfOtpModal()" style="background:none; border:none; font-size:1.5rem; cursor:pointer;">&times;</button>
       </div>
 
-      <!-- STEP 1: ENTER USER IDENTIFIER -->
       <div id="otpStep1">
         <p style="font-size:0.9rem; color:#475569; margin-bottom:15px;">
-          Enter your Registration ID, Email, or Telephone number to receive a 6-digit one-time verification code (OTP).
+          Enter your Registration ID, Email, or Telephone number to receive a 6-digit verification code (OTP).
         </p>
         <div class="form-group">
           <label>Account ID / Phone / Email</label>
@@ -873,7 +853,6 @@
         </button>
       </div>
 
-      <!-- STEP 2: VERIFY OTP & ENTER NEW PASSWORD -->
       <div id="otpStep2" style="display: none;">
         <p style="font-size:0.9rem; color:#475569; margin-bottom:15px;">
           A 6-digit OTP code has been dispatched. Enter the code along with your new password below.
@@ -958,11 +937,13 @@
   </footer>
 
   <script>
+    // YOUR EXACT FIREBASE DATABASE URL
+    const FIREBASE_DB_URL = "https://acej-portal-default-rtdb.firebaseio.com";
+
     var currentRole = 'student';
     var activeSessionUser = null;
     var selectedAttachmentName = "";
 
-    // OTP State Variables
     var currentOtpTargetUser = null;
     var generatedOtpCode = null;
 
@@ -972,14 +953,32 @@
     const NOTICE_STORAGE_KEY = "ACEJ_PORTAL_BROADCAST";
     const SESSION_STORAGE_KEY = "ACEJ_ACTIVE_SESSION";
 
-    // 1. Storage Helpers
+    const SEED_USERS = [
+      { id: "1", role: "student", name: "Dufitimana Clebert", username: "Acej/2026/0100", pass: "Acej#2026", dept: "NIT", level: "Level 5", status: "active", groups: ["Core Class", "Tech Club"], firstLogin: false },
+      { id: "2", role: "student", name: "noheri", username: "noheri", pass: "Noheri@/2020", dept: "NIT", level: "Level 5", status: "active", groups: ["Core Class"], firstLogin: false },
+      { id: "3", role: "student", name: "Dangote", username: "dangote", pass: "Kigali@123", dept: "NIT", level: "Level 5", status: "active", groups: ["Board"], firstLogin: false },
+      { id: "4", role: "staff", name: "marlene", username: "Marlene", pass: "Marlene@123", dept: "NIT", level: "Level 5", status: "active", groups: ["Core Class"], firstLogin: false },
+      { id: "5", role: "staff", name: "Muneza Germain", username: "muneza", pass: "Muneza@2026", dept: "GEN", level: "Faculty", status: "active", groups: ["Exam Board", "Faculty"], firstLogin: false },
+      { id: "6", role: "staff", name: "Barihamwe Jean D'Amour", username: "trainer.barihamwe", pass: "staff123", dept: "CSA", level: "Faculty", status: "active", groups: ["Pedagogy Lead", "Faculty"], firstLogin: false },
+      { id: "7", role: "staff", name: "john", username: "john", pass: "john@123", dept: "NIT", level: "Faculty", status: "active", groups: ["General"], firstLogin: false }
+    ];
+
     function getUsersDB() {
       var stored = localStorage.getItem(DB_USERS_KEY);
-      return stored ? JSON.parse(stored) : [];
+      if (!stored) {
+        localStorage.setItem(DB_USERS_KEY, JSON.stringify(SEED_USERS));
+        return SEED_USERS;
+      }
+      return JSON.parse(stored);
     }
 
     function saveUsersDB(users) {
       localStorage.setItem(DB_USERS_KEY, JSON.stringify(users));
+      fetch(`${FIREBASE_DB_URL}/users.json`, {
+        method: "PUT",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify(users)
+      }).catch(function(e) {});
     }
 
     function getCoursesDB() {
@@ -1006,6 +1005,11 @@
 
     function saveCoursesDB(courses) {
       localStorage.setItem(DB_COURSES_KEY, JSON.stringify(courses));
+      fetch(`${FIREBASE_DB_URL}/courses.json`, {
+        method: "PUT",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify(courses)
+      }).catch(function(e) {});
     }
 
     function getGradesDB() {
@@ -1015,9 +1019,13 @@
 
     function saveGradesDB(grades) {
       localStorage.setItem(DB_GRADES_KEY, JSON.stringify(grades));
+      fetch(`${FIREBASE_DB_URL}/grades.json`, {
+        method: "PUT",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify(grades)
+      }).catch(function(e) {});
     }
 
-    // 2. Role Switching & Inline Validation
     function switchLoginRole(role) {
       currentRole = role;
       clearInlineLoginErrors();
@@ -1034,9 +1042,39 @@
       document.getElementById('passwordInlineError').style.display = 'none';
     }
 
-    // 3. PERSISTENT SESSION AUTO-RESTORE (PREVENTS LOGOUT ON REFRESH)
-    window.addEventListener('DOMContentLoaded', function() {
-      // Check if user impersonated from Admin
+    // SESSION RESTORE ENGINE
+    window.addEventListener('DOMContentLoaded', async function() {
+      try {
+        const uRes = await fetch(`${FIREBASE_DB_URL}/users.json`);
+        if (uRes.ok) {
+          const uCloud = await uRes.json();
+          if (uCloud && Array.isArray(uCloud) && uCloud.length > 0) {
+            localStorage.setItem(DB_USERS_KEY, JSON.stringify(uCloud));
+          }
+        }
+        const cRes = await fetch(`${FIREBASE_DB_URL}/courses.json`);
+        if (cRes.ok) {
+          const cCloud = await cRes.json();
+          if (cCloud && Array.isArray(cCloud)) {
+            localStorage.setItem(DB_COURSES_KEY, JSON.stringify(cCloud));
+          }
+        }
+        const gRes = await fetch(`${FIREBASE_DB_URL}/grades.json`);
+        if (gRes.ok) {
+          const gCloud = await gRes.json();
+          if (gCloud && typeof gCloud === 'object') {
+            localStorage.setItem(DB_GRADES_KEY, JSON.stringify(gCloud));
+          }
+        }
+        const bRes = await fetch(`${FIREBASE_DB_URL}/broadcast.json`);
+        if (bRes.ok) {
+          const bCloud = await bRes.json();
+          if (bCloud) {
+            localStorage.setItem(NOTICE_STORAGE_KEY, JSON.stringify(bCloud));
+          }
+        }
+      } catch(e) {}
+
       var impersonated = localStorage.getItem("ACEJ_IMPERSONATE_USER");
       if (impersonated) {
         localStorage.removeItem("ACEJ_IMPERSONATE_USER");
@@ -1047,19 +1085,16 @@
         return;
       }
 
-      // Check if session exists in sessionStorage
       var existingSession = sessionStorage.getItem(SESSION_STORAGE_KEY);
       if (existingSession) {
         var userObj = JSON.parse(existingSession);
-        // Refresh with latest data from database
         var currentDB = getUsersDB();
-        var refreshed = currentDB.find(function(u) { return u.id === userObj.id; });
+        var refreshed = currentDB.find(function(u) { return u.id === userObj.id || u.username.toLowerCase() === userObj.username.toLowerCase(); });
         activeSessionUser = refreshed || userObj;
         showUserDashboard(activeSessionUser);
       }
     });
 
-    // 4. Login Workflow
     function handlePortalLogin(e) {
       e.preventDefault();
       clearInlineLoginErrors();
@@ -1086,12 +1121,10 @@
       }
 
       activeSessionUser = userMatch;
-      // Persist to session storage so refresh does not log out
       sessionStorage.setItem(SESSION_STORAGE_KEY, JSON.stringify(userMatch));
       showUserDashboard(userMatch);
     }
 
-    // 5. Dashboard View Rendering
     function showUserDashboard(matched) {
       document.getElementById('loginBox').style.display = 'none';
       document.getElementById('btnSignOut').style.display = 'inline-flex';
@@ -1101,7 +1134,6 @@
       document.getElementById('navUserAvatar').innerText = matched.name.charAt(0).toUpperCase();
       document.getElementById('navUserName').innerText = matched.name;
 
-      // Render Broadcast Announcement directly into the active dashboard
       renderActiveBroadcastForUser();
 
       if (matched.role === 'student') {
@@ -1111,7 +1143,6 @@
       }
     }
 
-    // RENDER EMBEDDED BROADCAST BANNER INSIDE ACTIVE VIEW
     function renderActiveBroadcastForUser() {
       var stored = localStorage.getItem(NOTICE_STORAGE_KEY);
       var staffBanner = document.getElementById('staffNoticeBanner');
@@ -1120,13 +1151,11 @@
       if (stored) {
         var n = JSON.parse(stored);
         
-        // Staff banner setup
         document.getElementById('staffNoticeTitle').innerText = n.title;
         document.getElementById('staffNoticeBody').innerText = n.body;
         document.getElementById('staffNoticeMeta').innerText = 'Published by ' + (n.author || 'School Administration') + ' • ' + (n.date || 'Recent');
         staffBanner.style.display = 'block';
 
-        // Student banner setup
         document.getElementById('studentNoticeTitle').innerText = n.title;
         document.getElementById('studentNoticeBody').innerText = n.body;
         document.getElementById('studentNoticeMeta').innerText = 'Published by ' + (n.author || 'School Administration') + ' • ' + (n.date || 'Recent');
@@ -1137,7 +1166,6 @@
       }
     }
 
-    // --- STUDENT VIEW LOGIC ---
     function renderStudentView(student) {
       document.getElementById('studentDashboard').style.display = 'block';
       document.getElementById('staffDashboard').style.display = 'none';
@@ -1146,7 +1174,6 @@
       var cohortStr = (student.level || "Level 5") + " • " + (student.dept || "NIT");
       document.getElementById('studentHeroSub').innerText = cohortStr + " • Reg: " + student.username;
 
-      // Render Marks & Attendance from DB
       var gradesDB = getGradesDB();
       var studentRecord = gradesDB[student.username.toLowerCase()] || {
         attendance: "Present",
@@ -1170,7 +1197,6 @@
         </tr>
       `;
 
-      // Filter and Show Courses/Notes uploaded for this student's class
       var studentClassKey = (student.level || "Level 5") + " " + (student.dept || "NIT");
       var allCourses = getCoursesDB();
       var matchingCourses = allCourses.filter(function(c) {
@@ -1203,7 +1229,6 @@
       }
     }
 
-    // --- TRAINER VIEW LOGIC ---
     function renderTrainerView(trainer) {
       document.getElementById('staffDashboard').style.display = 'block';
       document.getElementById('studentDashboard').style.display = 'none';
@@ -1214,7 +1239,6 @@
       document.getElementById('statClassTitle').innerText = targetClass;
       document.getElementById('gradebookClassHeader').innerText = targetClass;
 
-      // 1. Query all students registered in this exact class from ACEJ_PORTAL_USERS_DB
       var allUsers = getUsersDB();
       var enrolledStudents = allUsers.filter(function(u) {
         if (u.role !== 'student') return false;
@@ -1224,7 +1248,6 @@
 
       document.getElementById('statEnrolledCount').innerText = enrolledStudents.length;
 
-      // 2. Render Roster with Marks & Attendance Inputs
       var gradesDB = getGradesDB();
       var gradebookTbody = document.getElementById('trainerGradebookTbody');
       gradebookTbody.innerHTML = "";
@@ -1259,7 +1282,6 @@
         });
       }
 
-      // 3. Render Published Notes for this Teacher
       renderTrainerPublishedNotes();
     }
 
@@ -1283,7 +1305,6 @@
       });
     }
 
-    // 6. Save Class Marks & Attendance by Teacher
     function saveClassMarksAndAttendance() {
       var rows = document.querySelectorAll('#trainerGradebookTbody tr');
       var gradesDB = getGradesDB();
@@ -1304,10 +1325,9 @@
       });
 
       saveGradesDB(gradesDB);
-      showSystemToast("Class marks and attendance updated and synced to students!");
+      showSystemToast("Class marks and attendance updated and synced to cloud!");
     }
 
-    // 7. Publish Course Notes
     function openPublishCourseModal() {
       document.getElementById('publishModal').style.display = 'flex';
     }
@@ -1344,11 +1364,10 @@
       saveCoursesDB(courses);
       closePublishModal();
       renderTrainerPublishedNotes();
-      showSystemToast("Course notes published and delivered to student portal!");
+      showSystemToast("Course notes published and synced to student portal!");
       e.target.reset();
     }
 
-    // 8. ON-DEMAND PROFILE & PASSWORD UPDATE LOGIC
     function openProfileUpdateModal() {
       if (!activeSessionUser) return;
       document.getElementById('profFullName').value = activeSessionUser.name;
@@ -1390,7 +1409,6 @@
       showUserDashboard(activeSessionUser);
     }
 
-    // 9. SELF-SERVICE OTP PASSWORD RESET WORKFLOW
     function openSelfServiceOtpModal() {
       currentOtpTargetUser = null;
       generatedOtpCode = null;
@@ -1405,7 +1423,7 @@
     }
 
     function closeSelfOtpModal() {
-      document.getElementById('selfOtpModal').style.display = "none";
+      document.getElementById('selfOtpModal').style.display = 'none';
     }
 
     function requestOtpCode() {
@@ -1430,13 +1448,10 @@
       }
 
       currentOtpTargetUser = match;
-      // Generate secure 6-digit random code
       generatedOtpCode = Math.floor(100000 + Math.random() * 900000).toString();
 
-      // Dispatch to UI Toast
       showOtpToastNotification("OTP Code sent to " + (match.phone || match.email || match.username) + ": " + generatedOtpCode);
 
-      // Switch to Step 2
       document.getElementById('otpStep1').style.display = "none";
       document.getElementById('otpStep2').style.display = "block";
     }
@@ -1456,7 +1471,6 @@
         return;
       }
 
-      // Update password in DB
       var users = getUsersDB();
       var idx = users.findIndex(function(u) { return u.id === currentOtpTargetUser.id; });
       if (idx !== -1) {
@@ -1468,7 +1482,6 @@
       closeSelfOtpModal();
       showSystemToast("Password successfully reset! Logging you in...");
 
-      // Automatically log the user in
       activeSessionUser = currentOtpTargetUser;
       sessionStorage.setItem(SESSION_STORAGE_KEY, JSON.stringify(currentOtpTargetUser));
       showUserDashboard(currentOtpTargetUser);
