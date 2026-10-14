@@ -44,6 +44,25 @@
     .brand-logo-img { height: 42px; width: 42px; object-fit: contain; }
     .brand-title span { color: var(--gold); }
     .header-controls { display: flex; align-items: center; gap: 12px; }
+    
+    .sync-status-indicator {
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+      font-size: 0.8rem;
+      background: rgba(16, 185, 129, 0.2);
+      border: 1px solid #10b981;
+      color: #6ee7b7;
+      padding: 5px 12px;
+      border-radius: 20px;
+      font-weight: 700;
+    }
+    .sync-status-indicator.syncing {
+      background: rgba(245, 158, 11, 0.2);
+      border-color: #f59e0b;
+      color: #fde68a;
+    }
+
     .btn-action {
       background: rgba(255, 255, 255, 0.15);
       color: var(--white);
@@ -125,7 +144,7 @@
     
     .form-ctrl { margin-bottom: 14px; }
     .form-ctrl label { display: block; font-size: 0.85rem; font-weight: 700; color: #334155; margin-bottom: 5px; }
-    .form-ctrl input, .form-ctrl select, .form-ctrl textarea {
+    .form-ctrl input, .form-ctrl select {
       width: 100%;
       padding: 10px 12px;
       border: 1.5px solid var(--border);
@@ -216,13 +235,16 @@
 </head>
 <body>
 
-  <!-- ADMIN HEADER WITH ACEJ LOGO -->
+  <!-- ADMIN HEADER -->
   <header class="admin-header">
     <div class="brand-title">
       <img src="/logo.png?v=3" alt="ACEJ Crest" class="brand-logo-img">
       <div>ACEJ KARAMA TSS &bull; <span id="adminHeaderBadge">Super Admin Console</span></div>
     </div>
     <div class="header-controls">
+      <div class="sync-status-indicator" id="cloudSyncStatus">
+        <i class="fa-solid fa-cloud"></i> <span>Live Cloud Sync</span>
+      </div>
       <a href="/portal/" target="_blank" class="btn-action">
         <i class="fa-solid fa-arrow-up-right-from-square"></i> Student &amp; Staff Portal
       </a>
@@ -237,10 +259,10 @@
     <div style="font-size: 2.4rem; color: var(--navy); margin-bottom: 12px;">
       <i class="fa-solid fa-user-shield"></i>
     </div>
-    <h2>Administrative Portal</h2>
-    <p>Sign in with your Super Admin or Assigned Officer credentials to manage users, groups, and notices.</p>
+    <h2>Super Admin Portal</h2>
+    <p>Sign in with your master administrative credentials to manage accounts across all campus devices.</p>
     <form onsubmit="handleAdminLogin(event)">
-      <input type="text" id="adminUser" class="auth-input" placeholder="Admin Username" required>
+      <input type="text" id="adminUser" class="auth-input" placeholder="Super Admin Username" required>
       <input type="password" id="adminPass" class="auth-input" placeholder="Password" required>
       <button type="submit" class="btn-auth-submit">
         <i class="fa-solid fa-unlock"></i> Unlock Management Console
@@ -268,54 +290,29 @@
         <div class="stat-label">Admins / Officers</div>
         <div class="stat-digit" id="statTotalAdmins" style="color: var(--purple);">0</div>
       </div>
-      <div class="stat-box">
-        <div class="stat-label">Password Reset Inquiries</div>
-        <div class="stat-digit" id="statTotalRequests" style="color: var(--red);">0</div>
-      </div>
     </div>
 
     <!-- BROADCAST NOTIFICATION PANEL -->
     <div class="card-panel" style="border-left: 5px solid var(--gold);">
       <div class="card-title" style="color: var(--navy);">
-        <i class="fa-solid fa-bullhorn" style="color: var(--gold-dark);"></i> Broadcast Announcement to All Users
+        <i class="fa-solid fa-bullhorn" style="color: var(--gold-dark);"></i> Broadcast Announcement to All Devices
       </div>
       <p style="font-size: 0.85rem; color: #64748b; margin-bottom: 12px;">
-        Publish an official announcement that will appear prominently on student, staff, and parent dashboards upon login.
+        Publish an official announcement that immediately pushes across all phones, computers, and student dashboards upon login.
       </p>
       <form onsubmit="handleSendBroadcast(event)" style="display: flex; gap: 10px; flex-wrap: wrap;">
         <input type="text" id="broadcastTitle" placeholder="Announcement Title (e.g., Term 2 Exam Timetable Released)" style="flex: 1 1 250px; padding: 10px 12px; border: 1.5px solid var(--border); border-radius: 6px;" required>
         <input type="text" id="broadcastBody" placeholder="Message details for students &amp; teachers..." style="flex: 2 1 350px; padding: 10px 12px; border: 1.5px solid var(--border); border-radius: 6px;" required>
         <button type="submit" class="btn-create" style="width: auto; padding: 10px 20px;">
-          <i class="fa-solid fa-paper-plane"></i> Publish Notice
+          <i class="fa-solid fa-paper-plane"></i> Publish Everywhere
         </button>
       </form>
       <div id="activeBroadcastDisplay" style="margin-top: 12px; font-size: 0.85rem;"></div>
     </div>
 
-    <!-- PENDING RESET REQUESTS INBOX -->
-    <div class="card-panel" style="border-left: 5px solid var(--red);">
-      <div class="card-title" style="color: var(--red);">
-        <i class="fa-solid fa-bell"></i> Password Reset &amp; Unlock Inquiries
-      </div>
-      <div class="table-container">
-        <table class="user-table">
-          <thead>
-            <tr>
-              <th>Date</th>
-              <th>Username / Reg ID</th>
-              <th>Contact Phone</th>
-              <th>Reason</th>
-              <th>Action</th>
-            </tr>
-          </thead>
-          <tbody id="resetReqTableBody"></tbody>
-        </table>
-      </div>
-    </div>
-
     <div class="grid-forms-tables">
       
-      <!-- REGISTER USER FORM WITH MULTI-GROUP ASSIGNMENT -->
+      <!-- REGISTER USER FORM -->
       <div>
         <div class="card-panel">
           <div class="card-title">
@@ -343,7 +340,7 @@
             </div>
 
             <div class="form-ctrl">
-              <label>Initial Temporary Password</label>
+              <label>Initial Password</label>
               <input type="text" id="newPassword" placeholder="e.g., Acej#2026" required>
             </div>
 
@@ -367,7 +364,6 @@
               </select>
             </div>
 
-            <!-- MULTI-GROUP SELECTION -->
             <div class="privilege-box">
               <div class="privilege-title"><i class="fa-solid fa-users"></i> Assigned Groups / Associations</div>
               <div class="priv-item">
@@ -386,24 +382,20 @@
                 <input type="checkbox" id="grpClubs">
                 <label for="grpClubs">Tech &amp; Innovation Club</label>
               </div>
-              <div class="priv-item">
-                <input type="checkbox" id="grpBoard">
-                <label for="grpBoard">Faculty Exam &amp; Discipline Board</label>
-              </div>
             </div>
 
             <button type="submit" class="btn-create">
-              <i class="fa-solid fa-check"></i> Register Account
+              <i class="fa-solid fa-check"></i> Register Account &amp; Sync to Cloud
             </button>
           </form>
         </div>
       </div>
 
-      <!-- USERS DIRECTORY WITH 1-CLICK IMPERSONATION -->
+      <!-- LIVE USERS DIRECTORY -->
       <div class="card-panel">
         <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 15px; flex-wrap: wrap; gap: 10px;">
           <div class="card-title" style="margin-bottom: 0;">
-            <i class="fa-solid fa-users-gear" style="color: var(--blue);"></i> Registered Accounts &amp; Folders
+            <i class="fa-solid fa-users-gear" style="color: var(--blue);"></i> Registered Accounts &amp; Profiles
           </div>
           <input type="text" id="searchUser" placeholder="Search name or ID..." onkeyup="filterUsersTable()" style="padding: 7px 12px; border: 1.5px solid var(--border); border-radius: 6px; font-size: 0.85rem; width: 220px;">
         </div>
@@ -492,41 +484,87 @@
         </div>
 
         <button type="submit" class="btn-create" style="margin-top:10px;">
-          <i class="fa-solid fa-floppy-disk"></i> Save Changes to Database
+          <i class="fa-solid fa-floppy-disk"></i> Save &amp; Sync to Cloud
         </button>
       </form>
     </div>
   </div>
 
   <script>
+    // YOUR EXACT FIREBASE DATABASE URL
+    const FIREBASE_DB_URL = "https://acej-portal-default-rtdb.firebaseio.com";
+
     const MASTER_ADMIN_USER = "superadmin";
     const MASTER_ADMIN_PASS = "AcejAdmin@2026";
     const DB_STORAGE_KEY = "ACEJ_PORTAL_USERS_DB";
-    const REQ_STORAGE_KEY = "ACEJ_RESET_REQUESTS_DB";
     const NOTICE_STORAGE_KEY = "ACEJ_PORTAL_BROADCAST";
 
-    function getDatabase() {
+    const SEED_USERS = [
+      { id: "1", role: "student", name: "Dufitimana Clebert", username: "Acej/2026/0100", pass: "Acej#2026", dept: "NIT", level: "Level 5", status: "active", groups: ["Core Class", "Tech Club"], firstLogin: false },
+      { id: "2", role: "student", name: "noheri", username: "noheri", pass: "Noheri@/2020", dept: "NIT", level: "Level 5", status: "active", groups: ["Core Class"], firstLogin: false },
+      { id: "3", role: "student", name: "Dangote", username: "dangote", pass: "Kigali@123", dept: "NIT", level: "Level 5", status: "active", groups: ["Board"], firstLogin: false },
+      { id: "4", role: "staff", name: "marlene", username: "Marlene", pass: "Marlene@123", dept: "NIT", level: "Level 5", status: "active", groups: ["Core Class"], firstLogin: false },
+      { id: "5", role: "staff", name: "Muneza Germain", username: "muneza", pass: "Muneza@2026", dept: "GEN", level: "Faculty", status: "active", groups: ["Exam Board", "Faculty"], firstLogin: false },
+      { id: "6", role: "staff", name: "Barihamwe Jean D'Amour", username: "trainer.barihamwe", pass: "staff123", dept: "CSA", level: "Faculty", status: "active", groups: ["Pedagogy Lead", "Faculty"], firstLogin: false },
+      { id: "7", role: "staff", name: "john", username: "john", pass: "john@123", dept: "NIT", level: "Faculty", status: "active", groups: ["General"], firstLogin: false }
+    ];
+
+    function getLocalDatabase() {
       const stored = localStorage.getItem(DB_STORAGE_KEY);
-      return stored ? JSON.parse(stored) : [
-        { id: "1", role: "student", name: "Dufitimana Clebert", username: "Acej/2026/0100", pass: "Dufizo@123", dept: "NIT", level: "Level 5", status: "active", groups: ["Core Class", "Tech Club"], firstLogin: false },
-        { id: "2", role: "staff", name: "Muneza Germain", username: "trainer.muneza", pass: "staff123", dept: "NIT", level: "Faculty", status: "active", groups: ["Exam Board", "Faculty"], firstLogin: false },
-        { id: "3", role: "staff", name: "Barihamwe Jean D'Amour", username: "trainer.barihamwe", pass: "staff123", dept: "CSA", level: "Faculty", status: "active", groups: ["Pedagogy Lead", "Faculty"], firstLogin: false }
-      ];
+      if (!stored) {
+        localStorage.setItem(DB_STORAGE_KEY, JSON.stringify(SEED_USERS));
+        return SEED_USERS;
+      }
+      return JSON.parse(stored);
     }
 
-    function saveDatabase(db) {
+    function saveLocalDatabase(db) {
       localStorage.setItem(DB_STORAGE_KEY, JSON.stringify(db));
       renderData();
+      syncToCloud(db);
     }
 
-    function getRequests() {
-      const stored = localStorage.getItem(REQ_STORAGE_KEY);
-      return stored ? JSON.parse(stored) : [];
+    // CLOUD SYNC ENGINE
+    async function syncToCloud(db) {
+      try {
+        setSyncState(true);
+        await fetch(`${FIREBASE_DB_URL}/users.json`, {
+          method: "PUT",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify(db)
+        });
+        setSyncState(false);
+      } catch (e) {
+        setSyncState(false);
+      }
     }
 
-    function saveRequests(reqs) {
-      localStorage.setItem(REQ_STORAGE_KEY, JSON.stringify(reqs));
-      renderData();
+    async function pullFromCloud() {
+      try {
+        setSyncState(true);
+        const res = await fetch(`${FIREBASE_DB_URL}/users.json`);
+        if (res.ok) {
+          const cloudData = await res.json();
+          if (cloudData && Array.isArray(cloudData) && cloudData.length > 0) {
+            localStorage.setItem(DB_STORAGE_KEY, JSON.stringify(cloudData));
+            renderData();
+          } else {
+            // First time initialization: populate Firebase with seed users
+            syncToCloud(getLocalDatabase());
+          }
+        }
+        setSyncState(false);
+      } catch (e) {
+        setSyncState(false);
+      }
+    }
+
+    function setSyncState(isSyncing) {
+      const badge = document.getElementById('cloudSyncStatus');
+      if (badge) {
+        badge.className = isSyncing ? "sync-status-indicator syncing" : "sync-status-indicator";
+        badge.innerHTML = isSyncing ? '<i class="fa-solid fa-spinner fa-spin"></i> <span>Syncing Cloud...</span>' : '<i class="fa-solid fa-cloud"></i> <span>Live Cloud Sync</span>';
+      }
     }
 
     function handleAdminLogin(e) {
@@ -534,7 +572,7 @@
       const user = document.getElementById('adminUser').value.trim();
       const pass = document.getElementById('adminPass').value.trim();
 
-      const db = getDatabase();
+      const db = getLocalDatabase();
       const matchedAdmin = db.find(u => u.username.toLowerCase() === user.toLowerCase() && u.pass === pass && (u.role === 'admin' || u.role === 'super'));
 
       if (user === MASTER_ADMIN_USER && pass === MASTER_ADMIN_PASS) {
@@ -564,6 +602,7 @@
       document.getElementById('btnAdminLogout').style.display = "inline-flex";
       document.getElementById('adminHeaderBadge').innerText = sessionStorage.getItem("ACEJ_ADMIN_ROLE") || "Super Admin";
       renderData();
+      pullFromCloud();
     }
 
     function toggleFormRoleFields() {
@@ -581,7 +620,7 @@
 
     function handleCreateUser(e) {
       e.preventDefault();
-      const db = getDatabase();
+      const db = getLocalDatabase();
       const role = document.getElementById('newRole').value;
       const name = document.getElementById('newName').value.trim();
       const username = document.getElementById('newUsername').value.trim();
@@ -599,7 +638,6 @@
       if (document.getElementById('grpAerg').checked) assignedGroups.push("AERG");
       if (document.getElementById('grpPrefect').checked) assignedGroups.push("Prefect");
       if (document.getElementById('grpClubs').checked) assignedGroups.push("Tech Club");
-      if (document.getElementById('grpBoard').checked) assignedGroups.push("Board");
 
       db.push({
         id: Date.now().toString(),
@@ -611,18 +649,17 @@
         level: level,
         status: "active",
         groups: assignedGroups,
-        firstLogin: true
+        firstLogin: false
       });
 
-      saveDatabase(db);
-      alert(`User ${name} registered successfully with ${assignedGroups.length} assigned groups.`);
+      saveLocalDatabase(db);
+      alert(`User ${name} registered! Synced directly to cloud.`);
       e.target.reset();
       toggleFormRoleFields();
     }
 
-    // 1-CLICK IMPERSONATION (OPEN USER VIEW)
     function impersonateUser(username) {
-      const db = getDatabase();
+      const db = getLocalDatabase();
       const user = db.find(u => u.username.toLowerCase() === username.toLowerCase());
       if (user) {
         localStorage.setItem("ACEJ_IMPERSONATE_USER", JSON.stringify(user));
@@ -631,7 +668,7 @@
     }
 
     function openEditModal(userId) {
-      const db = getDatabase();
+      const db = getLocalDatabase();
       const user = db.find(u => u.id === userId);
       if (!user) return;
 
@@ -653,7 +690,7 @@
 
     function handleSaveUserEdit(e) {
       e.preventDefault();
-      const db = getDatabase();
+      const db = getLocalDatabase();
       const id = document.getElementById('editUserId').value;
       const user = db.find(u => u.id === id);
 
@@ -666,30 +703,29 @@
         user.role = document.getElementById('editRole').value;
         user.groups = document.getElementById('editGroups').value.split(",").map(g => g.trim()).filter(Boolean);
 
-        saveDatabase(db);
-        alert(`Account ${user.name} updated successfully!`);
+        saveLocalDatabase(db);
+        alert(`Account ${user.name} updated and synced!`);
         closeEditModal();
       }
     }
 
     function toggleUserStatus(id) {
-      const db = getDatabase();
+      const db = getLocalDatabase();
       const u = db.find(user => user.id === id);
       if (u) {
         u.status = u.status === 'active' ? 'disabled' : 'active';
-        saveDatabase(db);
+        saveLocalDatabase(db);
       }
     }
 
     function deleteUser(id) {
-      if (confirm("Delete this user permanently?")) {
-        let db = getDatabase();
+      if (confirm("Delete this user permanently across all devices?")) {
+        let db = getLocalDatabase();
         db = db.filter(u => u.id !== id);
-        saveDatabase(db);
+        saveLocalDatabase(db);
       }
     }
 
-    // BROADCAST NOTIFICATIONS
     function handleSendBroadcast(e) {
       e.preventDefault();
       const title = document.getElementById('broadcastTitle').value.trim();
@@ -703,7 +739,13 @@
       };
 
       localStorage.setItem(NOTICE_STORAGE_KEY, JSON.stringify(notice));
-      alert("Broadcast notice published! All users will see this on their dashboard.");
+      fetch(`${FIREBASE_DB_URL}/broadcast.json`, {
+        method: "PUT",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify(notice)
+      });
+
+      alert("Broadcast notice published across all campus devices!");
       e.target.reset();
       renderBroadcastDisplay();
     }
@@ -713,7 +755,7 @@
       const disp = document.getElementById('activeBroadcastDisplay');
       if (stored) {
         const n = JSON.parse(stored);
-        disp.innerHTML = `<strong>Current Active Notice:</strong> <em>"${n.title}"</em> — ${n.body} <button onclick="clearBroadcast()" style="margin-left:8px; padding:2px 6px; font-size:0.75rem; border-radius:4px; border:1px solid #cbd5e1; cursor:pointer;">Dismiss Notice</button>`;
+        disp.innerHTML = `<strong>Active:</strong> <em>"${n.title}"</em> — ${n.body} <button onclick="clearBroadcast()" style="margin-left:8px; padding:2px 6px; font-size:0.75rem; border-radius:4px; border:1px solid #cbd5e1; cursor:pointer;">Dismiss</button>`;
       } else {
         disp.innerHTML = `<span style="color:#94a3b8;">No active broadcast announcement.</span>`;
       }
@@ -721,34 +763,12 @@
 
     function clearBroadcast() {
       localStorage.removeItem(NOTICE_STORAGE_KEY);
+      fetch(`${FIREBASE_DB_URL}/broadcast.json`, { method: "DELETE" });
       renderBroadcastDisplay();
     }
 
-    function resolveRequest(reqId, username) {
-      const newPass = prompt(`Assign new password for ${username}:`, "Acej#2026");
-      if (!newPass) return;
-
-      const db = getDatabase();
-      const u = db.find(user => user.username.toLowerCase() === username.toLowerCase());
-      if (u) {
-        u.pass = newPass;
-        u.status = "active";
-        saveDatabase(db);
-      }
-
-      let reqs = getRequests().filter(r => r.id !== reqId);
-      saveRequests(reqs);
-      alert(`Password updated to "${newPass}" and resolved!`);
-    }
-
-    function dismissRequest(reqId) {
-      let reqs = getRequests().filter(r => r.id !== reqId);
-      saveRequests(reqs);
-    }
-
     function renderData() {
-      const db = getDatabase();
-      const reqs = getRequests();
+      const db = getLocalDatabase();
 
       const userTbody = document.getElementById('userTableBody');
       userTbody.innerHTML = "";
@@ -791,32 +811,10 @@
         userTbody.appendChild(tr);
       });
 
-      const reqTbody = document.getElementById('resetReqTableBody');
-      reqTbody.innerHTML = "";
-      if (reqs.length === 0) {
-        reqTbody.innerHTML = `<tr><td colspan="5" style="text-align:center; color:#94a3b8;">No pending reset requests.</td></tr>`;
-      } else {
-        reqs.forEach(r => {
-          const tr = document.createElement('tr');
-          tr.innerHTML = `
-            <td>${r.date}</td>
-            <td><strong>${r.username}</strong></td>
-            <td><a href="tel:${r.phone}">${r.phone}</a></td>
-            <td>${r.reason}</td>
-            <td>
-              <button class="btn-tbl" style="background:#eff6ff; color:var(--blue); font-weight:700;" onclick="resolveRequest('${r.id}', '${r.username}')">Unlock &amp; Set Password</button>
-              <button class="btn-tbl btn-tbl-del" onclick="dismissRequest('${r.id}')">Dismiss</button>
-            </td>
-          `;
-          reqTbody.appendChild(tr);
-        });
-      }
-
       document.getElementById('statTotalUsers').innerText = db.length;
       document.getElementById('statTotalStudents').innerText = countStudents;
       document.getElementById('statTotalStaff').innerText = countStaff;
       document.getElementById('statTotalAdmins').innerText = countAdmins;
-      document.getElementById('statTotalRequests').innerText = reqs.length;
 
       renderBroadcastDisplay();
     }
