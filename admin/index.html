@@ -154,7 +154,6 @@
       outline: none;
     }
 
-    /* FOLDERS LIST IN PANEL */
     .folder-item-pill {
       display: inline-flex;
       align-items: center;
@@ -291,7 +290,7 @@
       <div>ACEJ KARAMA TSS &bull; <span id="adminHeaderBadge">Super Admin Console</span></div>
     </div>
     <div class="header-controls">
-      <div class="sync-status-indicator" id="cloudSyncStatus" onclick="pullFromCloud()" title="Click to force refresh from cloud">
+      <div class="sync-status-indicator" id="cloudSyncStatus" onclick="pullFromCloud()" title="Click to force sync">
         <i class="fa-solid fa-cloud"></i> <span>Live Cloud Sync</span>
       </div>
       <a href="/portal/" target="_blank" class="btn-action">
@@ -361,10 +360,10 @@
 
     <div class="grid-forms-tables">
       
-      <!-- LEFT: CREATE USER & CREATE/DELETE GROUPS -->
+      <!-- LEFT COLUMN -->
       <div>
         
-        <!-- FOLDERS / GROUPS MANAGER -->
+        <!-- FOLDERS MANAGER -->
         <div class="card-panel">
           <div class="card-title">
             <i class="fa-solid fa-folder-tree" style="color: var(--purple);"></i> User Groups &amp; Folders
@@ -381,9 +380,7 @@
           </form>
 
           <label style="font-size: 0.82rem; font-weight: 700; color: #334155; display:block; margin-bottom:6px;">Current Folders:</label>
-          <div id="activeFoldersBadgeList" style="display: flex; flex-wrap: wrap; gap: 4px;">
-            <!-- Dynamically populated with delete buttons -->
-          </div>
+          <div id="activeFoldersBadgeList" style="display: flex; flex-wrap: wrap; gap: 4px;"></div>
         </div>
 
         <!-- REGISTER USER -->
@@ -449,7 +446,7 @@
         </div>
       </div>
 
-      <!-- RIGHT: LIVE USERS DIRECTORY -->
+      <!-- RIGHT COLUMN: DIRECTORY -->
       <div class="card-panel">
         <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 12px; flex-wrap: wrap; gap: 10px;">
           <div class="card-title" style="margin-bottom: 0;">
@@ -554,7 +551,6 @@
   </div>
 
   <script>
-    // AUTOMATIC URL SANITIZATION (PREVENTS DOUBLE SLASH ERRORS)
     const RAW_FIREBASE_URL = "https://acej-portal-default-rtdb.firebaseio.com";
     const FIREBASE_DB_URL = RAW_FIREBASE_URL.replace(/\/+$/, '');
 
@@ -599,6 +595,7 @@
       return stored ? JSON.parse(stored) : [];
     }
 
+    // STRICT FIREBASE AUTHORITY (NO CACHE FALLBACK OVERWRITE)
     async function saveLocalDatabase(db) {
       localStorage.setItem(DB_STORAGE_KEY, JSON.stringify(db));
       renderData();
@@ -608,10 +605,12 @@
     async function syncToCloud(db) {
       try {
         setSyncState(true);
+        // If empty, force Firebase to store an empty array
+        const payload = (db && db.length > 0) ? db : [];
         const res = await fetch(`${FIREBASE_DB_URL}/users.json`, {
           method: "PUT",
           headers: { "Content-Type": "application/json" },
-          body: JSON.stringify(db)
+          body: JSON.stringify(payload)
         });
         if (!res.ok) throw new Error("Firebase HTTP " + res.status);
         setSyncState(false);
@@ -624,16 +623,15 @@
     async function pullFromCloud() {
       try {
         setSyncState(true);
-        // Pull Users
         const res = await fetch(`${FIREBASE_DB_URL}/users.json`);
         if (res.ok) {
           const cloudData = await res.json();
+          // Realtime authoritative check
           const usersList = parseCloudData(cloudData);
           localStorage.setItem(DB_STORAGE_KEY, JSON.stringify(usersList));
           renderData();
         }
 
-        // Pull Groups
         const gRes = await fetch(`${FIREBASE_DB_URL}/groups.json`);
         if (gRes.ok) {
           const cloudGroups = await gRes.json();
@@ -684,6 +682,7 @@
       document.getElementById('adminDashboard').style.display = "none";
       document.getElementById('adminLoginBox').style.display = "block";
       document.getElementById('btnAdminLogout').style.display = "none";
+      if (window.cloudPollInterval) clearInterval(window.cloudPollInterval);
     }
 
     function showAdminConsole() {
@@ -695,13 +694,12 @@
       renderData();
       pullFromCloud();
 
-      // AUTO-POLL FIREBASE EVERY 4 SECONDS SO PHONE & LAPTOP MATCH IN REAL-TIME
+      // Poll cloud every 3 seconds
       if (!window.cloudPollInterval) {
-        window.cloudPollInterval = setInterval(pullFromCloud, 4000);
+        window.cloudPollInterval = setInterval(pullFromCloud, 3000);
       }
     }
 
-    // CREATE FOLDER / GROUP
     async function handleCreateGroup(e) {
       e.preventDefault();
       const nameInput = document.getElementById('newGroupNameInput');
@@ -719,14 +717,12 @@
       nameInput.value = "";
     }
 
-    // DELETE FOLDER / GROUP
     async function deleteGroup(gName) {
-      if (!confirm(`Delete folder/group "${gName}"? Users in this group will not be deleted, but this folder tag will be removed.`)) return;
+      if (!confirm(`Delete folder/group "${gName}"? Users will stay registered, but this folder tag will be removed.`)) return;
 
       let groups = getGroupsDB().filter(g => g.toLowerCase() !== gName.toLowerCase());
       await saveGroupsDB(groups);
 
-      // Clean up tag from users
       let users = getLocalDatabase();
       let changed = false;
       users.forEach(u => {
@@ -750,7 +746,6 @@
       const groups = getGroupsDB();
       document.getElementById('statTotalGroups').innerText = groups.length;
 
-      // Render Checkboxes in "Register Account" form
       const regList = document.getElementById('registerGroupsCheckboxList');
       regList.innerHTML = "";
       groups.forEach((g, idx) => {
@@ -763,7 +758,6 @@
         regList.appendChild(item);
       });
 
-      // Render Current Folders list with DELETE buttons
       const badgeList = document.getElementById('activeFoldersBadgeList');
       badgeList.innerHTML = "";
       groups.forEach(g => {
@@ -776,7 +770,6 @@
         badgeList.appendChild(pill);
       });
 
-      // Render Filter Buttons
       const filterBox = document.getElementById('groupFilterButtons');
       filterBox.innerHTML = `
         <span style="font-size:0.8rem; font-weight:800; color:#64748b; margin-right:4px;"><i class="fa-solid fa-filter"></i> Group Folder:</span>
@@ -838,7 +831,7 @@
       submitBtn.innerHTML = '<i class="fa-solid fa-spinner fa-spin"></i> Syncing to Cloud...';
 
       db.push({
-        id: Date.now().toString(),
+        id: "usr_" + Date.now().toString(),
         role: role,
         name: name,
         username: username,
@@ -851,13 +844,14 @@
       });
 
       await saveLocalDatabase(db);
-      alert(`User ${name} registered and synced directly to Firebase cloud! They can log in immediately from any device.`);
+      alert(`User ${name} registered and synced directly to Firebase cloud!`);
       submitBtn.disabled = false;
       submitBtn.innerHTML = origText;
       e.target.reset();
       toggleFormRoleFields();
     }
 
+    // PERMANENT DELETION (FORCES ZERO RECOVERY)
     async function deleteUser(id) {
       const db = getLocalDatabase();
       const target = db.find(u => u.id === id);
