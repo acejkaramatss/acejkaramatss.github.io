@@ -512,7 +512,7 @@
 
   <main class="portal-main-area">
 
-    <!-- LOGIN FORM -->
+    <!-- LOGIN CONTAINER -->
     <div class="login-container" id="loginBox">
       <div class="login-header">
         <h2>Institutional Portal</h2>
@@ -940,11 +940,11 @@
     var currentOtpTargetUser = null;
     var generatedOtpCode = null;
 
-    const DB_USERS_KEY = "ACEJ_PORTAL_USERS_DB";
-    const DB_COURSES_KEY = "ACEJ_PORTAL_COURSES_DB";
-    const DB_GRADES_KEY = "ACEJ_STUDENT_GRADES_DB";
-    const NOTICE_STORAGE_KEY = "ACEJ_PORTAL_BROADCAST";
     const SESSION_STORAGE_KEY = "ACEJ_ACTIVE_SESSION";
+
+    function cleanFirebaseKey(str) {
+      return String(str || '').trim().replace(/[.#$\[\]\/]/g, '_');
+    }
 
     function parseCloudUsers(data) {
       if (!data) return [];
@@ -955,7 +955,7 @@
         Object.keys(data).forEach(key => {
           if (data[key] && typeof data[key] === 'object') {
             let item = data[key];
-            if (!item.id) item.id = key;
+            if (!item.username) item.username = key;
             list.push(item);
           }
         });
@@ -968,59 +968,6 @@
       if (Array.isArray(data)) return data.filter(Boolean);
       if (typeof data === 'object') return Object.values(data).filter(Boolean);
       return [];
-    }
-
-    function getUsersDB() {
-      var stored = localStorage.getItem(DB_USERS_KEY);
-      return stored ? JSON.parse(stored) : [];
-    }
-
-    async function saveUsersDB(users) {
-      localStorage.setItem(DB_USERS_KEY, JSON.stringify(users));
-      let payload = {};
-      users.forEach((u, idx) => {
-        let cleanId = u.id ? String(u.id).replace(/[.#$\[\]\/]/g, '_') : 'usr_' + idx;
-        payload[cleanId] = u;
-      });
-      try {
-        await fetch(`${FIREBASE_DB_URL}/users.json`, {
-          method: "PUT",
-          headers: { "Content-Type": "application/json" },
-          body: JSON.stringify(payload)
-        });
-      } catch (e) {}
-    }
-
-    function getCoursesDB() {
-      var stored = localStorage.getItem(DB_COURSES_KEY);
-      return stored ? JSON.parse(stored) : [];
-    }
-
-    async function saveCoursesDB(courses) {
-      localStorage.setItem(DB_COURSES_KEY, JSON.stringify(courses));
-      try {
-        await fetch(`${FIREBASE_DB_URL}/courses.json`, {
-          method: "PUT",
-          headers: { "Content-Type": "application/json" },
-          body: JSON.stringify(courses)
-        });
-      } catch (e) {}
-    }
-
-    function getGradesDB() {
-      var stored = localStorage.getItem(DB_GRADES_KEY);
-      return stored ? JSON.parse(stored) : {};
-    }
-
-    async function saveGradesDB(grades) {
-      localStorage.setItem(DB_GRADES_KEY, JSON.stringify(grades));
-      try {
-        await fetch(`${FIREBASE_DB_URL}/grades.json`, {
-          method: "PUT",
-          headers: { "Content-Type": "application/json" },
-          body: JSON.stringify(grades)
-        });
-      } catch (e) {}
     }
 
     function switchLoginRole(role) {
@@ -1039,22 +986,19 @@
       document.getElementById('passwordInlineError').style.display = 'none';
     }
 
-    // CONTINUOUS ACTIVE HEARTBEAT GUARD
-    // Checks Firebase every 3 seconds: If account deleted in Admin, immediately kicks out user
+    // INSTANT LIVE HEARTBEAT: KICKS DELETED USERS OUT IMMEDIATELY
     async function checkSessionStillActiveInCloud() {
       if (!activeSessionUser) return;
 
       try {
-        const uRes = await fetch(`${FIREBASE_DB_URL}/users.json`);
-        if (uRes.ok) {
-          const uCloud = await uRes.json();
-          const usersList = parseCloudUsers(uCloud);
-          localStorage.setItem(DB_USERS_KEY, JSON.stringify(usersList));
-
-          // Check if active session user still exists
-          const currentAccount = usersList.find(u => u.username.toLowerCase() === activeSessionUser.username.toLowerCase());
-          if (!currentAccount || currentAccount.status !== 'active') {
-            alert("This account was deleted or revoked by the Super Admin. You are now being signed out.");
+        const uKey = cleanFirebaseKey(activeSessionUser.username);
+        const res = await fetch(`${FIREBASE_DB_URL}/users/${uKey}.json`);
+        
+        if (res.ok) {
+          const userInCloud = await res.json();
+          // If deleted (null) or suspended, immediately kill session
+          if (!userInCloud || userInCloud.status !== 'active') {
+            alert("Your account was deleted or revoked by the Super Admin. You are now being signed out.");
             logoutPortal();
           }
         }
@@ -1063,37 +1007,6 @@
 
     window.addEventListener('DOMContentLoaded', async function() {
       switchLoginRole('student');
-
-      try {
-        const uRes = await fetch(`${FIREBASE_DB_URL}/users.json`);
-        if (uRes.ok) {
-          const uCloud = await uRes.json();
-          const usersList = parseCloudUsers(uCloud);
-          localStorage.setItem(DB_USERS_KEY, JSON.stringify(usersList));
-        }
-        const cRes = await fetch(`${FIREBASE_DB_URL}/courses.json`);
-        if (cRes.ok) {
-          const cCloud = await cRes.json();
-          const coursesList = parseCloudData(cCloud);
-          localStorage.setItem(DB_COURSES_KEY, JSON.stringify(coursesList));
-        }
-        const gRes = await fetch(`${FIREBASE_DB_URL}/grades.json`);
-        if (gRes.ok) {
-          const gCloud = await gRes.json();
-          if (gCloud && typeof gCloud === 'object') {
-            localStorage.setItem(DB_GRADES_KEY, JSON.stringify(gCloud));
-          }
-        }
-        const bRes = await fetch(`${FIREBASE_DB_URL}/broadcast.json`);
-        if (bRes.ok) {
-          const bCloud = await bRes.json();
-          if (bCloud) {
-            localStorage.setItem(NOTICE_STORAGE_KEY, JSON.stringify(bCloud));
-          } else {
-            localStorage.removeItem(NOTICE_STORAGE_KEY);
-          }
-        }
-      } catch(e) {}
 
       var impersonated = localStorage.getItem("ACEJ_IMPERSONATE_USER");
       if (impersonated) {
@@ -1108,18 +1021,28 @@
       var existingSession = sessionStorage.getItem(SESSION_STORAGE_KEY);
       if (existingSession) {
         var userObj = JSON.parse(existingSession);
-        var currentDB = getUsersDB();
-        var refreshed = currentDB.find(function(u) { return u.username.toLowerCase() === userObj.username.toLowerCase(); });
-        if (refreshed && refreshed.status === 'active') {
-          activeSessionUser = refreshed;
-          showUserDashboard(activeSessionUser);
-        } else {
-          logoutPortal();
+        // Verify against cloud on startup
+        try {
+          const uKey = cleanFirebaseKey(userObj.username);
+          const res = await fetch(`${FIREBASE_DB_URL}/users/${uKey}.json`);
+          if (res.ok) {
+            const userInCloud = await res.json();
+            if (userInCloud && userInCloud.status === 'active') {
+              activeSessionUser = userInCloud;
+              showUserDashboard(activeSessionUser);
+            } else {
+              logoutPortal();
+              return;
+            }
+          }
+        } catch (e) {
+          activeSessionUser = userObj;
+          showUserDashboard(userObj);
         }
       }
 
-      // Start Realtime Guard Poll
-      setInterval(checkSessionStillActiveInCloud, 3000);
+      // Check every 2 seconds
+      setInterval(checkSessionStillActiveInCloud, 2000);
     });
 
     async function handlePortalLogin(e) {
@@ -1134,25 +1057,22 @@
       submitBtn.disabled = true;
       submitBtn.innerHTML = '<i class="fa-solid fa-spinner fa-spin"></i> Checking Cloud Database...';
 
-      // Live query Firebase before validating credentials
+      let userMatch = null;
+
       try {
-        const uRes = await fetch(`${FIREBASE_DB_URL}/users.json`);
-        if (uRes.ok) {
-          const uCloud = await uRes.json();
-          const usersList = parseCloudUsers(uCloud);
-          localStorage.setItem(DB_USERS_KEY, JSON.stringify(usersList));
+        const res = await fetch(`${FIREBASE_DB_URL}/users.json`);
+        if (res.ok) {
+          const cloudData = await res.json();
+          const usersList = parseCloudUsers(cloudData);
+          userMatch = usersList.find(function(u) {
+            return u.username.toLowerCase() === user.toLowerCase() && u.role === currentRole;
+          });
         }
       } catch (err) {
       } finally {
         submitBtn.disabled = false;
         submitBtn.innerHTML = origText;
       }
-
-      var userList = getUsersDB();
-
-      var userMatch = userList.find(function(u) {
-        return u.username.toLowerCase() === user.toLowerCase() && u.role === currentRole;
-      });
 
       if (!userMatch) {
         document.getElementById('portalUsername').classList.add('has-error');
@@ -1194,30 +1114,34 @@
       }
     }
 
-    function renderActiveBroadcastForUser() {
-      var stored = localStorage.getItem(NOTICE_STORAGE_KEY);
+    async function renderActiveBroadcastForUser() {
       var staffBanner = document.getElementById('staffNoticeBanner');
       var studentBanner = document.getElementById('studentNoticeBanner');
 
-      if (stored) {
-        var n = JSON.parse(stored);
-        
-        document.getElementById('staffNoticeTitle').innerText = n.title;
-        document.getElementById('staffNoticeBody').innerText = n.body;
-        document.getElementById('staffNoticeMeta').innerText = 'Published by ' + (n.author || 'School Administration') + ' • ' + (n.date || 'Recent');
-        staffBanner.style.display = 'block';
+      try {
+        const bRes = await fetch(`${FIREBASE_DB_URL}/broadcast.json`);
+        if (bRes.ok) {
+          const n = await bRes.json();
+          if (n) {
+            document.getElementById('staffNoticeTitle').innerText = n.title;
+            document.getElementById('staffNoticeBody').innerText = n.body;
+            document.getElementById('staffNoticeMeta').innerText = 'Published by ' + (n.author || 'School Administration') + ' • ' + (n.date || 'Recent');
+            staffBanner.style.display = 'block';
 
-        document.getElementById('studentNoticeTitle').innerText = n.title;
-        document.getElementById('studentNoticeBody').innerText = n.body;
-        document.getElementById('studentNoticeMeta').innerText = 'Published by ' + (n.author || 'School Administration') + ' • ' + (n.date || 'Recent');
-        studentBanner.style.display = 'block';
-      } else {
-        staffBanner.style.display = 'none';
-        studentBanner.style.display = 'none';
-      }
+            document.getElementById('studentNoticeTitle').innerText = n.title;
+            document.getElementById('studentNoticeBody').innerText = n.body;
+            document.getElementById('studentNoticeMeta').innerText = 'Published by ' + (n.author || 'School Administration') + ' • ' + (n.date || 'Recent');
+            studentBanner.style.display = 'block';
+            return;
+          }
+        }
+      } catch (e) {}
+
+      staffBanner.style.display = 'none';
+      studentBanner.style.display = 'none';
     }
 
-    function renderStudentView(student) {
+    async function renderStudentView(student) {
       document.getElementById('studentDashboard').style.display = 'block';
       document.getElementById('staffDashboard').style.display = 'none';
 
@@ -1225,12 +1149,15 @@
       var cohortStr = (student.level || "Level 5") + " • " + (student.dept || "NIT");
       document.getElementById('studentHeroSub').innerText = cohortStr + " • Reg: " + student.username;
 
-      var gradesDB = getGradesDB();
-      var studentRecord = gradesDB[student.username.toLowerCase()] || {
-        attendance: "Present",
-        continuous: 40,
-        practical: 55
-      };
+      let studentRecord = { attendance: "Present", continuous: 40, practical: 55 };
+
+      try {
+        const gRes = await fetch(`${FIREBASE_DB_URL}/grades/${student.username.toLowerCase()}.json`);
+        if (gRes.ok) {
+          const gData = await gRes.json();
+          if (gData) studentRecord = gData;
+        }
+      } catch (e) {}
 
       document.getElementById('studentAttDisplay').innerText = studentRecord.attendance;
       var total = studentRecord.continuous + studentRecord.practical;
@@ -1249,7 +1176,16 @@
       `;
 
       var studentClassKey = (student.level || "Level 5") + " " + (student.dept || "NIT");
-      var allCourses = getCoursesDB();
+      let allCourses = [];
+
+      try {
+        const cRes = await fetch(`${FIREBASE_DB_URL}/courses.json`);
+        if (cRes.ok) {
+          const cData = await cRes.json();
+          allCourses = parseCloudData(cData);
+        }
+      } catch (e) {}
+
       var matchingCourses = allCourses.filter(function(c) {
         return c.cohort.toLowerCase() === studentClassKey.toLowerCase();
       });
@@ -1280,7 +1216,7 @@
       }
     }
 
-    function renderTrainerView(trainer) {
+    async function renderTrainerView(trainer) {
       document.getElementById('staffDashboard').style.display = 'block';
       document.getElementById('studentDashboard').style.display = 'none';
 
@@ -1290,7 +1226,15 @@
       document.getElementById('statClassTitle').innerText = targetClass;
       document.getElementById('gradebookClassHeader').innerText = targetClass;
 
-      var allUsers = getUsersDB();
+      let allUsers = [];
+      try {
+        const uRes = await fetch(`${FIREBASE_DB_URL}/users.json`);
+        if (uRes.ok) {
+          const uData = await uRes.json();
+          allUsers = parseCloudUsers(uData);
+        }
+      } catch (e) {}
+
       var enrolledStudents = allUsers.filter(function(u) {
         if (u.role !== 'student') return false;
         var uClass = (u.level || "Level 5") + " " + (u.dept || "NIT");
@@ -1299,7 +1243,15 @@
 
       document.getElementById('statEnrolledCount').innerText = enrolledStudents.length;
 
-      var gradesDB = getGradesDB();
+      let gradesDB = {};
+      try {
+        const gRes = await fetch(`${FIREBASE_DB_URL}/grades.json`);
+        if (gRes.ok) {
+          const gData = await gRes.json();
+          if (gData) gradesDB = gData;
+        }
+      } catch (e) {}
+
       var gradebookTbody = document.getElementById('trainerGradebookTbody');
       gradebookTbody.innerHTML = "";
 
@@ -1336,8 +1288,16 @@
       renderTrainerPublishedNotes();
     }
 
-    function renderTrainerPublishedNotes() {
-      var courses = getCoursesDB();
+    async function renderTrainerPublishedNotes() {
+      let courses = [];
+      try {
+        const cRes = await fetch(`${FIREBASE_DB_URL}/courses.json`);
+        if (cRes.ok) {
+          const cData = await cRes.json();
+          courses = parseCloudData(cData);
+        }
+      } catch (e) {}
+
       document.getElementById('statNotesCount').innerText = courses.length;
 
       var tbody = document.getElementById('trainerCoursesTbody');
@@ -1358,24 +1318,26 @@
 
     async function saveClassMarksAndAttendance() {
       var rows = document.querySelectorAll('#trainerGradebookTbody tr');
-      var gradesDB = getGradesDB();
 
-      rows.forEach(function(row) {
+      for (const row of rows) {
         var username = row.dataset.username;
-        if (!username) return;
+        if (!username) continue;
 
         var att = row.querySelector('.att-select').value;
         var cont = parseInt(row.querySelector('.mark-cont').value) || 0;
         var prac = parseInt(row.querySelector('.mark-prac').value) || 0;
 
-        gradesDB[username] = {
-          attendance: att,
-          continuous: cont,
-          practical: prac
-        };
-      });
+        await fetch(`${FIREBASE_DB_URL}/grades/${username}.json`, {
+          method: "PUT",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({
+            attendance: att,
+            continuous: cont,
+            practical: prac
+          })
+        });
+      }
 
-      await saveGradesDB(gradesDB);
       showSystemToast("Class marks and attendance updated and synced to cloud!");
     }
 
@@ -1402,7 +1364,15 @@
       var title = document.getElementById('pubCourseTitle').value.trim();
       var fileName = selectedAttachmentName || "Lecture_Notes_Presentation.pptx";
 
-      var courses = getCoursesDB();
+      let courses = [];
+      try {
+        const cRes = await fetch(`${FIREBASE_DB_URL}/courses.json`);
+        if (cRes.ok) {
+          const cData = await cRes.json();
+          courses = parseCloudData(cData);
+        }
+      } catch (err) {}
+
       courses.unshift({
         id: "c_" + Date.now(),
         cohort: cohort,
@@ -1412,7 +1382,12 @@
         date: new Date().toLocaleDateString('en-GB', { day: 'numeric', month: 'short', year: 'numeric' })
       });
 
-      await saveCoursesDB(courses);
+      await fetch(`${FIREBASE_DB_URL}/courses.json`, {
+        method: "PUT",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify(courses)
+      });
+
       closePublishModal();
       renderTrainerPublishedNotes();
       showSystemToast("Course notes published and synced to student portal!");
@@ -1439,22 +1414,19 @@
       var email = document.getElementById('profEmail').value.trim();
       var newPass = document.getElementById('profNewPass').value.trim();
 
-      var users = getUsersDB();
-      var idx = users.findIndex(function(u) { return u.id === activeSessionUser.id || u.username.toLowerCase() === activeSessionUser.username.toLowerCase(); });
+      activeSessionUser.name = name;
+      activeSessionUser.phone = phone;
+      activeSessionUser.email = email;
+      if (newPass) activeSessionUser.pass = newPass;
 
-      if (idx !== -1) {
-        users[idx].name = name;
-        users[idx].phone = phone;
-        users[idx].email = email;
-        if (newPass) {
-          users[idx].pass = newPass;
-        }
+      const uKey = cleanFirebaseKey(activeSessionUser.username);
+      await fetch(`${FIREBASE_DB_URL}/users/${uKey}.json`, {
+        method: "PUT",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify(activeSessionUser)
+      });
 
-        await saveUsersDB(users);
-        activeSessionUser = users[idx];
-        sessionStorage.setItem(SESSION_STORAGE_KEY, JSON.stringify(activeSessionUser));
-      }
-
+      sessionStorage.setItem(SESSION_STORAGE_KEY, JSON.stringify(activeSessionUser));
       closeProfileUpdateModal();
       showSystemToast("Your profile and security credentials have been updated!");
       showUserDashboard(activeSessionUser);
@@ -1486,16 +1458,15 @@
         return;
       }
 
+      let users = [];
       try {
         const uRes = await fetch(`${FIREBASE_DB_URL}/users.json`);
         if (uRes.ok) {
           const uCloud = await uRes.json();
-          const usersList = parseCloudUsers(uCloud);
-          localStorage.setItem(DB_USERS_KEY, JSON.stringify(usersList));
+          users = parseCloudUsers(uCloud);
         }
       } catch (e) {}
 
-      var users = getUsersDB();
       var match = users.find(function(u) {
         return (u.username.toLowerCase() === query) || 
                (u.phone && u.phone.includes(query)) || 
@@ -1531,13 +1502,14 @@
         return;
       }
 
-      var users = getUsersDB();
-      var idx = users.findIndex(function(u) { return u.id === currentOtpTargetUser.id || u.username.toLowerCase() === currentOtpTargetUser.username.toLowerCase(); });
-      if (idx !== -1) {
-        users[idx].pass = newPass;
-        await saveUsersDB(users);
-        currentOtpTargetUser = users[idx];
-      }
+      currentOtpTargetUser.pass = newPass;
+      const uKey = cleanFirebaseKey(currentOtpTargetUser.username);
+
+      await fetch(`${FIREBASE_DB_URL}/users/${uKey}.json`, {
+        method: "PUT",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify(currentOtpTargetUser)
+      });
 
       closeSelfOtpModal();
       showSystemToast("Password successfully reset! Logging you in...");
