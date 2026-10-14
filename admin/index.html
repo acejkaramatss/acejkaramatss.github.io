@@ -283,7 +283,6 @@
 </head>
 <body>
 
-  <!-- ADMIN HEADER -->
   <header class="admin-header">
     <div class="brand-title">
       <img src="/logo.png?v=3" alt="ACEJ Crest" class="brand-logo-img">
@@ -302,7 +301,6 @@
     </div>
   </header>
 
-  <!-- AUTH LOCK -->
   <main class="auth-overlay" id="adminLoginBox">
     <div style="font-size: 2.4rem; color: var(--navy); margin-bottom: 12px;">
       <i class="fa-solid fa-user-shield"></i>
@@ -318,7 +316,6 @@
     </form>
   </main>
 
-  <!-- DASHBOARD -->
   <div class="admin-console" id="adminDashboard">
     
     <div class="stats-row">
@@ -340,7 +337,6 @@
       </div>
     </div>
 
-    <!-- ANNOUNCEMENT BROADCASTER -->
     <div class="card-panel" style="border-left: 5px solid var(--gold);">
       <div class="card-title" style="color: var(--navy);">
         <i class="fa-solid fa-bullhorn" style="color: var(--gold-dark);"></i> Broadcast Announcement to All Devices
@@ -360,9 +356,7 @@
 
     <div class="grid-forms-tables">
       
-      <!-- LEFT -->
       <div>
-        <!-- FOLDERS MANAGER -->
         <div class="card-panel">
           <div class="card-title">
             <i class="fa-solid fa-folder-tree" style="color: var(--purple);"></i> User Groups &amp; Folders
@@ -382,7 +376,6 @@
           <div id="activeFoldersBadgeList" style="display: flex; flex-wrap: wrap; gap: 4px;"></div>
         </div>
 
-        <!-- CREATE USER -->
         <div class="card-panel">
           <div class="card-title">
             <i class="fa-solid fa-user-plus" style="color: var(--blue);"></i> Register Account &amp; Assign Groups
@@ -445,7 +438,6 @@
         </div>
       </div>
 
-      <!-- RIGHT: LIVE DIRECTORY -->
       <div class="card-panel">
         <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 12px; flex-wrap: wrap; gap: 10px;">
           <div class="card-title" style="margin-bottom: 0;">
@@ -480,7 +472,6 @@
     </div>
   </div>
 
-  <!-- EDIT USER MODAL -->
   <div class="modal-backdrop" id="editModal">
     <div class="modal-content">
       <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:15px;">
@@ -491,7 +482,7 @@
       </div>
 
       <form onsubmit="handleSaveUserEdit(event)">
-        <input type="hidden" id="editUserId">
+        <input type="hidden" id="editOriginalKey">
 
         <div class="form-ctrl">
           <label>Full Name</label>
@@ -555,24 +546,27 @@
     const MASTER_ADMIN_USER = "Ismael";
     const MASTER_ADMIN_PASS = "Acej@84011";
 
-    const DEFAULT_GROUPS = ["Core Class", "Tech Club", "AERG Itetero", "Prefects", "Exam Board"];
+    const DEFAULT_GROUPS = ["Core Class", "Tech Club", "AERG Itetero", "Prefects", "Exam Board", "Students"];
     let liveUsersList = [];
     let liveGroupsList = DEFAULT_GROUPS;
     let activeFilterGroup = "all";
 
-    function cleanFirebaseKey(str) {
-      return String(str || '').trim().replace(/[.#$\[\]\/]/g, '_');
-    }
-
+    // Returns exact array with the original Firebase key attached to each object
     function parseCloudUsers(data) {
       if (!data) return [];
       let list = [];
       if (Array.isArray(data)) {
-        list = data.filter(Boolean);
+        data.forEach((item, index) => {
+          if (item) {
+            item._fbKey = String(index);
+            list.push(item);
+          }
+        });
       } else if (typeof data === 'object') {
         Object.keys(data).forEach(key => {
           if (data[key] && typeof data[key] === 'object') {
             let item = data[key];
+            item._fbKey = key;
             if (!item.username) item.username = key;
             list.push(item);
           }
@@ -581,7 +575,6 @@
       return list;
     }
 
-    // STRICT CLOUD READ (NO STALE LOCAL STORAGE FALLBACK)
     async function pullFromCloud() {
       try {
         setSyncState(true);
@@ -685,25 +678,23 @@
       liveGroupsList = liveGroupsList.filter(g => g.toLowerCase() !== gName.toLowerCase());
       renderGroupControls();
 
-      // Clean from Firebase
       await fetch(`${FIREBASE_DB_URL}/groups.json`, {
         method: "PUT",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify(liveGroupsList)
       });
 
-      // Remove from any users holding it
-      liveUsersList.forEach(u => {
+      for (const u of liveUsersList) {
         if (u.groups && u.groups.includes(gName)) {
           u.groups = u.groups.filter(g => g !== gName);
-          const uKey = cleanFirebaseKey(u.username);
-          fetch(`${FIREBASE_DB_URL}/users/${uKey}.json`, {
+          const key = u._fbKey || u.username;
+          await fetch(`${FIREBASE_DB_URL}/users/${key}.json`, {
             method: "PUT",
             headers: { "Content-Type": "application/json" },
             body: JSON.stringify(u)
           });
         }
-      });
+      }
 
       if (activeFilterGroup.toLowerCase() === gName.toLowerCase()) {
         activeFilterGroup = "all";
@@ -810,10 +801,8 @@
         firstLogin: false
       };
 
-      const uKey = cleanFirebaseKey(username);
-
-      // Save directly under user key
-      await fetch(`${FIREBASE_DB_URL}/users/${uKey}.json`, {
+      // Store by the exact username as key
+      await fetch(`${FIREBASE_DB_URL}/users/${username}.json`, {
         method: "PUT",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify(newUser)
@@ -827,31 +816,26 @@
       toggleFormRoleFields();
     }
 
-    // ABSOLUTE DIRECT DELETION (CANNOT BE RESTORED BY REFRESH)
-    async function deleteUser(username) {
-      const target = liveUsersList.find(u => u.username.toLowerCase() === username.toLowerCase());
-      const name = target ? target.name : username;
-
-      if (!confirm(`Permanently delete ${name}? This will remove them immediately across all devices and terminate any active session.`)) {
+    // ROBUST DELETION BY EXACT FIREBASE KEY
+    async function deleteUserByExactKey(fbKey, displayName) {
+      if (!confirm(`Permanently delete ${displayName}? This will remove them immediately from Firebase across all devices.`)) {
         return;
       }
 
-      const uKey = cleanFirebaseKey(username);
-
-      // 1. Remove from local array immediately
-      liveUsersList = liveUsersList.filter(u => u.username.toLowerCase() !== username.toLowerCase());
+      // 1. Remove from local screen immediately
+      liveUsersList = liveUsersList.filter(u => (u._fbKey !== fbKey && u.username !== fbKey));
       renderData();
 
-      // 2. HTTP DELETE to Firebase
+      // 2. Perform direct DELETE on the exact key stored in Firebase
       try {
-        await fetch(`${FIREBASE_DB_URL}/users/${uKey}.json`, {
+        await fetch(`${FIREBASE_DB_URL}/users/${fbKey}.json`, {
           method: "DELETE"
         });
       } catch (err) {
         console.error("Firebase DELETE error:", err);
       }
 
-      // 3. Refresh from cloud to confirm
+      // 3. Confirm deletion by pulling latest from cloud
       await pullFromCloud();
     }
 
@@ -863,11 +847,11 @@
       }
     }
 
-    function openEditModal(username) {
-      const user = liveUsersList.find(u => u.username.toLowerCase() === username.toLowerCase());
+    function openEditModal(fbKey) {
+      const user = liveUsersList.find(u => (u._fbKey === fbKey || u.username === fbKey));
       if (!user) return;
 
-      document.getElementById('editUserId').value = user.username;
+      document.getElementById('editOriginalKey').value = user._fbKey || user.username;
       document.getElementById('editName').value = user.name;
       document.getElementById('editUsername').value = user.username;
       document.getElementById('editPassword').value = user.pass;
@@ -898,12 +882,13 @@
 
     async function handleSaveUserEdit(e) {
       e.preventDefault();
-      const originalUsername = document.getElementById('editUserId').value;
-      const user = liveUsersList.find(u => u.username.toLowerCase() === originalUsername.toLowerCase());
+      const originalKey = document.getElementById('editOriginalKey').value;
+      const user = liveUsersList.find(u => (u._fbKey === originalKey || u.username === originalKey));
 
       if (user) {
+        const newUsername = document.getElementById('editUsername').value.trim();
         user.name = document.getElementById('editName').value.trim();
-        user.username = document.getElementById('editUsername').value.trim();
+        user.username = newUsername;
         user.pass = document.getElementById('editPassword').value.trim();
         user.dept = document.getElementById('editDepartment').value;
         user.level = document.getElementById('editLevel').value;
@@ -915,8 +900,12 @@
         });
         user.groups = updatedGroups;
 
-        const uKey = cleanFirebaseKey(user.username);
-        await fetch(`${FIREBASE_DB_URL}/users/${uKey}.json`, {
+        // If username changed, delete old key and save new key
+        if (originalKey !== newUsername) {
+          await fetch(`${FIREBASE_DB_URL}/users/${originalKey}.json`, { method: "DELETE" });
+        }
+
+        await fetch(`${FIREBASE_DB_URL}/users/${newUsername}.json`, {
           method: "PUT",
           headers: { "Content-Type": "application/json" },
           body: JSON.stringify(user)
@@ -928,12 +917,12 @@
       }
     }
 
-    async function toggleUserStatus(username) {
-      const u = liveUsersList.find(user => user.username.toLowerCase() === username.toLowerCase());
+    async function toggleUserStatus(fbKey) {
+      const u = liveUsersList.find(user => (user._fbKey === fbKey || user.username === fbKey));
       if (u) {
         u.status = u.status === 'active' ? 'disabled' : 'active';
-        const uKey = cleanFirebaseKey(u.username);
-        await fetch(`${FIREBASE_DB_URL}/users/${uKey}.json`, {
+        const key = u._fbKey || u.username;
+        await fetch(`${FIREBASE_DB_URL}/users/${key}.json`, {
           method: "PUT",
           headers: { "Content-Type": "application/json" },
           body: JSON.stringify(u)
@@ -1014,6 +1003,7 @@
           if (u.role === 'admin') roleBadgeClass = 'role-admin';
 
           const groupsHtml = (u.groups || []).map(g => `<span class="group-pill">${g}</span>`).join("");
+          const keyRef = u._fbKey || u.username;
 
           const tr = document.createElement('tr');
           tr.innerHTML = `
@@ -1027,13 +1017,13 @@
               <button class="btn-tbl btn-tbl-login" title="1-Click Open User Portal" onclick="impersonateUser('${u.username}')">
                 <i class="fa-solid fa-arrow-right-to-bracket"></i>
               </button>
-              <button class="btn-tbl btn-tbl-edit" title="Edit User &amp; Groups" onclick="openEditModal('${u.username}')">
+              <button class="btn-tbl btn-tbl-edit" title="Edit User &amp; Groups" onclick="openEditModal('${keyRef}')">
                 <i class="fa-solid fa-pen-to-square"></i>
               </button>
-              <button class="btn-tbl" title="Toggle Status" onclick="toggleUserStatus('${u.username}')">
+              <button class="btn-tbl" title="Toggle Status" onclick="toggleUserStatus('${keyRef}')">
                 <i class="fa-solid fa-power-off"></i>
               </button>
-              <button class="btn-tbl btn-tbl-del" title="Delete User Permanently" onclick="deleteUser('${u.username}')">
+              <button class="btn-tbl btn-tbl-del" title="Delete User Permanently" onclick="deleteUserByExactKey('${keyRef}', '${u.name}')">
                 <i class="fa-solid fa-trash"></i>
               </button>
             </td>
