@@ -283,7 +283,6 @@
 </head>
 <body>
 
-  <!-- ADMIN HEADER -->
   <header class="admin-header">
     <div class="brand-title">
       <img src="/logo.png?v=3" alt="ACEJ Crest" class="brand-logo-img">
@@ -302,7 +301,6 @@
     </div>
   </header>
 
-  <!-- ADMIN AUTH LOCK -->
   <main class="auth-overlay" id="adminLoginBox">
     <div style="font-size: 2.4rem; color: var(--navy); margin-bottom: 12px;">
       <i class="fa-solid fa-user-shield"></i>
@@ -318,7 +316,6 @@
     </form>
   </main>
 
-  <!-- DASHBOARD -->
   <div class="admin-console" id="adminDashboard">
     
     <div class="stats-row">
@@ -340,7 +337,6 @@
       </div>
     </div>
 
-    <!-- BROADCAST NOTIFICATION PANEL -->
     <div class="card-panel" style="border-left: 5px solid var(--gold);">
       <div class="card-title" style="color: var(--navy);">
         <i class="fa-solid fa-bullhorn" style="color: var(--gold-dark);"></i> Broadcast Announcement to All Devices
@@ -349,8 +345,8 @@
         Publish an official announcement that immediately pushes across all phones, computers, and student dashboards upon login.
       </p>
       <form onsubmit="handleSendBroadcast(event)" style="display: flex; gap: 10px; flex-wrap: wrap;">
-        <input type="text" id="broadcastTitle" placeholder="Announcement Title (e.g., Term 2 Exam Timetable Released)" style="flex: 1 1 250px; padding: 10px 12px; border: 1.5px solid var(--border); border-radius: 6px;" required>
-        <input type="text" id="broadcastBody" placeholder="Message details for students &amp; teachers..." style="flex: 2 1 350px; padding: 10px 12px; border: 1.5px solid var(--border); border-radius: 6px;" required>
+        <input type="text" id="broadcastTitle" placeholder="Announcement Title" style="flex: 1 1 250px; padding: 10px 12px; border: 1.5px solid var(--border); border-radius: 6px;" required>
+        <input type="text" id="broadcastBody" placeholder="Message details..." style="flex: 2 1 350px; padding: 10px 12px; border: 1.5px solid var(--border); border-radius: 6px;" required>
         <button type="submit" class="btn-create" style="width: auto; padding: 10px 20px;">
           <i class="fa-solid fa-paper-plane"></i> Publish Everywhere
         </button>
@@ -360,10 +356,7 @@
 
     <div class="grid-forms-tables">
       
-      <!-- LEFT COLUMN -->
       <div>
-        
-        <!-- FOLDERS MANAGER -->
         <div class="card-panel">
           <div class="card-title">
             <i class="fa-solid fa-folder-tree" style="color: var(--purple);"></i> User Groups &amp; Folders
@@ -383,7 +376,6 @@
           <div id="activeFoldersBadgeList" style="display: flex; flex-wrap: wrap; gap: 4px;"></div>
         </div>
 
-        <!-- REGISTER USER -->
         <div class="card-panel">
           <div class="card-title">
             <i class="fa-solid fa-user-plus" style="color: var(--blue);"></i> Register Account &amp; Assign Groups
@@ -446,7 +438,6 @@
         </div>
       </div>
 
-      <!-- RIGHT COLUMN: DIRECTORY -->
       <div class="card-panel">
         <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 12px; flex-wrap: wrap; gap: 10px;">
           <div class="card-title" style="margin-bottom: 0;">
@@ -481,7 +472,6 @@
     </div>
   </div>
 
-  <!-- EDIT USER MODAL -->
   <div class="modal-backdrop" id="editModal">
     <div class="modal-content">
       <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:15px;">
@@ -551,8 +541,7 @@
   </div>
 
   <script>
-    const RAW_FIREBASE_URL = "https://acej-portal-default-rtdb.firebaseio.com";
-    const FIREBASE_DB_URL = RAW_FIREBASE_URL.replace(/\/+$/, '');
+    const FIREBASE_DB_URL = "https://acej-portal-default-rtdb.firebaseio.com";
 
     const MASTER_ADMIN_USER = "Ismael";
     const MASTER_ADMIN_PASS = "Acej@84011";
@@ -563,12 +552,24 @@
 
     const DEFAULT_GROUPS = ["Core Class", "Tech Club", "AERG Itetero", "Prefects", "Exam Board"];
     let activeFilterGroup = "all";
+    let isPerformingLocalMutation = false;
 
-    function parseCloudData(data) {
+    // Normalizes Firebase response whether it's an object with keys or an array
+    function parseCloudUsers(data) {
       if (!data) return [];
-      if (Array.isArray(data)) return data.filter(Boolean);
-      if (typeof data === 'object') return Object.values(data).filter(Boolean);
-      return [];
+      let list = [];
+      if (Array.isArray(data)) {
+        list = data.filter(Boolean);
+      } else if (typeof data === 'object') {
+        Object.keys(data).forEach(key => {
+          if (data[key] && typeof data[key] === 'object') {
+            let item = data[key];
+            if (!item.id) item.id = key;
+            list.push(item);
+          }
+        });
+      }
+      return list;
     }
 
     function getGroupsDB() {
@@ -585,9 +586,7 @@
           headers: { "Content-Type": "application/json" },
           body: JSON.stringify(groups)
         });
-      } catch (e) {
-        console.error("Failed to sync groups to Firebase:", e);
-      }
+      } catch (e) {}
     }
 
     function getLocalDatabase() {
@@ -595,39 +594,43 @@
       return stored ? JSON.parse(stored) : [];
     }
 
-    // STRICT FIREBASE AUTHORITY (NO CACHE FALLBACK OVERWRITE)
-    async function saveLocalDatabase(db) {
+    // Force strict array overwrite in Firebase
+    async function syncFullDatabaseToCloud(db) {
+      isPerformingLocalMutation = true;
       localStorage.setItem(DB_STORAGE_KEY, JSON.stringify(db));
       renderData();
-      await syncToCloud(db);
-    }
 
-    async function syncToCloud(db) {
       try {
         setSyncState(true);
-        // If empty, force Firebase to store an empty array
-        const payload = (db && db.length > 0) ? db : [];
-        const res = await fetch(`${FIREBASE_DB_URL}/users.json`, {
+        // Save as indexed map object to prevent array-collapse bugs in Firebase
+        let payload = {};
+        db.forEach((u, idx) => {
+          let cleanId = u.id ? String(u.id).replace(/[.#$\[\]\/]/g, '_') : 'usr_' + idx;
+          payload[cleanId] = u;
+        });
+
+        await fetch(`${FIREBASE_DB_URL}/users.json`, {
           method: "PUT",
           headers: { "Content-Type": "application/json" },
           body: JSON.stringify(payload)
         });
-        if (!res.ok) throw new Error("Firebase HTTP " + res.status);
         setSyncState(false);
       } catch (e) {
         setSyncState(false);
-        console.error("Cloud push failed:", e);
+      } finally {
+        setTimeout(() => { isPerformingLocalMutation = false; }, 1200);
       }
     }
 
     async function pullFromCloud() {
+      if (isPerformingLocalMutation) return;
+
       try {
         setSyncState(true);
         const res = await fetch(`${FIREBASE_DB_URL}/users.json`);
         if (res.ok) {
           const cloudData = await res.json();
-          // Realtime authoritative check
-          const usersList = parseCloudData(cloudData);
+          const usersList = parseCloudUsers(cloudData);
           localStorage.setItem(DB_STORAGE_KEY, JSON.stringify(usersList));
           renderData();
         }
@@ -635,9 +638,8 @@
         const gRes = await fetch(`${FIREBASE_DB_URL}/groups.json`);
         if (gRes.ok) {
           const cloudGroups = await gRes.json();
-          const groupsList = parseCloudData(cloudGroups);
-          if (groupsList.length > 0) {
-            localStorage.setItem(GROUPS_STORAGE_KEY, JSON.stringify(groupsList));
+          if (cloudGroups && Array.isArray(cloudGroups)) {
+            localStorage.setItem(GROUPS_STORAGE_KEY, JSON.stringify(cloudGroups));
             renderGroupControls();
           }
         }
@@ -694,9 +696,8 @@
       renderData();
       pullFromCloud();
 
-      // Poll cloud every 3 seconds
       if (!window.cloudPollInterval) {
-        window.cloudPollInterval = setInterval(pullFromCloud, 3000);
+        window.cloudPollInterval = setInterval(pullFromCloud, 4000);
       }
     }
 
@@ -732,7 +733,7 @@
         }
       });
       if (changed) {
-        await saveLocalDatabase(users);
+        await syncFullDatabaseToCloud(users);
       }
 
       if (activeFilterGroup.toLowerCase() === gName.toLowerCase()) {
@@ -830,7 +831,7 @@
       submitBtn.disabled = true;
       submitBtn.innerHTML = '<i class="fa-solid fa-spinner fa-spin"></i> Syncing to Cloud...';
 
-      db.push({
+      const newUser = {
         id: "usr_" + Date.now().toString(),
         role: role,
         name: name,
@@ -841,25 +842,57 @@
         status: "active",
         groups: selectedGroups,
         firstLogin: false
-      });
+      };
 
-      await saveLocalDatabase(db);
-      alert(`User ${name} registered and synced directly to Firebase cloud!`);
+      db.push(newUser);
+      await syncFullDatabaseToCloud(db);
+
+      alert(`User ${name} registered! Synced directly to cloud.`);
       submitBtn.disabled = false;
       submitBtn.innerHTML = origText;
       e.target.reset();
       toggleFormRoleFields();
     }
 
-    // PERMANENT DELETION (FORCES ZERO RECOVERY)
+    // DIRECT DELETE: PURGES FROM FIREBASE AND OVERWRITES CLOUD
     async function deleteUser(id) {
       const db = getLocalDatabase();
       const target = db.find(u => u.id === id);
       const name = target ? target.name : "this user";
 
-      if (confirm(`Permanently delete ${name}? This will remove them immediately across all devices.`)) {
-        const updatedDb = db.filter(u => u.id !== id);
-        await saveLocalDatabase(updatedDb);
+      if (!confirm(`Permanently delete ${name}? This will remove them immediately across all devices.`)) {
+        return;
+      }
+
+      isPerformingLocalMutation = true;
+      setSyncState(true);
+
+      const updatedDb = db.filter(u => u.id !== id);
+      localStorage.setItem(DB_STORAGE_KEY, JSON.stringify(updatedDb));
+      renderData();
+
+      try {
+        // 1. Explicitly delete the child key in Firebase
+        const cleanId = String(id).replace(/[.#$\[\]\/]/g, '_');
+        await fetch(`${FIREBASE_DB_URL}/users/${cleanId}.json`, { method: "DELETE" });
+
+        // 2. Full PUT to ensure no dangling records remain
+        let payload = {};
+        updatedDb.forEach((u, idx) => {
+          let cid = u.id ? String(u.id).replace(/[.#$\[\]\/]/g, '_') : 'usr_' + idx;
+          payload[cid] = u;
+        });
+
+        await fetch(`${FIREBASE_DB_URL}/users.json`, {
+          method: "PUT",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify(payload)
+        });
+      } catch (e) {
+        console.error("Deletion sync error:", e);
+      } finally {
+        setSyncState(false);
+        setTimeout(() => { isPerformingLocalMutation = false; }, 1500);
       }
     }
 
@@ -927,7 +960,7 @@
         });
         user.groups = updatedGroups;
 
-        await saveLocalDatabase(db);
+        await syncFullDatabaseToCloud(db);
         alert(`Account ${user.name} updated and synced across all devices!`);
         closeEditModal();
       }
@@ -938,7 +971,7 @@
       const u = db.find(user => user.id === id);
       if (u) {
         u.status = u.status === 'active' ? 'disabled' : 'active';
-        await saveLocalDatabase(db);
+        await syncFullDatabaseToCloud(db);
       }
     }
 
