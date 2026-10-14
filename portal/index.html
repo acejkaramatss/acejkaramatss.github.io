@@ -475,7 +475,6 @@
 </head>
 <body>
 
-  <!-- TOP BAR -->
   <div class="top-bar">
     <div>
       <span><i class="fa-solid fa-graduation-cap"></i> ACEJ KARAMA TSS Official Portal Workspace</span>
@@ -487,7 +486,6 @@
     </div>
   </div>
 
-  <!-- NAVIGATION BAR -->
   <header class="portal-nav">
     <a href="/" class="brand">
       <img src="/logo.png?v=3" alt="ACEJ Crest" class="brand-logo-img">
@@ -514,7 +512,7 @@
 
   <main class="portal-main-area">
 
-    <!-- 1. LOGIN CONTAINER -->
+    <!-- LOGIN CONTAINER -->
     <div class="login-container" id="loginBox">
       <div class="login-header">
         <h2>Institutional Portal</h2>
@@ -537,7 +535,7 @@
             <input type="text" id="portalUsername" class="input-control" placeholder="e.g. Paul" oninput="clearInlineLoginErrors()">
             <div class="inline-error-message" id="usernameInlineError">
               <i class="fa-solid fa-circle-exclamation"></i>
-              <span>The username or ID you entered isn't connected to an account.</span>
+              <span>The username or ID you entered isn't connected to an active account.</span>
             </div>
           </div>
 
@@ -564,7 +562,7 @@
       </div>
     </div>
 
-    <!-- 2. TEACHER DASHBOARD -->
+    <!-- TEACHER DASHBOARD -->
     <div id="staffDashboard" style="display: none;">
       
       <div class="embedded-notice-card" id="staffNoticeBanner">
@@ -696,7 +694,7 @@
 
     </div>
 
-    <!-- 3. STUDENT DASHBOARD -->
+    <!-- STUDENT DASHBOARD -->
     <div id="studentDashboard" style="display: none;">
       
       <div class="embedded-notice-card" id="studentNoticeBanner">
@@ -792,7 +790,7 @@
 
   </main>
 
-  <!-- MODAL: ON-DEMAND PROFILE & PASSWORD UPDATE -->
+  <!-- PROFILE MODAL -->
   <div class="modal-backdrop" id="profileUpdateModal">
     <div class="modal-card">
       <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:15px;">
@@ -828,7 +826,7 @@
     </div>
   </div>
 
-  <!-- MODAL: SELF-SERVICE OTP PASSWORD RESET -->
+  <!-- SELF-SERVICE OTP MODAL -->
   <div class="modal-backdrop" id="selfOtpModal">
     <div class="modal-card">
       <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:15px;">
@@ -876,7 +874,7 @@
     </div>
   </div>
 
-  <!-- MODAL: PUBLISH NEW NOTES / COURSE -->
+  <!-- PUBLISH NOTES MODAL -->
   <div class="modal-backdrop" id="publishModal">
     <div class="modal-card">
       <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:15px;">
@@ -923,7 +921,6 @@
     </div>
   </div>
 
-  <!-- DISPATCH NOTIFICATION TOAST -->
   <div class="otp-toast-banner" id="otpToast">
     <div style="font-size:0.82rem; text-transform:uppercase; font-weight:800; letter-spacing:1px; margin-bottom:4px;">
       <i class="fa-solid fa-mobile-screen"></i> SMS / Email Delivery Gateway
@@ -937,11 +934,10 @@
   </footer>
 
   <script>
-    // AUTOMATIC URL SANITIZATION (PREVENTS DOUBLE SLASH ERRORS)
     const RAW_FIREBASE_URL = "https://acej-portal-default-rtdb.firebaseio.com";
     const FIREBASE_DB_URL = RAW_FIREBASE_URL.replace(/\/+$/, '');
 
-    var currentRole = 'staff'; // Default to Trainer / Staff
+    var currentRole = 'staff';
     var activeSessionUser = null;
     var selectedAttachmentName = "";
 
@@ -1025,9 +1021,27 @@
       document.getElementById('passwordInlineError').style.display = 'none';
     }
 
-    // DIRECT CLOUD SYNC & SESSION RESTORE
+    // REAL-TIME SESSION HEARTBEAT: KICKS USER IF DELETED
+    async function verifyActiveSessionStillExists() {
+      if (!activeSessionUser) return;
+      try {
+        const uRes = await fetch(`${FIREBASE_DB_URL}/users.json`);
+        if (uRes.ok) {
+          const uCloud = await uRes.json();
+          const usersList = parseCloudData(uCloud);
+          localStorage.setItem(DB_USERS_KEY, JSON.stringify(usersList));
+
+          // Check if active user still exists and is active
+          const exists = usersList.find(u => u.username.toLowerCase() === activeSessionUser.username.toLowerCase());
+          if (!exists || exists.status !== 'active') {
+            alert("Your account has been revoked or deleted by the administrator. Session terminated.");
+            logoutPortal();
+          }
+        }
+      } catch (e) {}
+    }
+
     window.addEventListener('DOMContentLoaded', async function() {
-      // By default, activate the Trainer / Staff tab
       switchLoginRole('staff');
 
       try {
@@ -1076,16 +1090,18 @@
         var userObj = JSON.parse(existingSession);
         var currentDB = getUsersDB();
         var refreshed = currentDB.find(function(u) { return u.id === userObj.id || u.username.toLowerCase() === userObj.username.toLowerCase(); });
-        if (refreshed) {
+        if (refreshed && refreshed.status === 'active') {
           activeSessionUser = refreshed;
           showUserDashboard(activeSessionUser);
         } else {
           logoutPortal();
         }
       }
+
+      // Check session status every 5 seconds
+      setInterval(verifyActiveSessionStillExists, 5000);
     });
 
-    // INSTANT CLOUD FETCH DURING LOGIN SUBMISSION
     async function handlePortalLogin(e) {
       e.preventDefault();
       clearInlineLoginErrors();
@@ -1098,7 +1114,6 @@
       submitBtn.disabled = true;
       submitBtn.innerHTML = '<i class="fa-solid fa-spinner fa-spin"></i> Checking Cloud Database...';
 
-      // PULL LATEST LIVE CLOUD USERS RIGHT NOW BEFORE FAILING
       try {
         const uRes = await fetch(`${FIREBASE_DB_URL}/users.json`);
         if (uRes.ok) {
@@ -1107,7 +1122,6 @@
           localStorage.setItem(DB_USERS_KEY, JSON.stringify(usersList));
         }
       } catch (err) {
-        console.warn("Direct cloud fetch error:", err);
       } finally {
         submitBtn.disabled = false;
         submitBtn.innerHTML = origText;
@@ -1115,7 +1129,6 @@
 
       var userList = getUsersDB();
 
-      // Find user (case-insensitive)
       var userMatch = userList.find(function(u) {
         return u.username.toLowerCase() === user.toLowerCase() && u.role === currentRole;
       });
@@ -1129,6 +1142,11 @@
       if (userMatch.pass !== pass) {
         document.getElementById('portalPassword').classList.add('has-error');
         document.getElementById('passwordInlineError').style.display = 'flex';
+        return;
+      }
+
+      if (userMatch.status !== 'active') {
+        alert("This account is currently suspended. Please contact the administrator.");
         return;
       }
 
