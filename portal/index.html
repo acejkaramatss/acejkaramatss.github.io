@@ -512,7 +512,7 @@
 
   <main class="portal-main-area">
 
-    <!-- LOGIN CONTAINER -->
+    <!-- LOGIN FORM -->
     <div class="login-container" id="loginBox">
       <div class="login-header">
         <h2>Institutional Portal</h2>
@@ -531,8 +531,8 @@
       <div class="login-body">
         <form id="portalLoginForm" onsubmit="handlePortalLogin(event)" novalidate>
           <div class="form-group">
-            <label id="lblUsername" for="portalUsername">Staff Username or Email</label>
-            <input type="text" id="portalUsername" class="input-control" placeholder="e.g. Paul" oninput="clearInlineLoginErrors()">
+            <label id="lblUsername" for="portalUsername">Student Roll / Reg ID Number</label>
+            <input type="text" id="portalUsername" class="input-control" placeholder="e.g. Dangote" oninput="clearInlineLoginErrors()">
             <div class="inline-error-message" id="usernameInlineError">
               <i class="fa-solid fa-circle-exclamation"></i>
               <span>The username or ID you entered isn't connected to an active account.</span>
@@ -790,7 +790,6 @@
 
   </main>
 
-  <!-- PROFILE MODAL -->
   <div class="modal-backdrop" id="profileUpdateModal">
     <div class="modal-card">
       <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:15px;">
@@ -826,7 +825,6 @@
     </div>
   </div>
 
-  <!-- SELF-SERVICE OTP MODAL -->
   <div class="modal-backdrop" id="selfOtpModal">
     <div class="modal-card">
       <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:15px;">
@@ -840,7 +838,7 @@
         </p>
         <div class="form-group">
           <label>Account ID / Phone / Email</label>
-          <input type="text" id="otpAccountInput" class="input-control" placeholder="e.g. Paul or 0788..." required>
+          <input type="text" id="otpAccountInput" class="input-control" placeholder="e.g. Dangote or 0788..." required>
           <div class="inline-error-message" id="otpStep1Error">
             <i class="fa-solid fa-circle-exclamation"></i>
             <span>No account found matching this identifier. Please verify and try again.</span>
@@ -874,7 +872,6 @@
     </div>
   </div>
 
-  <!-- PUBLISH NOTES MODAL -->
   <div class="modal-backdrop" id="publishModal">
     <div class="modal-card">
       <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:15px;">
@@ -934,10 +931,9 @@
   </footer>
 
   <script>
-    const RAW_FIREBASE_URL = "https://acej-portal-default-rtdb.firebaseio.com";
-    const FIREBASE_DB_URL = RAW_FIREBASE_URL.replace(/\/+$/, '');
+    const FIREBASE_DB_URL = "https://acej-portal-default-rtdb.firebaseio.com";
 
-    var currentRole = 'staff';
+    var currentRole = 'student';
     var activeSessionUser = null;
     var selectedAttachmentName = "";
 
@@ -949,6 +945,23 @@
     const DB_GRADES_KEY = "ACEJ_STUDENT_GRADES_DB";
     const NOTICE_STORAGE_KEY = "ACEJ_PORTAL_BROADCAST";
     const SESSION_STORAGE_KEY = "ACEJ_ACTIVE_SESSION";
+
+    function parseCloudUsers(data) {
+      if (!data) return [];
+      let list = [];
+      if (Array.isArray(data)) {
+        list = data.filter(Boolean);
+      } else if (typeof data === 'object') {
+        Object.keys(data).forEach(key => {
+          if (data[key] && typeof data[key] === 'object') {
+            let item = data[key];
+            if (!item.id) item.id = key;
+            list.push(item);
+          }
+        });
+      }
+      return list;
+    }
 
     function parseCloudData(data) {
       if (!data) return [];
@@ -964,11 +977,16 @@
 
     async function saveUsersDB(users) {
       localStorage.setItem(DB_USERS_KEY, JSON.stringify(users));
+      let payload = {};
+      users.forEach((u, idx) => {
+        let cleanId = u.id ? String(u.id).replace(/[.#$\[\]\/]/g, '_') : 'usr_' + idx;
+        payload[cleanId] = u;
+      });
       try {
         await fetch(`${FIREBASE_DB_URL}/users.json`, {
           method: "PUT",
           headers: { "Content-Type": "application/json" },
-          body: JSON.stringify(users)
+          body: JSON.stringify(payload)
         });
       } catch (e) {}
     }
@@ -1011,7 +1029,7 @@
       document.getElementById('tabStudent').classList.toggle('active-tab', role === 'student');
       document.getElementById('tabStaff').classList.toggle('active-tab', role === 'staff');
       document.getElementById('lblUsername').innerText = (role === 'student') ? 'Student Roll / Reg ID Number' : 'Staff Username or Email';
-      document.getElementById('portalUsername').placeholder = (role === 'student') ? 'e.g. noheri' : 'e.g. Paul';
+      document.getElementById('portalUsername').placeholder = (role === 'student') ? 'e.g. Dangote' : 'e.g. Paul';
     }
 
     function clearInlineLoginErrors() {
@@ -1021,20 +1039,22 @@
       document.getElementById('passwordInlineError').style.display = 'none';
     }
 
-    // REAL-TIME SESSION HEARTBEAT: KICKS USER IF DELETED
-    async function verifyActiveSessionStillExists() {
+    // CONTINUOUS ACTIVE HEARTBEAT GUARD
+    // Checks Firebase every 3 seconds: If account deleted in Admin, immediately kicks out user
+    async function checkSessionStillActiveInCloud() {
       if (!activeSessionUser) return;
+
       try {
         const uRes = await fetch(`${FIREBASE_DB_URL}/users.json`);
         if (uRes.ok) {
           const uCloud = await uRes.json();
-          const usersList = parseCloudData(uCloud);
+          const usersList = parseCloudUsers(uCloud);
           localStorage.setItem(DB_USERS_KEY, JSON.stringify(usersList));
 
-          // Check if active user still exists and is active
-          const exists = usersList.find(u => u.username.toLowerCase() === activeSessionUser.username.toLowerCase());
-          if (!exists || exists.status !== 'active') {
-            alert("Your account has been revoked or deleted by the administrator. Session terminated.");
+          // Check if active session user still exists
+          const currentAccount = usersList.find(u => u.username.toLowerCase() === activeSessionUser.username.toLowerCase());
+          if (!currentAccount || currentAccount.status !== 'active') {
+            alert("This account was deleted or revoked by the Super Admin. You are now being signed out.");
             logoutPortal();
           }
         }
@@ -1042,13 +1062,13 @@
     }
 
     window.addEventListener('DOMContentLoaded', async function() {
-      switchLoginRole('staff');
+      switchLoginRole('student');
 
       try {
         const uRes = await fetch(`${FIREBASE_DB_URL}/users.json`);
         if (uRes.ok) {
           const uCloud = await uRes.json();
-          const usersList = parseCloudData(uCloud);
+          const usersList = parseCloudUsers(uCloud);
           localStorage.setItem(DB_USERS_KEY, JSON.stringify(usersList));
         }
         const cRes = await fetch(`${FIREBASE_DB_URL}/courses.json`);
@@ -1089,7 +1109,7 @@
       if (existingSession) {
         var userObj = JSON.parse(existingSession);
         var currentDB = getUsersDB();
-        var refreshed = currentDB.find(function(u) { return u.id === userObj.id || u.username.toLowerCase() === userObj.username.toLowerCase(); });
+        var refreshed = currentDB.find(function(u) { return u.username.toLowerCase() === userObj.username.toLowerCase(); });
         if (refreshed && refreshed.status === 'active') {
           activeSessionUser = refreshed;
           showUserDashboard(activeSessionUser);
@@ -1098,8 +1118,8 @@
         }
       }
 
-      // Check session status every 5 seconds
-      setInterval(verifyActiveSessionStillExists, 5000);
+      // Start Realtime Guard Poll
+      setInterval(checkSessionStillActiveInCloud, 3000);
     });
 
     async function handlePortalLogin(e) {
@@ -1114,11 +1134,12 @@
       submitBtn.disabled = true;
       submitBtn.innerHTML = '<i class="fa-solid fa-spinner fa-spin"></i> Checking Cloud Database...';
 
+      // Live query Firebase before validating credentials
       try {
         const uRes = await fetch(`${FIREBASE_DB_URL}/users.json`);
         if (uRes.ok) {
           const uCloud = await uRes.json();
-          const usersList = parseCloudData(uCloud);
+          const usersList = parseCloudUsers(uCloud);
           localStorage.setItem(DB_USERS_KEY, JSON.stringify(usersList));
         }
       } catch (err) {
@@ -1419,7 +1440,7 @@
       var newPass = document.getElementById('profNewPass').value.trim();
 
       var users = getUsersDB();
-      var idx = users.findIndex(function(u) { return u.id === activeSessionUser.id; });
+      var idx = users.findIndex(function(u) { return u.id === activeSessionUser.id || u.username.toLowerCase() === activeSessionUser.username.toLowerCase(); });
 
       if (idx !== -1) {
         users[idx].name = name;
@@ -1469,7 +1490,7 @@
         const uRes = await fetch(`${FIREBASE_DB_URL}/users.json`);
         if (uRes.ok) {
           const uCloud = await uRes.json();
-          const usersList = parseCloudData(uCloud);
+          const usersList = parseCloudUsers(uCloud);
           localStorage.setItem(DB_USERS_KEY, JSON.stringify(usersList));
         }
       } catch (e) {}
@@ -1511,7 +1532,7 @@
       }
 
       var users = getUsersDB();
-      var idx = users.findIndex(function(u) { return u.id === currentOtpTargetUser.id; });
+      var idx = users.findIndex(function(u) { return u.id === currentOtpTargetUser.id || u.username.toLowerCase() === currentOtpTargetUser.username.toLowerCase(); });
       if (idx !== -1) {
         users[idx].pass = newPass;
         await saveUsersDB(users);
