@@ -406,11 +406,10 @@
               </select>
             </div>
 
+            <!-- DYNAMIC MULTI-GROUP SELECTION -->
             <div class="form-ctrl">
               <label>Assign to Groups / Folders</label>
-              <div class="groups-container-box" id="registerGroupsCheckboxList">
-                <!-- Dynamically generated -->
-              </div>
+              <div class="groups-container-box" id="registerGroupsCheckboxList"></div>
             </div>
 
             <button type="submit" class="btn-create">
@@ -429,6 +428,7 @@
           <input type="text" id="searchUser" placeholder="Search name or ID..." onkeyup="filterUsersTable()" style="padding: 7px 12px; border: 1.5px solid var(--border); border-radius: 6px; font-size: 0.85rem; width: 220px;">
         </div>
 
+        <!-- FOLDER / GROUP FILTER BAR -->
         <div class="group-filter-strip" id="groupFilterButtons">
           <span style="font-size:0.8rem; font-weight:800; color:#64748b; margin-right:4px;"><i class="fa-solid fa-filter"></i> Group Folder:</span>
           <button class="filter-btn active" onclick="setGroupFilter('all', this)">All Users</button>
@@ -514,9 +514,7 @@
 
         <div class="form-ctrl">
           <label>Assigned Groups</label>
-          <div class="groups-container-box" id="editGroupsCheckboxList">
-            <!-- Dynamically populated -->
-          </div>
+          <div class="groups-container-box" id="editGroupsCheckboxList"></div>
         </div>
 
         <button type="submit" class="btn-create" style="margin-top:10px;">
@@ -538,16 +536,11 @@
     const NOTICE_STORAGE_KEY = "ACEJ_PORTAL_BROADCAST";
 
     const DEFAULT_GROUPS = ["Core Class", "Tech Club", "AERG Itetero", "Prefects", "Exam Board"];
-
     let activeFilterGroup = "all";
 
     function getGroupsDB() {
       const stored = localStorage.getItem(GROUPS_STORAGE_KEY);
-      if (!stored) {
-        localStorage.setItem(GROUPS_STORAGE_KEY, JSON.stringify(DEFAULT_GROUPS));
-        return DEFAULT_GROUPS;
-      }
-      return JSON.parse(stored);
+      return stored ? JSON.parse(stored) : DEFAULT_GROUPS;
     }
 
     function saveGroupsDB(groups) {
@@ -565,6 +558,7 @@
       return stored ? JSON.parse(stored) : [];
     }
 
+    // Force Firebase to be the absolute authority
     function saveLocalDatabase(db) {
       localStorage.setItem(DB_STORAGE_KEY, JSON.stringify(db));
       renderData();
@@ -585,16 +579,26 @@
       }
     }
 
+    // PULL & OVERWRITE LOCAL CACHE STRICTLY WITH FIREBASE
     async function pullFromCloud() {
       try {
         setSyncState(true);
         const res = await fetch(`${FIREBASE_DB_URL}/users.json`);
         if (res.ok) {
           const cloudData = await res.json();
-          const usersList = Array.isArray(cloudData) ? cloudData : (cloudData ? Object.values(cloudData) : []);
+          // If cloud data is null, empty array, or object, convert safely
+          let usersList = [];
+          if (Array.isArray(cloudData)) {
+            usersList = cloudData;
+          } else if (cloudData && typeof cloudData === 'object') {
+            usersList = Object.values(cloudData);
+          }
+          
+          // Overwrite local storage so deleted accounts stay deleted
           localStorage.setItem(DB_STORAGE_KEY, JSON.stringify(usersList));
           renderData();
         }
+
         const gRes = await fetch(`${FIREBASE_DB_URL}/groups.json`);
         if (gRes.ok) {
           const cloudGroups = await gRes.json();
@@ -763,13 +767,15 @@
       toggleFormRoleFields();
     }
 
-    function deleteUser(id) {
+    // PERMANENT DELETION ACROSS ALL DEVICES
+    async function deleteUser(id) {
       const db = getLocalDatabase();
       const target = db.find(u => u.id === id);
       const name = target ? target.name : "this user";
 
       if (confirm(`Permanently delete ${name}? This will remove them immediately from Firebase and all devices.`)) {
         const updatedDb = db.filter(u => u.id !== id);
+        // Save locally and push directly to Firebase
         saveLocalDatabase(updatedDb);
       }
     }
@@ -913,7 +919,7 @@
       });
 
       if (filteredUsers.length === 0) {
-        userTbody.innerHTML = `<tr><td colspan="7" style="text-align:center; color:#94a3b8;">No users found in this group/folder.</td></tr>`;
+        userTbody.innerHTML = `<tr><td colspan="7" style="text-align:center; color:#94a3b8; padding: 25px;">No users found in this group/folder.</td></tr>`;
       } else {
         filteredUsers.forEach(u => {
           let roleBadgeClass = 'role-student';
