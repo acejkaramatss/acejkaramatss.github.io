@@ -10,6 +10,10 @@
   <link rel="shortcut icon" type="image/png" href="/logo.png?v=3">
   <link rel="apple-touch-icon" href="/logo.png?v=3">
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+
+  <!-- OFFICIAL FIREBASE REALTIME WEBSOCKET SDK -->
+  <script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-app.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-database.js"></script>
   
   <style>
     :root {
@@ -532,7 +536,7 @@
         <form id="portalLoginForm" onsubmit="handlePortalLogin(event)" novalidate>
           <div class="form-group">
             <label id="lblUsername" for="portalUsername">Student Roll / Reg ID Number</label>
-            <input type="text" id="portalUsername" class="input-control" placeholder="e.g. Dangote" oninput="clearInlineLoginErrors()">
+            <input type="text" id="portalUsername" class="input-control" placeholder="e.g. Mugisha" oninput="clearInlineLoginErrors()">
             <div class="inline-error-message" id="usernameInlineError">
               <i class="fa-solid fa-circle-exclamation"></i>
               <span>The username or ID you entered isn't connected to an active account.</span>
@@ -838,7 +842,7 @@
         </p>
         <div class="form-group">
           <label>Account ID / Phone / Email</label>
-          <input type="text" id="otpAccountInput" class="input-control" placeholder="e.g. Dangote or 0788..." required>
+          <input type="text" id="otpAccountInput" class="input-control" placeholder="e.g. Mugisha or 0788..." required>
           <div class="inline-error-message" id="otpStep1Error">
             <i class="fa-solid fa-circle-exclamation"></i>
             <span>No account found matching this identifier. Please verify and try again.</span>
@@ -931,43 +935,26 @@
   </footer>
 
   <script>
-    const FIREBASE_DB_URL = "https://acej-portal-default-rtdb.firebaseio.com";
+    // INITIALIZE FIREBASE SDK WITH REAL-TIME WEBSOCKETS
+    const firebaseConfig = {
+      databaseURL: "https://acej-portal-default-rtdb.firebaseio.com"
+    };
+    if (!firebase.apps.length) {
+      firebase.initializeApp(firebaseConfig);
+    }
+    const rtdb = firebase.database();
 
     var currentRole = 'student';
     var activeSessionUser = null;
     var selectedAttachmentName = "";
-
     var currentOtpTargetUser = null;
     var generatedOtpCode = null;
 
+    let activeUserLiveRef = null;
     const SESSION_STORAGE_KEY = "ACEJ_ACTIVE_SESSION";
 
     function cleanFirebaseKey(str) {
       return String(str || '').trim().replace(/[.#$\[\]\/]/g, '_');
-    }
-
-    function parseCloudUsers(data) {
-      if (!data) return [];
-      let list = [];
-      if (Array.isArray(data)) {
-        list = data.filter(Boolean);
-      } else if (typeof data === 'object') {
-        Object.keys(data).forEach(key => {
-          if (data[key] && typeof data[key] === 'object') {
-            let item = data[key];
-            if (!item.username) item.username = key;
-            list.push(item);
-          }
-        });
-      }
-      return list;
-    }
-
-    function parseCloudData(data) {
-      if (!data) return [];
-      if (Array.isArray(data)) return data.filter(Boolean);
-      if (typeof data === 'object') return Object.values(data).filter(Boolean);
-      return [];
     }
 
     function switchLoginRole(role) {
@@ -976,7 +963,7 @@
       document.getElementById('tabStudent').classList.toggle('active-tab', role === 'student');
       document.getElementById('tabStaff').classList.toggle('active-tab', role === 'staff');
       document.getElementById('lblUsername').innerText = (role === 'student') ? 'Student Roll / Reg ID Number' : 'Staff Username or Email';
-      document.getElementById('portalUsername').placeholder = (role === 'student') ? 'e.g. Dangote' : 'e.g. Paul';
+      document.getElementById('portalUsername').placeholder = (role === 'student') ? 'e.g. Mugisha' : 'e.g. Paul';
     }
 
     function clearInlineLoginErrors() {
@@ -986,27 +973,48 @@
       document.getElementById('passwordInlineError').style.display = 'none';
     }
 
-    // INSTANT LIVE HEARTBEAT: KICKS DELETED USERS OUT IMMEDIATELY
-    async function checkSessionStillActiveInCloud() {
-      if (!activeSessionUser) return;
+    // NATIVE REAL-TIME SESSION GUARDIAN
+    function attachRealtimeSessionGuardian(username) {
+      const key = cleanFirebaseKey(username);
+      if (activeUserLiveRef) activeUserLiveRef.off();
 
-      try {
-        const uKey = cleanFirebaseKey(activeSessionUser.username);
-        const res = await fetch(`${FIREBASE_DB_URL}/users/${uKey}.json`);
-        
-        if (res.ok) {
-          const userInCloud = await res.json();
-          // If deleted (null) or suspended, immediately kill session
-          if (!userInCloud || userInCloud.status !== 'active') {
-            alert("Your account was deleted or revoked by the Super Admin. You are now being signed out.");
-            logoutPortal();
-          }
+      activeUserLiveRef = rtdb.ref('users/' + key);
+      
+      // Fires immediately (<100ms) when user is deleted in Firebase
+      activeUserLiveRef.on('value', (snapshot) => {
+        const val = snapshot.val();
+        if (!val || val.status !== 'active') {
+          alert("Your account was deleted or revoked by the Super Admin. You are now being signed out.");
+          logoutPortal();
+        } else {
+          activeSessionUser = val;
         }
-      } catch (e) {}
+      });
     }
 
     window.addEventListener('DOMContentLoaded', async function() {
       switchLoginRole('student');
+
+      // Realtime announcements listener
+      rtdb.ref('broadcast').on('value', (snapshot) => {
+        const n = snapshot.val();
+        const staffBanner = document.getElementById('staffNoticeBanner');
+        const studentBanner = document.getElementById('studentNoticeBanner');
+        if (n && n.title) {
+          document.getElementById('staffNoticeTitle').innerText = n.title;
+          document.getElementById('staffNoticeBody').innerText = n.body;
+          document.getElementById('staffNoticeMeta').innerText = 'Published by ' + (n.author || 'School Administration') + ' • ' + (n.date || 'Recent');
+          staffBanner.style.display = 'block';
+
+          document.getElementById('studentNoticeTitle').innerText = n.title;
+          document.getElementById('studentNoticeBody').innerText = n.body;
+          document.getElementById('studentNoticeMeta').innerText = 'Published by ' + (n.author || 'School Administration') + ' • ' + (n.date || 'Recent');
+          studentBanner.style.display = 'block';
+        } else {
+          staffBanner.style.display = 'none';
+          studentBanner.style.display = 'none';
+        }
+      });
 
       var impersonated = localStorage.getItem("ACEJ_IMPERSONATE_USER");
       if (impersonated) {
@@ -1015,34 +1023,26 @@
         sessionStorage.setItem(SESSION_STORAGE_KEY, JSON.stringify(userObj));
         activeSessionUser = userObj;
         showUserDashboard(userObj);
+        attachRealtimeSessionGuardian(userObj.username);
         return;
       }
 
       var existingSession = sessionStorage.getItem(SESSION_STORAGE_KEY);
       if (existingSession) {
         var userObj = JSON.parse(existingSession);
-        // Verify against cloud on startup
-        try {
-          const uKey = cleanFirebaseKey(userObj.username);
-          const res = await fetch(`${FIREBASE_DB_URL}/users/${uKey}.json`);
-          if (res.ok) {
-            const userInCloud = await res.json();
-            if (userInCloud && userInCloud.status === 'active') {
-              activeSessionUser = userInCloud;
-              showUserDashboard(activeSessionUser);
-            } else {
-              logoutPortal();
-              return;
-            }
+        const key = cleanFirebaseKey(userObj.username);
+        
+        rtdb.ref('users/' + key).once('value', (snapshot) => {
+          const cloudUser = snapshot.val();
+          if (cloudUser && cloudUser.status === 'active') {
+            activeSessionUser = cloudUser;
+            showUserDashboard(cloudUser);
+            attachRealtimeSessionGuardian(cloudUser.username);
+          } else {
+            logoutPortal();
           }
-        } catch (e) {
-          activeSessionUser = userObj;
-          showUserDashboard(userObj);
-        }
+        });
       }
-
-      // Check every 2 seconds
-      setInterval(checkSessionStillActiveInCloud, 2000);
     });
 
     async function handlePortalLogin(e) {
@@ -1055,24 +1055,21 @@
       var submitBtn = document.getElementById('btnPortalLoginSubmit');
       var origText = submitBtn.innerHTML;
       submitBtn.disabled = true;
-      submitBtn.innerHTML = '<i class="fa-solid fa-spinner fa-spin"></i> Checking Cloud Database...';
+      submitBtn.innerHTML = '<i class="fa-solid fa-spinner fa-spin"></i> Authenticating with Firebase...';
 
+      const snapshot = await rtdb.ref('users').once('value');
+      submitBtn.disabled = false;
+      submitBtn.innerHTML = origText;
+
+      const usersObj = snapshot.val() || {};
       let userMatch = null;
 
-      try {
-        const res = await fetch(`${FIREBASE_DB_URL}/users.json`);
-        if (res.ok) {
-          const cloudData = await res.json();
-          const usersList = parseCloudUsers(cloudData);
-          userMatch = usersList.find(function(u) {
-            return u.username.toLowerCase() === user.toLowerCase() && u.role === currentRole;
-          });
+      Object.keys(usersObj).forEach(key => {
+        const u = usersObj[key];
+        if (u && u.username && u.username.toLowerCase() === user.toLowerCase() && u.role === currentRole) {
+          userMatch = u;
         }
-      } catch (err) {
-      } finally {
-        submitBtn.disabled = false;
-        submitBtn.innerHTML = origText;
-      }
+      });
 
       if (!userMatch) {
         document.getElementById('portalUsername').classList.add('has-error');
@@ -1094,6 +1091,7 @@
       activeSessionUser = userMatch;
       sessionStorage.setItem(SESSION_STORAGE_KEY, JSON.stringify(userMatch));
       showUserDashboard(userMatch);
+      attachRealtimeSessionGuardian(userMatch.username);
     }
 
     function showUserDashboard(matched) {
@@ -1105,40 +1103,11 @@
       document.getElementById('navUserAvatar').innerText = matched.name.charAt(0).toUpperCase();
       document.getElementById('navUserName').innerText = matched.name;
 
-      renderActiveBroadcastForUser();
-
       if (matched.role === 'student') {
         renderStudentView(matched);
       } else {
         renderTrainerView(matched);
       }
-    }
-
-    async function renderActiveBroadcastForUser() {
-      var staffBanner = document.getElementById('staffNoticeBanner');
-      var studentBanner = document.getElementById('studentNoticeBanner');
-
-      try {
-        const bRes = await fetch(`${FIREBASE_DB_URL}/broadcast.json`);
-        if (bRes.ok) {
-          const n = await bRes.json();
-          if (n) {
-            document.getElementById('staffNoticeTitle').innerText = n.title;
-            document.getElementById('staffNoticeBody').innerText = n.body;
-            document.getElementById('staffNoticeMeta').innerText = 'Published by ' + (n.author || 'School Administration') + ' • ' + (n.date || 'Recent');
-            staffBanner.style.display = 'block';
-
-            document.getElementById('studentNoticeTitle').innerText = n.title;
-            document.getElementById('studentNoticeBody').innerText = n.body;
-            document.getElementById('studentNoticeMeta').innerText = 'Published by ' + (n.author || 'School Administration') + ' • ' + (n.date || 'Recent');
-            studentBanner.style.display = 'block';
-            return;
-          }
-        }
-      } catch (e) {}
-
-      staffBanner.style.display = 'none';
-      studentBanner.style.display = 'none';
     }
 
     async function renderStudentView(student) {
@@ -1149,71 +1118,60 @@
       var cohortStr = (student.level || "Level 5") + " • " + (student.dept || "NIT");
       document.getElementById('studentHeroSub').innerText = cohortStr + " • Reg: " + student.username;
 
-      let studentRecord = { attendance: "Present", continuous: 40, practical: 55 };
+      // Realtime marks
+      rtdb.ref('grades/' + cleanFirebaseKey(student.username).toLowerCase()).on('value', (snapshot) => {
+        const studentRecord = snapshot.val() || { attendance: "Present", continuous: 40, practical: 55 };
+        document.getElementById('studentAttDisplay').innerText = studentRecord.attendance;
+        var total = studentRecord.continuous + studentRecord.practical;
+        document.getElementById('studentAvgDisplay').innerText = total + "%";
 
-      try {
-        const gRes = await fetch(`${FIREBASE_DB_URL}/grades/${student.username.toLowerCase()}.json`);
-        if (gRes.ok) {
-          const gData = await gRes.json();
-          if (gData) studentRecord = gData;
-        }
-      } catch (e) {}
-
-      document.getElementById('studentAttDisplay').innerText = studentRecord.attendance;
-      var total = studentRecord.continuous + studentRecord.practical;
-      document.getElementById('studentAvgDisplay').innerText = total + "%";
-
-      var marksTbody = document.getElementById('studentMarksTbody');
-      marksTbody.innerHTML = `
-        <tr>
-          <td><strong>${student.dept || 'NIT'}-501</strong></td>
-          <td>Telcom &amp; Practical Module Lab</td>
-          <td>15</td>
-          <td>${studentRecord.continuous} / 40</td>
-          <td>${studentRecord.practical} / 60</td>
-          <td><span class="grade-badge grade-competent">${total >= 70 ? 'Competent' : 'In Progress'}</span></td>
-        </tr>
-      `;
-
-      var studentClassKey = (student.level || "Level 5") + " " + (student.dept || "NIT");
-      let allCourses = [];
-
-      try {
-        const cRes = await fetch(`${FIREBASE_DB_URL}/courses.json`);
-        if (cRes.ok) {
-          const cData = await cRes.json();
-          allCourses = parseCloudData(cData);
-        }
-      } catch (e) {}
-
-      var matchingCourses = allCourses.filter(function(c) {
-        return c.cohort.toLowerCase() === studentClassKey.toLowerCase();
+        var marksTbody = document.getElementById('studentMarksTbody');
+        marksTbody.innerHTML = `
+          <tr>
+            <td><strong>${student.dept || 'NIT'}-501</strong></td>
+            <td>Telcom &amp; Practical Module Lab</td>
+            <td>15</td>
+            <td>${studentRecord.continuous} / 40</td>
+            <td>${studentRecord.practical} / 60</td>
+            <td><span class="grade-badge grade-competent">${total >= 70 ? 'Competent' : 'In Progress'}</span></td>
+          </tr>
+        `;
       });
 
-      document.getElementById('studentNotesAvailableCount').innerText = matchingCourses.length;
-
-      var notesTbody = document.getElementById('studentSharedNotesTbody');
-      notesTbody.innerHTML = "";
-
-      if (matchingCourses.length === 0) {
-        notesTbody.innerHTML = `<tr><td colspan="5" style="text-align:center; color:#94a3b8;">No notes uploaded for ${studentClassKey} yet.</td></tr>`;
-      } else {
-        matchingCourses.forEach(function(c) {
-          var tr = document.createElement('tr');
-          tr.innerHTML = `
-            <td><strong>${c.title}</strong></td>
-            <td><i class="fa-solid fa-file-lines" style="color:#2563eb;"></i> ${c.fileName}</td>
-            <td>${c.teacher}</td>
-            <td>${c.date}</td>
-            <td>
-              <a href="#" onclick="alert('Downloading: ' + '${c.fileName}'); return false;" class="btn-publish-open" style="padding:4px 10px; font-size:0.78rem;">
-                <i class="fa-solid fa-download"></i> Download
-              </a>
-            </td>
-          `;
-          notesTbody.appendChild(tr);
+      // Realtime courses
+      var studentClassKey = (student.level || "Level 5") + " " + (student.dept || "NIT");
+      rtdb.ref('courses').on('value', (snapshot) => {
+        const val = snapshot.val();
+        let allCourses = Array.isArray(val) ? val : (val ? Object.values(val) : []);
+        var matchingCourses = allCourses.filter(function(c) {
+          return c.cohort.toLowerCase() === studentClassKey.toLowerCase();
         });
-      }
+
+        document.getElementById('studentNotesAvailableCount').innerText = matchingCourses.length;
+
+        var notesTbody = document.getElementById('studentSharedNotesTbody');
+        notesTbody.innerHTML = "";
+
+        if (matchingCourses.length === 0) {
+          notesTbody.innerHTML = `<tr><td colspan="5" style="text-align:center; color:#94a3b8;">No notes uploaded for ${studentClassKey} yet.</td></tr>`;
+        } else {
+          matchingCourses.forEach(function(c) {
+            var tr = document.createElement('tr');
+            tr.innerHTML = `
+              <td><strong>${c.title}</strong></td>
+              <td><i class="fa-solid fa-file-lines" style="color:#2563eb;"></i> ${c.fileName}</td>
+              <td>${c.teacher}</td>
+              <td>${c.date}</td>
+              <td>
+                <a href="#" onclick="alert('Downloading: ' + '${c.fileName}'); return false;" class="btn-publish-open" style="padding:4px 10px; font-size:0.78rem;">
+                  <i class="fa-solid fa-download"></i> Download
+                </a>
+              </td>
+            `;
+            notesTbody.appendChild(tr);
+          });
+        }
+      });
     }
 
     async function renderTrainerView(trainer) {
@@ -1226,93 +1184,74 @@
       document.getElementById('statClassTitle').innerText = targetClass;
       document.getElementById('gradebookClassHeader').innerText = targetClass;
 
-      let allUsers = [];
-      try {
-        const uRes = await fetch(`${FIREBASE_DB_URL}/users.json`);
-        if (uRes.ok) {
-          const uData = await uRes.json();
-          allUsers = parseCloudUsers(uData);
-        }
-      } catch (e) {}
+      rtdb.ref('users').on('value', async (snapshot) => {
+        const usersObj = snapshot.val() || {};
+        const allUsers = Object.values(usersObj);
+        
+        var enrolledStudents = allUsers.filter(function(u) {
+          if (u.role !== 'student') return false;
+          var uClass = (u.level || "Level 5") + " " + (u.dept || "NIT");
+          return uClass.toLowerCase() === targetClass.toLowerCase();
+        });
 
-      var enrolledStudents = allUsers.filter(function(u) {
-        if (u.role !== 'student') return false;
-        var uClass = (u.level || "Level 5") + " " + (u.dept || "NIT");
-        return uClass.toLowerCase() === targetClass.toLowerCase();
+        document.getElementById('statEnrolledCount').innerText = enrolledStudents.length;
+
+        const gSnap = await rtdb.ref('grades').once('value');
+        const gradesDB = gSnap.val() || {};
+
+        var gradebookTbody = document.getElementById('trainerGradebookTbody');
+        gradebookTbody.innerHTML = "";
+
+        if (enrolledStudents.length === 0) {
+          gradebookTbody.innerHTML = `<tr><td colspan="6" style="text-align:center; color:#94a3b8;">No students registered in ${targetClass} yet.</td></tr>`;
+        } else {
+          enrolledStudents.forEach(function(s) {
+            var sRecord = gradesDB[s.username.toLowerCase()] || {
+              attendance: "Present",
+              continuous: 38,
+              practical: 54
+            };
+
+            var tr = document.createElement('tr');
+            tr.dataset.username = s.username.toLowerCase();
+            tr.innerHTML = `
+              <td><strong>${s.name}</strong></td>
+              <td><code>${s.username}</code></td>
+              <td>
+                <select class="input-control att-select" style="padding:6px; font-size:0.85rem; width:110px;">
+                  <option value="Present" ${sRecord.attendance === 'Present' ? 'selected' : ''}>Present</option>
+                  <option value="Absent" ${sRecord.attendance === 'Absent' ? 'selected' : ''}>Absent</option>
+                  <option value="Excused" ${sRecord.attendance === 'Excused' ? 'selected' : ''}>Excused</option>
+                </select>
+              </td>
+              <td><input type="number" class="grade-input mark-cont" value="${sRecord.continuous}" min="0" max="40"></td>
+              <td><input type="number" class="grade-input mark-prac" value="${sRecord.practical}" min="0" max="60"></td>
+              <td><span class="grade-badge grade-competent">Active</span></td>
+            `;
+            gradebookTbody.appendChild(tr);
+          });
+        }
       });
 
-      document.getElementById('statEnrolledCount').innerText = enrolledStudents.length;
+      rtdb.ref('courses').on('value', (snapshot) => {
+        const val = snapshot.val();
+        let courses = Array.isArray(val) ? val : (val ? Object.values(val) : []);
+        document.getElementById('statNotesCount').innerText = courses.length;
 
-      let gradesDB = {};
-      try {
-        const gRes = await fetch(`${FIREBASE_DB_URL}/grades.json`);
-        if (gRes.ok) {
-          const gData = await gRes.json();
-          if (gData) gradesDB = gData;
-        }
-      } catch (e) {}
+        var tbody = document.getElementById('trainerCoursesTbody');
+        tbody.innerHTML = "";
 
-      var gradebookTbody = document.getElementById('trainerGradebookTbody');
-      gradebookTbody.innerHTML = "";
-
-      if (enrolledStudents.length === 0) {
-        gradebookTbody.innerHTML = `<tr><td colspan="6" style="text-align:center; color:#94a3b8;">No students registered in ${targetClass} yet.</td></tr>`;
-      } else {
-        enrolledStudents.forEach(function(s) {
-          var sRecord = gradesDB[s.username.toLowerCase()] || {
-            attendance: "Present",
-            continuous: 38,
-            practical: 54
-          };
-
+        courses.forEach(function(c) {
           var tr = document.createElement('tr');
-          tr.dataset.username = s.username.toLowerCase();
           tr.innerHTML = `
-            <td><strong>${s.name}</strong></td>
-            <td><code>${s.username}</code></td>
-            <td>
-              <select class="input-control att-select" style="padding:6px; font-size:0.85rem; width:110px;">
-                <option value="Present" ${sRecord.attendance === 'Present' ? 'selected' : ''}>Present</option>
-                <option value="Absent" ${sRecord.attendance === 'Absent' ? 'selected' : ''}>Absent</option>
-                <option value="Excused" ${sRecord.attendance === 'Excused' ? 'selected' : ''}>Excused</option>
-              </select>
-            </td>
-            <td><input type="number" class="grade-input mark-cont" value="${sRecord.continuous}" min="0" max="40"></td>
-            <td><input type="number" class="grade-input mark-prac" value="${sRecord.practical}" min="0" max="60"></td>
+            <td><strong>${c.cohort}</strong></td>
+            <td>${c.title}</td>
+            <td><i class="fa-solid fa-file-lines" style="color:#2563eb;"></i> ${c.fileName}</td>
+            <td>${c.date}</td>
             <td><span class="grade-badge grade-competent">Active</span></td>
           `;
-          gradebookTbody.appendChild(tr);
+          tbody.appendChild(tr);
         });
-      }
-
-      renderTrainerPublishedNotes();
-    }
-
-    async function renderTrainerPublishedNotes() {
-      let courses = [];
-      try {
-        const cRes = await fetch(`${FIREBASE_DB_URL}/courses.json`);
-        if (cRes.ok) {
-          const cData = await cRes.json();
-          courses = parseCloudData(cData);
-        }
-      } catch (e) {}
-
-      document.getElementById('statNotesCount').innerText = courses.length;
-
-      var tbody = document.getElementById('trainerCoursesTbody');
-      tbody.innerHTML = "";
-
-      courses.forEach(function(c) {
-        var tr = document.createElement('tr');
-        tr.innerHTML = `
-          <td><strong>${c.cohort}</strong></td>
-          <td>${c.title}</td>
-          <td><i class="fa-solid fa-file-lines" style="color:#2563eb;"></i> ${c.fileName}</td>
-          <td>${c.date}</td>
-          <td><span class="grade-badge grade-competent">Active</span></td>
-        `;
-        tbody.appendChild(tr);
       });
     }
 
@@ -1327,18 +1266,14 @@
         var cont = parseInt(row.querySelector('.mark-cont').value) || 0;
         var prac = parseInt(row.querySelector('.mark-prac').value) || 0;
 
-        await fetch(`${FIREBASE_DB_URL}/grades/${username}.json`, {
-          method: "PUT",
-          headers: { "Content-Type": "application/json" },
-          body: JSON.stringify({
-            attendance: att,
-            continuous: cont,
-            practical: prac
-          })
+        await rtdb.ref('grades/' + cleanFirebaseKey(username).toLowerCase()).set({
+          attendance: att,
+          continuous: cont,
+          practical: prac
         });
       }
 
-      showSystemToast("Class marks and attendance updated and synced to cloud!");
+      showSystemToast("Class marks and attendance updated directly in Firebase!");
     }
 
     function openPublishCourseModal() {
@@ -1364,14 +1299,9 @@
       var title = document.getElementById('pubCourseTitle').value.trim();
       var fileName = selectedAttachmentName || "Lecture_Notes_Presentation.pptx";
 
-      let courses = [];
-      try {
-        const cRes = await fetch(`${FIREBASE_DB_URL}/courses.json`);
-        if (cRes.ok) {
-          const cData = await cRes.json();
-          courses = parseCloudData(cData);
-        }
-      } catch (err) {}
+      const snapshot = await rtdb.ref('courses').once('value');
+      const val = snapshot.val();
+      let courses = Array.isArray(val) ? val : (val ? Object.values(val) : []);
 
       courses.unshift({
         id: "c_" + Date.now(),
@@ -1382,15 +1312,10 @@
         date: new Date().toLocaleDateString('en-GB', { day: 'numeric', month: 'short', year: 'numeric' })
       });
 
-      await fetch(`${FIREBASE_DB_URL}/courses.json`, {
-        method: "PUT",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify(courses)
-      });
+      await rtdb.ref('courses').set(courses);
 
       closePublishModal();
-      renderTrainerPublishedNotes();
-      showSystemToast("Course notes published and synced to student portal!");
+      showSystemToast("Course notes published and synced directly to Firebase!");
       e.target.reset();
     }
 
@@ -1419,16 +1344,12 @@
       activeSessionUser.email = email;
       if (newPass) activeSessionUser.pass = newPass;
 
-      const uKey = cleanFirebaseKey(activeSessionUser.username);
-      await fetch(`${FIREBASE_DB_URL}/users/${uKey}.json`, {
-        method: "PUT",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify(activeSessionUser)
-      });
+      const key = cleanFirebaseKey(activeSessionUser.username);
+      await rtdb.ref('users/' + key).set(activeSessionUser);
 
       sessionStorage.setItem(SESSION_STORAGE_KEY, JSON.stringify(activeSessionUser));
       closeProfileUpdateModal();
-      showSystemToast("Your profile and security credentials have been updated!");
+      showSystemToast("Your profile and security credentials have been updated in Firebase!");
       showUserDashboard(activeSessionUser);
     }
 
@@ -1458,14 +1379,9 @@
         return;
       }
 
-      let users = [];
-      try {
-        const uRes = await fetch(`${FIREBASE_DB_URL}/users.json`);
-        if (uRes.ok) {
-          const uCloud = await uRes.json();
-          users = parseCloudUsers(uCloud);
-        }
-      } catch (e) {}
+      const snapshot = await rtdb.ref('users').once('value');
+      const usersObj = snapshot.val() || {};
+      const users = Object.values(usersObj);
 
       var match = users.find(function(u) {
         return (u.username.toLowerCase() === query) || 
@@ -1503,13 +1419,9 @@
       }
 
       currentOtpTargetUser.pass = newPass;
-      const uKey = cleanFirebaseKey(currentOtpTargetUser.username);
+      const key = cleanFirebaseKey(currentOtpTargetUser.username);
 
-      await fetch(`${FIREBASE_DB_URL}/users/${uKey}.json`, {
-        method: "PUT",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify(currentOtpTargetUser)
-      });
+      await rtdb.ref('users/' + key).set(currentOtpTargetUser);
 
       closeSelfOtpModal();
       showSystemToast("Password successfully reset! Logging you in...");
@@ -1517,6 +1429,7 @@
       activeSessionUser = currentOtpTargetUser;
       sessionStorage.setItem(SESSION_STORAGE_KEY, JSON.stringify(currentOtpTargetUser));
       showUserDashboard(currentOtpTargetUser);
+      attachRealtimeSessionGuardian(currentOtpTargetUser.username);
     }
 
     function showOtpToastNotification(msg) {
@@ -1537,6 +1450,7 @@
     }
 
     function logoutPortal() {
+      if (activeUserLiveRef) activeUserLiveRef.off();
       activeSessionUser = null;
       sessionStorage.removeItem(SESSION_STORAGE_KEY);
       document.getElementById('studentDashboard').style.display = 'none';
