@@ -153,7 +153,7 @@
       letter-spacing: 0.5px;
     }
     .notice-body-text { color: #78350f; font-size: 0.94rem; line-height: 1.5; }
-    .notice-footer-meta { font-size: 0.78rem; color: #b45309; margin-top: 8px; font-weight: 600; }
+    .notice-footer-meta { font-size: 0.78rem; color: #b45309; margin-top: 8px; font-weight: 600; display: flex; justify-content: space-between; flex-wrap: wrap; }
 
     .login-container {
       max-width: 460px;
@@ -569,13 +569,17 @@
     <!-- TEACHER DASHBOARD -->
     <div id="staffDashboard" style="display: none;">
       
+      <!-- TARGETED ANNOUNCEMENT CARD -->
       <div class="embedded-notice-card" id="staffNoticeBanner">
         <div class="notice-header-row">
           <h4><i class="fa-solid fa-bullhorn" style="color: #d97706;"></i> <span id="staffNoticeTitle">Campus Announcement</span></h4>
-          <span class="notice-badge">Official Admin Notice</span>
+          <span class="notice-badge" id="staffNoticeBadge">Staff Notice</span>
         </div>
         <div class="notice-body-text" id="staffNoticeBody"></div>
-        <div class="notice-footer-meta" id="staffNoticeMeta"></div>
+        <div class="notice-footer-meta">
+          <span id="staffNoticeMeta"></span>
+          <span id="staffNoticeTimer" style="font-style: italic;"></span>
+        </div>
       </div>
 
       <div class="edtech-welcome-banner">
@@ -701,13 +705,17 @@
     <!-- STUDENT DASHBOARD -->
     <div id="studentDashboard" style="display: none;">
       
+      <!-- TARGETED ANNOUNCEMENT CARD -->
       <div class="embedded-notice-card" id="studentNoticeBanner">
         <div class="notice-header-row">
           <h4><i class="fa-solid fa-bullhorn" style="color: #d97706;"></i> <span id="studentNoticeTitle">Campus Announcement</span></h4>
-          <span class="notice-badge">Official Admin Notice</span>
+          <span class="notice-badge" id="studentNoticeBadge">Student Notice</span>
         </div>
         <div class="notice-body-text" id="studentNoticeBody"></div>
-        <div class="notice-footer-meta" id="studentNoticeMeta"></div>
+        <div class="notice-footer-meta">
+          <span id="studentNoticeMeta"></span>
+          <span id="studentNoticeTimer" style="font-style: italic;"></span>
+        </div>
       </div>
 
       <div class="edtech-welcome-banner" style="background: linear-gradient(135deg, #0f2847 0%, #1e3a8a 100%);">
@@ -935,7 +943,6 @@
   </footer>
 
   <script>
-    // INITIALIZE FIREBASE SDK WITH REAL-TIME WEBSOCKETS
     const firebaseConfig = {
       databaseURL: "https://acej-portal-default-rtdb.firebaseio.com"
     };
@@ -973,14 +980,11 @@
       document.getElementById('passwordInlineError').style.display = 'none';
     }
 
-    // NATIVE REAL-TIME SESSION GUARDIAN
     function attachRealtimeSessionGuardian(username) {
       const key = cleanFirebaseKey(username);
       if (activeUserLiveRef) activeUserLiveRef.off();
 
       activeUserLiveRef = rtdb.ref('users/' + key);
-      
-      // Fires immediately (<100ms) when user is deleted in Firebase
       activeUserLiveRef.on('value', (snapshot) => {
         const val = snapshot.val();
         if (!val || val.status !== 'active') {
@@ -992,29 +996,69 @@
       });
     }
 
-    window.addEventListener('DOMContentLoaded', async function() {
-      switchLoginRole('student');
-
-      // Realtime announcements listener
+    // TARGETED & TIMED ANNOUNCEMENT HANDLER
+    function setupAnnouncementListener() {
       rtdb.ref('broadcast').on('value', (snapshot) => {
         const n = snapshot.val();
         const staffBanner = document.getElementById('staffNoticeBanner');
         const studentBanner = document.getElementById('studentNoticeBanner');
-        if (n && n.title) {
+
+        if (!n || !n.title) {
+          staffBanner.style.display = 'none';
+          studentBanner.style.display = 'none';
+          return;
+        }
+
+        // 1. Check Expiration
+        const now = Date.now();
+        if (n.expiresAt && now > n.expiresAt) {
+          staffBanner.style.display = 'none';
+          studentBanner.style.display = 'none';
+          return;
+        }
+
+        const target = n.target || 'all'; // 'all', 'student', or 'staff'
+        const metaText = `Published by ${n.author || 'School Administration'}`;
+
+        let timerText = "";
+        if (n.expiresAt) {
+          const diffMinutes = Math.max(0, Math.round((n.expiresAt - now) / (1000 * 60)));
+          if (diffMinutes > 60) {
+            timerText = `Expires in ~${Math.round(diffMinutes / 60)} hr(s)`;
+          } else {
+            timerText = `Expires in ~${diffMinutes} min`;
+          }
+        }
+
+        // Show to Staff only if target is 'all' or 'staff'
+        if (target === 'all' || target === 'staff') {
           document.getElementById('staffNoticeTitle').innerText = n.title;
           document.getElementById('staffNoticeBody').innerText = n.body;
-          document.getElementById('staffNoticeMeta').innerText = 'Published by ' + (n.author || 'School Administration') + ' • ' + (n.date || 'Recent');
+          document.getElementById('staffNoticeBadge').innerText = (target === 'staff') ? 'Staff-Only Notice' : 'Campus Notice';
+          document.getElementById('staffNoticeMeta').innerText = metaText;
+          document.getElementById('staffNoticeTimer').innerText = timerText;
           staffBanner.style.display = 'block';
-
-          document.getElementById('studentNoticeTitle').innerText = n.title;
-          document.getElementById('studentNoticeBody').innerText = n.body;
-          document.getElementById('studentNoticeMeta').innerText = 'Published by ' + (n.author || 'School Administration') + ' • ' + (n.date || 'Recent');
-          studentBanner.style.display = 'block';
         } else {
           staffBanner.style.display = 'none';
+        }
+
+        // Show to Students only if target is 'all' or 'student'
+        if (target === 'all' || target === 'student') {
+          document.getElementById('studentNoticeTitle').innerText = n.title;
+          document.getElementById('studentNoticeBody').innerText = n.body;
+          document.getElementById('studentNoticeBadge').innerText = (target === 'student') ? 'Student-Only Notice' : 'Campus Notice';
+          document.getElementById('studentNoticeMeta').innerText = metaText;
+          document.getElementById('studentNoticeTimer').innerText = timerText;
+          studentBanner.style.display = 'block';
+        } else {
           studentBanner.style.display = 'none';
         }
       });
+    }
+
+    window.addEventListener('DOMContentLoaded', async function() {
+      switchLoginRole('student');
+      setupAnnouncementListener();
 
       var impersonated = localStorage.getItem("ACEJ_IMPERSONATE_USER");
       if (impersonated) {
@@ -1055,7 +1099,7 @@
       var submitBtn = document.getElementById('btnPortalLoginSubmit');
       var origText = submitBtn.innerHTML;
       submitBtn.disabled = true;
-      submitBtn.innerHTML = '<i class="fa-solid fa-spinner fa-spin"></i> Authenticating with Firebase...';
+      submitBtn.innerHTML = '<i class="fa-solid fa-spinner fa-spin"></i> Authenticating...';
 
       const snapshot = await rtdb.ref('users').once('value');
       submitBtn.disabled = false;
@@ -1118,7 +1162,6 @@
       var cohortStr = (student.level || "Level 5") + " • " + (student.dept || "NIT");
       document.getElementById('studentHeroSub').innerText = cohortStr + " • Reg: " + student.username;
 
-      // Realtime marks
       rtdb.ref('grades/' + cleanFirebaseKey(student.username).toLowerCase()).on('value', (snapshot) => {
         const studentRecord = snapshot.val() || { attendance: "Present", continuous: 40, practical: 55 };
         document.getElementById('studentAttDisplay').innerText = studentRecord.attendance;
@@ -1138,7 +1181,6 @@
         `;
       });
 
-      // Realtime courses
       var studentClassKey = (student.level || "Level 5") + " " + (student.dept || "NIT");
       rtdb.ref('courses').on('value', (snapshot) => {
         const val = snapshot.val();
