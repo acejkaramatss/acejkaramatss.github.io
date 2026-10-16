@@ -1,4 +1,3 @@
-
 <!DOCTYPE html>
 <html lang="en">
 <head>
@@ -85,10 +84,136 @@ th,td{padding:10px 12px;border-bottom:1px solid var(--border);text-align:left;ve
   <div style="font-size:2.4rem;color:var(--navy)"><i class="fa-solid fa-user-shield"></i></div>
   <h2>Management Console</h2>
   <p>Sign in as Super Admin or as an authorised administrator.</p>
-  <form id="loginForm">
+  <form id="loginForm" onsubmit="return handleAdminLogin(event)">
     <div class="fc"><input id="lu" placeholder="Username" required autocomplete="username"></div>
     <div class="fc"><input id="lp" type="password" placeholder="Password" required autocomplete="current-password"></div>
     <button type="submit" class="btn" style="width:100%;justify-content:center;padding:12px"><i class="fa-solid fa-unlock"></i> Sign in</button>
+  </form>
+</section>
+
+<div id="app"><div class="layout">
+<nav class="side" id="nav">
+  <button data-tab="dash" class="active"><i class="fa-solid fa-chart-pie"></i> Dashboard</button>
+  <div class="sep">People</div>
+  <button data-tab="users" data-perm="users.view"><i class="fa-solid fa-users"></i> All Accounts</button>
+  <button data-tab="create" data-perm="users.create"><i class="fa-solid fa-user-plus"></i> Create Account</button>
+  <button data-tab="folders" data-perm="groups.manage"><i class="fa-solid fa-folder-tree"></i> Groups &amp; Folders</button>
+  <div class="sep">Academics</div>
+  <button data-tab="classes" data-perm="classes.view"><i class="fa-solid fa-school"></i> Classes &amp; Teachers</button>
+  <button data-tab="marks" data-perm="marks.view"><i class="fa-solid fa-graduation-cap"></i> Marks Inspector</button>
+  <button data-tab="announce" data-perm="announce.post"><i class="fa-solid fa-bullhorn"></i> Announcements</button>
+  <div class="sep">SystemThe reason the page refreshes and clears your inputs back to a blank login card is because of the URL in your browser bar: **`acejkaramatss.github.io/admin/?`**.
+
+The trailing question mark (`?`) confirms that **the HTML `<form>` is submitting normally via standard browser HTTP GET instead of being intercepted by JavaScript**[cite: 22, 23]. When the button is clicked, the browser reloads the page with empty fields before the Firebase verification can finish running[cite: 23].
+
+This happens because the script encountered a fatal error during load, disabling the `loginForm.addEventListener("submit", ...)` handler entirely:
+
+1. **Uncaught ReferenceError: `openGroup` and `openClassName`**: 
+   Inside `renderFolders()` and `renderClasses()`, the code checks `if (openGroup)` and `if (openClassName)`. However, `let openGroup = null;` and `let openClassName = null;` were defined *further down* in the script. Because `let` variables cannot be accessed before their declaration (Temporal Dead Zone), JavaScript immediately crashed on startup.
+2. **Event Delegation Interference**:
+   The click event delegator at the bottom was intercepting button clicks and failing to prevent the default form submission.
+
+---
+
+### Step-by-Step Fix
+
+Follow these steps to update your admin console file on GitHub:
+
+1. Open **`admin/index.html`** (or `super-admin.html`) on GitHub.
+2. Select all text (`Ctrl + A`) and delete it.
+3. Paste the clean, verified code below:
+
+```html
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Super Admin Management Console | ACEJ KARAMA TSS</title>
+<link rel="icon" type="image/png" href="/logo.png?v=3">
+<link rel="stylesheet" href="[https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css](https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css)">
+<script src="[https://www.gstatic.com/firebasejs/8.10.1/firebase-app.js](https://www.gstatic.com/firebasejs/8.10.1/firebase-app.js)"></script>
+<script src="[https://www.gstatic.com/firebasejs/8.10.1/firebase-database.js](https://www.gstatic.com/firebasejs/8.10.1/firebase-database.js)"></script>
+<script src="[https://cdnjs.cloudflare.com/ajax/libs/Chart.js/4.4.1/chart.umd.min.js](https://cdnjs.cloudflare.com/ajax/libs/Chart.js/4.4.1/chart.umd.min.js)"></script>
+<style>
+:root{--navy:#002D6E;--blue:#0047AB;--gold:#FFC72C;--dark:#0f172a;--bg:#f1f5f9;--white:#fff;--border:#e2e8f0;--green:#10b981;--red:#ef4444;--purple:#7e22ce;--muted:#64748b;--shadow:0 4px 14px rgba(0,45,110,.08)}
+*{box-sizing:border-box;margin:0;padding:0;font-family:'Segoe UI',system-ui,sans-serif}
+body{background:var(--bg);color:var(--dark);min-height:100vh}
+header.top{background:var(--navy);color:#fff;padding:10px 20px;display:flex;justify-content:space-between;align-items:center;border-bottom:3px solid var(--gold);position:sticky;top:0;z-index:50}
+.brand{display:flex;align-items:center;gap:10px;font-weight:800}.brand img{height:38px;width:38px;object-fit:contain}.brand span{color:var(--gold)}
+.hc{display:flex;gap:10px;align-items:center;flex-wrap:wrap}
+.sync{font-size:.78rem;padding:5px 12px;border-radius:20px;font-weight:700;border:1px solid var(--green);color:#6ee7b7;background:rgba(16,185,129,.2)}
+.sync.off{border-color:#f87171;color:#fca5a5;background:rgba(239,68,68,.2)}
+.btn{background:var(--blue);color:#fff;border:none;padding:8px 14px;border-radius:6px;font-weight:700;font-size:.85rem;cursor:pointer;display:inline-flex;gap:6px;align-items:center;text-decoration:none}
+.btn:hover{background:var(--navy)}.btn.ghost{background:rgba(255,255,255,.15);border:1px solid rgba(255,255,255,.3)}
+.btn.sm{padding:5px 9px;font-size:.78rem}.btn.red{background:var(--red)}.btn.green{background:var(--green)}.btn.gold{background:var(--gold);color:var(--navy)}.btn.purple{background:var(--purple)}
+.btn[disabled]{opacity:.4;cursor:not-allowed}
+#login{max-width:420px;margin:80px auto;background:#fff;border-radius:16px;padding:34px 28px;box-shadow:var(--shadow);text-align:center}
+#login h2{color:var(--navy);margin:10px 0 6px}#login p{color:var(--muted);font-size:.9rem;margin-bottom:20px}
+input,select,textarea{width:100%;padding:10px 12px;border:1.5px solid var(--border);border-radius:6px;font-size:.9rem;outline:none;background:#fff}
+input:focus,select:focus,textarea:focus{border-color:var(--blue)}
+#app{display:none;min-height:calc(100vh - 62px)}
+.layout{display:grid;grid-template-columns:230px 1fr;min-height:calc(100vh - 62px)}
+nav.side{background:#fff;border-right:1px solid var(--border);padding:14px 10px;position:sticky;top:62px;height:calc(100vh - 62px);overflow-y:auto}
+nav.side button{width:100%;text-align:left;background:none;border:none;padding:11px 12px;border-radius:8px;font-weight:700;color:#475569;cursor:pointer;display:flex;gap:10px;align-items:center;margin-bottom:3px;font-size:.88rem}
+nav.side button:hover{background:#f1f5f9}nav.side button.active{background:var(--navy);color:#fff}
+nav.side .sep{font-size:.68rem;text-transform:uppercase;color:#94a3b8;font-weight:800;letter-spacing:1px;margin:14px 10px 6px}
+main{padding:22px;overflow-x:hidden}
+.tab{display:none}.tab.show{display:block}
+h2.pt{color:var(--navy);font-size:1.35rem;margin-bottom:16px;display:flex;gap:10px;align-items:center}
+.card{background:#fff;border:1px solid var(--border);border-radius:14px;padding:20px;box-shadow:var(--shadow);margin-bottom:20px}
+.card h3{color:var(--navy);font-size:1.02rem;margin-bottom:12px;display:flex;gap:8px;align-items:center}
+.stats{display:grid;grid-template-columns:repeat(auto-fit,minmax(170px,1fr));gap:16px;margin-bottom:20px}
+.stat{background:#fff;border:1px solid var(--border);border-radius:12px;padding:16px;box-shadow:var(--shadow);border-left:4px solid var(--blue)}
+.stat .l{font-size:.72rem;text-transform:uppercase;font-weight:800;color:var(--muted);letter-spacing:1px}.stat .d{font-size:1.8rem;font-weight:900;color:var(--navy)}
+.g2{display:grid;grid-template-columns:1fr 1fr;gap:20px}.g3{display:grid;grid-template-columns:repeat(auto-fill,minmax(270px,1fr));gap:16px}
+.fc{margin-bottom:12px}.fc label{display:block;font-size:.82rem;font-weight:700;color:#334155;margin-bottom:4px}
+.row2{display:grid;grid-template-columns:1fr 1fr;gap:12px}
+.tiles{display:grid;grid-template-columns:repeat(auto-fill,minmax(140px,1fr));gap:10px;margin-bottom:16px}
+.tile{border:2px solid var(--border);border-radius:12px;padding:14px 8px;text-align:center;cursor:pointer;background:#fff;transition:.15s;font-weight:700;font-size:.82rem;color:#334155}
+.tile i{font-size:1.5rem;display:block;margin-bottom:6px;color:var(--blue)}.tile:hover{border-color:var(--blue);transform:translateY(-2px)}
+.tile.sel{border-color:var(--gold);background:#fffbeb;box-shadow:0 0 0 3px rgba(255,199,44,.35)}
+.chk{background:#f8fafc;border:1.5px solid var(--border);border-radius:8px;padding:10px 12px;max-height:190px;overflow-y:auto;display:grid;grid-template-columns:repeat(auto-fill,minmax(190px,1fr));gap:4px 10px}
+.chk label{display:flex;gap:7px;align-items:center;font-size:.83rem;margin:0;font-weight:500;cursor:pointer}.chk input{width:15px;height:15px}
+.chk .gh{grid-column:1/-1;font-size:.7rem;text-transform:uppercase;font-weight:800;color:var(--muted);margin-top:6px}
+.tbl{overflow-x:auto}table{width:100%;border-collapse:collapse;font-size:.86rem}
+th,td{padding:10px 12px;border-bottom:1px solid var(--border);text-align:left;vertical-align:middle}th{background:#f8fafc;color:#475569;font-weight:700;white-space:nowrap}
+.pill{display:inline-block;padding:2px 8px;border-radius:5px;font-size:.7rem;font-weight:800;margin:1px;background:#e2e8f0;color:#334155}
+.pill.student{background:#eff6ff;color:#1d4ed8}.pill.staff{background:#fef3c7;color:#b45309}.pill.admin{background:#f5f3ff;color:var(--purple)}
+.pill.ok{background:#ecfdf5;color:#047857}.pill.bad{background:#fef2f2;color:#b91c1c}.pill.role{background:#e0f2fe;color:#0369a1}
+.strip{display:flex;gap:6px;flex-wrap:wrap;margin-bottom:12px;align-items:center}
+.fb{background:#f1f5f9;border:1px solid var(--border);border-radius:6px;padding:5px 11px;font-size:.78rem;font-weight:700;cursor:pointer;color:#475569}
+.fb.active{background:var(--navy);color:#fff;border-color:var(--navy)}
+.modal{position:fixed;inset:0;background:rgba(15,23,42,.7);display:none;align-items:center;justify-content:center;z-index:200;padding:20px;backdrop-filter:blur(4px)}
+.modal .mc{background:#fff;max-width:640px;width:100%;border-radius:14px;padding:26px;border:2px solid var(--gold);max-height:92vh;overflow-y:auto}
+.tree details{margin-left:14px;margin-bottom:4px}.tree summary{cursor:pointer;font-weight:700;padding:4px 0;color:var(--navy)}
+.tree .leaf{margin-left:26px;font-size:.84rem;padding:2px 0;color:#334155}
+.cc{border-left:5px solid var(--blue)}.cc .big{font-size:1.4rem;font-weight:900;color:var(--navy)}
+.bar{height:8px;background:#e2e8f0;border-radius:6px;overflow:hidden;margin:6px 0}.bar i{display:block;height:100%;background:var(--green)}
+.perm-chips .pill{background:#ecfdf5;color:#047857}
+.super-badge{background:var(--gold);color:var(--navy);padding:2px 8px;border-radius:5px;font-size:.7rem;font-weight:900}
+.imp-banner{background:#fffbeb;border:1px solid var(--gold);padding:10px 14px;border-radius:8px;font-size:.84rem;margin-bottom:14px}
+@media(max-width:900px){.layout{grid-template-columns:1fr}nav.side{position:static;height:auto;display:flex;overflow-x:auto;gap:4px}nav.side button{width:auto;white-space:nowrap}nav.side .sep{display:none}.g2,.row2{grid-template-columns:1fr}}
+</style>
+</head>
+<body>
+<header class="top">
+  <div class="brand"><img src="/logo.png?v=3" alt="" onerror="this.style.display='none'"><div>ACEJ KARAMA TSS &bull; <span id="who">Management Console</span></div></div>
+  <div class="hc">
+    <div class="sync" id="sync"><i class="fa-solid fa-bolt"></i> <span>Connected (Direct Sync)</span></div>
+    <a class="btn ghost" href="/portal/" target="_blank"><i class="fa-solid fa-arrow-up-right-from-square"></i> Portal</a>
+    <button class="btn ghost" id="btnOut" style="display:none" data-act="logout"><i class="fa-solid fa-power-off"></i> Exit</button>
+  </div>
+</header>
+
+<section id="login">
+  <div style="font-size:2.4rem;color:var(--navy)"><i class="fa-solid fa-user-shield"></i></div>
+  <h2>Management Console</h2>
+  <p>Sign in as Super Admin or as an authorised administrator.</p>
+  <form id="loginForm" onsubmit="return false;">
+    <div class="fc"><input id="lu" placeholder="Username" required autocomplete="username"></div>
+    <div class="fc"><input id="lp" type="password" placeholder="Password" required autocomplete="current-password"></div>
+    <button type="button" id="btnSignInSubmit" class="btn" style="width:100%;justify-content:center;padding:12px"><i class="fa-solid fa-unlock"></i> Sign in</button>
   </form>
 </section>
 
@@ -270,7 +395,7 @@ th,td{padding:10px 12px;border-bottom:1px solid var(--border);text-align:left;ve
 <script>
 /* ============ CONFIG ============ */
 const firebaseConfig = {
-  databaseURL: "https://acej-portal-default-rtdb.firebaseio.com"
+  databaseURL: "[https://acej-portal-default-rtdb.firebaseio.com](https://acej-portal-default-rtdb.firebaseio.com)"
 };
 if (!firebase.apps.length) {
   firebase.initializeApp(firebaseConfig);
@@ -318,6 +443,9 @@ const TILES = [
 /* ============ STATE ============ */
 const S = { users: [], groups: DEFAULT_GROUPS.slice(), roles: DEFAULT_ROLES, marks: {}, audit: [], ann: {} };
 let ME = null, tile = "student", catF = "all", grpF = "all", curClass = CLASSES[0], listening = false, charts = {};
+let openGroup = null;
+let openClassName = null;
+
 const $ = id => document.getElementById(id);
 const esc = s => String(s == null ? "" : s).replace(/[&<>"']/g, c => ({ "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;", "'": "&#39;" }[c]));
 const ck = s => String(s || "").trim().replace(/[.#$\[\]\/]/g, "_");
@@ -387,11 +515,11 @@ function listen() {
   db.ref("audit").limitToLast(150).on("value", s => { S.audit = Object.values(s.val() || {}).sort((a, b) => b.ts - a.ts); renderAudit(); });
 }
 
-/* ============ AUTH ============ */
-$("loginForm").addEventListener("submit", async e => {
-  e.preventDefault();
-  const u = $("lu").value.trim(), p = $("lp").value.trim();
-  
+/* ============ DIRECT LOGIN HANDLER ============ */
+async function processLogin() {
+  const u = $("lu").value.trim();
+  const p = $("lp").value.trim();
+
   if (u === MASTER.user && p === MASTER.pass) {
     ME = { isSuper: true, name: "Super Admin (" + MASTER.user + ")", username: MASTER.user };
     return enter();
@@ -400,11 +528,18 @@ $("loginForm").addEventListener("submit", async e => {
   const snap = await db.ref("users").once("value");
   const list = parseUsers(snap.val());
   const m = list.find(x => x.username && x.username.toLowerCase() === u.toLowerCase() && x.pass === p && x.role === "admin" && (x.status || "active") === "active");
-  
-  if (!m) return alert("Invalid credentials, or this account is not an active administrator.");
+
+  if (!m) {
+    return alert("Invalid credentials, or this account is not an active administrator.");
+  }
+
   ME = { isSuper: false, name: "Admin (" + m.name + ")", username: m.username, user: m };
   enter();
-});
+}
+
+$("btnSignInSubmit").addEventListener("click", processLogin);
+$("lp").addEventListener("keydown", e => { if (e.key === "Enter") processLogin(); });
+$("lu").addEventListener("keydown", e => { if (e.key === "Enter") $("lp").focus(); });
 
 function enter() {
   sessionStorage.setItem("ACEJ_ADMIN", JSON.stringify({ isSuper: ME.isSuper, username: ME.username, name: ME.name }));
@@ -518,21 +653,21 @@ function userSub(u) {
 function canTouch(u) { return isSuper() || u.role !== "admin"; }
 
 function renderUsers() {
-  const cf = \$("catFilter");
+  const cf = $("catFilter");
   cf.innerHTML = ["all", "student", "staff", "admin"].map(c => `<button class="fb ${catF === c ? "active" : ""}" data-cat="${c}">${c === "all" ? "All" : c[0].toUpperCase() + c.slice(1)}</button>`).join("");
-  \$("grpFilter").innerHTML = `<span style="font-size:.78rem;font-weight:800;color:var(--muted)"><i class="fa-solid fa-folder"></i> Folder:</span><button class="fb ${grpF === "all" ? "active" : ""}" data-grp="all">All</button>` + S.groups.map(g => `<button class="fb ${grpF === g ? "active" : ""}" data-grp="${esc(g)}">${esc(g)}</button>`).join("");
-  const q = \$("search").value.toLowerCase();
+  $("grpFilter").innerHTML = `<span style="font-size:.78rem;font-weight:800;color:var(--muted)"><i class="fa-solid fa-folder"></i> Folder:</span><button class="fb ${grpF === "all" ? "active" : ""}" data-grp="all">All</button>` + S.groups.map(g => `<button class="fb ${grpF === g ? "active" : ""}" data-grp="${esc(g)}">${esc(g)}</button>`).join("");
+  const q = $("search").value.toLowerCase();
   const rows = S.users.filter(u => (catF === "all" || u.role === catF) && (grpF === "all" || (u.groups || []).includes(grpF)))
     .filter(u => !q || (u.name + " " + u.username + " " + (u.staffRoles || []).join(" " + classOf(u))).toLowerCase().includes(q))
     .sort((a, b) => (a.role + a.name).localeCompare(b.role + b.name));
 
-  \$("uBody").innerHTML = rows.length ? rows.map(u => {
+  $("uBody").innerHTML = rows.length ? rows.map(u => {
     const k = esc(u._k || u.username), t = canTouch(u);
     return `<tr><td><span class="pill ${esc(u.role)}">${esc(u.role || "user")}</span></td><td><b>${esc(u.name)}</b></td><td><code>${esc(u.username)}</code></td>
-    <td>${isSuper() ? `<code class="pw" data-pw="\${esc(u.pass || "")}">••••••</code> <button class="btn sm" style="padding:2px 6px" data-act="reveal"><i class="fa-solid fa-eye"></i></button>` : `<span style="color:#94a3b8">hidden</span>`}</td>
+    <td>${isSuper() ? `<code class="pw" data-pw="${esc(u.pass || "")}">••••••</code> <button class="btn sm" style="padding:2px 6px" data-act="reveal"><i class="fa-solid fa-eye"></i></button>` : `<span style="color:#94a3b8">hidden</span>`}</td>
     <td>${userSub(u)}</td><td><span class="pill ${u.status === "disabled" ? "bad" : "ok"}">${esc(u.status || "active")}</span></td>
     <td style="white-space:nowrap">
-      ${isSuper() ? `<button class="btn sm green" title="Open their portal without password" data-act="impersonate" data-k="\${k}"><i class="fa-solid fa-eye"></i> Open Portal</button>` : ""}
+      ${isSuper() ? `<button class="btn sm green" title="Open their portal without password" data-act="impersonate" data-k="${k}"><i class="fa-solid fa-eye"></i> Open Portal</button>` : ""}
       <button class="btn sm" data-act="edit" data-k="${k}" ${t && can("users.edit") ? "" : "disabled"}><i class="fa-solid fa-pen"></i></button>
       <button class="btn sm gold" data-act="toggle" data-k="${k}" ${t && can("users.edit") ? "" : "disabled"} title="Enable / disable"><i class="fa-solid fa-ban"></i></button>
       <button class="btn sm red" data-act="del" data-k="${k}" ${t && can("users.delete") ? "" : "disabled"}><i class="fa-solid fa-trash"></i></button>
@@ -547,20 +682,20 @@ function chkList(el, items, sel, name) {
 function checked(sel) { return [...document.querySelectorAll(sel + " input:checked")].map(i => i.value); }
 
 function renderCreateLists() {
-  \$("tiles").innerHTML = TILES.map(t => `<div class="tile ${tile === t.id ? "sel" : ""}" data-tile="${t.id}"><i class="fa-solid ${t.icon}"></i>${t.label}</div>`).join("");
+  $("tiles").innerHTML = TILES.map(t => `<div class="tile ${tile === t.id ? "sel" : ""}" data-tile="${t.id}"><i class="fa-solid ${t.icon}"></i>${t.label}</div>`).join("");
   const rSel = checked("#cRoles"), cSel = checked("#cClasses"), gSel = checked("#cGroups"), pSel = checked("#cPerms");
-  chkList(\$("cRoles"), roleNames(), rSel, "r");
-  chkList(\$("cClasses"), CLASSES, cSel, "c");
-  chkList(\$("cGroups"), S.groups, gSel, "g");
+  chkList($("cRoles"), roleNames(), rSel, "r");
+  chkList($("cClasses"), CLASSES, cSel, "c");
+  chkList($("cGroups"), S.groups, gSel, "g");
   let ph = "";
   Object.keys(PERMS).forEach(g => {
     ph += `<div class="gh">${g}</div>` + Object.keys(PERMS[g]).map(p => `<label><input type="checkbox" value="${p}" ${pSel.includes(p) ? "checked" : ""}>${PERMS[g][p]}</label>`).join("");
   });
-  \$("cPerms").innerHTML = ph;
+  $("cPerms").innerHTML = ph;
 
-  if (!\$("cDept").options.length) {
-    \$("cDept").innerHTML = Object.keys(DEPTS).map(k => `<option value="${k}">${DEPTS[k]}</option>`).join("");
-    \$("cLevel").innerHTML = LEVELS.map(l => `<option>${l}</option>`).join("");
+  if (!$("cDept").options.length) {
+    $("cDept").innerHTML = Object.keys(DEPTS).map(k => `<option value="${k}">${DEPTS[k]}</option>`).join("");
+    $("cLevel").innerHTML = LEVELS.map(l => `<option>${l}</option>`).join("");
     $("eDept").innerHTML = $("cDept").innerHTML;
     $("eLevel").innerHTML = $("cLevel").innerHTML;
   }
@@ -793,7 +928,6 @@ function renderFolders() {
   if (openGroup) showGroup(openGroup);
 }
 
-let openGroup = null;
 function showGroup(g) {
   openGroup = g;
   const m = S.users.filter(u => (u.groups || []).includes(g)), non = S.users.filter(u => !(u.groups || []).includes(g));
@@ -874,7 +1008,6 @@ function renderClasses() {
   if (openClassName) showClass(openClassName);
 }
 
-let openClassName = null;
 function showClass(c) {
   openClassName = c;
   const st = S.users.filter(u => u.role === "student" && classOf(u) === c);
