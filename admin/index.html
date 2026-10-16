@@ -357,13 +357,16 @@ function toast(m){const t=document.createElement("div");t.textContent=m;t.style.
 
 /* ============ REALTIME LISTENER ============ */
 function listen(){
-  if(listening)return;
-  listening=true;
   db.ref(".info/connected").on("value",s=>{
     const on=s.val()===true;
-    $("sync").className="sync"+(on?"":" off");
-    $("sync").querySelector("span").textContent=on?"Connected (Direct Sync)":"Offline · reconnecting…";
+    const syncEl=$("sync");
+    if(syncEl){
+      syncEl.className="sync"+(on?"":" off");
+      syncEl.querySelector("span").textContent=on?"Connected (Direct Sync)":"Offline · reconnecting…";
+    }
   });
+  if(listening)return;
+  listening=true;
   db.ref("users").on("value",s=>{S.users=parseUsers(s.val());renderAll()});
   db.ref("groups").on("value",s=>{const v=s.val();S.groups=Array.isArray(v)?v:(v?Object.values(v):DEFAULT_GROUPS.slice());renderAll()});
   db.ref("roleDefs").on("value",s=>{const v=s.val();if(!v){if(isSuper())db.ref("roleDefs").set(keyed(DEFAULT_ROLES));S.roles=keyed(DEFAULT_ROLES)}else S.roles=v;renderAll()});
@@ -400,7 +403,8 @@ function logout(){sessionStorage.removeItem("ACEJ_ADMIN");location.reload()}
 
 (async()=>{
   const s=sessionStorage.getItem("ACEJ_ADMIN");
-  if(!s){listen();return;}
+  listen();
+  if(!s)return;
   try{
     const x=JSON.parse(s);ME=x;
     if(!x.isSuper){
@@ -455,19 +459,19 @@ function userSub(u){
 function canTouch(u){return isSuper()||u.role!=="admin"}
 
 function renderUsers(){
-  const cf=\$("catFilter");
+  const cf=$("catFilter");
   cf.innerHTML=["all","student","staff","admin"].map(c=>`<button class="fb ${catF===c?"active":""}" data-cat="${c}">${c==="all"?"All":c[0].toUpperCase()+c.slice(1)}</button>`).join("");
-  \$("grpFilter").innerHTML=`<span style="font-size:.78rem;font-weight:800;color:var(--muted)"><i class="fa-solid fa-folder"></i> Folder:</span><button class="fb ${grpF==="all"?"active":""}" data-grp="all">All</button>`+S.groups.map(g=>`<button class="fb ${grpF===g?"active":""}" data-grp="${esc(g)}">${esc(g)}</button>`).join("");
-  const q=\$("search").value.toLowerCase();
+  $("grpFilter").innerHTML=`<span style="font-size:.78rem;font-weight:800;color:var(--muted)"><i class="fa-solid fa-folder"></i> Folder:</span><button class="fb ${grpF==="all"?"active":""}" data-grp="all">All</button>`+S.groups.map(g=>`<button class="fb ${grpF===g?"active":""}" data-grp="${esc(g)}">${esc(g)}</button>`).join("");
+  const q=$("search").value.toLowerCase();
   const rows=S.users.filter(u=>(catF==="all"||u.role===catF)&&(grpF==="all"||(u.groups||[]).includes(grpF))).filter(u=>!q||(u.name+" "+u.username+" "+(u.staffRoles||[]).join(" ")+" "+classOf(u)).toLowerCase().includes(q))
     .sort((a,b)=>(a.role+a.name).localeCompare(b.role+b.name));
-  \$("uBody").innerHTML=rows.length?rows.map(u=>{
+  $("uBody").innerHTML=rows.length?rows.map(u=>{
     const k=esc(u._k||u.username),t=canTouch(u);
     return `<tr><td><span class="pill ${esc(u.role)}">${esc(u.role||"user")}</span></td><td><b>${esc(u.name)}</b></td><td><code>${esc(u.username)}</code></td>
-    <td>${isSuper()?`<code class="pw" data-pw="\${esc(u.pass||"")}">••••••</code> <button class="btn sm" style="padding:2px 6px" data-act="reveal"><i class="fa-solid fa-eye"></i></button>`:`<span style="color:#94a3b8">hidden</span>`}</td>
+    <td>${isSuper()?`<code class="pw" data-pw="${esc(u.pass||"")}">••••••</code> <button class="btn sm" style="padding:2px 6px" data-act="reveal"><i class="fa-solid fa-eye"></i></button>`:`<span style="color:#94a3b8">hidden</span>`}</td>
     <td>${userSub(u)}</td><td><span class="pill ${u.status==="disabled"?"bad":"ok"}">${esc(u.status||"active")}</span></td>
     <td style="white-space:nowrap">
-      ${isSuper()?`<button class="btn sm green" title="Open their portal without password" data-act="impersonate" data-k="\${k}"><i class="fa-solid fa-eye"></i> Open Portal</button>`:""}
+      ${isSuper()?`<button class="btn sm green" title="Open their portal without password" data-act="impersonate" data-k="${k}"><i class="fa-solid fa-eye"></i> Open Portal</button>`:""}
       <button class="btn sm" data-act="edit" data-k="${k}" ${t&&can("users.edit")?"":"disabled"}><i class="fa-solid fa-pen"></i></button>
       <button class="btn sm gold" data-act="toggle" data-k="${k}" ${t&&can("users.edit")?"":"disabled"} title="Enable / disable"><i class="fa-solid fa-ban"></i></button>
       <button class="btn sm red" data-act="del" data-k="${k}" ${t&&can("users.delete")?"":"disabled"}><i class="fa-solid fa-trash"></i></button>
@@ -480,11 +484,555 @@ function chkList(el,items,sel,name){
 }
 function checked(sel){return [...document.querySelectorAll(sel+" input:checked")].map(i=>i.value)}
 function renderCreateLists(){
-  \$("tiles").innerHTML=TILES.map(t=>`<div class="tile ${tile===t.id?"sel":""}" data-tile="${t.id}"><i class="fa-solid ${t.icon}"></i>${t.label}</div>`).join("");
+  $("tiles").innerHTML=TILES.map(t=>`<div class="tile ${tile===t.id?"sel":""}" data-tile="${t.id}"><i class="fa-solid ${t.icon}"></i>${t.label}</div>`).join("");
   const rSel=checked("#cRoles"),cSel=checked("#cClasses"),gSel=checked("#cGroups"),pSel=checked("#cPerms");
-  chkList(\$("cRoles"),roleNames(),rSel,"r");chkList($("cClasses"),CLASSES,cSel,"c");chkList($("cGroups"),S.groups,gSel,"g");
-  let ph="";Object.keys(PERMS).forEach(g=>{ph+=`<div class="gh">${g}</div>`+Object.keys(PERMS[g]).map(p=>`<label><input type="checkbox" value="${p}" ${pSel.includes(p)?"checked":""}>${PERMS[g][p]}</label>`).join("")});\$("cPerms").innerHTML=ph;
-  if(!$("cDept").options.length){$("cDept").innerHTML=Object.keys(DEPTS).map(k=>`<option value="${k}">${DEPTS[k]}</option>`).join("");\$("cLevel").innerHTML=LEVELS.map(l=>`<option>${l}</option>`).join("");$("eDept").innerHTML=$("cDept").innerHTML;$("eLevel").innerHTML=$("cLevel").innerHTML}
+  chkList($("cRoles"),roleNames(),rSel,"r");chkList($("cClasses"),CLASSES,cSel,"c");chkList($("cGroups"),S.groups,gSel,"g");
+  let ph="";Object.keys(PERMS).forEach(g=>{ph+=`<div class="gh">${g}</div>`+Object.keys(PERMS[g]).map(p=>`<label><input type="checkbox" value="${p}" ${pSel.includes(p)?"checked":""}>${PERMS[g][p]}</label>`).join("")});$("cPerms").innerHTML=ph;
+  if(!$("cDept").options.length){$("cDept").innerHTML=Object.keys(DEPTS).map(k=>`<option value="${k}">${DEPTS[k]}</option>`).join("");$("cLevel").innerHTML=LEVELS.map(l=>`<option>${l}</option>`).join("");$("eDept").innerHTML=$("cDept").innerHTML;$("eLevel").innerHTML=$("cLevel").innerHTML}
+  previewPerms();
+}
+function pickTile(id){
+  tile=id;const t=TILES.find(x=>x.id===id);
+  document.querySelectorAll(".tile").forEach(e=>e.classList.toggle("sel",e.dataset.tile===id));
+  $("cStudent").style.display=t.cat==="student"?"block":"none";$("cStaff").style.display=t.cat==="student"?"none":"block";
+  $("lblUser").textContent=t.cat==="student"?"Student Roll / Reg ID":"Staff / Admin username";
+  document.querySelectorAll("#cRoles input").forEach(i=>i.checked=t.roles.includes(i.value));
+  if(t.cat==="staff"&&id==="teacher"){const f=document.querySelector("#cClasses input");if(f&&!checked("#cClasses").length)f.checked=true}
+  previewPerms();
+}
+function previewPerms(){
+  const s=new Set(checked("#cPerms"));checked("#cRoles").forEach(r=>permsOfRole(r).forEach(p=>s.add(p)));
+  const t=TILES.find(x=>x.id===tile);
+  $("cPreview").innerHTML=t&&t.cat==="student"?`<span class="pill">Student portal access only</span>`:([...s].map(p=>`<span class="pill">${esc(PLABEL[p]||p)}</span>`).join("")||`<span class="pill" style="background:#fef2f2;color:#b91c1c">No privileges selected</span>`);
+}
+$("createForm").addEventListener("submit",async e=>{
+  e.preventDefault();if(!can("users.create"))return alert("You do not have permission to create accounts.");
+  const t=TILES.find(x=>x.id===tile);
+  const username=$("cUser").value.trim();
+  if(!username)return;
+  if(S.users.some(u=>ck(u.username).toLowerCase()===ck(username).toLowerCase()))return alert("That username / Reg ID already exists.");
+  if(t.cat==="admin"&&!isSuper())return alert("Only the Super Admin can create administrators.");
+  const u={id:"usr_"+Date.now(),role:t.cat,name:$("cName").value.trim(),username,pass:$("cPass").value.trim(),
+    dept:t.cat==="student"?$("cDept").value:"Faculty",level:t.cat==="student"?$("cLevel").value:"Faculty",
+    staffRoles:t.cat==="student"?[]:checked("#cRoles"),managedClasses:t.cat==="student"?[]:checked("#cClasses"),
+    customPerms:t.cat==="student"?[]:checked("#cPerms"),groups:checked("#cGroups"),status:"active",firstLogin:false,createdAt:Date.now(),createdBy:ME.name};
+  if(t.cat==="admin"&&!u.staffRoles.includes("Administrator"))u.staffRoles.push("Administrator");
+  await db.ref("users/"+ck(username)).set(u);
+  log("create account",u.name+" ("+u.role+")");toast("Account created: "+u.name);
+  e.target.reset();document.querySelectorAll("#createForm input[type=checkbox]").forEach(i=>i.checked=false);pickTile(tile);
+});
+$("createForm").addEventListener("change",previewPerms);
+function genPass(){const c="ABCDEFGHJKMNPQRSTUVWXYZabcdefghijkmnpqrstuvwxyz23456789@#";let p="";for(let i=0;i<10;i++)p+=c[Math.floor(Math.random()*c.length)];$("cPass").value=p}
+async function bulkImport(){
+  if(!can("users.create"))return alert("No permission.");
+  const lines=$("bulk").value.split("\n").map(l=>l.trim()).filter(Boolean);let n=0,skip=0;const up={};
+  lines.forEach(l=>{const [name,username,pass,dept,level]=l.split(",").map(x=>(x||"").trim());
+    if(!name||!username||!pass||S.users.some(u=>ck(u.username).toLowerCase()===ck(username).toLowerCase())){skip++;return}
+    up[ck(username)]={id:"usr_"+Date.now()+n,role:"student",name,username,pass,dept:DEPTS[dept]?dept:"NIT",level:LEVELS.includes(level)?level:"Level 5",staffRoles:[],managedClasses:[],groups:["Students"],status:"active",firstLogin:false,createdAt:Date.now(),createdBy:ME.name};n++});
+  if(n)await db.ref("users").update(up);
+  log("bulk import",n+" students");alert(`Imported ${n} student(s). Skipped ${skip} (blank or duplicate).`);$("bulk").value="";
+}
+
+/* ----- edit ----- */
+function openEdit(k){
+  const u=S.users.find(x=>x._k===k||ck(x.username)===ck(k));if(!u||!canTouch(u))return;
+  $("eKey").value=u._k||u.username;$("eName").value=u.name||"";$("eUser").value=u.username||"";$("ePass").value=isSuper()?(u.pass||""):"";$("ePass").placeholder=isSuper()?"":"Leave blank to keep current";$("ePass").required=isSuper();
+  $("eRole").value=u.role||"student";$("eRole").querySelector("option[value=admin]").disabled=!isSuper();
+  $("eLevel").value=u.level||"Level 5";$("eDept").value=u.dept||"NIT";
+  chkList($("eRoles"),roleNames(),u.staffRoles||[],"er");chkList($("eClasses"),CLASSES,u.managedClasses||[],"ec");chkList($("eGroups"),S.groups,u.groupsHere is the complete file with the `listen()` function and the Firebase connection sequence fixed so you can sign in directly with `Ismael` and `Acej@84011`:
+
+```html
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Super Admin Management Console | ACEJ KARAMA TSS</title>
+<link rel="icon" type="image/png" href="/logo.png?v=3">
+<link rel="stylesheet" href="[https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css](https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css)">
+<script src="[https://www.gstatic.com/firebasejs/8.10.1/firebase-app.js](https://www.gstatic.com/firebasejs/8.10.1/firebase-app.js)"></script>
+<script src="[https://www.gstatic.com/firebasejs/8.10.1/firebase-database.js](https://www.gstatic.com/firebasejs/8.10.1/firebase-database.js)"></script>
+<script src="[https://cdnjs.cloudflare.com/ajax/libs/Chart.js/4.4.1/chart.umd.min.js](https://cdnjs.cloudflare.com/ajax/libs/Chart.js/4.4.1/chart.umd.min.js)"></script>
+<style>
+:root{--navy:#002D6E;--blue:#0047AB;--gold:#FFC72C;--dark:#0f172a;--bg:#f1f5f9;--white:#fff;--border:#e2e8f0;--green:#10b981;--red:#ef4444;--purple:#7e22ce;--muted:#64748b;--shadow:0 4px 14px rgba(0,45,110,.08)}
+*{box-sizing:border-box;margin:0;padding:0;font-family:'Segoe UI',system-ui,sans-serif}
+body{background:var(--bg);color:var(--dark);min-height:100vh}
+header.top{background:var(--navy);color:#fff;padding:10px 20px;display:flex;justify-content:space-between;align-items:center;border-bottom:3px solid var(--gold);position:sticky;top:0;z-index:50}
+.brand{display:flex;align-items:center;gap:10px;font-weight:800}.brand img{height:38px;width:38px;object-fit:contain}.brand span{color:var(--gold)}
+.hc{display:flex;gap:10px;align-items:center;flex-wrap:wrap}
+.sync{font-size:.78rem;padding:5px 12px;border-radius:20px;font-weight:700;border:1px solid var(--green);color:#6ee7b7;background:rgba(16,185,129,.2)}
+.sync.off{border-color:#f87171;color:#fca5a5;background:rgba(239,68,68,.2)}
+.btn{background:var(--blue);color:#fff;border:none;padding:8px 14px;border-radius:6px;font-weight:700;font-size:.85rem;cursor:pointer;display:inline-flex;gap:6px;align-items:center;text-decoration:none}
+.btn:hover{background:var(--navy)}.btn.ghost{background:rgba(255,255,255,.15);border:1px solid rgba(255,255,255,.3)}
+.btn.sm{padding:5px 9px;font-size:.78rem}.btn.red{background:var(--red)}.btn.green{background:var(--green)}.btn.gold{background:var(--gold);color:var(--navy)}.btn.purple{background:var(--purple)}
+.btn[disabled]{opacity:.4;cursor:not-allowed}
+#login{max-width:420px;margin:80px auto;background:#fff;border-radius:16px;padding:34px 28px;box-shadow:var(--shadow);text-align:center}
+#login h2{color:var(--navy);margin:10px 0 6px}#login p{color:var(--muted);font-size:.9rem;margin-bottom:20px}
+input,select,textarea{width:100%;padding:10px 12px;border:1.5px solid var(--border);border-radius:6px;font-size:.9rem;outline:none;background:#fff}
+input:focus,select:focus,textarea:focus{border-color:var(--blue)}
+#app{display:none;min-height:calc(100vh - 62px)}
+.layout{display:grid;grid-template-columns:230px 1fr;min-height:calc(100vh - 62px)}
+nav.side{background:#fff;border-right:1px solid var(--border);padding:14px 10px;position:sticky;top:62px;height:calc(100vh - 62px);overflow-y:auto}
+nav.side button{width:100%;text-align:left;background:none;border:none;padding:11px 12px;border-radius:8px;font-weight:700;color:#475569;cursor:pointer;display:flex;gap:10px;align-items:center;margin-bottom:3px;font-size:.88rem}
+nav.side button:hover{background:#f1f5f9}nav.side button.active{background:var(--navy);color:#fff}
+nav.side .sep{font-size:.68rem;text-transform:uppercase;color:#94a3b8;font-weight:800;letter-spacing:1px;margin:14px 10px 6px}
+main{padding:22px;overflow-x:hidden}
+.tab{display:none}.tab.show{display:block}
+h2.pt{color:var(--navy);font-size:1.35rem;margin-bottom:16px;display:flex;gap:10px;align-items:center}
+.card{background:#fff;border:1px solid var(--border);border-radius:14px;padding:20px;box-shadow:var(--shadow);margin-bottom:20px}
+.card h3{color:var(--navy);font-size:1.02rem;margin-bottom:12px;display:flex;gap:8px;align-items:center}
+.stats{display:grid;grid-template-columns:repeat(auto-fit,minmax(170px,1fr));gap:16px;margin-bottom:20px}
+.stat{background:#fff;border:1px solid var(--border);border-radius:12px;padding:16px;box-shadow:var(--shadow);border-left:4px solid var(--blue)}
+.stat .l{font-size:.72rem;text-transform:uppercase;font-weight:800;color:var(--muted);letter-spacing:1px}.stat .d{font-size:1.8rem;font-weight:900;color:var(--navy)}
+.g2{display:grid;grid-template-columns:1fr 1fr;gap:20px}.g3{display:grid;grid-template-columns:repeat(auto-fill,minmax(270px,1fr));gap:16px}
+.fc{margin-bottom:12px}.fc label{display:block;font-size:.82rem;font-weight:700;color:#334155;margin-bottom:4px}
+.row2{display:grid;grid-template-columns:1fr 1fr;gap:12px}
+.tiles{display:grid;grid-template-columns:repeat(auto-fill,minmax(140px,1fr));gap:10px;margin-bottom:16px}
+.tile{border:2px solid var(--border);border-radius:12px;padding:14px 8px;text-align:center;cursor:pointer;background:#fff;transition:.15s;font-weight:700;font-size:.82rem;color:#334155}
+.tile i{font-size:1.5rem;display:block;margin-bottom:6px;color:var(--blue)}.tile:hover{border-color:var(--blue);transform:translateY(-2px)}
+.tile.sel{border-color:var(--gold);background:#fffbeb;box-shadow:0 0 0 3px rgba(255,199,44,.35)}
+.chk{background:#f8fafc;border:1.5px solid var(--border);border-radius:8px;padding:10px 12px;max-height:190px;overflow-y:auto;display:grid;grid-template-columns:repeat(auto-fill,minmax(190px,1fr));gap:4px 10px}
+.chk label{display:flex;gap:7px;align-items:center;font-size:.83rem;margin:0;font-weight:500;cursor:pointer}.chk input{width:15px;height:15px}
+.chk .gh{grid-column:1/-1;font-size:.7rem;text-transform:uppercase;font-weight:800;color:var(--muted);margin-top:6px}
+.tbl{overflow-x:auto}table{width:100%;border-collapse:collapse;font-size:.86rem}
+th,td{padding:10px 12px;border-bottom:1px solid var(--border);text-align:left;vertical-align:middle}th{background:#f8fafc;color:#475569;font-weight:700;white-space:nowrap}
+.pill{display:inline-block;padding:2px 8px;border-radius:5px;font-size:.7rem;font-weight:800;margin:1px;background:#e2e8f0;color:#334155}
+.pill.student{background:#eff6ff;color:#1d4ed8}.pill.staff{background:#fef3c7;color:#b45309}.pill.admin{background:#f5f3ff;color:var(--purple)}
+.pill.ok{background:#ecfdf5;color:#047857}.pill.bad{background:#fef2f2;color:#b91c1c}.pill.role{background:#e0f2fe;color:#0369a1}
+.strip{display:flex;gap:6px;flex-wrap:wrap;margin-bottom:12px;align-items:center}
+.fb{background:#f1f5f9;border:1px solid var(--border);border-radius:6px;padding:5px 11px;font-size:.78rem;font-weight:700;cursor:pointer;color:#475569}
+.fb.active{background:var(--navy);color:#fff;border-color:var(--navy)}
+.modal{position:fixed;inset:0;background:rgba(15,23,42,.7);display:none;align-items:center;justify-content:center;z-index:200;padding:20px;backdrop-filter:blur(4px)}
+.modal .mc{background:#fff;max-width:640px;width:100%;border-radius:14px;padding:26px;border:2px solid var(--gold);max-height:92vh;overflow-y:auto}
+.tree details{margin-left:14px;margin-bottom:4px}.tree summary{cursor:pointer;font-weight:700;padding:4px 0;color:var(--navy)}
+.tree .leaf{margin-left:26px;font-size:.84rem;padding:2px 0;color:#334155}
+.cc{border-left:5px solid var(--blue)}.cc .big{font-size:1.4rem;font-weight:900;color:var(--navy)}
+.bar{height:8px;background:#e2e8f0;border-radius:6px;overflow:hidden;margin:6px 0}.bar i{display:block;height:100%;background:var(--green)}
+.perm-chips .pill{background:#ecfdf5;color:#047857}
+.super-badge{background:var(--gold);color:var(--navy);padding:2px 8px;border-radius:5px;font-size:.7rem;font-weight:900}
+.imp-banner{background:#fffbeb;border:1px solid var(--gold);padding:10px 14px;border-radius:8px;font-size:.84rem;margin-bottom:14px}
+@media(max-width:900px){.layout{grid-template-columns:1fr}nav.side{position:static;height:auto;display:flex;overflow-x:auto;gap:4px}nav.side button{width:auto;white-space:nowrap}nav.side .sep{display:none}.g2,.row2{grid-template-columns:1fr}}
+</style>
+</head>
+<body>
+<header class="top">
+  <div class="brand"><img src="/logo.png?v=3" alt="" onerror="this.style.display='none'"><div>ACEJ KARAMA TSS &bull; <span id="who">Management Console</span></div></div>
+  <div class="hc">
+    <div class="sync" id="sync"><i class="fa-solid fa-bolt"></i> <span>Connecting…</span></div>
+    <a class="btn ghost" href="/portal/" target="_blank"><i class="fa-solid fa-arrow-up-right-from-square"></i> Portal</a>
+    <button class="btn ghost" id="btnOut" style="display:none" data-act="logout"><i class="fa-solid fa-power-off"></i> Exit</button>
+  </div>
+</header>
+
+<section id="login">
+  <div style="font-size:2.4rem;color:var(--navy)"><i class="fa-solid fa-user-shield"></i></div>
+  <h2>Management Console</h2>
+  <p>Sign in as Super Admin or as an authorised administrator.</p>
+  <form id="loginForm">
+    <div class="fc"><input id="lu" placeholder="Username" required autocomplete="username"></div>
+    <div class="fc"><input id="lp" type="password" placeholder="Password" required autocomplete="current-password"></div>
+    <button class="btn" style="width:100%;justify-content:center;padding:12px"><i class="fa-solid fa-unlock"></i> Sign in</button>
+  </form>
+</section>
+
+<div id="app"><div class="layout">
+<nav class="side" id="nav">
+  <button data-tab="dash" class="active"><i class="fa-solid fa-chart-pie"></i> Dashboard</button>
+  <div class="sep">People</div>
+  <button data-tab="users" data-perm="users.view"><i class="fa-solid fa-users"></i> All Accounts</button>
+  <button data-tab="create" data-perm="users.create"><i class="fa-solid fa-user-plus"></i> Create Account</button>
+  <button data-tab="folders" data-perm="groups.manage"><i class="fa-solid fa-folder-tree"></i> Groups &amp; Folders</button>
+  <div class="sep">Academics</div>
+  <button data-tab="classes" data-perm="classes.view"><i class="fa-solid fa-school"></i> Classes &amp; Teachers</button>
+  <button data-tab="marks" data-perm="marks.view"><i class="fa-solid fa-graduation-cap"></i> Marks Inspector</button>
+  <button data-tab="announce" data-perm="announce.post"><i class="fa-solid fa-bullhorn"></i> Announcements</button>
+  <div class="sep">System</div>
+  <button data-tab="roles" data-super="1"><i class="fa-solid fa-key"></i> Roles &amp; Privileges</button>
+  <button data-tab="audit" data-super="1"><i class="fa-solid fa-clipboard-list"></i> Audit Log</button>
+</nav>
+
+<main>
+<!-- DASHBOARD -->
+<section class="tab show" id="tab-dash">
+  <h2 class="pt"><i class="fa-solid fa-chart-pie"></i> Dashboard <span id="superBadge" class="super-badge" style="display:none">SUPER ADMIN</span></h2>
+  <div class="stats">
+    <div class="stat"><div class="l">Total accounts</div><div class="d" id="sTotal">0</div></div>
+    <div class="stat" style="border-color:#1d4ed8"><div class="l">Students</div><div class="d" id="sStu">0</div></div>
+    <div class="stat" style="border-color:#b45309"><div class="l">Staff</div><div class="d" id="sStaff">0</div></div>
+    <div class="stat" style="border-color:var(--purple)"><div class="l">Admins</div><div class="d" id="sAdm">0</div></div>
+    <div class="stat" style="border-color:var(--green)"><div class="l">Groups</div><div class="d" id="sGrp">0</div></div>
+    <div class="stat" style="border-color:var(--red)"><div class="l">Disabled</div><div class="d" id="sDis">0</div></div>
+  </div>
+  <div class="g2">
+    <div class="card"><h3><i class="fa-solid fa-chart-bar"></i> Students per class</h3><canvas id="chClass" height="200"></canvas></div>
+    <div class="card"><h3><i class="fa-solid fa-chart-pie"></i> Accounts by role</h3><canvas id="chRole" height="200"></canvas></div>
+  </div>
+  <div class="card"><h3><i class="fa-solid fa-bolt"></i> Quick actions</h3>
+    <div class="strip">
+      <button class="btn" data-go="create"><i class="fa-solid fa-user-plus"></i> New account</button>
+      <button class="btn purple" data-go="folders"><i class="fa-solid fa-folder-plus"></i> New group</button>
+      <button class="btn gold" data-go="classes"><i class="fa-solid fa-school"></i> View classes</button>
+      <button class="btn green" data-act="exportUsers"><i class="fa-solid fa-file-csv"></i> Export accounts</button>
+    </div>
+  </div>
+</section>
+
+<!-- USERS -->
+<section class="tab" id="tab-users">
+  <h2 class="pt"><i class="fa-solid fa-users"></i> All Accounts</h2>
+  <div class="card">
+    <div class="strip" style="justify-content:space-between">
+      <div class="strip" id="catFilter" style="margin:0"></div>
+      <input id="search" placeholder="Search name, ID, role…" style="width:240px">
+    </div>
+    <div class="strip" id="grpFilter"></div>
+    <div id="impNote" class="imp-banner" style="display:none"><i class="fa-solid fa-eye"></i> <b>Open Portal</b> lets you view any user's portal exactly as they see it, without their password. Every use is recorded in the Audit Log.</div>
+    <div class="tbl"><table><thead><tr><th>Type</th><th>Full name</th><th>Username</th><th>Password</th><th>Class / Roles</th><th>Status</th><th>Actions</th></tr></thead><tbody id="uBody"></tbody></table></div>
+  </div>
+</section>
+
+<!-- CREATE -->
+<section class="tab" id="tab-create">
+  <h2 class="pt"><i class="fa-solid fa-user-plus"></i> Create Account</h2>
+  <div class="card">
+    <h3>1. Who is this account for?</h3>
+    <div class="tiles" id="tiles"></div>
+    <form id="createForm">
+      <h3>2. Basic details</h3>
+      <div class="row2">
+        <div class="fc"><label>Full name</label><input id="cName" required></div>
+        <div class="fc"><label id="lblUser">Username / Reg ID</label><input id="cUser" required></div>
+      </div>
+      <div class="fc"><label>Initial password</label><div style="display:flex;gap:8px"><input id="cPass" required><button type="button" class="btn sm" data-act="genPass">Generate</button></div></div>
+      <div id="cStudent">
+        <div class="row2">
+          <div class="fc"><label>Trade / Department</label><select id="cDept"></select></div>
+          <div class="fc"><label>Class level</label><select id="cLevel"></select></div>
+        </div>
+      </div>
+      <div id="cStaff" style="display:none">
+        <h3>3. Roles (what this person does)</h3>
+        <div class="fc"><div class="chk" id="cRoles"></div></div>
+        <div class="fc"><label>Classes they teach / manage</label><div class="chk" id="cClasses"></div></div>
+      </div>
+      <div class="fc"><label>Groups / Folders</label><div class="chk" id="cGroups"></div></div>
+      <details class="fc"><summary style="cursor:pointer;font-weight:700;color:var(--navy)">Advanced: extra privileges for this person only</summary><div class="chk" id="cPerms" style="margin-top:8px"></div></details>
+      <div class="fc"><label>Effective privileges</label><div class="perm-chips" id="cPreview"></div></div>
+      <button class="btn" style="width:100%;justify-content:center;padding:12px"><i class="fa-solid fa-check"></i> Create account</button>
+    </form>
+  </div>
+  <div class="card">
+    <h3><i class="fa-solid fa-file-import"></i> Bulk import students (CSV)</h3>
+    <p style="font-size:.82rem;color:var(--muted);margin-bottom:8px">One per line: <code>Full Name,Username,Password,Dept(NIT/CSA/ACC/GEN),Level(Level 5/Level 4/Level 3)</code></p>
+    <textarea id="bulk" rows="5" placeholder="Mugisha David,Mugisha,Mugisha@123,NIT,Level 5"></textarea>
+    <button class="btn green" style="margin-top:10px" data-act="bulkImport"><i class="fa-solid fa-upload"></i> Import</button>
+  </div>
+</section>
+
+<!-- FOLDERS -->
+<section class="tab" id="tab-folders">
+  <h2 class="pt"><i class="fa-solid fa-folder-tree"></i> Groups &amp; Folders</h2>
+  <div class="g2">
+    <div class="card">
+      <h3>Custom groups</h3>
+      <form id="grpForm" style="display:flex;gap:8px;margin-bottom:12px"><input id="gName" placeholder="New group / folder name" required><button class="btn purple"><i class="fa-solid fa-plus"></i> Add</button></form>
+      <div id="grpList"></div>
+    </div>
+    <div class="card">
+      <h3>Organised view (auto-sorted)</h3>
+      <div class="tree" id="tree"></div>
+    </div>
+  </div>
+  <div class="card" id="grpDetail" style="display:none"></div>
+</section>
+
+<!-- CLASSES -->
+<section class="tab" id="tab-classes">
+  <h2 class="pt"><i class="fa-solid fa-school"></i> Classes &amp; Teachers</h2>
+  <div class="g3" id="classCards"></div>
+  <div class="card" id="classDetail" style="display:none"></div>
+  <div class="card"><h3><i class="fa-solid fa-chalkboard-user"></i> Teacher workload</h3><div class="tbl"><table><thead><tr><th>Teacher</th><th>Roles</th><th>Classes</th><th>Students reached</th></tr></thead><tbody id="tBody"></tbody></table></div></div>
+</section>
+
+<!-- MARKS -->
+<section class="tab" id="tab-marks">
+  <h2 class="pt"><i class="fa-solid fa-graduation-cap"></i> Marks Inspector</h2>
+  <div class="card">
+    <div class="strip" style="justify-content:space-between"><div class="strip" id="clsBtns" style="margin:0"></div><button class="btn" data-act="exportMarks"><i class="fa-solid fa-file-csv"></i> Download CSV</button></div>
+    <div class="tbl"><table><thead><tr><th>Reg ID</th><th>Name</th><th>CW1 (10)</th><th>CW2 (10)</th><th>CAT (30)</th><th>Exam (50)</th><th>Total</th><th>Status</th></tr></thead><tbody id="mBody"></tbody></table></div>
+  </div>
+</section>
+
+<!-- ANNOUNCE -->
+<section class="tab" id="tab-announce">
+  <h2 class="pt"><i class="fa-solid fa-bullhorn"></i> Announcements</h2>
+  <div class="g2">
+    <div class="card"><h3>Post announcement</h3>
+      <form id="annForm">
+        <div class="fc"><input id="aTitle" placeholder="Title" required></div>
+        <div class="fc"><textarea id="aMsg" rows="4" placeholder="Message" required></textarea></div>
+        <div class="fc"><select id="aTo"><option value="all">Everyone</option><option value="student">Students only</option><option value="staff">Staff only</option></select></div>
+        <button class="btn"><i class="fa-solid fa-paper-plane"></i> Publish</button>
+      </form></div>
+    <div class="card"><h3>Published</h3><div id="annList"></div></div>
+  </div>
+</section>
+
+<!-- ROLES -->
+<section class="tab" id="tab-roles">
+  <h2 class="pt"><i class="fa-solid fa-key"></i> Roles &amp; Privileges</h2>
+  <div class="imp-banner"><i class="fa-solid fa-shield-halved"></i> Only the Super Admin can edit roles. Administrators never get <b>Open Portal (no-password access)</b>, role editing or the audit log, whatever roles they hold.</div>
+  <div class="card"><h3>Create a new role</h3>
+    <form id="roleForm" class="row2"><input id="rName" placeholder="Role name e.g. Librarian" required><input id="rDesc" placeholder="Short description"><button class="btn green" style="grid-column:1/-1;justify-content:center"><i class="fa-solid fa-plus"></i> Add role</button></form></div>
+  <div class="g3" id="roleCards"></div>
+</section>
+
+<!-- AUDIT -->
+<section class="tab" id="tab-audit">
+  <h2 class="pt"><i class="fa-solid fa-clipboard-list"></i> Audit Log</h2>
+  <div class="card"><div class="tbl"><table><thead><tr><th>Time</th><th>By</th><th>Action</th><th>Detail</th></tr></thead><tbody id="auBody"></tbody></table></div></div>
+</section>
+</main></div></div>
+
+<!-- EDIT MODAL -->
+<div class="modal" id="editModal"><div class="mc">
+  <div style="display:flex;justify-content:space-between;margin-bottom:12px"><h3 style="color:var(--navy)"><i class="fa-solid fa-user-pen"></i> Edit account</h3><button data-act="closeEdit" style="border:none;background:none;font-size:1.5rem;cursor:pointer">&times;</button></div>
+  <form id="editForm">
+    <input type="hidden" id="eKey">
+    <div class="row2"><div class="fc"><label>Full name</label><input id="eName" required></div><div class="fc"><label>Username</label><input id="eUser" required></div></div>
+    <div class="row2"><div class="fc"><label>Password</label><input id="ePass" required></div>
+    <div class="fc"><label>Category</label><select id="eRole"><option value="student">Student</option><option value="staff">Staff</option><option value="admin">Administrator</option></select></div></div>
+    <div id="eStu" class="row2"><div class="fc"><label>Level</label><select id="eLevel"></select></div><div class="fc"><label>Department</label><select id="eDept"></select></div></div>
+    <div id="eStf"><div class="fc"><label>Roles</label><div class="chk" id="eRoles"></div></div><div class="fc"><label>Classes</label><div class="chk" id="eClasses"></div></div>
+      <details class="fc"><summary style="cursor:pointer;font-weight:700;color:var(--navy)">Extra privileges</summary><div class="chk" id="ePerms" style="margin-top:8px"></div></details></div>
+    <div class="fc"><label>Groups / Folders</label><div class="chk" id="eGroups"></div></div>
+    <button class="btn" style="width:100%;justify-content:center;padding:12px"><i class="fa-solid fa-floppy-disk"></i> Save changes</button>
+  </form>
+</div></div>
+
+<script>
+/* ============ CONFIG ============ */
+if(!firebase.apps.length){
+  firebase.initializeApp({databaseURL:"[https://acej-portal-default-rtdb.firebaseio.com](https://acej-portal-default-rtdb.firebaseio.com)"});
+}
+const db=firebase.database();
+const MASTER={user:"Ismael",pass:"Acej@84011"};
+
+const DEPTS={NIT:"Networking & Internet Tech (NIT)",CSA:"Computer Systems & Arch (CSA)",ACC:"Accounting & Finance (ACC)",GEN:"General Administration"};
+const LEVELS=["Level 5","Level 4","Level 3"];
+const CLASSES=["Level 5 NIT","Level 4 NIT","Level 5 CSA","Level 4 CSA","Level 5 ACC","Level 4 ACC","Level 3 General"];
+const DEFAULT_GROUPS=["Core Class","Tech Club","AERG Itetero","Prefects","Exam Board","Students"];
+
+const PERMS={
+ "Accounts":{"users.view":"View accounts","users.create":"Create accounts","users.edit":"Edit accounts","users.delete":"Delete accounts","groups.manage":"Manage groups & folders"},
+ "Academics":{"classes.view":"View classes & teachers","classes.manage":"Manage class assignments","marks.view":"View marks","marks.edit":"Enter / edit marks","marks.approve":"Approve & publish marks","exams.manage":"Manage exams","attendance.manage":"Take attendance","timetable.manage":"Manage timetable","library.manage":"Manage library"},
+ "Operations":{"discipline.manage":"Manage discipline records","stock.manage":"Manage stock & inventory","finance.manage":"Manage fees & finance","reports.view":"View reports","announce.post":"Post announcements"}
+};
+const ALL_PERMS=Object.values(PERMS).flatMap(o=>Object.keys(o));
+const PLABEL=Object.assign({},...Object.values(PERMS));
+const DEFAULT_ROLES={
+ "Administrator":{desc:"Day-to-day school administration (below Super Admin)",perms:["users.view","users.create","users.edit","groups.manage","classes.view","marks.view","reports.view","announce.post"]},
+ "Director of Studies (DOS)":{desc:"Oversees academics, marks & timetable",perms:["users.view","classes.view","classes.manage","marks.view","marks.approve","timetable.manage","reports.view","exams.manage"]},
+ "Teacher / Trainer":{desc:"Teaches classes and records marks",perms:["classes.view","marks.view","marks.edit","attendance.manage"]},
+ "Stock & Inventory Manager":{desc:"School store and inventory",perms:["stock.manage","reports.view"]},
+ "Dean of Discipline":{desc:"Student discipline and conduct",perms:["users.view","discipline.manage","attendance.manage"]},
+ "Exam Officer":{desc:"Runs exams and approves results",perms:["classes.view","marks.view","marks.approve","exams.manage"]},
+ "Librarian":{desc:"Library catalogue and loans",perms:["library.manage"]},
+ "Bursar / Accountant":{desc:"Fees and school finances",perms:["finance.manage","reports.view","users.view"]},
+ "Registrar":{desc:"Admissions and student records",perms:["users.view","users.create","users.edit","classes.view"]},
+ "Secretary":{desc:"Office work and announcements",perms:["users.view","announce.post"]},
+ "ICT Officer":{desc:"Technical support for accounts",perms:["users.view","users.edit"]}
+};
+const TILES=[
+ {id:"student",icon:"fa-user-graduate",label:"Student",cat:"student",roles:[]},
+ {id:"teacher",icon:"fa-chalkboard-user",label:"Teacher / Trainer",cat:"staff",roles:["Teacher / Trainer"]},
+ {id:"dos",icon:"fa-book-open-reader",label:"Director of Studies",cat:"staff",roles:["Director of Studies (DOS)"]},
+ {id:"stock",icon:"fa-boxes-stacked",label:"Stock Manager",cat:"staff",roles:["Stock & Inventory Manager"]},
+ {id:"dean",icon:"fa-gavel",label:"Dean of Discipline",cat:"staff",roles:["Dean of Discipline"]},
+ {id:"exam",icon:"fa-file-pen",label:"Exam Officer",cat:"staff",roles:["Exam Officer"]},
+ {id:"lib",icon:"fa-book",label:"Librarian",cat:"staff",roles:["Librarian"]},
+ {id:"bursar",icon:"fa-coins",label:"Bursar",cat:"staff",roles:["Bursar / Accountant"]},
+ {id:"admin",icon:"fa-user-gear",label:"Administrator",cat:"admin",roles:["Administrator"]}
+];
+
+/* ============ STATE ============ */
+const S={users:[],groups:DEFAULT_GROUPS.slice(),roles:DEFAULT_ROLES,marks:{},audit:[],ann:{}};
+let ME=null,tile="student",catF="all",grpF="all",curClass=CLASSES[0],listening=false,charts={};
+const $=id=>document.getElementById(id);
+const esc=s=>String(s==null?"":s).replace(/[&<>"']/g,c=>({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#39;"}[c]));
+const ck=s=>String(s||"").trim().replace(/[.#$\[\]\/]/g,"_");
+const classOf=u=>(u.level||"")+" "+(u.dept==="GEN"?"General":(u.dept||""));
+const isSuper=()=>ME&&ME.isSuper;
+
+function keyed(o){const r={};Object.keys(o).forEach(n=>r[ck(n)]={name:n,desc:o[n].desc||"",perms:o[n].perms||[]});return r}
+function rolesByName(){const r={};Object.values(S.roles).forEach(x=>{if(x&&x.name)r[x.name]=x});return r}
+S.roles=keyed(DEFAULT_ROLES);
+const roleNames=()=>Object.values(S.roles).map(r=>r.name).filter(Boolean);
+const permsOfRole=n=>(rolesByName()[n]||{}).perms||[];
+
+const myPerms=function(){
+  if(!ME)return new Set();
+  if(ME.isSuper)return new Set(ALL_PERMS);
+  const u=ME.user||{};
+  const s=new Set(u.customPerms||[]);
+  (u.staffRoles||[]).forEach(r=>permsOfRole(r).forEach(p=>s.add(p)));
+  if(u.role==="admin"&&!(u.staffRoles||[]).length)DEFAULT_ROLES.Administrator.perms.forEach(p=>s.add(p));
+  return s;
+};
+const can=p=>myPerms().has(p);
+
+function parseUsers(d){
+  const l=[];if(!d)return l;
+  const add=(k,i)=>{
+    if(i&&typeof i==="object"){
+      i._k=String(k);
+      if(!i.username)i.username=String(k);
+      if(!i.name)i.name=i.username;
+      l.push(i);
+    }
+  };
+  Array.isArray(d)?d.forEach((i,k)=>add(k,i)):Object.keys(d).forEach(k=>add(k,d[k]));
+  return l;
+}
+
+function clean(u){const c=Object.assign({},u);delete c._k;return c}
+function log(action,detail){db.ref("audit").push({ts:Date.now(),by:ME?ME.name:"?",action,detail:detail||""})}
+function toast(m){const t=document.createElement("div");t.textContent=m;t.style.cssText="position:fixed;bottom:20px;right:20px;background:#0f172a;color:#fff;padding:12px 18px;border-radius:8px;z-index:999;font-weight:600;box-shadow:0 6px 20px rgba(0,0,0,.3)";document.body.appendChild(t);setTimeout(()=>t.remove(),2600)}
+
+/* ============ REALTIME LISTENER ============ */
+function listen(){
+  db.ref(".info/connected").on("value",s=>{
+    const on=s.val()===true;
+    const el=$("sync");
+    if(el){
+      el.className="sync"+(on?"":" off");
+      el.querySelector("span").textContent=on?"Connected (Direct Sync)":"Offline · reconnecting…";
+    }
+  });
+  if(listening)return;
+  listening=true;
+  db.ref("users").on("value",s=>{S.users=parseUsers(s.val());renderAll()});
+  db.ref("groups").on("value",s=>{const v=s.val();S.groups=Array.isArray(v)?v:(v?Object.values(v):DEFAULT_GROUPS.slice());renderAll()});
+  db.ref("roleDefs").on("value",s=>{const v=s.val();if(!v){if(isSuper())db.ref("roleDefs").set(keyed(DEFAULT_ROLES));S.roles=keyed(DEFAULT_ROLES)}else S.roles=v;renderAll()});
+  db.ref("marks").on("value",s=>{S.marks=s.val()||{};renderMarks();renderClasses();renderDash()});
+  db.ref("broadcast").on("value",s=>{S.ann=s.val()||{};renderAnn()});
+  db.ref("audit").limitToLast(150).on("value",s=>{S.audit=Object.values(s.val()||{}).sort((a,b)=>b.ts-a.ts);renderAudit()});
+}
+
+/* ============ AUTH ============ */
+$("loginForm").addEventListener("submit",async e=>{
+  e.preventDefault();
+  const u=$("lu").value.trim(),p=$("lp").value.trim();
+  if(u===MASTER.user&&p===MASTER.pass){
+    ME={isSuper:true,name:"Super Admin ("+MASTER.user+")",username:MASTER.user};
+    return enter();
+  }
+  const snap=await db.ref("users").once("value");
+  const list=parseUsers(snap.val());
+  const m=list.find(x=>x.username&&x.username.toLowerCase()===u.toLowerCase()&&x.pass===p&&x.role==="admin"&&(x.status||"active")==="active");
+  if(!m)return alert("Invalid credentials, or this account is not an active administrator.");
+  ME={isSuper:false,name:"Admin ("+m.name+")",username:m.username,user:m};
+  enter();
+});
+
+function enter(){
+  sessionStorage.setItem("ACEJ_ADMIN",JSON.stringify({isSuper:ME.isSuper,username:ME.username,name:ME.name}));
+  $("login").style.display="none";$("app").style.display="block";$("btnOut").style.display="inline-flex";
+  $("who").textContent=ME.name;$("superBadge").style.display=ME.isSuper?"inline-block":"none";
+  listen();applyGates();renderAll();go("dash");
+  if(ME.isSuper)log("login","Super Admin signed in");else log("login","Administrator signed in");
+}
+
+function logout(){sessionStorage.removeItem("ACEJ_ADMIN");location.reload()}
+
+(async()=>{
+  listen();
+  const s=sessionStorage.getItem("ACEJ_ADMIN");
+  if(!s)return;
+  try{
+    const x=JSON.parse(s);ME=x;
+    if(!x.isSuper){
+      const sn=await db.ref("users/"+ck(x.username)).once("value");
+      ME.user=sn.val();
+      if(!ME.user||ME.user.role!=="admin")return logout();
+    }
+    enter();
+  }catch(err){logout()}
+})();
+
+function applyGates(){
+  document.querySelectorAll("#nav button").forEach(b=>{
+    let ok=true;if(b.dataset.super)ok=isSuper();else if(b.dataset.perm)ok=can(b.dataset.perm);
+    b.style.display=ok?"":"none";
+  });
+  $("impNote").style.display=isSuper()?"block":"none";
+}
+
+/* ============ NAV ============ */
+function go(t){
+  document.querySelectorAll(".tab").forEach(x=>x.classList.toggle("show",x.id==="tab-"+t));
+  document.querySelectorAll("#nav button").forEach(b=>b.classList.toggle("active",b.dataset.tab===t));
+  if(t==="dash")renderDash();
+}
+
+/* ============ RENDER ============ */
+function renderAll(){if(!ME)return;applyGates();renderDash();renderUsers();renderCreateLists();renderFolders();renderClasses();renderMarks();renderRoles();renderAnn();renderAudit()}
+
+function chart(id,type,labels,data,colors){
+  if(typeof Chart==="undefined")return;
+  if(charts[id]){charts[id].data.labels=labels;charts[id].data.datasets[0].data=data;charts[id].update();return}
+  charts[id]=new Chart($(id),{type,data:{labels,datasets:[{data,backgroundColor:colors,borderRadius:6}]},options:{plugins:{legend:{display:type==="doughnut",position:"bottom"}},scales:type==="bar"?{y:{beginAtZero:true,ticks:{precision:0}}}:{}}});
+}
+function renderDash(){
+  const U=S.users;
+  $("sTotal").textContent=U.length;
+  $("sStu").textContent=U.filter(u=>u.role==="student").length;
+  $("sStaff").textContent=U.filter(u=>u.role==="staff").length;
+  $("sAdm").textContent=U.filter(u=>u.role==="admin").length;
+  $("sGrp").textContent=S.groups.length;
+  $("sDis").textContent=U.filter(u=>u.status==="disabled").length;
+  chart("chClass","bar",CLASSES,CLASSES.map(c=>U.filter(u=>u.role==="student"&&classOf(u)===c).length),"#0047AB");
+  const rc={};U.forEach(u=>{if(u.role==="student")rc.Student=(rc.Student||0)+1;else if((u.staffRoles||[]).length)u.staffRoles.forEach(r=>rc[r]=(rc[r]||0)+1);else rc[u.role==="admin"?"Administrator":"Staff"]=(rc[u.role==="admin"?"Administrator":"Staff"]||0)+1});
+  chart("chRole","doughnut",Object.keys(rc),Object.values(rc),["#0047AB","#FFC72C","#7e22ce","#10b981","#ef4444","#0ea5e9","#f97316","#64748b","#84cc16","#ec4899","#14b8a6"]);
+}
+
+function userSub(u){
+  if(u.role==="student")return `<span class="pill role"><i class="fa-solid fa-chalkboard"></i> ${esc(classOf(u))}</span>`;
+  return (u.staffRoles||[]).map(r=>`<span class="pill">${esc(r)}</span>`).join("")||`<span class="pill">Staff</span>`;
+}
+function canTouch(u){return isSuper()||u.role!=="admin"}
+
+function renderUsers(){
+  const cf=$("catFilter");
+  cf.innerHTML=["all","student","staff","admin"].map(c=>`<button class="fb ${catF===c?"active":""}" data-cat="${c}">${c==="all"?"All":c[0].toUpperCase()+c.slice(1)}</button>`).join("");
+  $("grpFilter").innerHTML=`<span style="font-size:.78rem;font-weight:800;color:var(--muted)"><i class="fa-solid fa-folder"></i> Folder:</span><button class="fb ${grpF==="all"?"active":""}" data-grp="all">All</button>`+S.groups.map(g=>`<button class="fb ${grpF===g?"active":""}" data-grp="${esc(g)}">${esc(g)}</button>`).join("");
+  const q=$("search").value.toLowerCase();
+  const rows=S.users.filter(u=>(catF==="all"||u.role===catF)&&(grpF==="all"||(u.groups||[]).includes(grpF))).filter(u=>!q||(u.name+" "+u.username+" "+(u.staffRoles||[]).join(" ")+" "+classOf(u)).toLowerCase().includes(q))
+    .sort((a,b)=>(a.role+a.name).localeCompare(b.role+b.name));
+  $("uBody").innerHTML=rows.length?rows.map(u=>{
+    const k=esc(u._k||u.username),t=canTouch(u);
+    return `<tr><td><span class="pill ${esc(u.role)}">${esc(u.role||"user")}</span></td><td><b>${esc(u.name)}</b></td><td><code>${esc(u.username)}</code></td>
+    <td>${isSuper()?`<code class="pw" data-pw="${esc(u.pass||"")}">••••••</code> <button class="btn sm" style="padding:2px 6px" data-act="reveal"><i class="fa-solid fa-eye"></i></button>`:`<span style="color:#94a3b8">hidden</span>`}</td>
+    <td>${userSub(u)}</td><td><span class="pill ${u.status==="disabled"?"bad":"ok"}">${esc(u.status||"active")}</span></td>
+    <td style="white-space:nowrap">
+      ${isSuper()?`<button class="btn sm green" title="Open their portal without password" data-act="impersonate" data-k="${k}"><i class="fa-solid fa-eye"></i> Open Portal</button>`:""}
+      <button class="btn sm" data-act="edit" data-k="${k}" ${t&&can("users.edit")?"":"disabled"}><i class="fa-solid fa-pen"></i></button>
+      <button class="btn sm gold" data-act="toggle" data-k="${k}" ${t&&can("users.edit")?"":"disabled"} title="Enable / disable"><i class="fa-solid fa-ban"></i></button>
+      <button class="btn sm red" data-act="del" data-k="${k}" ${t&&can("users.delete")?"":"disabled"}><i class="fa-solid fa-trash"></i></button>
+    </td></tr>`}).join(""):`<tr><td colspan="7" style="text-align:center;color:#94a3b8;padding:24px">No accounts in this view.</td></tr>`;
+}
+
+/* ----- create ----- */
+function chkList(el,items,sel,name){
+  el.innerHTML=items.map((i,x)=>`<label><input type="checkbox" name="${name}" value="${esc(i)}" ${sel.includes(i)?"checked":""}>${esc(i)}</label>`).join("");
+}
+function checked(sel){return [...document.querySelectorAll(sel+" input:checked")].map(i=>i.value)}
+function renderCreateLists(){
+  $("tiles").innerHTML=TILES.map(t=>`<div class="tile ${tile===t.id?"sel":""}" data-tile="${t.id}"><i class="fa-solid ${t.icon}"></i>${t.label}</div>`).join("");
+  const rSel=checked("#cRoles"),cSel=checked("#cClasses"),gSel=checked("#cGroups"),pSel=checked("#cPerms");
+  chkList($("cRoles"),roleNames(),rSel,"r");chkList($("cClasses"),CLASSES,cSel,"c");chkList($("cGroups"),S.groups,gSel,"g");
+  let ph="";Object.keys(PERMS).forEach(g=>{ph+=`<div class="gh">${g}</div>`+Object.keys(PERMS[g]).map(p=>`<label><input type="checkbox" value="${p}" ${pSel.includes(p)?"checked":""}>${PERMS[g][p]}</label>`).join("")});$("cPerms").innerHTML=ph;
+  if(!$("cDept").options.length){$("cDept").innerHTML=Object.keys(DEPTS).map(k=>`<option value="${k}">${DEPTS[k]}</option>`).join("");$("cLevel").innerHTML=LEVELS.map(l=>`<option>${l}</option>`).join("");$("eDept").innerHTML=$("cDept").innerHTML;$("eLevel").innerHTML=$("cLevel").innerHTML}
   previewPerms();
 }
 function pickTile(id){
