@@ -85,8 +85,8 @@ th,td{padding:10px 12px;border-bottom:1px solid var(--border);text-align:left;ve
   <h2>Management Console</h2>
   <p>Sign in as Super Admin or as an authorised administrator.</p>
   <div class="fc"><input id="lu" type="text" placeholder="Username" value="Ismael" autocomplete="username"></div>
-  <div class="fc"><input id="lp" type="password" placeholder="Password" autocomplete="current-password" onkeydown="if(event.key==='Enter')executeAdminLogin()"></div>
-  <button type="button" class="btn" style="width:100%;justify-content:center;padding:12px" onclick="executeAdminLogin()"><i class="fa-solid fa-unlock"></i> Sign in</button>
+  <div class="fc"><input id="lp" type="password" placeholder="Password" autocomplete="current-password" onkeydown="if(event.key==='Enter')doLogin()"></div>
+  <button type="button" class="btn" style="width:100%;justify-content:center;padding:12px" onclick="doLogin()"><i class="fa-solid fa-unlock"></i> Sign in</button>
 </section>
 
 <div id="app"><div class="layout">
@@ -118,8 +118,8 @@ th,td{padding:10px 12px;border-bottom:1px solid var(--border);text-align:left;ve
     <div class="stat" style="border-color:var(--red)"><div class="l">Disabled</div><div class="d" id="sDis">0</div></div>
   </div>
   <div class="g2">
-    <div class="card"><h3><i class="fa-solid fa-chart-bar"></i> Students per class</h3><canvas id="chClass" height="200"></canvas></div>
-    <div class="card"><h3><i class="fa-solid fa-chart-pie"></i> Accounts by role</h3><canvas id="chRole" height="200"></canvas></div>
+    <div class="card"><h3><i class="fa-solid fa-chart-bar"></i> Students per class</h3><div style="height:200px"><canvas id="chClass"></canvas></div></div>
+    <div class="card"><h3><i class="fa-solid fa-chart-pie"></i> Accounts by role</h3><div style="height:200px"><canvas id="chRole"></canvas></div></div>
   </div>
   <div class="card"><h3><i class="fa-solid fa-bolt"></i> Quick actions</h3>
     <div class="strip">
@@ -392,7 +392,7 @@ function listen() {
 }
 
 /* ============ DIRECT LOGIN HANDLER ============ */
-async function executeAdminLogin() {
+async function doLogin() {
   const u = $("lu").value.trim();
   const p = $("lp").value.trim();
 
@@ -432,7 +432,6 @@ function enter() {
   applyGates();
   renderAll();
   go("dash");
-  if (ME.isSuper) log("login", "Super Admin signed in"); else log("login", "Administrator signed in");
 }
 
 function logout() {
@@ -638,7 +637,6 @@ function previewPerms() {
   if (t.cat === "admin" && !u.staffRoles.includes("Administrator")) u.staffRoles.push("Administrator");
 
   await db.ref("users/" + ck(username)).set(u);
-  log("create account", u.name + " (" + u.role + ")");
   toast("Account created: " + u.name);
   e.target.reset();
   document.querySelectorAll("#createForm input[type=checkbox]").forEach(i => i.checked = false);
@@ -681,7 +679,6 @@ async function bulkImport() {
     n++;
   });
   if (n) await db.ref("users").update(up);
-  log("bulk import", n + " students");
   alert(`Imported ${n} student(s). Skipped ${skip} (blank or duplicate).`);
   \$("bulk").value = "";
 }
@@ -755,7 +752,6 @@ function toggleEdit() {
   upd["users/" + nk] = nu;
 
   await db.ref().update(upd);
-  log("edit account", nu.name);
   toast("Saved");
   \$("editModal").style.display = "none";
 });
@@ -765,7 +761,6 @@ async function toggleUser(k) {
   if (!u || !canTouch(u)) return;
   const s = u.status === "disabled" ? "active" : "disabled";
   await db.ref("users/" + ck(k) + "/status").set(s);
-  log("status", u.name + " → " + s);
 }
 
 async function delUser(k) {
@@ -773,7 +768,6 @@ async function delUser(k) {
   if (!u || !canTouch(u)) return;
   if (!confirm(`Permanently delete ${u.name}? This removes them on every device immediately.`)) return;
   await db.ref("users/" + ck(k)).remove();
-  log("delete account", u.name);
 }
 
 function impersonate(k) {
@@ -781,7 +775,6 @@ function impersonate(k) {
   const u = S.users.find(x => x._k === k || ck(x.username) === ck(k));
   if (!u) return;
   localStorage.setItem("ACEJ_IMPERSONATE_USER", JSON.stringify(clean(u)));
-  log("open portal as user", u.name + " (" + u.role + ")");
   window.open("/portal/", "_blank");
 }
 
@@ -829,7 +822,6 @@ async function setMember(g, k, add) {
   let gs = (u.groups || []).filter(x => x !== g);
   if (add) gs.push(g);
   await db.ref("users/" + ck(k) + "/groups").set(gs);
-  log(add ? "add to folder" : "remove from folder", u.name + " · " + g);
 }
 
 \$("grpForm").addEventListener("submit", async e => {
@@ -838,7 +830,6 @@ async function setMember(g, k, add) {
   const n = \$("gName").value.trim();
   if (n && !S.groups.includes(n)) {
     await db.ref("groups").set(S.groups.concat(n));
-    log("create group", n);
   }
   \$("gName").value = "";
 });
@@ -853,7 +844,6 @@ async function delGrp(g) {
   });
   if (Object.keys(u2).length) await db.ref().update(u2);
   if (openGroup === g) { openGroup = null; \$("grpDetail").style.display = "none"; }
-  log("delete group", g);
 }
 
 /* ----- classes & teachers ----- */
@@ -940,7 +930,6 @@ function exportUsers() {
     c += [q(u.role), q(u.name), q(u.username), q(u.role === "student" ? classOf(u) : (u.managedClasses || []).join("; ")), q((u.staffRoles || []).join("; ")), q((u.groups || []).join("; ")), q(u.status)].join(",") + "\n";
   });
   dl("accounts.csv", c);
-  log("export", "accounts CSV (no passwords)");
 }
 
 /* ----- announcements ----- */
@@ -955,7 +944,6 @@ function renderAnn() {
   if (!can("announce.post")) return;
   const title = \$("aTitle").value.trim(), msg = $("aMsg").value.trim(), to = $("aTo").value;
   await db.ref("broadcast").set({ title, body: msg, target: to, to, author: ME.name, by: ME.name, createdAt: Date.now(), ts: Date.now() });
-  log("announcement", title);
   toast("Announcement published!");
   e.target.reset();
 });
@@ -982,14 +970,12 @@ function renderRoles() {
   const n = \$("rName").value.trim();
   if (!n) return;
   await db.ref("roleDefs/" + ck(n)).set({ name: n, desc: \$("rDesc").value.trim(), perms: [] });
-  log("create role", n);
   e.target.reset();
 });
 
 async function saveRole(k) {
   const p = [...document.querySelectorAll("#rp_" + CSS.escape(k) + " input:checked")].map(i => i.value);
   await db.ref("roleDefs/" + k + "/perms").set(p);
-  log("update role privileges", S.roles[k].name);
   toast("Role saved — applies instantly");
 }
 
@@ -997,7 +983,6 @@ async function delRole(k) {
   const r = S.roles[k];
   if (!confirm(`Delete role "${r.name}"? Users keep the label but lose its privileges.`)) return;
   await db.ref("roleDefs/" + k).remove();
-  log("delete role", r.name);
 }
 
 /* ----- audit ----- */
