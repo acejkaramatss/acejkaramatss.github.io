@@ -866,11 +866,11 @@
         </div>
         <div class="form-group">
           <label>Course Title</label>
-          <input type="text" id="modalCourseTitle" class="input-control" placeholder="e.g. Telecommunications & Advanced Routing" required>
+          <input type="text" id="modalCourseTitle" class="input-control" placeholder="e.g. English 1" required>
         </div>
         <div class="form-group">
           <label>Module Code</label>
-          <input type="text" id="modalCourseCode" class="input-control" placeholder="e.g. NIT-501" required>
+          <input type="text" id="modalCourseCode" class="input-control" placeholder="e.g. ENG1" required>
         </div>
         <div class="form-group">
           <label>Total Scheduled Course Days (e.g. 10 Days = 10% per day)</label>
@@ -911,7 +911,7 @@
 
         <div class="form-group">
           <label>Assignment Title</label>
-          <input type="text" id="modalAssignTitle" class="input-control" placeholder="e.g. Routing Protocols Multiple Choice Quiz" required>
+          <input type="text" id="modalAssignTitle" class="input-control" placeholder="e.g. Grammar and Vocabulary Quiz 1" required>
         </div>
 
         <div class="form-group">
@@ -925,19 +925,19 @@
         <div id="mcqBuilderSection">
           <div class="form-group">
             <label>Question Prompt</label>
-            <input type="text" id="modalMcqQuestion" class="input-control" placeholder="e.g. Which protocol is classless and supports VLSM?">
+            <input type="text" id="modalMcqQuestion" class="input-control" placeholder="e.g. Choose the correct synonym for 'Diligent':">
           </div>
           <div class="form-group">
             <label>Option A</label>
-            <input type="text" id="modalOptA" class="input-control" placeholder="e.g. RIPv1">
+            <input type="text" id="modalOptA" class="input-control" placeholder="e.g. Lazy">
           </div>
           <div class="form-group">
             <label>Option B</label>
-            <input type="text" id="modalOptB" class="input-control" placeholder="e.g. OSPF">
+            <input type="text" id="modalOptB" class="input-control" placeholder="e.g. Hardworking">
           </div>
           <div class="form-group">
             <label>Option C</label>
-            <input type="text" id="modalOptC" class="input-control" placeholder="e.g. IGRP">
+            <input type="text" id="modalOptC" class="input-control" placeholder="e.g. Careless">
           </div>
           <div class="form-group">
             <label>Correct Answer Key</label>
@@ -1045,6 +1045,28 @@
       });
     }
 
+    // HELPER: STRICT UNIQUE DEDUPLICATION FOR STUDENTS IN A CLASS
+    function getDeduplicatedStudentsForClass(targetClass) {
+      const seen = new Set();
+      const uniqueList = [];
+
+      allCloudUsers.forEach(u => {
+        if (!u || u.role !== 'student') return;
+        const uClass = `${u.level || ''} ${u.dept || ''}`.trim();
+        const isInGroup = Array.isArray(u.groups) && u.groups.includes(targetClass);
+
+        if (uClass === targetClass || isInGroup) {
+          const userIdentifier = (u.username || u.id || '').toLowerCase();
+          if (userIdentifier && !seen.has(userIdentifier)) {
+            seen.add(userIdentifier);
+            uniqueList.push(u);
+          }
+        }
+      });
+
+      return uniqueList;
+    }
+
     window.addEventListener('DOMContentLoaded', async function() {
       switchLoginRole('student');
 
@@ -1055,6 +1077,10 @@
       rtdb.ref('users').on('value', snap => {
         const val = snap.val() || {};
         allCloudUsers = Object.values(val);
+        if (activeSessionUser && activeSessionUser.role === 'staff') {
+          loadClassAttendanceForDate();
+          loadCourseMarksForClass();
+        }
       });
 
       rtdb.ref('courses').on('value', snap => {
@@ -1159,6 +1185,7 @@
     function showUserDashboard(matched) {
       document.getElementById('loginBox').style.display = 'none';
       document.getElementById('btnSignOut').style.display = 'inline-flex';
+      
       document.getElementById('navUserBadgeGroup').style.display = 'flex';
       document.getElementById('navRolePill').innerText = (matched.role === 'student') ? 'Student' : 'Staff';
       document.getElementById('navUserAvatar').innerText = matched.name.charAt(0).toUpperCase();
@@ -1213,8 +1240,8 @@
       } else {
         classCourses.forEach(c => {
           const opt = document.createElement('option');
-          opt.value = c.code;
-          opt.innerText = `${c.title} (${c.code})`;
+          opt.value = c.code || c.title;
+          opt.innerText = `${c.title} (${c.code || ''})`;
           select.appendChild(opt);
         });
       }
@@ -1225,7 +1252,8 @@
       const activeClass = document.getElementById('teacherActiveManagedClass').value;
       const selDate = document.getElementById('attendanceDatePicker').value || new Date().toISOString().split('T')[0];
 
-      const students = allCloudUsers.filter(u => u.role === 'student' && ((u.level + " " + u.dept) === activeClass || (u.groups && u.groups.includes(activeClass))));
+      // DEDUPLICATED STUDENTS
+      const students = getDeduplicatedStudentsForClass(activeClass);
       document.getElementById('statClassEnrolledStudents').innerText = students.length;
 
       const dateKey = selDate.replace(/-/g, '_');
@@ -1235,26 +1263,31 @@
       const tbody = document.getElementById('trainerAttendanceTbody');
       tbody.innerHTML = "";
 
-      students.forEach(s => {
-        const uRecord = recorded[cleanFirebaseKey(s.username).toLowerCase()] || { status: "Present", remark: "" };
-        const tr = document.createElement('tr');
-        tr.dataset.username = s.username.toLowerCase();
-        tr.innerHTML = `
-          <td><strong>${s.name}</strong></td>
-          <td><code>${s.username}</code></td>
-          <td>
-            <select class="input-control att-select" style="padding:6px; font-size:0.85rem; width:120px;">
-              <option value="Present" ${uRecord.status === 'Present' ? 'selected' : ''}>Present</option>
-              <option value="Absent" ${uRecord.status === 'Absent' ? 'selected' : ''}>Absent</option>
-              <option value="Excused" ${uRecord.status === 'Excused' ? 'selected' : ''}>Excused</option>
-            </select>
-          </td>
-          <td>
-            <input type="text" class="input-control att-remark" value="${uRecord.remark || ''}" placeholder="Note" style="padding:6px; font-size:0.85rem;">
-          </td>
-        `;
-        tbody.appendChild(tr);
-      });
+      if (students.length === 0) {
+        tbody.innerHTML = `<tr><td colspan="4" style="text-align:center; color:#94a3b8;">No registered students found in ${activeClass}.</td></tr>`;
+      } else {
+        students.forEach(s => {
+          const uKey = cleanFirebaseKey(s.username).toLowerCase();
+          const uRecord = recorded[uKey] || { status: "Present", remark: "" };
+          const tr = document.createElement('tr');
+          tr.dataset.username = uKey;
+          tr.innerHTML = `
+            <td><strong>${s.name}</strong></td>
+            <td><code>${s.username}</code></td>
+            <td>
+              <select class="input-control att-select" style="padding:6px; font-size:0.85rem; width:120px;">
+                <option value="Present" ${uRecord.status === 'Present' ? 'selected' : ''}>Present</option>
+                <option value="Absent" ${uRecord.status === 'Absent' ? 'selected' : ''}>Absent</option>
+                <option value="Excused" ${uRecord.status === 'Excused' ? 'selected' : ''}>Excused</option>
+              </select>
+            </td>
+            <td>
+              <input type="text" class="input-control att-remark" value="${uRecord.remark || ''}" placeholder="Note" style="padding:6px; font-size:0.85rem;">
+            </td>
+          `;
+          tbody.appendChild(tr);
+        });
+      }
 
       const activeCourse = allCloudCourses.find(c => c.targetClass === activeClass);
       const totalCourseDays = activeCourse ? (parseInt(activeCourse.totalDays) || 10) : 10;
@@ -1287,11 +1320,13 @@
       loadClassAttendanceForDate();
     }
 
-    // 100% WEIGHTED MARKS EVALUATION (CW1:10, CW2:10, CAT:30, EXAM:50)
+    // 100% WEIGHTED MARKS EVALUATION (CW1:10, CW2:10, CAT:30, EXAM:50) WITHOUT DUPLICATION
     async function loadCourseMarksForClass() {
       const activeClass = document.getElementById('teacherActiveManagedClass').value;
       const courseCode = document.getElementById('teacherMarkCourseSelector').value;
-      const students = allCloudUsers.filter(u => u.role === 'student' && ((u.level + " " + u.dept) === activeClass || (u.groups && u.groups.includes(activeClass))));
+      
+      // DEDUPLICATED STUDENTS
+      const students = getDeduplicatedStudentsForClass(activeClass);
       const tbody = document.getElementById('trainerMarksTbody');
       tbody.innerHTML = "";
 
@@ -1307,7 +1342,6 @@
         const u = cleanFirebaseKey(s.username).toLowerCase();
         const m = marksData[u] || { cw1: 8, cw2: 9, cat: 26, exam: 44 };
         
-        // Strict boundary cap to prevent >100% bugs
         const cw1 = Math.min(10, Math.max(0, parseInt(m.cw1) || 0));
         const cw2 = Math.min(10, Math.max(0, parseInt(m.cw2) || 0));
         const cat = Math.min(30, Math.max(0, parseInt(m.cat) || 0));
@@ -1375,7 +1409,7 @@
     function downloadTeacherMarksSheet() {
       const activeClass = document.getElementById('teacherActiveManagedClass').value;
       const courseCode = document.getElementById('teacherMarkCourseSelector').value;
-      const students = allCloudUsers.filter(u => u.role === 'student' && ((u.level + " " + u.dept) === activeClass || (u.groups && u.groups.includes(activeClass))));
+      const students = getDeduplicatedStudentsForClass(activeClass);
       if (students.length === 0) return alert("No students in this class!");
 
       let csv = `Reg ID,Student Name,Class,Course,CW1 (10),CW2 (10),CAT (30),Exam (50),Total (100%),Competency\n`;
@@ -1468,7 +1502,7 @@
             <button class="btn-publish-open" style="padding:4px 8px; font-size:0.75rem;" onclick="viewDocumentInPortal('${n.id}')">
               <i class="fa-solid fa-eye"></i> View
             </button>
-            ${isDraft ? `<button class="btn-publish-open btn-publish-action" style="padding:4px 8px; font-size:0.75rem; background:#10b981;" data-id="\${n.id}" onclick="triggerPublishNote(this)">
+            ${isDraft ? `<button class="btn-publish-open" style="padding:4px 8px; font-size:0.75rem; background:#10b981;" onclick="triggerPublishNoteDirect('\${n.id}')">
               <i class="fa-solid fa-cloud-arrow-up"></i> Publish
             </button>` : ''}
             <button class="btn-publish-open" style="padding:4px 8px; font-size:0.75rem; background:#64748b;" onclick="openEditNoteModal('${n.id}')">
@@ -1483,21 +1517,19 @@
       });
     }
 
-    // PUBLISH HANDLER (FIXES PATH ERROR)
-    async function triggerPublishNote(btn) {
-      const noteId = btn.getAttribute('data-id');
+    // DIRECT SAFE FIREBASE PUBLISH WITHOUT PATH BRACKET ERRORS
+    async function triggerPublishNoteDirect(noteId) {
       if (!noteId) return alert("Invalid note ID!");
-      
       const cleanKey = cleanFirebaseKey(noteId);
+      
       try {
-        await rtdb.ref(`notes/${cleanKey}/status`).set('published');
+        await rtdb.ref('notes/' + cleanKey + '/status').set('published');
         alert("Course material published successfully! All students can now read it.");
       } catch (err) {
         alert("Failed to publish: " + err.message);
       }
     }
 
-    // EDIT NOTE METADATA
     function openEditNoteModal(noteId) {
       const note = allCloudNotes[noteId] || Object.values(allCloudNotes).find(n => n.id === noteId);
       if (!note) return alert("Note not found!");
@@ -1515,16 +1547,15 @@
       const status = document.getElementById('editNoteStatus').value;
 
       const cleanKey = cleanFirebaseKey(id);
-      await rtdb.ref(`notes/${cleanKey}/title`).set(title);
-      await rtdb.ref(`notes/${cleanKey}/status`).set(status);
+      await rtdb.ref('notes/' + cleanKey + '/title').set(title);
+      await rtdb.ref('notes/' + cleanKey + '/status').set(status);
 
       alert("Note updated successfully!");
       closeModal('editNoteModal');
     }
 
-    // DELETE NOTE (REMOVES DIRECTLY FROM FIREBASE)
     async function deleteUploadedNote(noteId, title) {
-      if (!confirm(`Permanently delete "${title}"? This will remove the file from Firebase across all devices.`)) return;
+      if (!confirm(`Permanently delete "${title}"? This will remove the file from Firebase.`)) return;
 
       const cleanKey = cleanFirebaseKey(noteId);
       try {
@@ -1535,7 +1566,6 @@
       }
     }
 
-    // BASE64 TO BLOB HELPER
     function base64ToBlob(base64Data) {
       const parts = base64Data.split(';base64,');
       const contentType = parts[0].split(':')[1];
@@ -1548,7 +1578,6 @@
       return new Blob([uInt8Array], { type: contentType });
     }
 
-    // DOCUMENT READER (PDF, IMAGES & ODG/OFFICE FALLBACKS)
     function viewDocumentInPortal(noteId) {
       const note = allCloudNotes[noteId] || Object.values(allCloudNotes).find(n => n.id === noteId);
       if (!note || !note.fileData) return alert("Document not found!");
@@ -1588,7 +1617,7 @@
       openModal('docReaderModal');
     }
 
-    // ASSIGNMENTS
+    // ASSIGNMENTS CREATION
     function toggleAssignmentBuilderMode() {
       const mode = document.getElementById('modalAssignMode').value;
       document.getElementById('mcqBuilderSection').style.display = mode === 'auto' ? 'block' : 'none';
@@ -1603,15 +1632,16 @@
       const dueDate = document.getElementById('modalAssignDueDate').value;
       const marks = parseInt(document.getElementById('modalAssignMarks').value) || 10;
 
+      const assignKey = "asg_" + Date.now();
       const newAssign = {
-        id: "asg_" + Date.now(),
+        id: assignKey,
         targetClass: activeClass,
         courseCode: course,
         title: title,
         mode: mode,
         dueDate: dueDate,
         maxMarks: marks,
-        question: mode === 'auto' ? document.getElementById('modalMcqQuestion').value.trim() : "Submit practical exercises.",
+        question: mode === 'auto' ? document.getElementById('modalMcqQuestion').value.trim() : "Submit exercises.",
         optA: mode === 'auto' ? document.getElementById('modalOptA').value.trim() : "",
         optB: mode === 'auto' ? document.getElementById('modalOptB').value.trim() : "",
         optC: mode === 'auto' ? document.getElementById('modalOptC').value.trim() : "",
@@ -1620,8 +1650,8 @@
       };
 
       allCloudAssignments.push(newAssign);
-      await rtdb.ref('assignments').set(allCloudAssignments);
-      alert("Assignment deployed!");
+      await rtdb.ref('assignments/' + assignKey).set(newAssign);
+      alert("Assignment deployed successfully!");
       closeModal('createAssignmentModal');
       e.target.reset();
     }
@@ -1631,7 +1661,7 @@
       const tbody = document.getElementById('trainerAssignmentsTbody');
       tbody.innerHTML = "";
 
-      const items = allCloudAssignments.filter(a => a.targetClass === activeClass);
+      const items = allCloudAssignments.filter(a => a && a.targetClass === activeClass);
       document.getElementById('statTeacherAssignmentsCount').innerText = items.length;
 
       items.forEach(a => {
@@ -1656,7 +1686,7 @@
       document.getElementById('staffDashboard').style.display = 'none';
 
       document.getElementById('studentHeroTitle').innerText = "Welcome, " + student.name + "!";
-      const studentClass = (student.level || "Level 5") + " " + (student.dept || "NIT");
+      const studentClass = `${student.level || ''} ${student.dept || ''}`.trim();
       document.getElementById('studentHeroSub').innerText = `Enrolled: ${studentClass} &bull; Reg: ${student.username}`;
 
       populateStudentCoursesDropdown();
@@ -1666,18 +1696,18 @@
 
     function populateStudentCoursesDropdown() {
       if (!activeSessionUser) return;
-      const studentClass = (activeSessionUser.level || "Level 5") + " " + (activeSessionUser.dept || "NIT");
+      const studentClass = `${activeSessionUser.level || ''} ${activeSessionUser.dept || ''}`.trim();
       const selector = document.getElementById('studentCourseSelector');
       selector.innerHTML = "";
 
-      const myCourses = allCloudCourses.filter(c => c.targetClass === studentClass);
+      const myCourses = allCloudCourses.filter(c => c && c.targetClass === studentClass);
       if (myCourses.length === 0) {
         selector.innerHTML = `<option value="">No courses created for ${studentClass}</option>`;
       } else {
         myCourses.forEach(c => {
           const opt = document.createElement('option');
-          opt.value = c.code;
-          opt.innerText = `${c.title} (${c.code})`;
+          opt.value = c.code || c.title;
+          opt.innerText = `${c.title} (${c.code || ''})`;
           selector.appendChild(opt);
         });
       }
@@ -1686,22 +1716,24 @@
 
     async function renderStudentCourseDetails() {
       if (!activeSessionUser) return;
-      const studentClass = (activeSessionUser.level || "Level 5") + " " + (activeSessionUser.dept || "NIT");
-      const code = document.getElementById('studentCourseSelector').value;
-      const course = allCloudCourses.find(c => c.code === code && c.targetClass === studentClass);
+      const studentClass = `${activeSessionUser.level || ''} ${activeSessionUser.dept || ''}`.trim();
+      const selectedValue = document.getElementById('studentCourseSelector').value;
+      
+      const course = allCloudCourses.find(c => c && c.targetClass === studentClass && (c.code === selectedValue || c.title === selectedValue || selectedValue.includes(c.code)));
 
       if (course) {
-        document.getElementById('studentCourseTeacherBadge').innerText = `Instructor: ${course.teacher}`;
+        document.getElementById('studentCourseTeacherBadge').innerText = `Instructor: ${course.teacher || 'Trainer'}`;
         document.getElementById('studentCourseCatDate').innerText = course.catDate || "TBA";
         document.getElementById('studentCourseExamDate').innerText = course.examDate || "TBA";
 
         const u = cleanFirebaseKey(activeSessionUser.username).toLowerCase();
-        const m = (allCloudMarks[studentClass] && allCloudMarks[studentClass][cleanFirebaseKey(code)] && allCloudMarks[studentClass][cleanFirebaseKey(code)][u]) || { cw1:0, cw2:0, cat:0, exam:0 };
+        const courseKey = cleanFirebaseKey(course.code || course.title);
+        const m = (allCloudMarks[studentClass] && allCloudMarks[studentClass][courseKey] && allCloudMarks[studentClass][courseKey][u]) || { cw1:0, cw2:0, cat:0, exam:0 };
         const total = (parseInt(m.cw1)||0) + (parseInt(m.cw2)||0) + (parseInt(m.cat)||0) + (parseInt(m.exam)||0);
         document.getElementById('studentCourseGradeDisplay').innerText = total + "%";
       }
 
-      // Calculate Course Attendance
+      // Attendance Calculation
       const totalCourseDays = course ? (parseInt(course.totalDays) || 10) : 10;
       const snap = await rtdb.ref(`attendance/${studentClass}`).once('value');
       const allAtt = snap.val() || {};
@@ -1723,7 +1755,7 @@
 
     async function renderStudentAttendanceForDay() {
       if (!activeSessionUser) return;
-      const studentClass = (activeSessionUser.level || "Level 5") + " " + (activeSessionUser.dept || "NIT");
+      const studentClass = `${activeSessionUser.level || ''} ${activeSessionUser.dept || ''}`.trim();
       const checkDate = document.getElementById('studentHistoryDatePicker').value;
       const resBox = document.getElementById('studentDayAttendanceResult');
 
@@ -1750,11 +1782,11 @@
 
     function renderStudentAllCoursesTranscript() {
       if (!activeSessionUser) return;
-      const studentClass = (activeSessionUser.level || "Level 5") + " " + (activeSessionUser.dept || "NIT");
+      const studentClass = `${activeSessionUser.level || ''} ${activeSessionUser.dept || ''}`.trim();
       const tbody = document.getElementById('studentAllCoursesTranscriptTbody');
       tbody.innerHTML = "";
 
-      const myCourses = allCloudCourses.filter(c => c.targetClass === studentClass);
+      const myCourses = allCloudCourses.filter(c => c && c.targetClass === studentClass);
       if (myCourses.length === 0) {
         tbody.innerHTML = `<tr><td colspan="9" style="text-align:center; color:#94a3b8;">No registered courses found for ${studentClass}.</td></tr>`;
         return;
@@ -1762,7 +1794,8 @@
 
       myCourses.forEach(c => {
         const u = cleanFirebaseKey(activeSessionUser.username).toLowerCase();
-        const m = (allCloudMarks[studentClass] && allCloudMarks[studentClass][cleanFirebaseKey(c.code)] && allCloudMarks[studentClass][cleanFirebaseKey(c.code)][u]) || { cw1:0, cw2:0, cat:0, exam:0 };
+        const courseKey = cleanFirebaseKey(c.code || c.title);
+        const m = (allCloudMarks[studentClass] && allCloudMarks[studentClass][courseKey] && allCloudMarks[studentClass][courseKey][u]) || { cw1:0, cw2:0, cat:0, exam:0 };
         
         const cw1 = Math.min(10, Math.max(0, parseInt(m.cw1) || 0));
         const cw2 = Math.min(10, Math.max(0, parseInt(m.cw2) || 0));
@@ -1773,9 +1806,9 @@
 
         const tr = document.createElement('tr');
         tr.innerHTML = `
-          <td><strong>${c.code}</strong></td>
+          <td><strong>${c.code || 'MOD'}</strong></td>
           <td>${c.title}</td>
-          <td>${c.teacher}</td>
+          <td>${c.teacher || 'Trainer'}</td>
           <td>${cw1} / 10</td>
           <td>${cw2} / 10</td>
           <td>${cat} / 30</td>
@@ -1787,15 +1820,22 @@
       });
     }
 
+    // STUDENT NOTES TABLE WITH FUZZY COURSE MATCHING
     function renderStudentNotesTable() {
       if (!activeSessionUser) return;
-      const studentClass = (activeSessionUser.level || "Level 5") + " " + (activeSessionUser.dept || "NIT");
-      const course = document.getElementById('studentCourseSelector').value;
+      const studentClass = `${activeSessionUser.level || ''} ${activeSessionUser.dept || ''}`.trim();
+      const currentSelected = (document.getElementById('studentCourseSelector').value || '').toLowerCase();
       const tbody = document.getElementById('studentNotesTbody');
       tbody.innerHTML = "";
 
       const notesKeys = Object.keys(allCloudNotes);
-      const notes = notesKeys.map(k => allCloudNotes[k]).filter(n => n && n.targetClass === studentClass && n.status === 'published' && (!course || n.courseCode === course));
+      const notes = notesKeys.map(k => allCloudNotes[k]).filter(n => {
+        if (!n || n.targetClass !== studentClass || n.status !== 'published') return false;
+        if (!currentSelected) return true;
+        
+        const noteCourse = (n.courseCode || '').toLowerCase();
+        return noteCourse === currentSelected || currentSelected.includes(noteCourse) || noteCourse.includes(currentSelected);
+      });
 
       if (notes.length === 0) {
         tbody.innerHTML = `<tr><td colspan="4" style="text-align:center; color:#94a3b8;">No notes published for this module yet.</td></tr>`;
@@ -1823,12 +1863,18 @@
 
     function renderStudentAssignmentsTable() {
       if (!activeSessionUser) return;
-      const studentClass = (activeSessionUser.level || "Level 5") + " " + (activeSessionUser.dept || "NIT");
-      const course = document.getElementById('studentCourseSelector').value;
+      const studentClass = `${activeSessionUser.level || ''} ${activeSessionUser.dept || ''}`.trim();
+      const currentSelected = (document.getElementById('studentCourseSelector').value || '').toLowerCase();
       const tbody = document.getElementById('studentAssignmentsTbody');
       tbody.innerHTML = "";
 
-      const assignments = allCloudAssignments.filter(a => a.targetClass === studentClass && (!course || a.courseCode === course));
+      const assignments = allCloudAssignments.filter(a => {
+        if (!a || a.targetClass !== studentClass) return false;
+        if (!currentSelected) return true;
+        const assignCourse = (a.courseCode || '').toLowerCase();
+        return assignCourse === currentSelected || currentSelected.includes(assignCourse) || assignCourse.includes(currentSelected);
+      });
+
       if (assignments.length === 0) {
         tbody.innerHTML = `<tr><td colspan="5" style="text-align:center; color:#94a3b8;">No assignments pending.</td></tr>`;
         return;
@@ -1852,7 +1898,7 @@
     }
 
     function openTakeAssignmentModal(assignId) {
-      const a = allCloudAssignments.find(item => item.id === assignId);
+      const a = allCloudAssignments.find(item => item && item.id === assignId);
       if (!a) return;
       currentActiveAssignment = a;
       document.getElementById('takeAssignHeading').innerHTML = `<i class="fa-solid fa-pen-clip"></i> ${a.title}`;
@@ -1895,7 +1941,7 @@
       if (!currentActiveAssignment.submissions) currentActiveAssignment.submissions = {};
       currentActiveAssignment.submissions[u] = { answer: ans, score: score, date: new Date().toISOString() };
 
-      await rtdb.ref('assignments').set(allCloudAssignments);
+      await rtdb.ref('assignments/' + cleanFirebaseKey(currentActiveAssignment.id)).set(currentActiveAssignment);
       alert(currentActiveAssignment.mode === 'auto' ? `Auto-Grade Result: ${score} / ${currentActiveAssignment.maxMarks} Marks!` : "Submission received for evaluation.");
       closeModal('takeAssignmentModal');
       renderStudentAssignmentsTable();
@@ -1921,8 +1967,9 @@
       const catDate = document.getElementById('modalCourseCatDate').value;
       const examDate = document.getElementById('modalCourseExamDate').value;
 
-      allCloudCourses.push({
-        id: "crs_" + Date.now(),
+      const courseKey = "crs_" + Date.now();
+      const newCourse = {
+        id: courseKey,
         targetClass: targetClass,
         title: title,
         code: code,
@@ -1931,9 +1978,10 @@
         catDate: catDate,
         examDate: examDate,
         teacher: activeSessionUser ? activeSessionUser.name : "Trainer"
-      });
+      };
 
-      await rtdb.ref('courses').set(allCloudCourses);
+      allCloudCourses.push(newCourse);
+      await rtdb.ref('courses/' + courseKey).set(newCourse);
       alert("Course created and students enrolled!");
       closeModal('createCourseModal');
       e.target.reset();
@@ -1944,8 +1992,8 @@
       document.getElementById('modalNoteClass').innerHTML = `<option value="${activeClass}">${activeClass}</option>`;
       const select = document.getElementById('modalNoteCourse');
       select.innerHTML = "";
-      allCloudCourses.filter(c => c.targetClass === activeClass).forEach(c => {
-        select.innerHTML += `<option value="${c.code}">${c.title} (${c.code})</option>`;
+      allCloudCourses.filter(c => c && c.targetClass === activeClass).forEach(c => {
+        select.innerHTML += `<option value="${c.code || c.title}">${c.title} (${c.code || ''})</option>`;
       });
       openModal('uploadNotesModal');
     }
@@ -1954,8 +2002,8 @@
       const activeClass = document.getElementById('teacherActiveManagedClass').value;
       const select = document.getElementById('modalAssignCourse');
       select.innerHTML = "";
-      allCloudCourses.filter(c => c.targetClass === activeClass).forEach(c => {
-        select.innerHTML += `<option value="${c.code}">${c.title} (${c.code})</option>`;
+      allCloudCourses.filter(c => c && c.targetClass === activeClass).forEach(c => {
+        select.innerHTML += `<option value="${c.code || c.title}">${c.title} (${c.code || ''})</option>`;
       });
       openModal('createAssignmentModal');
     }
