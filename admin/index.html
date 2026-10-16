@@ -8,6 +8,7 @@
 <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
 <script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-app.js"></script>
 <script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-database.js"></script>
+<script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-auth.js"></script>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/4.4.1/chart.umd.min.js"></script>
 <style>
 :root{--navy:#002D6E;--blue:#0047AB;--gold:#FFC72C;--dark:#0f172a;--bg:#f1f5f9;--white:#fff;--border:#e2e8f0;--green:#10b981;--red:#ef4444;--purple:#7e22ce;--muted:#64748b;--shadow:0 4px 14px rgba(0,45,110,.08)}
@@ -76,18 +77,17 @@ th,td{padding:10px 12px;border-bottom:1px solid var(--border);text-align:left;ve
   <div class="hc">
     <div class="sync" id="sync"><i class="fa-solid fa-bolt"></i> <span>Connected (Direct Sync)</span></div>
     <a class="btn ghost" href="/portal/" target="_blank"><i class="fa-solid fa-arrow-up-right-from-square"></i> Portal</a>
-    <button class="btn ghost" id="btnOut" style="display:none" onclick="logout()"><i class="fa-solid fa-power-off"></i> Exit</button>
+    <button class="btn ghost" id="btnOut" style="display:none"><i class="fa-solid fa-power-off"></i> Exit</button>
   </div>
 </header>
 
-<!-- LOGIN SECTION WITHOUT FORM WRAPPER (NO RELOAD POSSIBLE) -->
 <section id="login">
   <div style="font-size:2.4rem;color:var(--navy)"><i class="fa-solid fa-user-shield"></i></div>
   <h2>Management Console</h2>
-  <p>Sign in as Super Admin or as an authorised administrator.</p>
-  <div class="fc"><input id="lu" type="text" placeholder="Username" value="Ismael" autocomplete="username"></div>
-  <div class="fc"><input id="lp" type="password" placeholder="Password" value="Acej@84011" autocomplete="current-password" onkeydown="if(event.key==='Enter')bypassDirectLogin()"></div>
-  <button type="button" class="btn" style="width:100%;justify-content:center;padding:12px" onclick="bypassDirectLogin()"><i class="fa-solid fa-unlock"></i> Sign in</button>
+  <p>Sign in with an authorised Firebase Authentication admin account.</p>
+  <div class="fc"><input id="lu" type="email" placeholder="Admin email address" autocomplete="username" required></div>
+  <div class="fc"><input id="lp" type="password" placeholder="Password" autocomplete="current-password" onkeydown="if(event.key==='Enter')doLogin()" required></div>
+  <button type="button" id="btnSignInSubmit" class="btn" style="width:100%;justify-content:center;padding:12px"><i class="fa-solid fa-unlock"></i> Sign in</button>
 </section>
 
 <div id="app"><div class="layout">
@@ -141,8 +141,8 @@ th,td{padding:10px 12px;border-bottom:1px solid var(--border);text-align:left;ve
       <input id="search" placeholder="Search name, ID, role…" style="width:240px">
     </div>
     <div class="strip" id="grpFilter"></div>
-    <div id="impNote" class="imp-banner" style="display:none"><i class="fa-solid fa-eye"></i> <b>Open Portal</b> lets you view any user's portal exactly as they see it, without their password. Every use is recorded in the Audit Log.</div>
-    <div class="tbl"><table><thead><tr><th>Type</th><th>Full name</th><th>Username</th><th>Password</th><th>Class / Roles</th><th>Status</th><th>Actions</th></tr></thead><tbody id="uBody"></tbody></table></div>
+    <div id="impNote" class="imp-banner" style="display:none"><i class="fa-solid fa-shield-halved"></i> Super Admin actions are audited. Account impersonation is disabled in this build.</div>
+    <div class="tbl"><table><thead><tr><th>Type</th><th>Full name</th><th>Username</th><th>Credential status</th><th>Class / Roles</th><th>Status</th><th>Actions</th></tr></thead><tbody id="uBody"></tbody></table></div>
   </div>
 </section>
 
@@ -158,7 +158,8 @@ th,td{padding:10px 12px;border-bottom:1px solid var(--border);text-align:left;ve
         <div class="fc"><label>Full name</label><input id="cName" required></div>
         <div class="fc"><label id="lblUser">Username / Reg ID</label><input id="cUser" required></div>
       </div>
-      <div class="fc"><label>Initial password</label><div style="display:flex;gap:8px"><input id="cPass" required><button type="button" class="btn sm" data-act="genPass">Generate</button></div></div>
+      <div class="fc" id="cAdminEmail" style="display:none"><label>Administrator sign-in email</label><input id="cEmail" type="email" autocomplete="email" placeholder="admin@example.com"><small style="color:var(--muted)">Required only when creating an administrator. This creates a Firebase Authentication account as well as its protected admin access record.</small></div>
+      <div class="fc"><label>Initial password (legacy portal compatibility)</label><div style="display:flex;gap:8px"><input id="cPass" type="password" required minlength="8" autocomplete="new-password"><button type="button" class="btn sm" data-act="genPass">Generate</button></div><small style="color:var(--muted)">The existing portal schema uses a legacy password field. Migrate user sign-in to Firebase Authentication before treating this as production-secure.</small></div>
       <div id="cStudent">
         <div class="row2">
           <div class="fc"><label>Trade / Department</label><select id="cDept"></select></div>
@@ -236,7 +237,7 @@ th,td{padding:10px 12px;border-bottom:1px solid var(--border);text-align:left;ve
 <!-- ROLES -->
 <section class="tab" id="tab-roles">
   <h2 class="pt"><i class="fa-solid fa-key"></i> Roles &amp; Privileges</h2>
-  <div class="imp-banner"><i class="fa-solid fa-shield-halved"></i> Only the Super Admin can edit roles. Administrators never get <b>Open Portal (no-password access)</b>, role editing or the audit log, whatever roles they hold.</div>
+  <div class="imp-banner"><i class="fa-solid fa-shield-halved"></i> Only the Super Admin can edit roles or view the audit log. Account impersonation is not enabled in this build; add it only through a server-verified portal workflow.</div>
   <div class="card"><h3>Create a new role</h3>
     <form id="roleForm" class="row2"><input id="rName" placeholder="Role name e.g. Librarian" required><input id="rDesc" placeholder="Short description"><button type="submit" class="btn green" style="grid-column:1/-1;justify-content:center"><i class="fa-solid fa-plus"></i> Add role</button></form></div>
   <div class="g3" id="roleCards"></div>
@@ -255,7 +256,7 @@ th,td{padding:10px 12px;border-bottom:1px solid var(--border);text-align:left;ve
   <form id="editForm">
     <input type="hidden" id="eKey">
     <div class="row2"><div class="fc"><label>Full name</label><input id="eName" required></div><div class="fc"><label>Username</label><input id="eUser" required></div></div>
-    <div class="row2"><div class="fc"><label>Password</label><input id="ePass" required></div>
+    <div class="row2"><div class="fc"><label>Set new legacy portal password (leave blank to keep current)</label><input id="ePass" type="password" autocomplete="new-password" placeholder="Leave blank to keep current" minlength="8"></div>
     <div class="fc"><label>Category</label><select id="eRole"><option value="student">Student</option><option value="staff">Staff</option><option value="admin">Administrator</option></select></div></div>
     <div id="eStu" class="row2"><div class="fc"><label>Level</label><select id="eLevel"></select></div><div class="fc"><label>Department</label><select id="eDept"></select></div></div>
     <div id="eStf"><div class="fc"><label>Roles</label><div class="chk" id="eRoles"></div></div><div class="fc"><label>Classes</label><div class="chk" id="eClasses"></div></div>
@@ -266,246 +267,315 @@ th,td{padding:10px 12px;border-bottom:1px solid var(--border);text-align:left;ve
 </div></div>
 
 <script>
-/* ============ FIREBASE CONFIG & INITIALIZATION ============ */
+/*
+ * ACEJ KARAMA TSS Super Admin Console
+ * Firebase Realtime Database paths are preserved: users, groups, roleDefs,
+ * marks, broadcast and audit. Admin access is verified using Firebase Auth
+ * plus the server-protected adminAccess/{uid} record.
+ */
 const firebaseConfig = {
-  databaseURL: "https://acej-portal-default-rtdb.firebaseio.com"
+  apiKey: "AIzaSyDmU_l03eJ8ig-A3QsYaD33TapKeQzEGh0",
+  authDomain: "acej-portal.firebaseapp.com",
+  databaseURL: "https://acej-portal-default-rtdb.firebaseio.com",
+  projectId: "acej-portal",
+  storageBucket: "acej-portal.firebasestorage.app",
+  messagingSenderId: "147997877249",
+  appId: "1:147997877249:web:85e1daead5cc3d55fa8c00",
+  measurementId: "G-LBCFYX51FN"
 };
-if (!firebase.apps.length) {
-  firebase.initializeApp(firebaseConfig);
-}
-const db = firebase.database();
-const MASTER = { user: "Ismael", pass: "Acej@84011" };
 
-const DEPTS = { NIT: "Networking & Internet Tech (NIT)", CSA: "Computer Systems & Arch (CSA)", ACC: "Accounting & Finance (ACC)", GEN: "General Administration" };
+const DEPTS = {
+  NIT: "Networking & Internet Tech (NIT)",
+  CSA: "Computer Systems & Arch (CSA)",
+  ACC: "Accounting & Finance (ACC)",
+  GEN: "General Administration"
+};
 const LEVELS = ["Level 5", "Level 4", "Level 3"];
 const CLASSES = ["Level 5 NIT", "Level 4 NIT", "Level 5 CSA", "Level 4 CSA", "Level 5 ACC", "Level 4 ACC", "Level 3 General"];
 const DEFAULT_GROUPS = ["Core Class", "Tech Club", "AERG Itetero", "Prefects", "Exam Board", "Students"];
-
 const PERMS = {
-  "Accounts": { "users.view": "View accounts", "users.create": "Create accounts", "users.edit": "Edit accounts", "users.delete": "Delete accounts", "groups.manage": "Manage groups & folders" },
-  "Academics": { "classes.view": "View classes & teachers", "classes.manage": "Manage class assignments", "marks.view": "View marks", "marks.edit": "Enter / edit marks", "marks.approve": "Approve & publish marks", "exams.manage": "Manage exams", "attendance.manage": "Take attendance", "timetable.manage": "Manage timetable", "library.manage": "Manage library" },
-  "Operations": { "discipline.manage": "Manage discipline records", "stock.manage": "Manage stock & inventory", "finance.manage": "Manage fees & finance", "reports.view": "View reports", "announce.post": "Post announcements" }
+  Accounts: {"users.view":"View accounts", "users.create":"Create accounts", "users.edit":"Edit accounts", "users.delete":"Delete accounts", "groups.manage":"Manage groups & folders"},
+  Academics: {"classes.view":"View classes & teachers", "classes.manage":"Manage class assignments", "marks.view":"View marks", "marks.edit":"Enter / edit marks", "marks.approve":"Approve & publish marks", "exams.manage":"Manage exams", "attendance.manage":"Take attendance", "timetable.manage":"Manage timetable", "library.manage":"Manage library"},
+  Operations: {"discipline.manage":"Manage discipline records", "stock.manage":"Manage stock & inventory", "finance.manage":"Manage fees & finance", "reports.view":"View reports", "announce.post":"Post announcements"}
 };
-const ALL_PERMS = Object.values(PERMS).flatMap(o => Object.keys(o));
-const PLABEL = Object.assign({}, ...Object.values(PERMS));
+const ALL_PERMS = Object.values(PERMS).flatMap(group => Object.keys(group));
 const DEFAULT_ROLES = {
-  "Administrator": { desc: "Day-to-day school administration (below Super Admin)", perms: ["users.view", "users.create", "users.edit", "groups.manage", "classes.view", "marks.view", "reports.view", "announce.post"] },
-  "Director of Studies (DOS)": { desc: "Oversees academics, marks & timetable", perms: ["users.view", "classes.view", "classes.manage", "marks.view", "marks.approve", "timetable.manage", "reports.view", "exams.manage"] },
-  "Teacher / Trainer": { desc: "Teaches classes and records marks", perms: ["classes.view", "marks.view", "marks.edit", "attendance.manage"] },
-  "Stock & Inventory Manager": { desc: "School store and inventory", perms: ["stock.manage", "reports.view"] },
-  "Dean of Discipline": { desc: "Student discipline and conduct", perms: ["users.view", "discipline.manage", "attendance.manage"] },
-  "Exam Officer": { desc: "Runs exams and approves results", perms: ["classes.view", "marks.view", "marks.approve", "exams.manage"] },
-  "Librarian": { desc: "Library catalogue and loans", perms: ["library.manage"] },
-  "Bursar / Accountant": { desc: "Fees and school finances", perms: ["finance.manage", "reports.view", "users.view"] },
-  "Registrar": { desc: "Admissions and student records", perms: ["users.view", "users.create", "users.edit", "classes.view"] },
-  "Secretary": { desc: "Office work and announcements", perms: ["users.view", "announce.post"] },
-  "ICT Officer": { desc: "Technical support for accounts", perms: ["users.view", "users.edit"] }
+  "Administrator": {desc:"Day-to-day school administration (below Super Admin)", perms:["users.view","users.create","users.edit","groups.manage","classes.view","marks.view","reports.view","announce.post"]},
+  "Director of Studies (DOS)": {desc:"Oversees academics, marks & timetable", perms:["users.view","classes.view","classes.manage","marks.view","marks.approve","timetable.manage","reports.view","exams.manage"]},
+  "Teacher / Trainer": {desc:"Teaches classes and records marks", perms:["classes.view","marks.view","marks.edit","attendance.manage"]},
+  "Stock & Inventory Manager": {desc:"School store and inventory", perms:["stock.manage","reports.view"]},
+  "Dean of Discipline": {desc:"Student discipline and conduct", perms:["users.view","discipline.manage","attendance.manage"]},
+  "Exam Officer": {desc:"Runs exams and approves results", perms:["classes.view","marks.view","marks.approve","exams.manage"]},
+  "Librarian": {desc:"Library catalogue and loans", perms:["library.manage"]},
+  "Bursar / Accountant": {desc:"Fees and school finances", perms:["finance.manage","reports.view","users.view"]},
+  "Registrar": {desc:"Admissions and student records", perms:["users.view","users.create","users.edit","classes.view"]},
+  "Secretary": {desc:"Office work and announcements", perms:["users.view","announce.post"]},
+  "ICT Officer": {desc:"Technical support for accounts", perms:["users.view","users.edit"]}
 };
 const TILES = [
-  { id: "student", icon: "fa-user-graduate", label: "Student", cat: "student", roles: [] },
-  { id: "teacher", icon: "fa-chalkboard-user", label: "Teacher / Trainer", cat: "staff", roles: ["Teacher / Trainer"] },
-  { id: "dos", icon: "fa-book-open-reader", label: "Director of Studies", cat: "staff", roles: ["Director of Studies (DOS)"] },
-  { id: "stock", icon: "fa-boxes-stacked", label: "Stock Manager", cat: "staff", roles: ["Stock & Inventory Manager"] },
-  { id: "dean", icon: "fa-gavel", label: "Dean of Discipline", cat: "staff", roles: ["Dean of Discipline"] },
-  { id: "exam", icon: "fa-file-pen", label: "Exam Officer", cat: "staff", roles: ["Exam Officer"] },
-  { id: "lib", icon: "fa-book", label: "Librarian", cat: "staff", roles: ["Librarian"] },
-  { id: "bursar", icon: "fa-coins", label: "Bursar", cat: "staff", roles: ["Bursar / Accountant"] },
-  { id: "admin", icon: "fa-user-gear", label: "Administrator", cat: "admin", roles: ["Administrator"] }
+  {id:"student",icon:"fa-user-graduate",label:"Student",cat:"student",roles:[]},
+  {id:"teacher",icon:"fa-chalkboard-user",label:"Teacher / Trainer",cat:"staff",roles:["Teacher / Trainer"]},
+  {id:"dos",icon:"fa-book-open-reader",label:"Director of Studies",cat:"staff",roles:["Director of Studies (DOS)"]},
+  {id:"stock",icon:"fa-boxes-stacked",label:"Stock Manager",cat:"staff",roles:["Stock & Inventory Manager"]},
+  {id:"dean",icon:"fa-gavel",label:"Dean of Discipline",cat:"staff",roles:["Dean of Discipline"]},
+  {id:"exam",icon:"fa-file-pen",label:"Exam Officer",cat:"staff",roles:["Exam Officer"]},
+  {id:"lib",icon:"fa-book",label:"Librarian",cat:"staff",roles:["Librarian"]},
+  {id:"bursar",icon:"fa-coins",label:"Bursar",cat:"staff",roles:["Bursar / Accountant"]},
+  {id:"admin",icon:"fa-user-gear",label:"Administrator",cat:"admin",roles:["Administrator"]}
 ];
 
-let openGroup = null;
-let openClassName = null;
-const S = { users: [], groups: DEFAULT_GROUPS.slice(), roles: DEFAULT_ROLES, marks: {}, audit: [], ann: {} };
-let ME = null, tile = "student", catF = "all", grpF = "all", curClass = CLASSES[0], listening = false, charts = {};
-
 const $ = id => document.getElementById(id);
-const esc = s => String(s == null ? "" : s).replace(/[&<>"']/g, c => ({ "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;", "'": "&#39;" }[c]));
-const ck = s => String(s || "").trim().replace(/[.#$\[\]\/]/g, "_");
-const classOf = u => (u.level || "") + " " + (u.dept === "GEN" ? "General" : (u.dept || ""));
-const isSuper = () => ME && ME.isSuper;
+const esc = value => String(value == null ? "" : value).replace(/[&<>"']/g, c => ({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#39;"}[c]));
+const ck = value => String(value || "").trim().replace(/[.#$\[\]\/]/g, "_");
+const classOf = u => `${u.level || ""} ${u.dept === "GEN" ? "General" : (u.dept || "")}`.trim();
+const isSuper = () => !!(ME && ME.isSuper);
+const keyed = obj => Object.keys(obj).reduce((out, name) => { out[ck(name)] = {name, desc:obj[name].desc || "", perms:Array.isArray(obj[name].perms) ? obj[name].perms : []}; return out; }, {});
+const rolesByName = () => Object.values(S.roles).reduce((out, role) => { if (role && role.name) out[role.name] = role; return out; }, {});
+const roleNames = () => Object.values(S.roles).map(role => role && role.name).filter(Boolean);
+const permsOfRole = name => (rolesByName()[name] || {}).perms || [];
+function nestPermissions(permissions) {
+  const nested = {};
+  [...new Set(permissions || [])].forEach(permission => {
+    if (typeof permission !== "string" || !permission.includes(".")) return;
+    const bits = permission.split("."); let target = nested;
+    bits.forEach((bit,index) => { if (index === bits.length - 1) target[bit] = true; else target = target[bit] ||= {}; });
+  });
+  return nested;
+}
+function permissionsForAdminProfile(profile, roleMap = S.roles) {
+  const roleLookup = Object.values(roleMap || {}).reduce((out, role) => { if (role && role.name) out[role.name] = role; return out; }, {});
+  const derived = (profile.staffRoles || []).flatMap(name => (roleLookup[name] && roleLookup[name].perms) || []);
+  return nestPermissions([...derived, ...(profile.customPerms || [])]);
+}
+async function syncAdminAccessFromRoleMap(roleMap = S.roles) {
+  if (!isSuper()) return;
+  const updates = {};
+  S.users.filter(user => user.role === "admin" && user.authUid).forEach(user => {
+    updates[`adminAccess/${user.authUid}/perms`] = permissionsForAdminProfile(user, roleMap);
+  });
+  if (!Object.keys(updates).length) return;
+  await db.ref().update(updates);
+  await log("sync-admin-permissions", `Recomputed permissions for ${Object.keys(updates).length} admin accounts`);
+}
 
-function keyed(o) { const r = {}; Object.keys(o).forEach(n => r[ck(n)] = { name: n, desc: o[n].desc || "", perms: o[n].perms || [] }); return r; }
-function rolesByName() { const r = {}; Object.values(S.roles).forEach(x => { if (x && x.name) r[x.name] = x; }); return r; }
-S.roles = keyed(DEFAULT_ROLES);
-const roleNames = () => Object.values(S.roles).map(r => r.name).filter(Boolean);
-const permsOfRole = n => (rolesByName()[n] || {}).perms || [];
+let app, auth, db;
+try {
+  if (typeof firebase === "undefined") throw new Error("Firebase SDK failed to load.");
+  if (!firebase.apps.length) firebase.initializeApp(firebaseConfig);
+  app = firebase.app();
+  auth = firebase.auth();
+  db = firebase.database();
+} catch (err) {
+  console.error(err);
+  window.addEventListener("DOMContentLoaded", () => toast("Firebase setup error. Check the web app config and SDK scripts."));
+}
 
-const myPerms = function() {
+let openGroup = null, openClassName = null;
+const S = {users:[], groups:DEFAULT_GROUPS.slice(), roles:keyed(DEFAULT_ROLES), marks:{}, audit:[], ann:{}};
+let ME = null, tile = "student", catF = "all", grpF = "all", curClass = CLASSES[0], listening = false, charts = {}, activeRefs = [];
+
+function flattenPermissions(value, prefix = "", result = new Set()) {
+  if (Array.isArray(value)) { value.forEach(p => { if (typeof p === "string") result.add(p); }); return result; }
+  if (!value || typeof value !== "object") return result;
+  Object.entries(value).forEach(([key, child]) => {
+    const path = prefix ? `${prefix}.${key}` : key;
+    if (child === true) result.add(path);
+    else if (child && typeof child === "object") flattenPermissions(child, path, result);
+  });
+  return result;
+}
+function myPerms() {
   if (!ME) return new Set();
   if (ME.isSuper) return new Set(ALL_PERMS);
-  const u = ME.user || {};
-  const s = new Set(u.customPerms || []);
-  (u.staffRoles || []).forEach(r => permsOfRole(r).forEach(p => s.add(p)));
-  if (u.role === "admin" && !(u.staffRoles || []).length) DEFAULT_ROLES.Administrator.perms.forEach(p => s.add(p));
-  return s;
-};
-const can = p => myPerms().has(p);
-
-function parseUsers(d) {
-  const l = []; if (!d) return l;
-  const add = (k, i) => {
-    if (i && typeof i === "object") {
-      i._k = String(k);
-      if (!i.username) i.username = String(k);
-      if (!i.name) i.name = i.username;
-      l.push(i);
-    }
+  return flattenPermissions(ME.perms || {});
+}
+const can = permission => myPerms().has(permission);
+function parseUsers(data) {
+  if (!data) return [];
+  const list = [];
+  const add = (key, item) => {
+    if (!item || typeof item !== "object") return;
+    const copy = {...item, _k:String(key)};
+    if (!copy.username) copy.username = String(key);
+    if (!copy.name) copy.name = copy.username;
+    list.push(copy);
   };
-  Array.isArray(d) ? d.forEach((i, k) => add(k, i)) : Object.keys(d).forEach(k => add(k, d[k]));
-  return l;
+  if (Array.isArray(data)) data.forEach((item, key) => add(key, item));
+  else Object.entries(data).forEach(([key, item]) => add(key, item));
+  return list;
 }
-
-function clean(u) { const c = Object.assign({}, u); delete c._k; return c; }
-function log(action, detail) { 
-  try {
-    db.ref("audit").push({ ts: Date.now(), by: ME ? ME.name : "?", action, detail: detail || "" });
-  } catch(e) {}
+function toast(message) {
+  const element = document.createElement("div");
+  element.textContent = message;
+  element.style.cssText = "position:fixed;bottom:20px;right:20px;background:#0f172a;color:#fff;padding:12px 18px;border-radius:8px;z-index:9999;font-weight:600;box-shadow:0 6px 20px rgba(0,0,0,.3);max-width:min(90vw,520px)";
+  document.body.appendChild(element);
+  setTimeout(() => element.remove(), 3500);
 }
-function toast(m) {
-  const t = document.createElement("div");
-  t.textContent = m;
-  t.style.cssText = "position:fixed;bottom:20px;right:20px;background:#0f172a;color:#fff;padding:12px 18px;border-radius:8px;z-index:999;font-weight:600;box-shadow:0 6px 20px rgba(0,0,0,.3)";
-  document.body.appendChild(t);
-  setTimeout(() => t.remove(), 2600);
+function friendlyError(err) {
+  const code = err && err.code;
+  const messages = {
+    "auth/invalid-credential":"Email or password is incorrect.",
+    "auth/user-not-found":"No Firebase Authentication account was found for that email.",
+    "auth/wrong-password":"Email or password is incorrect.",
+    "auth/too-many-requests":"Too many sign-in attempts. Try again later.",
+    "auth/network-request-failed":"Network error. Check your internet connection.",
+    "PERMISSION_DENIED":"Firebase Realtime Database rules denied this operation. Check adminAccess and your database rules."
+  };
+  return messages[code] || err?.message || "An unexpected error occurred.";
 }
-
+function log(action, detail = "") {
+  if (!db || !ME) return Promise.resolve();
+  return db.ref("audit").push({ts:firebase.database.ServerValue.TIMESTAMP, by:ME.email || ME.name || "Unknown admin", uid:ME.uid, action, detail:String(detail).slice(0,500)})
+    .catch(err => { console.error("Audit write failed", err); });
+}
+function stopListeners() {
+  activeRefs.forEach(ref => { try { ref.off(); } catch (_) {} });
+  activeRefs = []; listening = false;
+}
+function attachListener(path, callback, options = {}) {
+  const ref = db.ref(path);
+  if (options.last) ref.limitToLast(options.last).on("value", snapshot => callback(snapshot), err => toast(`${path}: ${friendlyError(err)}`));
+  else ref.on("value", snapshot => callback(snapshot), err => toast(`${path}: ${friendlyError(err)}`));
+  activeRefs.push(ref);
+}
 function listen() {
-  db.ref(".info/connected").on("value", s => {
-    const on = s.val() === true;
-    const el = $("sync");
-    if (el) {
-      el.className = "sync" + (on ? "" : " off");
-      el.querySelector("span").textContent = on ? "Connected (Direct Sync)" : "Connecting…";
-    }
-  });
-
-  if (listening) return;
+  if (!db || listening || !ME) return;
   listening = true;
-
-  db.ref("users").on("value", s => { S.users = parseUsers(s.val()); if(ME) renderAll(); });
-  db.ref("groups").on("value", s => { const v = s.val(); S.groups = Array.isArray(v) ? v : (v ? Object.values(v) : DEFAULT_GROUPS.slice()); if(ME) renderAll(); });
-  db.ref("roleDefs").on("value", s => { const v = s.val(); if (!v) { if (isSuper()) db.ref("roleDefs").set(keyed(DEFAULT_ROLES)); S.roles = keyed(DEFAULT_ROLES); } else S.roles = v; if(ME) renderAll(); });
-  db.ref("marks").on("value", s => { S.marks = s.val() || {}; if(ME) { renderMarks(); renderClasses(); renderDash(); } });
-  db.ref("broadcast").on("value", s => { S.ann = s.val() || {}; if(ME) renderAnn(); });
-  db.ref("audit").limitToLast(150).on("value", s => { S.audit = Object.values(s.val() || {}).sort((a, b) => b.ts - a.ts); if(ME) renderAudit(); });
-}
-
-/* ============ DIRECT INSTANT AUTHENTICATION ============ */
-async function bypassDirectLogin() {
-  const u = $("lu").value.trim();
-  const p = $("lp").value.trim();
-
-  if (!u || !p) {
-    return alert("Please enter username and password.");
-  }
-
-  // 1. Direct master credentials validation
-  if (u === MASTER.user && p === MASTER.pass) {
-    ME = { isSuper: true, name: "Super Admin (" + MASTER.user + ")", username: MASTER.user };
-    return enter();
-  }
-
-  // 2. Database administrative lookup
-  try {
-    const snap = await db.ref("users").once("value");
-    const list = parseUsers(snap.val());
-    const m = list.find(x => x.username && x.username.toLowerCase() === u.toLowerCase() && x.pass === p && x.role === "admin" && (x.status || "active") === "active");
-
-    if (!m) {
-      return alert("Invalid credentials, or this account is not an active administrator.");
+  const connectedRef = db.ref(".info/connected");
+  connectedRef.on("value", snapshot => {
+    const on = snapshot.val() === true, badge = $("sync");
+    if (badge) { badge.className = "sync" + (on ? "" : " off"); badge.querySelector("span").textContent = on ? "Connected · Realtime Sync" : "Offline / reconnecting"; }
+  });
+  activeRefs.push(connectedRef);
+  attachListener(`adminAccess/${ME.uid}`, snap => {
+    const access = snap.val();
+    if (!access || access.active !== true) {
+      toast("Your admin access has been disabled. Signing out.");
+      if (auth) auth.signOut();
+      return;
     }
-
-    ME = { isSuper: false, name: "Admin (" + m.name + ")", username: m.username, user: m };
-    enter();
-  } catch(err) {
-    alert("Connection error: " + err.message);
-  }
+    const previouslySuper = ME.isSuper;
+    ME = {...ME, name:access.name || ME.name, isSuper:access.isSuper === true, perms:access.perms || {}};
+    $("who").textContent = ME.name;
+    $("superBadge").style.display = ME.isSuper ? "inline-block" : "none";
+    if (previouslySuper !== ME.isSuper) { S.audit = []; stopListeners(); listen(); }
+    applyGates(); renderAll();
+  });
+  attachListener("users", snap => { S.users = parseUsers(snap.val()); renderAll(); });
+  attachListener("groups", snap => {
+    const value = snap.val();
+    S.groups = Array.isArray(value) ? value.filter(Boolean) : (value ? Object.values(value).filter(Boolean) : DEFAULT_GROUPS.slice());
+    if (!value && isSuper()) db.ref("groups").set(DEFAULT_GROUPS).catch(err => console.warn("Default groups not written", err));
+    renderAll();
+  });
+  attachListener("roleDefs", snap => {
+    const value = snap.val();
+    if (!value) {
+      S.roles = keyed(DEFAULT_ROLES);
+      if (isSuper()) db.ref("roleDefs").set(S.roles).catch(err => console.warn("Default roles not written", err));
+    } else S.roles = value;
+    renderAll();
+  });
+  attachListener("marks", snap => { S.marks = snap.val() || {}; renderMarks(); renderClasses(); renderDash(); });
+  attachListener("broadcast", snap => { S.ann = snap.val() || {}; renderAnn(); });
+  if (isSuper()) attachListener("audit", snap => { S.audit = Object.values(snap.val() || {}).sort((a,b) => Number(b.ts || 0) - Number(a.ts || 0)); renderAudit(); }, {last:150});
 }
-
-function enter() {
-  sessionStorage.setItem("ACEJ_ADMIN", JSON.stringify({ isSuper: ME.isSuper, username: ME.username, name: ME.name }));
+function showAuthorizedApp(access, user) {
+  if (!access || access.active !== true) {
+    toast("This Firebase account is not enabled for the admin console. Ask the project owner to configure adminAccess/<UID>.");
+    return auth.signOut();
+  }
+  ME = {uid:user.uid, email:user.email || "", name:access.name || user.displayName || user.email || "Administrator", isSuper:access.isSuper === true, perms:access.perms || {}};
   $("login").style.display = "none";
   $("app").style.display = "block";
   $("btnOut").style.display = "inline-flex";
   $("who").textContent = ME.name;
   $("superBadge").style.display = ME.isSuper ? "inline-block" : "none";
-  listen();
-  applyGates();
-  renderAll();
-  go("dash");
+  listen(); applyGates(); renderAll(); go("dash");
 }
-
-function logout() {
-  sessionStorage.removeItem("ACEJ_ADMIN");
-  location.reload();
-}
-
-window.addEventListener("DOMContentLoaded", () => {
-  listen();
-  const s = sessionStorage.getItem("ACEJ_ADMIN");
-  if (!s) return;
+async function doLogin() {
+  if (!auth || !db || Object.values(firebaseConfig).some(value => String(value).startsWith("PASTE_"))) return alert("Complete firebaseConfig with the exact web app values from Firebase Console first. The databaseURL is already preserved.");
+  const email = $("lu").value.trim(), password = $("lp").value;
+  if (!email || !password) return alert("Enter your admin email and password.");
+  $("btnSignInSubmit").disabled = true;
   try {
-    const x = JSON.parse(s);
-    ME = x;
-    enter();
-  } catch(e) {
-    logout();
-  }
-});
-
-function applyGates() {
-  document.querySelectorAll("#nav button").forEach(b => {
-    let ok = true;
-    if (b.dataset.super) ok = isSuper();
-    else if (b.dataset.perm) ok = can(b.dataset.perm);
-    b.style.display = ok ? "" : "none";
+    const credential = await auth.signInWithEmailAndPassword(email, password);
+    const snap = await db.ref(`adminAccess/${credential.user.uid}`).once("value");
+    const access = snap.val();
+    if (!access || access.active !== true) {
+      await auth.signOut();
+      return alert("Sign-in succeeded, but this account has no active adminAccess record. Configure it in Firebase Console.");
+    }
+    showAuthorizedApp(access, credential.user);
+    $("lp").value = "";
+    await log("login", "Admin console login");
+  } catch (err) {
+    alert("Sign-in failed: " + friendlyError(err));
+  } finally { $("btnSignInSubmit").disabled = false; }
+}
+async function logout() {
+  await log("logout", "Admin console logout");
+  stopListeners(); ME = null;
+  if (auth) await auth.signOut();
+  $("app").style.display = "none"; $("login").style.display = "block"; $("btnOut").style.display = "none";
+  $("who").textContent = "Management Console"; $("lp").value = "";
+}
+window.addEventListener("DOMContentLoaded", () => {
+  if (!auth || !db) { toast("Configure the Firebase web app API key and App ID before signing in."); return; }
+  if (Object.values(firebaseConfig).some(value => String(value).startsWith("PASTE_"))) toast("Setup required: paste the exact Firebase web app config values into this file before signing in.");
+  db.ref(".info/connected").on("value", snap => {
+    const badge = $("sync"); const on = snap.val() === true;
+    badge.className = "sync" + (on ? "" : " off");
+    badge.querySelector("span").textContent = on ? "Connected · Realtime Sync" : "Offline / reconnecting";
   });
-  $("impNote").style.display = isSuper() ? "block" : "none";
+  auth.onAuthStateChanged(async user => {
+    stopListeners();
+    if (!user) {
+      ME = null; $("app").style.display = "none"; $("login").style.display = "block"; $("btnOut").style.display = "none"; return;
+    }
+    try {
+      const snap = await db.ref(`adminAccess/${user.uid}`).once("value");
+      const access = snap.val();
+      if (!access || access.active !== true) {
+        await auth.signOut();
+        alert("This Firebase account is not authorised for the admin console.");
+        return;
+      }
+      showAuthorizedApp(access, user);
+    } catch (err) {
+      console.error(err); toast("Could not verify admin access: " + friendlyError(err));
+    }
+  });
+});
+function applyGates() {
+  document.querySelectorAll("#nav button[data-tab]").forEach(button => {
+    const ok = button.dataset.super ? isSuper() : (button.dataset.perm ? can(button.dataset.perm) : true);
+    button.style.display = ok ? "" : "none";
+  });
+  const note = $("impNote"); if (note) note.style.display = isSuper() ? "block" : "none";
+  document.querySelectorAll("[data-act='bulkImport']").forEach(button => button.disabled = !can("users.create"));
 }
-
-function go(t) {
-  document.querySelectorAll(".tab").forEach(x => x.classList.toggle("show", x.id === "tab-" + t));
-  document.querySelectorAll("#nav button").forEach(b => b.classList.toggle("active", b.dataset.tab === t));
-  if (t === "dash") renderDash();
+function go(tabName) {
+  const navButton = document.querySelector(`#nav button[data-tab="${CSS.escape(tabName)}"]`);
+  if (navButton && navButton.style.display === "none") return toast("You do not have permission to open this section.");
+  document.querySelectorAll(".tab").forEach(tab => tab.classList.toggle("show", tab.id === `tab-${tabName}`));
+  document.querySelectorAll("#nav button").forEach(button => button.classList.toggle("active", button.dataset.tab === tabName));
+  if (tabName === "dash") renderDash();
 }
-
 function renderAll() {
   if (!ME) return;
-  applyGates();
-  renderDash();
-  renderUsers();
-  renderCreateLists();
-  renderFolders();
-  renderClasses();
-  renderMarks();
-  renderRoles();
-  renderAnn();
-  renderAudit();
+  applyGates(); renderDash(); renderUsers(); renderCreateLists(); renderFolders(); renderClasses(); renderMarks(); renderRoles(); renderAnn(); renderAudit();
 }
-
 function chart(id, type, labels, data, colors) {
   if (typeof Chart === "undefined") return;
-  const canvas = $(id);
-  if (!canvas || !canvas.offsetParent) return;
-
-  if (charts[id]) {
-    try { charts[id].destroy(); } catch(e){}
-  }
+  const canvas = $(id); if (!canvas || !canvas.offsetParent) return;
+  if (charts[id]) { try { charts[id].destroy(); } catch (_) {} }
   try {
-    charts[id] = new Chart(canvas, {
-      type,
-      data: { labels, datasets: [{ data, backgroundColor: colors, borderRadius: 6 }] },
-      options: {
-        responsive: true,
-        maintainAspectRatio: false,
-        plugins: { legend: { display: type === "doughnut", position: "bottom" } },
-        scales: type === "bar" ? { y: { beginAtZero: true, ticks: { precision: 0 } } } : {}
-      }
-    });
-  } catch(e) {}
+    charts[id] = new Chart(canvas, {type, data:{labels, datasets:[{data, backgroundColor:colors, borderRadius:type === "bar" ? 6 : 0}]}, options:{responsive:true, maintainAspectRatio:false, plugins:{legend:{display:type === "doughnut", position:"bottom"}}, scales:type === "bar" ? {y:{beginAtZero:true,ticks:{precision:0}}} : {}}});
+  } catch (err) { console.warn("Chart render failed", err); }
 }
-
 function renderDash() {
+  if (!ME) return;
   const U = S.users;
   $("sTotal").textContent = U.length;
   $("sStu").textContent = U.filter(u => u.role === "student").length;
@@ -513,498 +583,381 @@ function renderDash() {
   $("sAdm").textContent = U.filter(u => u.role === "admin").length;
   $("sGrp").textContent = S.groups.length;
   $("sDis").textContent = U.filter(u => u.status === "disabled").length;
-  
   if ($("tab-dash").classList.contains("show")) {
-    chart("chClass", "bar", CLASSES, CLASSES.map(c => U.filter(u => u.role === "student" && classOf(u) === c).length), "#0047AB");
-    const rc = {};
+    chart("chClass", "bar", CLASSES, CLASSES.map(cls => U.filter(u => u.role === "student" && classOf(u) === cls).length), "#0047AB");
+    const counts = {};
     U.forEach(u => {
-      if (u.role === "student") rc.Student = (rc.Student || 0) + 1;
-      else if ((u.staffRoles || []).length) u.staffRoles.forEach(r => rc[r] = (rc[r] || 0) + 1);
-      else rc[u.role === "admin" ? "Administrator" : "Staff"] = (rc[u.role === "admin" ? "Administrator" : "Staff"] || 0) + 1;
+      if (u.role === "student") counts.Student = (counts.Student || 0) + 1;
+      else if ((u.staffRoles || []).length) u.staffRoles.forEach(role => counts[role] = (counts[role] || 0) + 1);
+      else { const role = u.role === "admin" ? "Administrator" : "Staff"; counts[role] = (counts[role] || 0) + 1; }
     });
-    chart("chRole", "doughnut", Object.keys(rc), Object.values(rc), ["#0047AB", "#FFC72C", "#7e22ce", "#10b981", "#ef4444", "#0ea5e9", "#f97316", "#64748b", "#84cc16", "#ec4899", "#14b8a6"]);
+    chart("chRole", "doughnut", Object.keys(counts), Object.values(counts), ["#0047AB","#FFC72C","#7e22ce","#10b981","#ef4444","#0ea5e9","#f97316","#64748b","#84cc16","#ec4899","#14b8a6"]);
   }
 }
-
-function userSub(u) {
-  if (u.role === "student") return `<span class="pill role"><i class="fa-solid fa-chalkboard"></i> ${esc(classOf(u))}</span>`;
-  return (u.staffRoles || []).map(r => `<span class="pill">${esc(r)}</span>`).join("") || `<span class="pill">Staff</span>`;
+function userSub(user) {
+  if (user.role === "student") return `<span class="pill role">${esc(classOf(user) || "Student")}</span>`;
+  return (user.staffRoles || []).map(role => `<span class="pill">${esc(role)}</span>`).join("") || `<span class="pill">${esc(user.role || "Staff")}</span>`;
 }
-function canTouch(u) { return isSuper() || u.role !== "admin"; }
-
+function canTouch(user) { return isSuper() || (user.role !== "admin"); }
 function renderUsers() {
-  const cf = \$("catFilter");
-  cf.innerHTML = ["all", "student", "staff", "admin"].map(c => `<button class="fb ${catF === c ? "active" : ""}" data-cat="${c}">${c === "all" ? "All" : c[0].toUpperCase() + c.slice(1)}</button>`).join("");
-  \$("grpFilter").innerHTML = `<span style="font-size:.78rem;font-weight:800;color:var(--muted)"><i class="fa-solid fa-folder"></i> Folder:</span><button class="fb ${grpF === "all" ? "active" : ""}" data-grp="all">All</button>` + S.groups.map(g => `<button class="fb ${grpF === g ? "active" : ""}" data-grp="${esc(g)}">${esc(g)}</button>`).join("");
-  const q = (\$("search").value || "").toLowerCase();
-  const rows = S.users.filter(u => (catF === "all" || u.role === catF) && (grpF === "all" || (u.groups || []).includes(grpF)))
-    .filter(u => !q || (String(u.name || "") + " " + String(u.username || "") + " " + (u.staffRoles || []).join(" ") + " " + classOf(u)).toLowerCase().includes(q))
-    .sort((a, b) => (a.role + a.name).localeCompare(b.role + b.name));
-
-  \$("uBody").innerHTML = rows.length ? rows.map(u => {
-    const k = esc(u._k || u.username), t = canTouch(u);
-    return `<tr><td><span class="pill ${esc(u.role)}">${esc(u.role || "user")}</span></td><td><b>${esc(u.name)}</b></td><td><code>${esc(u.username)}</code></td>
-    <td>${isSuper() ? `<code class="pw" data-pw="\${esc(u.pass || "")}">••••••</code> <button class="btn sm" style="padding:2px 6px" data-act="reveal"><i class="fa-solid fa-eye"></i></button>` : `<span style="color:#94a3b8">hidden</span>`}</td>
-    <td>${userSub(u)}</td><td><span class="pill ${u.status === "disabled" ? "bad" : "ok"}">${esc(u.status || "active")}</span></td>
-    <td style="white-space:nowrap">
-      ${isSuper() ? `<button class="btn sm green" title="Open their portal without password" data-act="impersonate" data-k="\${k}"><i class="fa-solid fa-eye"></i> Open Portal</button>` : ""}
-      <button class="btn sm" data-act="edit" data-k="${k}" ${t && can("users.edit") ? "" : "disabled"}><i class="fa-solid fa-pen"></i></button>
-      <button class="btn sm gold" data-act="toggle" data-k="${k}" ${t && can("users.edit") ? "" : "disabled"} title="Enable / disable"><i class="fa-solid fa-ban"></i></button>
-      <button class="btn sm red" data-act="del" data-k="${k}" ${t && can("users.delete") ? "" : "disabled"}><i class="fa-solid fa-trash"></i></button>
-    </td></tr>`;
+  if (!$("uBody")) return;
+  $("catFilter").innerHTML = ["all","student","staff","admin"].map(cat => `<button class="fb ${catF === cat ? "active" : ""}" data-cat="${cat}">${cat === "all" ? "All" : cat[0].toUpperCase()+cat.slice(1)}</button>`).join("");
+  $("grpFilter").innerHTML = `<span style="font-size:.78rem;font-weight:800;color:var(--muted)"><i class="fa-solid fa-folder"></i> Folder:</span><button class="fb ${grpF === "all" ? "active" : ""}" data-grp="all">All</button>` + S.groups.map(group => `<button class="fb ${grpF === group ? "active" : ""}" data-grp="${esc(group)}">${esc(group)}</button>`).join("");
+  const query = ($("search").value || "").toLowerCase();
+  const rows = S.users.filter(user => (catF === "all" || user.role === catF) && (grpF === "all" || (user.groups || []).includes(grpF)))
+    .filter(user => !query || `${user.name||""} ${user.username||""} ${(user.staffRoles||[]).join(" ")} ${classOf(user)}`.toLowerCase().includes(query))
+    .sort((a,b) => `${a.role||""}${a.name||""}`.localeCompare(`${b.role||""}${b.name||""}`));
+  $("uBody").innerHTML = rows.length ? rows.map(user => {
+    const key = esc(user._k || user.username), touch = canTouch(user);
+    const status = user.status || "active";
+    return `<tr><td><span class="pill ${esc(user.role || "user")}">${esc(user.role || "user")}</span></td><td><b>${esc(user.name)}</b></td><td><code>${esc(user.username)}</code></td><td><span class="pill">Password hidden</span></td><td>${userSub(user)}</td><td><span class="pill ${status === "disabled" ? "bad" : "ok"}">${esc(status)}</span></td><td style="white-space:nowrap"><button class="btn sm" title="Edit account" data-act="edit" data-k="${key}" ${touch && can("users.edit") ? "" : "disabled"}><i class="fa-solid fa-pen"></i></button> <button class="btn sm gold" data-act="toggle" data-k="${key}" ${touch && can("users.edit") ? "" : "disabled"} title="Enable / disable"><i class="fa-solid fa-ban"></i></button> <button class="btn sm red" data-act="del" data-k="${key}" ${touch && can("users.delete") ? "" : "disabled"} title="Delete account"><i class="fa-solid fa-trash"></i></button></td></tr>`;
   }).join("") : `<tr><td colspan="7" style="text-align:center;color:#94a3b8;padding:24px">No accounts in this view.</td></tr>`;
 }
-
-function chkList(el, items, sel, name) {
-  el.innerHTML = items.map(i => `<label><input type="checkbox" name="${name}" value="${esc(i)}" ${sel.includes(i) ? "checked" : ""}>${esc(i)}</label>`).join("");
+function chkList(element, items, selected, name) {
+  if (!element) return;
+  element.innerHTML = items.map(item => `<label><input type="checkbox" name="${esc(name)}" value="${esc(item)}" ${selected.includes(item) ? "checked" : ""}>${esc(item)}</label>`).join("");
 }
-function checked(sel) { return [...document.querySelectorAll(sel + " input:checked")].map(i => i.value); }
-
+function checked(selector) { return [...document.querySelectorAll(`${selector} input:checked`)].map(input => input.value); }
 function renderCreateLists() {
-  \$("tiles").innerHTML = TILES.map(t => `<div class="tile ${tile === t.id ? "sel" : ""}" data-tile="${t.id}"><i class="fa-solid ${t.icon}"></i>${t.label}</div>`).join("");
-  const rSel = checked("#cRoles"), cSel = checked("#cClasses"), gSel = checked("#cGroups"), pSel = checked("#cPerms");
-  chkList(\$("cRoles"), roleNames(), rSel, "r");
-  chkList(\$("cClasses"), CLASSES, cSel, "c");
-  chkList(\$("cGroups"), S.groups, gSel, "g");
-  let ph = "";
-  Object.keys(PERMS).forEach(g => {
-    ph += `<div class="gh">${g}</div>` + Object.keys(PERMS[g]).map(p => `<label><input type="checkbox" value="${p}" ${pSel.includes(p) ? "checked" : ""}>${PERMS[g][p]}</label>`).join("");
-  });
-  \$("cPerms").innerHTML = ph;
-
-  if (!\$("cDept").options.length) {
-    \$("cDept").innerHTML = Object.keys(DEPTS).map(k => `<option value="${k}">${DEPTS[k]}</option>`).join("");
-    \$("cLevel").innerHTML = LEVELS.map(l => `<option>${l}</option>`).join("");
-    $("eDept").innerHTML = $("cDept").innerHTML;
-    $("eLevel").innerHTML = $("cLevel").innerHTML;
+  if (!$("tiles")) return;
+  $("tiles").innerHTML = TILES.filter(item => item.cat !== "admin" || isSuper()).map(item => `<div class="tile ${tile === item.id ? "sel" : ""}" data-tile="${item.id}"><i class="fa-solid ${item.icon}"></i>${esc(item.label)}</div>`).join("");
+  const selectedRoles = checked("#cRoles"), selectedClasses = checked("#cClasses"), selectedGroups = checked("#cGroups"), selectedPerms = checked("#cPerms");
+  chkList($("cRoles"), roleNames(), selectedRoles, "r"); chkList($("cClasses"), CLASSES, selectedClasses, "c"); chkList($("cGroups"), S.groups, selectedGroups, "g");
+  let permissionHtml = "";
+  Object.keys(PERMS).forEach(group => { permissionHtml += `<div class="gh">${esc(group)}</div>` + Object.entries(PERMS[group]).map(([permission,label]) => `<label><input type="checkbox" value="${esc(permission)}" ${selectedPerms.includes(permission) ? "checked" : ""}>${esc(label)}</label>`).join(""); });
+  $("cPerms").innerHTML = permissionHtml;
+  if (!$('cDept').options.length) {
+    $("cDept").innerHTML = Object.entries(DEPTS).map(([key,label]) => `<option value="${key}">${esc(label)}</option>`).join("");
+    $("cLevel").innerHTML = LEVELS.map(level => `<option value="${esc(level)}">${esc(level)}</option>`).join("");
+    $("eDept").innerHTML = $("cDept").innerHTML; $("eLevel").innerHTML = $("cLevel").innerHTML;
   }
-  previewPerms();
+  pickTile(tile, false); previewPerms();
 }
-
-function pickTile(id) {
+function pickTile(id, redraw = true) {
+  const choice = TILES.find(item => item.id === id && (item.cat !== "admin" || isSuper()));
+  if (!choice) return;
   tile = id;
-  const t = TILES.find(x => x.id === id);
-  document.querySelectorAll(".tile").forEach(e => e.classList.toggle("sel", e.dataset.tile === id));
-  \$("cStudent").style.display = t.cat === "student" ? "block" : "none";
-  \$("cStaff").style.display = t.cat === "student" ? "none" : "block";
-  \$("lblUser").textContent = t.cat === "student" ? "Student Roll / Reg ID" : "Staff / Admin username";
-  document.querySelectorAll("#cRoles input").forEach(i => i.checked = t.roles.includes(i.value));
-  if (t.cat === "staff" && id === "teacher") {
-    const f = document.querySelector("#cClasses input");
-    if (f && !checked("#cClasses").length) f.checked = true;
-  }
-  previewPerms();
+  document.querySelectorAll(".tile").forEach(element => element.classList.toggle("sel", element.dataset.tile === id));
+  $("cStudent").style.display = choice.cat === "student" ? "block" : "none";
+  $("cStaff").style.display = choice.cat === "student" ? "none" : "block";
+  $("cAdminEmail").style.display = choice.cat === "admin" ? "block" : "none";
+  $("cEmail").required = choice.cat === "admin";
+  $("lblUser").textContent = choice.cat === "student" ? "Username / Registration ID" : "Username";
+  if (redraw) previewPerms();
 }
-
 function previewPerms() {
-  const s = new Set(checked("#cPerms"));
-  checked("#cRoles").forEach(r => permsOfRole(r).forEach(p => s.add(p)));
-  const t = TILES.find(x => x.id === tile);
-  \$("cPreview").innerHTML = t && t.cat === "student" ? `<span class="pill">Student portal access only</span>` : ([...s].map(p => `<span class="pill">${esc(PLABEL[p] || p)}</span>`).join("") || `<span class="pill" style="background:#fef2f2;color:#b91c1c">No privileges selected</span>`);
+  if (!$('cPreview')) return;
+  const choice = TILES.find(item => item.id === tile) || TILES[0];
+  const all = new Set([...(choice.roles || []).flatMap(permsOfRole), ...checked("#cPerms")]);
+  $("cPreview").innerHTML = [...all].length ? [...all].map(permission => `<span class="pill">${esc(permission)}</span>`).join(" ") : `<span style="color:var(--muted);font-size:.82rem">No extra privileges selected.</span>`;
 }
-
-\$("createForm").addEventListener("submit", async e => {
-  e.preventDefault();
-  if (!can("users.create")) return alert("You do not have permission to create accounts.");
-  const t = TILES.find(x => x.id === tile);
-  const username = \$("cUser").value.trim();
-  if (!username) return;
-  if (S.users.some(u => ck(u.username).toLowerCase() === ck(username).toLowerCase())) return alert("That username / Reg ID already exists.");
-  if (t.cat === "admin" && !isSuper()) return alert("Only the Super Admin can create administrators.");
-
-  const u = {
-    id: "usr_" + Date.now(),
-    role: t.cat,
-    name: \$("cName").value.trim(),
-    username,
-    pass: \$("cPass").value.trim(),
-    dept: t.cat === "student" ? \$("cDept").value : "Faculty",
-    level: t.cat === "student" ? \$("cLevel").value : "Faculty",
-    staffRoles: t.cat === "student" ? [] : checked("#cRoles"),
-    managedClasses: t.cat === "student" ? [] : checked("#cClasses"),
-    customPerms: t.cat === "student" ? [] : checked("#cPerms"),
-    groups: checked("#cGroups"),
-    status: "active",
-    firstLogin: false,
-    createdAt: Date.now(),
-    createdBy: ME.name
-  };
-  if (t.cat === "admin" && !u.staffRoles.includes("Administrator")) u.staffRoles.push("Administrator");
-
-  await db.ref("users/" + ck(username)).set(u);
-  toast("Account created: " + u.name);
-  e.target.reset();
-  document.querySelectorAll("#createForm input[type=checkbox]").forEach(i => i.checked = false);
-  pickTile(tile);
-});
-
-\$("createForm").addEventListener("change", previewPerms);
-
-function genPass() {
-  const c = "ABCDEFGHJKMNPQRSTUVWXYZabcdefghijkmnpqrstuvwxyz23456789@#";
-  let p = "";
-  for (let i = 0; i < 10; i++) p += c[Math.floor(Math.random() * c.length)];
-  \$("cPass").value = p;
-}
-
-async function bulkImport() {
-  if (!can("users.create")) return alert("No permission.");
-  const lines = \$("bulk").value.split("\n").map(l => l.trim()).filter(Boolean);
-  let n = 0, skip = 0;
-  const up = {};
-  lines.forEach(l => {
-    const [name, username, pass, dept, level] = l.split(",").map(x => (x || "").trim());
-    if (!name || !username || !pass || S.users.some(u => ck(u.username).toLowerCase() === ck(username).toLowerCase())) { skip++; return; }
-    up[ck(username)] = {
-      id: "usr_" + Date.now() + n,
-      role: "student",
-      name,
-      username,
-      pass,
-      dept: DEPTS[dept] ? dept : "NIT",
-      level: LEVELS.includes(level) ? level : "Level 5",
-      staffRoles: [],
-      managedClasses: [],
-      groups: ["Students"],
-      status: "active",
-      firstLogin: false,
-      createdAt: Date.now(),
-      createdBy: ME.name
-    };
-    n++;
-  });
-  if (n) await db.ref("users").update(up);
-  alert(`Imported ${n} student(s). Skipped ${skip} (blank or duplicate).`);
-  \$("bulk").value = "";
-}
-
-function openEdit(k) {
-  const u = S.users.find(x => x._k === k || ck(x.username) === ck(k));
-  if (!u || !canTouch(u)) return;
-  \$("eKey").value = u._k || u.username;
-  \$("eName").value = u.name || "";
-  \$("eUser").value = u.username || "";
-  \$("ePass").value = isSuper() ? (u.pass || "") : "";
-  \$("ePass").placeholder = isSuper() ? "" : "Leave blank to keep current";
-  \$("ePass").required = isSuper();
-  \$("eRole").value = u.role || "student";
-  \$("eRole").querySelector("option[value=admin]").disabled = !isSuper();
-  \$("eLevel").value = u.level || "Level 5";
-  \$("eDept").value = u.dept || "NIT";
-  chkList(\$("eRoles"), roleNames(), u.staffRoles || [], "er");
-  chkList(\$("eClasses"), CLASSES, u.managedClasses || [], "ec");
-  chkList(\$("eGroups"), S.groups, u.groups || [], "eg");
-  let ph = "";
-  Object.keys(PERMS).forEach(g => {
-    ph += `<div class="gh">${g}</div>` + Object.keys(PERMS[g]).map(p => `<label><input type="checkbox" value="${p}" ${(u.customPerms || []).includes(p) ? "checked" : ""}>${PERMS[g][p]}</label>`).join("");
-  });
-  \$("ePerms").innerHTML = ph;
-  toggleEdit();
-  \$("editModal").style.display = "flex";
-}
-
-function toggleEdit() {
-  const r = \$("eRole").value;
-  \$("eStu").style.display = r === "student" ? "grid" : "none";
-  \$("eStf").style.display = r === "student" ? "none" : "block";
-}
-\$("eRole").addEventListener("change", toggleEdit);
-
-\$("editForm").addEventListener("submit", async e => {
-  e.preventDefault();
-  const k = \$("eKey").value, u = S.users.find(x => x._k === k || ck(x.username) === ck(k));
-  if (!u) return;
-  const nu = clean(u);
-  const newName = \$("eUser").value.trim();
-  nu.name = \$("eName").value.trim();
-  nu.username = newName;
-  if ($("ePass").value.trim()) nu.pass = $("ePass").value.trim();
-  nu.role = \$("eRole").value;
-  if (nu.role === "admin" && !isSuper()) return alert("Only Super Admin can make administrators.");
-
-  if (nu.role === "student") {
-    nu.level = \$("eLevel").value;
-    nu.dept = \$("eDept").value;
-    nu.staffRoles = [];
-    nu.managedClasses = [];
-    nu.customPerms = [];
-  } else {
-    nu.staffRoles = checked("#eRoles");
-    nu.managedClasses = checked("#eClasses");
-    nu.customPerms = checked("#ePerms");
-    if (nu.dept == null || nu.role !== "student") { nu.dept = "Faculty"; nu.level = "Faculty"; }
-  }
-  nu.groups = checked("#eGroups");
-
-  const nk = ck(newName), upd = {};
-  if (nk !== ck(k)) {
-    if (S.users.some(x => ck(x.username).toLowerCase() === nk.toLowerCase() && x._k !== k && ck(x.username) !== ck(k))) {
-      return alert("Username already taken.");
-    }
-    upd["users/" + ck(k)] = null;
-  }
-  upd["users/" + nk] = nu;
-
-  await db.ref().update(upd);
-  toast("Saved");
-  \$("editModal").style.display = "none";
-});
-
-async function toggleUser(k) {
-  const u = S.users.find(x => x._k === k || ck(x.username) === ck(k));
-  if (!u || !canTouch(u)) return;
-  const s = u.status === "disabled" ? "active" : "disabled";
-  await db.ref("users/" + ck(k) + "/status").set(s);
-}
-
-async function delUser(k) {
-  const u = S.users.find(x => x._k === k || ck(x.username) === ck(k));
-  if (!u || !canTouch(u)) return;
-  if (!confirm(`Permanently delete ${u.name}? This removes them on every device immediately.`)) return;
-  await db.ref("users/" + ck(k)).remove();
-}
-
-function impersonate(k) {
-  if (!isSuper()) return;
-  const u = S.users.find(x => x._k === k || ck(x.username) === ck(k));
-  if (!u) return;
-  localStorage.setItem("ACEJ_IMPERSONATE_USER", JSON.stringify(clean(u)));
-  window.open("/portal/", "_blank");
-}
-
 function renderFolders() {
-  \$("grpList").innerHTML = S.groups.map(g => {
-    const n = S.users.filter(u => (u.groups || []).includes(g)).length;
-    return `<div style="display:flex;justify-content:space-between;align-items:center;padding:9px 0;border-bottom:1px solid var(--border)"><div><i class="fa-solid fa-folder" style="color:var(--purple)"></i> <b>${esc(g)}</b> <span class="pill">${n} members</span></div><div><button class="btn sm" data-act="openGrp" data-g="${esc(g)}">Open</button> <button class="btn sm red" data-act="delGrp" data-g="${esc(g)}"><i class="fa-solid fa-trash"></i></button></div></div>`;
-  }).join("") || "<p style='color:#94a3b8'>No groups yet.</p>";
-
-  let h = "";
-  Object.keys(DEPTS).forEach(d => {
-    const st = S.users.filter(u => u.role === "student" && u.dept === d);
-    if (!st.length) return;
-    h += `<details><summary><i class="fa-solid fa-building-columns"></i> ${esc(DEPTS[d])} (${st.length})</summary>`;
-    LEVELS.forEach(l => {
-      const s2 = st.filter(u => u.level === l);
-      if (s2.length) h += `<details><summary>${l} (${s2.length})</summary>${s2.map(u => `<div class="leaf"><i class="fa-solid fa-user-graduate"></i> ${esc(u.name)} <code>${esc(u.username)}</code></div>`).join("")}</details>`;
-    });
-    h += "</details>";
-  });
-
-  roleNames().forEach(r => {
-    const st = S.users.filter(u => (u.staffRoles || []).includes(r));
-    if (st.length) h += `<details><summary><i class="fa-solid fa-id-badge"></i> ${esc(r)} (${st.length})</summary>${st.map(u => `<div class="leaf">${esc(u.name)} <code>${esc(u.username)}</code></div>`).join("")}</details>`;
-  });
-
-  \$("tree").innerHTML = h || "<p style='color:#94a3b8'>No accounts yet.</p>";
-  if (openGroup) showGroup(openGroup);
+  if (!$('grpList')) return;
+  $("grpList").innerHTML = S.groups.length ? S.groups.map(group => `<div style="display:flex;align-items:center;justify-content:space-between;padding:8px;border-bottom:1px solid var(--border)"><button class="fb" data-open-group="${esc(group)}">${esc(group)} <span class="pill">${S.users.filter(user => (user.groups||[]).includes(group)).length}</span></button><button class="btn sm red" data-remove-group="${esc(group)}" ${can("groups.manage") ? "" : "disabled"}><i class="fa-solid fa-trash"></i></button></div>`).join("") : `<p style="color:var(--muted)">No groups defined.</p>`;
+  const buckets = {};
+  S.users.forEach(user => { const key = user.role === "student" ? (classOf(user) || "Unassigned students") : (user.role === "admin" ? "Administrators" : "Staff"); (buckets[key] ||= []).push(user); });
+  $("tree").innerHTML = Object.keys(buckets).sort().map(label => `<details><summary>${esc(label)} (${buckets[label].length})</summary>${buckets[label].map(user => `<div class="leaf">${esc(user.name)} · ${esc(user.username)}</div>`).join("")}</details>`).join("") || `<p style="color:var(--muted)">No accounts yet.</p>`;
+  const detail = $("grpDetail");
+  if (openGroup && S.groups.includes(openGroup)) { detail.style.display = "block"; detail.innerHTML = `<h3>${esc(openGroup)}</h3><p>${S.users.filter(user => (user.groups||[]).includes(openGroup)).map(user => esc(user.name)).join(", ") || "No members in this group."}</p>`; }
+  else detail.style.display = "none";
 }
-
-function showGroup(g) {
-  openGroup = g;
-  const m = S.users.filter(u => (u.groups || []).includes(g)), non = S.users.filter(u => !(u.groups || []).includes(g));
-  const d = \$("grpDetail");
-  d.style.display = "block";
-  d.innerHTML = `<h3><i class="fa-solid fa-folder-open" style="color:var(--purple)"></i> ${esc(g)} — ${m.length} member(s)</h3>
-   <div style="display:flex;gap:8px;margin-bottom:12px"><select id="addMember">${non.map(u => `<option value="\${esc(u._k || u.username)}">${esc(u.name)} (${esc(u.username)})</option>`).join("")}</select><button class="btn" data-act="addMember" data-g="${esc(g)}"><i class="fa-solid fa-user-plus"></i> Add to folder</button></div>
-   ${m.map(u => `<span class="pill" style="padding:5px 9px;font-size:.78rem">\${esc(u.name)} <a href="#" data-act="rmMember" data-g="${esc(g)}" data-k="${esc(u._k || u.username)}" style="color:#ef4444;text-decoration:none">&times;</a></span>`).join("") || "<p style='color:#94a3b8'>Empty folder.</p>"}`;
-}
-
-async function setMember(g, k, add) {
-  const u = S.users.find(x => x._k === k || ck(x.username) === ck(k));
-  if (!u) return;
-  let gs = (u.groups || []).filter(x => x !== g);
-  if (add) gs.push(g);
-  await db.ref("users/" + ck(k) + "/groups").set(gs);
-}
-
-\$("grpForm").addEventListener("submit", async e => {
-  e.preventDefault();
-  if (!can("groups.manage")) return;
-  const n = \$("gName").value.trim();
-  if (n && !S.groups.includes(n)) {
-    await db.ref("groups").set(S.groups.concat(n));
-  }
-  \$("gName").value = "";
-});
-
-async function delGrp(g) {
-  if (!confirm(`Delete folder "${g}"? Members stay, only the folder tag is removed.`)) return;
-  const upd = { groups: S.groups.filter(x => x !== g) };
-  await db.ref("groups").set(upd.groups);
-  const u2 = {};
-  S.users.forEach(u => {
-    if ((u.groups || []).includes(g)) u2["users/" + ck(u._k || u.username) + "/groups"] = u.groups.filter(x => x !== g);
-  });
-  if (Object.keys(u2).length) await db.ref().update(u2);
-  if (openGroup === g) { openGroup = null; \$("grpDetail").style.display = "none"; }
-}
-
-function marksFor(cls, u) {
-  const uk = ck(u.username).toLowerCase();
-  let cw1 = 0, cw2 = 0, cat = 0, exam = 0;
-  const c = S.marks[cls];
-  if (c) Object.keys(c).forEach(co => {
-    const d = c[co] && c[co][uk];
-    if (d) {
-      cw1 = Math.max(cw1, parseInt(d.cw1) || 0);
-      cw2 = Math.max(cw2, parseInt(d.cw2) || 0);
-      cat = Math.max(cat, parseInt(d.cat) || 0);
-      exam = Math.max(exam, parseInt(d.exam) || 0);
-    }
-  });
-  return { cw1, cw2, cat, exam, total: cw1 + cw2 + cat + exam };
-}
-
 function renderClasses() {
-  if (!\$("classCards")) return;
-  \$("classCards").innerHTML = CLASSES.map(c => {
-    const st = S.users.filter(u => u.role === "student" && classOf(u) === c);
-    const tc = S.users.filter(u => u.role !== "student" && (u.managedClasses || []).includes(c));
-    const ms = st.map(u => marksFor(c, u).total), avg = ms.length ? Math.round(ms.reduce((a, b) => a + b, 0) / ms.length) : 0, comp = ms.filter(x => x >= 70).length;
-    return `<div class="card cc" style="margin:0"><div style="display:flex;justify-content:space-between"><h3 style="margin:0">${esc(c)}</h3><button class="btn sm" data-act="openClass" data-c="${esc(c)}">Details</button></div>
-    <div class="big">${st.length} <span style="font-size:.8rem;color:var(--muted);font-weight:600">students</span></div>
-    <div style="font-size:.82rem;color:var(--muted)">Average ${avg}% · ${comp} competent</div><div class="bar"><i style="width:${avg}%"></i></div>
-    <div style="font-size:.8rem"><b>Teachers:</b> ${tc.length ? tc.map(t => `<span class="pill role">\${esc(t.name)}</span>`).join("") : "<span style='color:#b91c1c'>none assigned</span>"}</div></div>`;
+  if (!$('classCards')) return;
+  $("classCards").innerHTML = CLASSES.map(className => {
+    const students = S.users.filter(user => user.role === "student" && classOf(user) === className).length;
+    return `<div class="card cc"><h3>${esc(className)}</h3><div class="big">${students} students</div><button class="btn sm" data-class="${esc(className)}">View class</button></div>`;
   }).join("");
-
-  \$("tBody").innerHTML = S.users.filter(u => u.role !== "student" && (u.staffRoles || []).concat(u.managedClasses || []).length).map(t => {
-    const reach = (t.managedClasses || []).reduce((n, c) => n + S.users.filter(u => u.role === "student" && classOf(u) === c).length, 0);
-    return `<tr><td><b>${esc(t.name)}</b></td><td>${(t.staffRoles || []).map(r => `<span class="pill">\${esc(r)}</span>`).join("")}</td><td>${(t.managedClasses || []).map(c => `<span class="pill role">\${esc(c)}</span>`).join("") || "—"}</td><td>${reach}</td></tr>`;
-  }).join("") || `<tr><td colspan="4" style="text-align:center;color:#94a3b8;padding:18px">No staff assigned yet.</td></tr>`;
-
-  if (openClassName) showClass(openClassName);
+  const detail = $("classDetail");
+  if (openClassName) {
+    const students = S.users.filter(user => user.role === "student" && classOf(user) === openClassName);
+    detail.style.display = "block";
+    detail.innerHTML = `<h3>${esc(openClassName)}</h3><div class="tbl"><table><thead><tr><th>Registration ID / Username</th><th>Student</th><th>Status</th></tr></thead><tbody>${students.map(user => `<tr><td>${esc(user.username)}</td><td>${esc(user.name)}</td><td>${esc(user.status||"active")}</td></tr>`).join("") || `<tr><td colspan="3">No students in this class.</td></tr>`}</tbody></table></div>`;
+  } else detail.style.display = "none";
+  $("tBody").innerHTML = S.users.filter(user => user.role === "staff" || user.role === "admin").map(user => {
+    const classes = user.classes || [];
+    const studentCount = classes.reduce((sum, name) => sum + S.users.filter(student => student.role === "student" && classOf(student) === name).length, 0);
+    return `<tr><td>${esc(user.name)}</td><td>${esc((user.staffRoles||[]).join(", ") || user.role)}</td><td>${esc(classes.join(", ") || "—")}</td><td>${studentCount}</td></tr>`;
+  }).join("") || `<tr><td colspan="4">No staff accounts.</td></tr>`;
 }
-
-function showClass(c) {
-  openClassName = c;
-  const st = S.users.filter(u => u.role === "student" && classOf(u) === c);
-  const tc = S.users.filter(u => u.role !== "student" && (u.managedClasses || []).includes(c));
-  const d = \$("classDetail");
-  d.style.display = "block";
-  d.innerHTML = `<h3><i class="fa-solid fa-school"></i> ${esc(c)}</h3><p style="margin-bottom:10px"><b>Teachers / managers:</b> ${tc.map(t => `<span class="pill role">${esc(t.name)} ·${esc((t.staffRoles || []).join(", ") || "staff")}</span>`).join("") || "none"}</p>
-  <div class="tbl"><table><thead><tr><th>Reg ID</th><th>Student</th><th>Total</th><th>Status</th></tr></thead><tbody>${st.map(u => {
-    const m = marksFor(c, u);
-    return `<tr><td><code>\${esc(u.username)}</code></td><td>${esc(u.name)}</td><td><b>${m.total}%</b></td><td><span class="pill ${m.total >= 70 ? "ok" : "bad"}">${m.total >= 70 ? "Competent" : "In progress"}</span></td></tr>`;
-  }).join("") || "<tr><td colspan=4 style='color:#94a3b8'>No students.</td></tr>"}</tbody></table></div>`;
-}
-
-function renderMarks() {
-  if (!\$("clsBtns")) return;
-  \$("clsBtns").innerHTML = CLASSES.map(c => `<button class="fb ${c === curClass ? "active" : ""}" data-mc="${esc(c)}">${esc(c)}</button>`).join("");
-  const st = S.users.filter(u => u.role === "student" && classOf(u) === curClass);
-  \$("mBody").innerHTML = st.map(u => {
-    const m = marksFor(curClass, u);
-    return `<tr><td><code>${esc(u.username)}</code></td><td><b>${esc(u.name)}</b></td><td>${m.cw1}</td><td>${m.cw2}</td><td>${m.cat}</td><td>${m.exam}</td><td><b style="color:${m.total >= 70 ? "#047857" : "#b45309"}">${m.total}%</b></td><td><span class="pill ${m.total >= 70 ? "ok" : "bad"}">${m.total >= 70 ? "Competent" : "In progress"}</span></td></tr>`;
-  }).join("") || `<tr><td colspan="8" style="text-align:center;color:#94a3b8;padding:20px">No students in ${esc(curClass)}.</td></tr>`;
-}
-
-function dl(name, text) {
-  const a = document.createElement("a");
-  a.href = URL.createObjectURL(new Blob([text], { type: "text/csv;charset=utf-8" }));
-  a.download = name;
-  a.click();
-}
-const q = s => '"' + String(s == null ? "" : s).replace(/"/g, '""') + '"';
-
-function exportMarks() {
-  let c = "Reg ID,Name,Class,CW1,CW2,CAT,Exam,Total,Status\n";
-  S.users.filter(u => u.role === "student" && classOf(u) === curClass).forEach(u => {
-    const m = marksFor(curClass, u);
-    c += [q(u.username), q(u.name), q(curClass), m.cw1, m.cw2, m.cat, m.exam, m.total, q(m.total >= 70 ? "Competent" : "In Progress")].join(",") + "\n";
-  });
-  dl(curClass.replace(/\s+/g, "_") + "_marks.csv", c);
-}
-
-function exportUsers() {
-  let c = "Type,Name,Username,Class,Roles,Groups,Status\n";
-  S.users.forEach(u => {
-    c += [q(u.role), q(u.name), q(u.username), q(u.role === "student" ? classOf(u) : (u.managedClasses || []).join("; ")), q((u.staffRoles || []).join("; ")), q((u.groups || []).join("; ")), q(u.status)].join(",") + "\n";
-  });
-  dl("accounts.csv", c);
-}
-
-function renderAnn() {
-  if (!\$("annList")) return;
-  const a = Object.entries(S.ann).sort((x, y) => (y[1].createdAt || y[1].ts || 0) - (x[1].createdAt || x[1].ts || 0));
-  \$("annList").innerHTML = a.map(([k, v]) => `<div style="padding:10px 0;border-bottom:1px solid var(--border)"><b>${esc(v.title)}</b> <span class="pill">${esc(v.target || v.to || "all")}</span><div style="font-size:.84rem;margin:4px 0">${esc(v.body || v.msg || "")}</div><small style="color:var(--muted)">${new Date(v.createdAt || v.ts || Date.now()).toLocaleString()} · ${esc(v.author || v.by || "Admin")}</small> <button class="btn sm red" data-act="delAnn" data-k="${esc(k)}"><i class="fa-solid fa-trash"></i></button></div>`).join("") || "<p style='color:#94a3b8'>Nothing published.</p>";
-}
-
-\$("annForm").addEventListener("submit", async e => {
-  e.preventDefault();
-  if (!can("announce.post")) return;
-  const title = \$("aTitle").value.trim(), msg = $("aMsg").value.trim(), to = $("aTo").value;
-  await db.ref("broadcast").set({ title, body: msg, target: to, to, author: ME.name, by: ME.name, createdAt: Date.now(), ts: Date.now() });
-  toast("Announcement published!");
-  e.target.reset();
-});
-
-function renderRoles() {
-  if (!isSuper() || !\$("roleCards")) return;
-  const open = [...document.querySelectorAll("#roleCards details[open]")].map(d => d.dataset.r);
-  \$("roleCards").innerHTML = Object.entries(S.roles).map(([k, r]) => {
-    const n = S.users.filter(u => (u.staffRoles || []).includes(r.name)).length;
-    let ph = "";
-    Object.keys(PERMS).forEach(g => {
-      ph += `<div class="gh">${g}</div>` + Object.keys(PERMS[g]).map(p => `<label><input type="checkbox" value="${p}" ${(r.perms || []).includes(p) ? "checked" : ""}>${PERMS[g][p]}</label>`).join("");
+function flattenMarks() {
+  const out = [];
+  const scoreKeys = ["cw1","CW1","cw2","CW2","cat","CAT","exam","Exam","total","Total","status","name","username","regId","className","class"];
+  Object.entries(S.marks || {}).forEach(([outerKey, value]) => {
+    if (!value || typeof value !== "object") return;
+    const looksLikeRecord = scoreKeys.some(key => Object.prototype.hasOwnProperty.call(value, key));
+    if (looksLikeRecord) out.push({key:outerKey, ...value, className:value.className || value.class || ""});
+    else Object.entries(value).forEach(([innerKey, record]) => {
+      if (record && typeof record === "object") out.push({key:innerKey, ...record, className:record.className || record.class || outerKey});
     });
-    return `<div class="card" style="margin:0"><h3><i class="fa-solid fa-id-badge"></i> ${esc(r.name)} <span class="pill">${n} users</span></h3><p style="font-size:.8rem;color:var(--muted);margin-bottom:8px">${esc(r.desc || "")}</p>
-    <details data-r="${esc(k)}" ${open.includes(k) ? "open" : ""}><summary style="cursor:pointer;font-weight:700;color:var(--blue);margin-bottom:6px">${(r.perms || []).length} privileges — edit</summary><div class="chk" id="rp_${esc(k)}" style="grid-template-columns:1fr">${ph}</div>
-    <div style="margin-top:8px"><button class="btn sm green" data-act="saveRole" data-k="${esc(k)}">Save</button> <button class="btn sm red" data-act="delRole" data-k="${esc(k)}">Delete role</button></div></details></div>`;
+  });
+  return out;
+}
+function markVal(record, keys) { for (const key of keys) if (record[key] != null) return record[key]; return "—"; }
+function renderMarks() {
+  if (!$('mBody')) return;
+  $("clsBtns").innerHTML = CLASSES.map(className => `<button class="fb ${curClass===className?"active":""}" data-markclass="${esc(className)}">${esc(className)}</button>`).join("");
+  let records = flattenMarks();
+  records = records.filter(record => {
+    const user = S.users.find(item => item.username === (record.username || record.regId || record.key) || item._k === (record.username || record.regId || record.key));
+    const recordClass = record.className || (user ? classOf(user) : "");
+    return !recordClass || recordClass === curClass;
+  });
+  $("mBody").innerHTML = records.length ? records.map(record => {
+    const key = record.regId || record.username || record.key || "—";
+    const user = S.users.find(item => item.username === key || item._k === key);
+    const name = record.name || (user && user.name) || key;
+    const total = record.total ?? record.Total ?? [record.cw1??record.CW1,record.cw2??record.CW2,record.cat??record.CAT,record.exam??record.Exam].reduce((sum,val)=>sum+(Number(val)||0),0);
+    return `<tr><td>${esc(key)}</td><td>${esc(name)}</td><td>${esc(markVal(record,["cw1","CW1"]))}</td><td>${esc(markVal(record,["cw2","CW2"]))}</td><td>${esc(markVal(record,["cat","CAT"]))}</td><td>${esc(markVal(record,["exam","Exam"]))}</td><td>${esc(total)}</td><td>${esc(markVal(record,["status","Status"]))}</td></tr>`;
+  }).join("") : `<tr><td colspan="8" style="text-align:center;color:#94a3b8;padding:24px">No marks records found for ${esc(curClass)}.</td></tr>`;
+}
+function renderAnn() {
+  if (!$('annList')) return;
+  const entries = Object.entries(S.ann || {}).map(([key,item])=>({key,...item})).sort((a,b)=>Number(b.ts||0)-Number(a.ts||0));
+  $("annList").innerHTML = entries.length ? entries.map(item => `<div style="border-bottom:1px solid var(--border);padding:10px 0"><b>${esc(item.title||"Announcement")}</b><div style="font-size:.8rem;color:var(--muted)">${esc(item.to||"all")} · ${item.ts ? esc(new Date(Number(item.ts)).toLocaleString()) : ""}</div><p style="white-space:pre-wrap;margin:6px 0">${esc(item.message||item.msg||"")}</p><button class="btn sm red" data-del-ann="${esc(item.key)}" ${isSuper()||can("announce.post") ? "" : "disabled"}>Delete</button></div>`).join("") : `<p style="color:var(--muted)">No announcements published.</p>`;
+}
+function renderRoles() {
+  if (!$('roleCards')) return;
+  $("roleCards").innerHTML = Object.entries(S.roles || {}).map(([key,role]) => {
+    const permissionHtml = Object.keys(PERMS).map(group => `<div class="gh">${esc(group)}</div>` + Object.keys(PERMS[group]).map(permission => `<label><input type="checkbox" data-roleperm="${esc(key)}" value="${esc(permission)}" ${(role.perms||[]).includes(permission)?"checked":""} ${isSuper()?"":"disabled"}>${esc(PERMS[group][permission])}</label>`).join("")).join("");
+    return `<div class="card"><h3>${esc(role.name||key)}</h3><p style="color:var(--muted);font-size:.82rem;margin-bottom:10px">${esc(role.desc||"")}</p><div class="chk">${permissionHtml}</div><div class="strip" style="margin-top:10px"><span class="pill">${(role.perms||[]).length} privileges</span><button class="btn sm red" data-delete-role="${esc(key)}" ${isSuper()?"":"disabled"}>Delete role</button></div></div>`;
   }).join("");
 }
-
-\$("roleForm").addEventListener("submit", async e => {
-  e.preventDefault();
-  if (!isSuper()) return;
-  const n = \$("rName").value.trim();
-  if (!n) return;
-  await db.ref("roleDefs/" + ck(n)).set({ name: n, desc: \$("rDesc").value.trim(), perms: [] });
-  e.target.reset();
-});
-
-async function saveRole(k) {
-  const p = [...document.querySelectorAll("#rp_" + CSS.escape(k) + " input:checked")].map(i => i.value);
-  await db.ref("roleDefs/" + k + "/perms").set(p);
-  toast("Role saved — applies instantly");
-}
-
-async function delRole(k) {
-  const r = S.roles[k];
-  if (!confirm(`Delete role "${r.name}"? Users keep the label but lose its privileges.`)) return;
-  await db.ref("roleDefs/" + k).remove();
-}
-
 function renderAudit() {
-  if (!isSuper() || !\$("auBody")) return;
-  \$("auBody").innerHTML = S.audit.map(a => `<tr><td style="white-space:nowrap">${new Date(a.ts).toLocaleString()}</td><td>${esc(a.by)}</td><td><span class="pill">${esc(a.action)}</span></td><td>${esc(a.detail)}</td></tr>`).join("") || `<tr><td colspan="4" style="color:#94a3b8;text-align:center;padding:18px">No activity yet.</td></tr>`;
+  if (!$('auBody')) return;
+  if (!isSuper()) { $("auBody").innerHTML = `<tr><td colspan="4">Super Admin access required.</td></tr>`; return; }
+  $("auBody").innerHTML = S.audit.length ? S.audit.map(item => `<tr><td>${item.ts?esc(new Date(Number(item.ts)).toLocaleString()):"—"}</td><td>${esc(item.by||"—")}</td><td>${esc(item.action||"—")}</td><td>${esc(item.detail||"")}</td></tr>`).join("") : `<tr><td colspan="4">No audit events yet.</td></tr>`;
 }
-
-document.addEventListener("click", e => {
-  const nb = e.target.closest("#nav button[data-tab]"); if (nb) return go(nb.dataset.tab);
-  const gb = e.target.closest("[data-go]"); if (gb) return go(gb.dataset.go);
-  const t = e.target.closest("[data-tile]"); if (t) return pickTile(t.dataset.tile);
-  const c = e.target.closest("[data-cat]"); if (c) { catF = c.dataset.cat; return renderUsers(); }
-  const g = e.target.closest("[data-grp]"); if (g) { grpF = g.dataset.grp; return renderUsers(); }
-  const mc = e.target.closest("[data-mc]"); if (mc) { curClass = mc.dataset.mc; return renderMarks(); }
-  
-  const a = e.target.closest("[data-act]"); if (!a) return;
-  const k = a.dataset.k, act = a.dataset.act;
-  ({
-    logout, genPass, bulkImport, exportMarks, exportUsers,
-    closeEdit: () => \$("editModal").style.display = "none",
-    edit: () => openEdit(k), toggle: () => toggleUser(k), del: () => delUser(k), impersonate: () => impersonate(k),
-    reveal: () => { const p = a.previousElementSibling; p.textContent = p.textContent === "••••••" ? (p.dataset.pw || "(none)") : "••••••"; },
-    openGrp: () => showGroup(a.dataset.g), delGrp: () => delGrp(a.dataset.g),
-    addMember: () => { const v = \$("addMember").value; if (v) setMember(a.dataset.g, v, true); },
-    rmMember: () => setMember(a.dataset.g, k, false),
-    openClass: () => showClass(a.dataset.c),
-    delAnn: () => db.ref("broadcast").remove(),
-    saveRole: () => saveRole(k), delRole: () => delRole(k)
-  })[act]?.();
+function exportCsv(filename, rows) {
+  const csv = rows.map(row => row.map(value => `"${String(value??"").replace(/"/g,'""')}"`).join(",")).join("\r\n");
+  const blob = new Blob(["\uFEFF"+csv], {type:"text/csv;charset=utf-8;"});
+  const url = URL.createObjectURL(blob), anchor = document.createElement("a");
+  anchor.href = url; anchor.download = filename; anchor.click(); URL.revokeObjectURL(url);
+}
+function exportUsers() {
+  if (!can("users.view")) return toast("Permission denied.");
+  exportCsv("acej-accounts.csv", [["Type","Full name","Username","Class","Roles","Status"], ...S.users.map(user=>[user.role,user.name,user.username,classOf(user),(user.staffRoles||[]).join("; "),user.status||"active"])]);
+  log("export-users", "Exported account list");
+}
+function exportMarks() {
+  if (!can("marks.view")) return toast("Permission denied.");
+  const rows = [["Reg ID","Name","CW1","CW2","CAT","Exam","Total","Status"]];
+  [...document.querySelectorAll("#mBody tr")].forEach(tr => rows.push([...tr.querySelectorAll("td")].map(td=>td.textContent.trim())));
+  exportCsv("acej-marks.csv", rows); log("export-marks", `Exported marks for ${curClass}`);
+}
+function openEdit(key) {
+  const user = S.users.find(item => item._k === key);
+  if (!user || !can("users.edit") || !canTouch(user)) return toast("You do not have permission to edit this account.");
+  $("eKey").value = key; $("eName").value = user.name || ""; $("eUser").value = user.username || ""; $("ePass").value = ""; $("eRole").value = user.role || "student";
+  $("eLevel").value = user.level || LEVELS[0]; $("eDept").value = user.dept || "NIT";
+  chkList($("eRoles"), roleNames(), user.staffRoles||[], "er"); chkList($("eClasses"), CLASSES, user.classes||[], "ec"); chkList($("eGroups"), S.groups, user.groups||[], "eg");
+  const selectedPerms = user.customPerms || [];
+  let permissionHtml = ""; Object.keys(PERMS).forEach(group=>{ permissionHtml += `<div class="gh">${esc(group)}</div>` + Object.entries(PERMS[group]).map(([permission,label])=>`<label><input type="checkbox" value="${esc(permission)}" ${selectedPerms.includes(permission)?"checked":""}>${esc(label)}</label>`).join(""); }); $("ePerms").innerHTML = permissionHtml;
+  $("eRole").disabled = !isSuper() && user.role === "admin";
+  $("eStu").style.display = user.role === "student" ? "grid" : "none"; $("eStf").style.display = user.role === "student" ? "none" : "block";
+  $("editModal").style.display = "flex";
+}
+function closeEdit() { $("editModal").style.display = "none"; }
+async function handleCreate(event) {
+  event.preventDefault();
+  if (!can("users.create")) return toast("You do not have permission to create accounts.");
+  const choice = TILES.find(item=>item.id===tile); if (!choice) return;
+  if (choice.cat === "admin" && !isSuper()) return toast("Only the Super Admin can create administrator accounts.");
+  const name = $("cName").value.trim(), username = $("cUser").value.trim(), password = $("cPass").value;
+  const email = $("cEmail").value.trim();
+  if (!name || !username || password.length < 8) return alert("Enter a name, username and a password with at least 8 characters.");
+  if (choice.cat === "admin" && (!isSuper() || !email || Object.values(firebaseConfig).some(value => String(value).startsWith("PASTE_")))) return alert("Only the Super Admin can create an admin account. Complete Firebase config and enter an admin sign-in email.");
+  const key = ck(username);
+  let secondaryAuth = null, createdAuthUser = null;
+  try {
+    const existing = await db.ref(`users/${key}`).once("value");
+    if (existing.exists()) return alert("That username/registration ID already exists. Choose another one.");
+    const data = {name, username, pass:password, role:choice.cat === "student" ? "student" : choice.cat === "admin" ? "admin" : "staff", status:"active", groups:checked("#cGroups"), createdAt:Date.now()};
+    if (data.role === "student") { data.dept = $("cDept").value; data.level = $("cLevel").value; }
+    else { data.staffRoles = [...new Set([...(choice.roles||[]),...checked("#cRoles")])]; data.classes = checked("#cClasses"); data.customPerms = checked("#cPerms"); }
+    const updates = {};
+    updates[`users/${key}`] = data;
+    if (data.role === "admin") {
+      const secondaryApp = firebase.apps.find(item => item.name === "AdminCreator") || firebase.initializeApp(firebaseConfig, "AdminCreator");
+      secondaryAuth = secondaryApp.auth();
+      const authCredential = await secondaryAuth.createUserWithEmailAndPassword(email, password);
+      createdAuthUser = authCredential.user;
+      data.email = email; data.authUid = createdAuthUser.uid; updates[`users/${key}`] = data;
+      updates[`adminAccess/${createdAuthUser.uid}`] = {active:true, isSuper:false, name, email, perms:permissionsForAdminProfile(data), createdAt:Date.now()};
+    }
+    await db.ref().update(updates);
+    if (secondaryAuth) await secondaryAuth.signOut();
+    await log("create-user", `${username} (${data.role})`);
+    $("createForm").reset(); $("cPass").type="password"; tile="student"; renderCreateLists(); toast(data.role === "admin" ? "Admin account created in Firebase Authentication and Realtime Database." : "Account created and saved to Firebase."); go("users");
+  } catch (err) {
+    if (createdAuthUser) { try { await createdAuthUser.delete(); } catch (cleanupError) { console.error("Could not clean up newly-created auth user", cleanupError); } }
+    if (secondaryAuth) { try { await secondaryAuth.signOut(); } catch (_) {} }
+    alert("Could not create account: "+friendlyError(err));
+  }
+}
+async function handleEdit(event) {
+  event.preventDefault();
+  const key = $("eKey").value, old = S.users.find(item=>item._k===key);
+  if (!old || !can("users.edit") || !canTouch(old)) return toast("You do not have permission to edit this account.");
+  const username = $("eUser").value.trim(), name = $("eName").value.trim();
+  if (!username || !name) return alert("Name and username are required.");
+  if (!isSuper() && $("eRole").value === "admin") return alert("Only the Super Admin can assign the administrator category.");
+  const newKey = ck(username);
+  try {
+    const duplicate = newKey !== key ? await db.ref(`users/${newKey}`).once("value") : null;
+    if (duplicate && duplicate.exists()) return alert("That username already exists.");
+    const nextRole = $("eRole").value;
+    if (old.role !== "admin" && nextRole === "admin") return alert("To grant admin-console access, use Create Account → Administrator. That workflow also creates Firebase Authentication and adminAccess records.");
+    const updated = {...old, name, username, role:nextRole, groups:checked("#eGroups")}; delete updated._k;
+    if ($("ePass").value) updated.pass = $("ePass").value;
+    if (updated.role === "student") { updated.level = $("eLevel").value; updated.dept = $("eDept").value; delete updated.staffRoles; delete updated.classes; delete updated.customPerms; }
+    else { updated.staffRoles = checked("#eRoles"); updated.classes = checked("#eClasses"); updated.customPerms = checked("#ePerms"); delete updated.level; delete updated.dept; }
+    const updates = {}; updates[`users/${newKey}`] = updated; if (newKey !== key) updates[`users/${key}`] = null;
+    if (old.role === "admin" && nextRole !== "admin" && old.authUid) updates[`adminAccess/${old.authUid}/active`] = false;
+    if (old.role === "admin" && nextRole === "admin" && old.authUid) updates[`adminAccess/${old.authUid}/perms`] = permissionsForAdminProfile(updated);
+    if (old.role === "admin" && nextRole === "admin" && old.authUid) updates[`adminAccess/${old.authUid}/name`] = name;
+    await db.ref().update(updates); await log("edit-user", `${old.username} → ${username}`); closeEdit(); toast("Account updated.");
+  } catch (err) { alert("Could not update account: "+friendlyError(err)); }
+}
+async function toggleUser(key) {
+  const user = S.users.find(item=>item._k===key); if (!user || !can("users.edit") || !canTouch(user)) return toast("Permission denied.");
+  const next = user.status === "disabled" ? "active" : "disabled";
+  if (!confirm(`${next === "disabled" ? "Disable" : "Enable"} ${user.username}?`)) return;
+  try {
+    const updates = {}; updates[`users/${key}/status`] = next;
+    if (user.role === "admin" && user.authUid) updates[`adminAccess/${user.authUid}/active`] = next !== "disabled";
+    await db.ref().update(updates); await log("set-user-status", `${user.username}: ${next}`); toast(`Account ${next}.`);
+  }
+  catch (err) { alert("Could not update account: "+friendlyError(err)); }
+}
+async function deleteUser(key) {
+  const user = S.users.find(item=>item._k===key); if (!user || !can("users.delete") || !canTouch(user)) return toast("Permission denied.");
+  if (user.role === "admin" && !isSuper()) return toast("Only the Super Admin can delete administrator records.");
+  if (!confirm(`Delete account ${user.username}? This action cannot be undone.`)) return;
+  try {
+    const updates = {}; updates[`users/${key}`] = null;
+    if (user.role === "admin" && user.authUid) updates[`adminAccess/${user.authUid}/active`] = false;
+    await db.ref().update(updates); await log("delete-user", `${user.username} (${user.role})`); toast("Account deleted.");
+  }
+  catch (err) { alert("Could not delete account: "+friendlyError(err)); }
+}
+async function bulkImport() {
+  if (!can("users.create")) return toast("Permission denied.");
+  const lines = $("bulk").value.split(/\r?\n/).map(line=>line.trim()).filter(Boolean);
+  if (!lines.length) return toast("Paste CSV rows before importing.");
+  const updates = {}, errors = []; let added = 0;
+  for (const line of lines) {
+    const parts = line.split(",").map(value=>value.trim());
+    if (parts.length < 5) { errors.push(`Invalid row: ${line}`); continue; }
+    const [name, username, password, dept, level] = parts;
+    if (!name || !username || password.length < 8 || !DEPTS[dept] || !LEVELS.includes(level)) { errors.push(`Check fields/password in row: ${line}`); continue; }
+    const key = ck(username); if (S.users.some(user=>user._k===key) || updates[`users/${key}`]) { errors.push(`Duplicate username: ${username}`); continue; }
+    updates[`users/${key}`] = {name,username,pass:password,dept,level,role:"student",status:"active",groups:[],createdAt:Date.now()}; added++;
+  }
+  if (!added) return alert("Nothing imported.\n"+errors.slice(0,8).join("\n"));
+  try { await db.ref().update(updates); await log("bulk-import", `Imported ${added} student records; rejected ${errors.length}`); $("bulk").value=""; alert(`Imported ${added} accounts.\nRejected ${errors.length}.`+(errors.length?"\n"+errors.slice(0,8).join("\n"):"")); }
+  catch (err) { alert("Bulk import failed: "+friendlyError(err)); }
+}
+async function addGroup(event) {
+  event.preventDefault(); if (!can("groups.manage")) return toast("Permission denied.");
+  const name = $("gName").value.trim(); if (!name) return;
+  if (S.groups.some(group=>group.toLowerCase()===name.toLowerCase())) return alert("That group already exists.");
+  try { await db.ref("groups").set([...S.groups,name]); await log("create-group", name); $("grpForm").reset(); toast("Group added."); }
+  catch (err) { alert("Could not create group: "+friendlyError(err)); }
+}
+async function removeGroup(name) {
+  if (!can("groups.manage")) return toast("Permission denied.");
+  if (!confirm(`Delete group ${name}? User membership labels will also be removed.`)) return;
+  try {
+    const updates = {groups:S.groups.filter(group=>group!==name)};
+    S.users.filter(user=>(user.groups||[]).includes(name)).forEach(user=>{updates[`users/${user._k}/groups`] = user.groups.filter(group=>group!==name);});
+    await db.ref().update(updates); await log("delete-group", name); if(openGroup===name)openGroup=null;
+  } catch (err) { alert("Could not delete group: "+friendlyError(err)); }
+}
+async function publishAnnouncement(event) {
+  event.preventDefault(); if (!can("announce.post")) return toast("Permission denied.");
+  const title = $("aTitle").value.trim(), message = $("aMsg").value.trim(); if (!title || !message) return;
+  try { await db.ref("broadcast").push({title,message,msg:message,to:$("aTo").value,by:ME.email,ts:Date.now()}); await log("publish-announcement", title); $("annForm").reset(); toast("Announcement published."); }
+  catch (err) { alert("Could not publish announcement: "+friendlyError(err)); }
+}
+async function deleteAnnouncement(key) {
+  if (!isSuper() && !can("announce.post")) return toast("Permission denied.");
+  if (!confirm("Delete this announcement?")) return;
+  try { await db.ref(`broadcast/${key}`).remove(); await log("delete-announcement", key); }
+  catch (err) { alert("Could not delete announcement: "+friendlyError(err)); }
+}
+async function createRole(event) {
+  event.preventDefault(); if (!isSuper()) return toast("Only the Super Admin can create roles.");
+  const name = $("rName").value.trim(), desc = $("rDesc").value.trim(), key=ck(name);
+  if (!name) return;
+  if (S.roles[key]) return alert("A role with that name already exists.");
+  try { await db.ref(`roleDefs/${key}`).set({name,desc,perms:[]}); await log("create-role", name); $("roleForm").reset(); toast("Role created."); }
+  catch (err) { alert("Could not create role: "+friendlyError(err)); }
+}
+async function updateRolePermission(key, permission, enabled) {
+  if (!isSuper()) return toast("Only the Super Admin can edit roles.");
+  const role = S.roles[key]; if (!role) return;
+  const perms = new Set(role.perms || []); enabled ? perms.add(permission) : perms.delete(permission);
+  const nextRoles = {...S.roles, [key]:{...role, perms:[...perms]}};
+  try { await db.ref(`roleDefs/${key}`).update({perms:[...perms]}); await syncAdminAccessFromRoleMap(nextRoles); await log("update-role-permission", `${role.name}: ${permission}=${enabled}`); }
+  catch (err) { alert("Could not update role: "+friendlyError(err)); }
+}
+async function deleteRole(key) {
+  if (!isSuper()) return toast("Only the Super Admin can delete roles.");
+  const role = S.roles[key]; if (!role || !confirm(`Delete role ${role.name}?`)) return;
+  const nextRoles = {...S.roles}; delete nextRoles[key];
+  try { await db.ref(`roleDefs/${key}`).remove(); await syncAdminAccessFromRoleMap(nextRoles); await log("delete-role", role.name); }
+  catch (err) { alert("Could not delete role: "+friendlyError(err)); }
+}
+function generatePassword(length=14) {
+  const chars = "ABCDEFGHJKLMNPQRSTUVWXYZabcdefghijkmnopqrstuvwxyz23456789!@#$%*-_";
+  const bytes = new Uint8Array(length); crypto.getRandomValues(bytes);
+  return Array.from(bytes, byte=>chars[byte%chars.length]).join("");
+}
+async function handleAction(button) {
+  const action=button.dataset.act, key=button.dataset.k;
+  switch(action) {
+    case "genPass": $("cPass").value=generatePassword(); $("cPass").type="text"; toast("Generated a password. Copy/store it securely before leaving this form."); break;
+    case "closeEdit": closeEdit(); break;
+    case "edit": openEdit(key); break;
+    case "toggle": await toggleUser(key); break;
+    case "del": await deleteUser(key); break;
+    case "bulkImport": await bulkImport(); break;
+    case "exportUsers": exportUsers(); break;
+    case "exportMarks": exportMarks(); break;
+    case "impersonate": toast("Account impersonation is intentionally disabled; implement it through a server-verified workflow."); break;
+  }
+}
+document.addEventListener("click", async event => {
+  const nav = event.target.closest("#nav button[data-tab]"); if (nav) { event.preventDefault(); go(nav.dataset.tab); return; }
+  const goButton = event.target.closest("[data-go]"); if (goButton) { go(goButton.dataset.go); return; }
+  const actionButton = event.target.closest("[data-act]"); if (actionButton) { event.preventDefault(); await handleAction(actionButton); return; }
+  const catButton = event.target.closest("[data-cat]"); if (catButton) { catF=catButton.dataset.cat; renderUsers(); return; }
+  const groupButton = event.target.closest("[data-grp]"); if (groupButton) { grpF=groupButton.dataset.grp; renderUsers(); return; }
+  const tileButton = event.target.closest("[data-tile]"); if (tileButton) { pickTile(tileButton.dataset.tile); return; }
+  const classButton = event.target.closest("[data-class]"); if (classButton) { openClassName=classButton.dataset.class; renderClasses(); return; }
+  const markButton = event.target.closest("[data-markclass]"); if (markButton) { curClass=markButton.dataset.markclass; renderMarks(); return; }
+  const openGroupButton = event.target.closest("[data-open-group]"); if (openGroupButton) { openGroup=openGroupButton.dataset.openGroup; renderFolders(); return; }
+  const removeGroupButton = event.target.closest("[data-remove-group]"); if (removeGroupButton) { await removeGroup(removeGroupButton.dataset.removeGroup); return; }
+  const deleteAnnButton = event.target.closest("[data-del-ann]"); if (deleteAnnButton) { await deleteAnnouncement(deleteAnnButton.dataset.delAnn); return; }
+  const deleteRoleButton = event.target.closest("[data-delete-role]"); if (deleteRoleButton) { await deleteRole(deleteRoleButton.dataset.deleteRole); return; }
 });
+document.addEventListener("change", async event => {
+  const box = event.target.closest("[data-roleperm]"); if (box) await updateRolePermission(box.dataset.roleperm, box.value, box.checked);
+  if (event.target.matches("#cPerms input, #cRoles input")) previewPerms();
+  if (event.target.matches("#eRole")) {
+    const student = event.target.value === "student"; $("eStu").style.display=student?"grid":"none"; $("eStf").style.display=student?"none":"block";
+  }
+});
+$("btnSignInSubmit").addEventListener("click", doLogin);
+$("btnOut").addEventListener("click", logout);
+$("createForm").addEventListener("submit", handleCreate);
+$("editForm").addEventListener("submit", handleEdit);
+$("grpForm").addEventListener("submit", addGroup);
+$("annForm").addEventListener("submit", publishAnnouncement);
+$("roleForm").addEventListener("submit", createRole);
+$("search").addEventListener("input", renderUsers);
+$("editModal").addEventListener("click", event=>{ if(event.target===$("editModal")) closeEdit(); });
 
-\$("search").addEventListener("input", renderUsers);
-pickTile("student");
 </script>
 </body>
 </html>
