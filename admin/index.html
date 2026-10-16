@@ -338,22 +338,44 @@
       </div>
     </div>
 
-    <!-- ANNOUNCEMENT BROADCASTER -->
+    <!-- TARGETED & TIMED ANNOUNCEMENT BROADCASTER -->
     <div class="card-panel" style="border-left: 5px solid var(--gold);">
       <div class="card-title" style="color: var(--navy);">
-        <i class="fa-solid fa-bullhorn" style="color: var(--gold-dark);"></i> Broadcast Announcement to All Devices
+        <i class="fa-solid fa-bullhorn" style="color: var(--gold-dark);"></i> Broadcast Targeted Announcement
       </div>
       <p style="font-size: 0.85rem; color: #64748b; margin-bottom: 12px;">
-        Publish an official announcement that immediately pushes across all phones, computers, and student dashboards upon login.
+        Publish an official announcement to specific audiences with an optional auto-expiration timer.
       </p>
+      
       <form onsubmit="handleSendBroadcast(event)" style="display: flex; gap: 10px; flex-wrap: wrap;">
-        <input type="text" id="broadcastTitle" placeholder="Announcement Title" style="flex: 1 1 250px; padding: 10px 12px; border: 1.5px solid var(--border); border-radius: 6px;" required>
-        <input type="text" id="broadcastBody" placeholder="Message details..." style="flex: 2 1 350px; padding: 10px 12px; border: 1.5px solid var(--border); border-radius: 6px;" required>
-        <button type="submit" class="btn-create" style="width: auto; padding: 10px 20px;">
-          <i class="fa-solid fa-paper-plane"></i> Publish Everywhere
+        <input type="text" id="broadcastTitle" placeholder="Announcement Title (e.g. Urgent Staff Briefing)" style="flex: 1 1 200px; padding: 10px 12px; border: 1.5px solid var(--border); border-radius: 6px; font-size: 0.9rem;" required>
+        
+        <input type="text" id="broadcastBody" placeholder="Message details for portal dashboard..." style="flex: 2 1 280px; padding: 10px 12px; border: 1.5px solid var(--border); border-radius: 6px; font-size: 0.9rem;" required>
+
+        <!-- TARGET AUDIENCE SELECTOR -->
+        <select id="broadcastTarget" style="flex: 1 1 160px; padding: 10px 12px; border: 1.5px solid var(--border); border-radius: 6px; font-size: 0.9rem; font-weight: 700; background: #fff;">
+          <option value="all">👥 All (Students & Staff)</option>
+          <option value="student">🎓 Students Only</option>
+          <option value="staff">👨‍🏫 Teachers / Staff Only</option>
+        </select>
+
+        <!-- DURATION / EXPIRATION SELECTOR -->
+        <select id="broadcastDuration" style="flex: 1 1 150px; padding: 10px 12px; border: 1.5px solid var(--border); border-radius: 6px; font-size: 0.9rem; font-weight: 700; background: #fff;">
+          <option value="0">⏱️ No Expiration</option>
+          <option value="1">⏱️ 1 Hour</option>
+          <option value="6">⏱️ 6 Hours</option>
+          <option value="12">⏱️ 12 Hours</option>
+          <option value="24" selected>⏱️ 24 Hours (1 Day)</option>
+          <option value="72">⏱️ 3 Days</option>
+          <option value="168">⏱️ 7 Days</option>
+        </select>
+
+        <button type="submit" class="btn-create" style="width: auto; padding: 10px 22px;">
+          <i class="fa-solid fa-paper-plane"></i> Publish
         </button>
       </form>
-      <div id="activeBroadcastDisplay" style="margin-top: 12px; font-size: 0.85rem;"></div>
+
+      <div id="activeBroadcastDisplay" style="margin-top: 14px; font-size: 0.88rem;"></div>
     </div>
 
     <div class="grid-forms-tables">
@@ -548,7 +570,6 @@
   </div>
 
   <script>
-    // INITIALIZE FIREBASE SDK WITH REAL-TIME WEBSOCKETS
     const firebaseConfig = {
       databaseURL: "https://acej-portal-default-rtdb.firebaseio.com"
     };
@@ -569,7 +590,6 @@
       return String(str || '').trim().replace(/[.#$\[\]\/]/g, '_');
     }
 
-    // REAL-TIME TWO-WAY LISTENERS
     function initRealtimeListeners() {
       rtdb.ref('users').on('value', (snapshot) => {
         const val = snapshot.val();
@@ -595,11 +615,39 @@
         }
       });
 
+      // REAL-TIME ANNOUNCEMENT LISTENER & EXPIRATION CHECK
       rtdb.ref('broadcast').on('value', (snapshot) => {
         const n = snapshot.val();
         const disp = document.getElementById('activeBroadcastDisplay');
         if (n && n.title) {
-          disp.innerHTML = `<strong>Active:</strong> <em>"${n.title}"</em> — ${n.body} <button onclick="clearBroadcast()" style="margin-left:8px; padding:2px 6px; font-size:0.75rem; border-radius:4px; border:1px solid #cbd5e1; cursor:pointer;">Dismiss</button>`;
+          // Check expiration
+          const now = Date.now();
+          if (n.expiresAt && now > n.expiresAt) {
+            // Auto terminate expired announcement
+            rtdb.ref('broadcast').remove();
+            disp.innerHTML = `<span style="color:#94a3b8;">No active announcement (previous expired).</span>`;
+            return;
+          }
+
+          let audienceLabel = "👥 All (Students & Staff)";
+          if (n.target === "student") audienceLabel = "🎓 Students Only";
+          if (n.target === "staff") audienceLabel = "👨‍🏫 Teachers / Staff Only";
+
+          let timeLeftStr = "No expiration";
+          if (n.expiresAt) {
+            const diffHours = Math.max(0, Math.round((n.expiresAt - now) / (1000 * 60 * 60)));
+            timeLeftStr = `Expires in ~${diffHours} hr(s)`;
+          }
+
+          disp.innerHTML = `
+            <div style="background:#fffbeb; border:1px solid #fde68a; padding:10px 14px; border-radius:8px;">
+              <strong>Active Notice:</strong> <em>"${n.title}"</em> — ${n.body}<br>
+              <span style="font-size:0.8rem; color:#b45309; font-weight:700;">
+                Target: ${audienceLabel} &bull; ${timeLeftStr}
+              </span>
+              <button onclick="clearBroadcast()" style="margin-left:10px; padding:3px 8px; font-size:0.75rem; border-radius:4px; border:1px solid #cbd5e1; cursor:pointer; background:#fff;">Dismiss / Delete</button>
+            </div>
+          `;
         } else {
           disp.innerHTML = `<span style="color:#94a3b8;">No active broadcast announcement.</span>`;
         }
@@ -778,8 +826,6 @@
       };
 
       const key = cleanFirebaseKey(username);
-      
-      // Native Real-time SDK Write
       await rtdb.ref('users/' + key).set(newUser);
 
       alert(`User ${name} registered directly in Firebase!`);
@@ -789,15 +835,12 @@
       toggleFormRoleFields();
     }
 
-    // NATIVE FIREBASE DELETION (ref.remove())
     async function deleteUserByExactKey(fbKey, displayName) {
       if (!confirm(`Permanently delete ${displayName}? This will remove them immediately from Firebase across all devices.`)) {
         return;
       }
 
       const key = cleanFirebaseKey(fbKey);
-      
-      // Direct SDK removal - deletes immediately from the remote server
       await rtdb.ref('users/' + key).remove();
     }
 
@@ -882,20 +925,31 @@
       }
     }
 
+    // BROADCAST WITH TARGET AUDIENCE & DURATION
     async function handleSendBroadcast(e) {
       e.preventDefault();
       const title = document.getElementById('broadcastTitle').value.trim();
       const body = document.getElementById('broadcastBody').value.trim();
+      const target = document.getElementById('broadcastTarget').value;
+      const durationHours = parseInt(document.getElementById('broadcastDuration').value);
+
+      let expiresAt = null;
+      if (durationHours > 0) {
+        expiresAt = Date.now() + (durationHours * 60 * 60 * 1000);
+      }
 
       const notice = {
         title: title,
         body: body,
-        date: new Date().toLocaleDateString(),
+        target: target, // 'all', 'student', or 'staff'
+        durationHours: durationHours,
+        createdAt: Date.now(),
+        expiresAt: expiresAt,
         author: sessionStorage.getItem("ACEJ_ADMIN_ROLE") || "Super Admin"
       };
 
       await rtdb.ref('broadcast').set(notice);
-      alert("Broadcast notice published across all campus devices!");
+      alert("Targeted announcement published with live auto-expiration!");
       e.target.reset();
     }
 
