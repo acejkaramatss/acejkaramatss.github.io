@@ -14,6 +14,16 @@
   <!-- OFFICIAL FIREBASE REALTIME WEBSOCKET SDK -->
   <script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-app.js"></script>
   <script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-database.js"></script>
+
+  <!-- ANTI-FLICKER SCRIPT (PREVENTS FLASH OF LOGIN FORM ON REFRESH) -->
+  <script>
+    (function() {
+      const active = sessionStorage.getItem("ACEJ_ACTIVE_SESSION");
+      if (active) {
+        document.documentElement.classList.add("session-restoring");
+      }
+    })();
+  </script>
   
   <style>
     :root {
@@ -39,6 +49,9 @@
 
     * { box-sizing: border-box; margin: 0; padding: 0; font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif; }
     body { color: var(--text-dark); background-color: var(--bg-light); line-height: 1.6; min-height: 100vh; display: flex; flex-direction: column; }
+
+    /* Hide login box immediately during page reload if session exists */
+    html.session-restoring #loginBox { display: none !important; }
 
     .top-bar {
       background: var(--acej-dark-blue);
@@ -171,6 +184,7 @@
       transition: all 0.2s;
     }
     .input-control:focus { border-color: var(--acej-blue); box-shadow: 0 0 0 3px rgba(30, 58, 138, 0.1); }
+    .input-control:disabled { background-color: #f1f5f9; cursor: not-allowed; color: #94a3b8; }
     
     .btn-login-submit {
       width: 100%;
@@ -282,6 +296,7 @@
       text-align: center;
       font-weight: 700;
     }
+    .grade-input:disabled { background: #f1f5f9; color: #94a3b8; border-color: #cbd5e1; }
 
     .selector-bar {
       display: flex;
@@ -512,16 +527,16 @@
         </div>
       </div>
 
-      <!-- 100% WEIGHTED ASSESSMENT (CW1:10, CW2:10, CAT:30, EXAM:50) -->
+      <!-- 100% WEIGHTED ASSESSMENT (ISOLATED TO COURSE INSTRUCTOR) -->
       <div class="content-panel">
         <div class="panel-header-row">
           <h3>
             <i class="fa-solid fa-chart-column" style="color: #2563eb;"></i> 
             Continuous Assessment &amp; Marks Evaluation (<span class="badgeClassLabel">Level 5 NIT</span>)
           </h3>
-          <div style="display:flex; gap:8px;">
+          <div style="display:flex; gap:8px; align-items:center;">
             <select id="teacherMarkCourseSelector" onchange="loadCourseMarksForClass()" style="padding:6px 10px; border-radius:6px; border:1.5px solid var(--border-color); font-weight:700;"></select>
-            <button class="btn-publish-open" onclick="saveCourseMarksForClass()">
+            <button id="btnSaveCourseMarks" class="btn-publish-open" onclick="saveCourseMarksForClass()">
               <i class="fa-solid fa-floppy-disk"></i> Save Marks
             </button>
             <button class="btn-publish-open" style="background:var(--navy);" onclick="downloadTeacherMarksSheet()">
@@ -529,6 +544,8 @@
             </button>
           </div>
         </div>
+
+        <div id="courseInstructorNotice" style="font-size:0.82rem; margin-bottom:10px; font-weight:700;"></div>
 
         <div style="overflow-x: auto;">
           <table class="records-table">
@@ -1045,7 +1062,7 @@
       });
     }
 
-    // HELPER: STRICT UNIQUE DEDUPLICATION FOR STUDENTS IN A CLASS
+    // HELPER: PER-CLASS UNIQUE STUDENT DEDUPLICATION
     function getDeduplicatedStudentsForClass(targetClass) {
       const seen = new Set();
       const uniqueList = [];
@@ -1067,6 +1084,14 @@
       return uniqueList;
     }
 
+    // PRIVILEGE CHECK: ADMIN, DOS, OR EXAM OFFICER HAVE FULL OVERRIDE
+    function isElevatedAcademicStaff(user) {
+      if (!user) return false;
+      if (user.role === 'admin' || user.role === 'super') return true;
+      const roles = user.staffRoles || [];
+      return roles.includes("Exam Officer") || roles.includes("Dean of Discipline") || roles.includes("Director of Studies");
+    }
+
     window.addEventListener('DOMContentLoaded', async function() {
       switchLoginRole('student');
 
@@ -1074,6 +1099,7 @@
       document.getElementById('attendanceDatePicker').value = todayStr;
       document.getElementById('studentHistoryDatePicker').value = todayStr;
 
+      // Realtime Firebase Listeners
       rtdb.ref('users').on('value', snap => {
         const val = snap.val() || {};
         allCloudUsers = Object.values(val);
@@ -1123,21 +1149,28 @@
         }
       });
 
-      // Session restore
+      // Immediate session restore without screen flash
       var existingSession = sessionStorage.getItem(SESSION_STORAGE_KEY);
       if (existingSession) {
         var userObj = JSON.parse(existingSession);
         const key = cleanFirebaseKey(userObj.username);
+        
+        activeSessionUser = userObj;
+        showUserDashboard(userObj);
+        document.documentElement.classList.remove("session-restoring");
+
         rtdb.ref('users/' + key).once('value', (snapshot) => {
           const cloudUser = snapshot.val();
           if (cloudUser && cloudUser.status === 'active') {
             activeSessionUser = cloudUser;
-            showUserDashboard(cloudUser);
+            sessionStorage.setItem(SESSION_STORAGE_KEY, JSON.stringify(cloudUser));
             attachRealtimeSessionGuardian(cloudUser.username);
           } else {
             logoutPortal();
           }
         });
+      } else {
+        document.documentElement.classList.remove("session-restoring");
       }
     });
 
@@ -1208,7 +1241,7 @@
 
       const classSelect = document.getElementById('teacherActiveManagedClass');
       classSelect.innerHTML = "";
-      const classes = (teacher.managedClasses && teacher.managedClasses.length > 0) ? teacher.managedClasses : ["Level 5 NIT", "Level 4 CSA"];
+      const classes = (teacher.managedClasses && teacher.managedClasses.length > 0) ? teacher.managedClasses : ["Level 5 NIT", "Level 4 CSA", "Level 4 NIT"];
       classes.forEach(c => {
         const opt = document.createElement('option');
         opt.value = c;
@@ -1234,14 +1267,15 @@
       const select = document.getElementById('teacherMarkCourseSelector');
       select.innerHTML = "";
 
-      const classCourses = allCloudCourses.filter(c => c.targetClass === activeClass);
+      const classCourses = allCloudCourses.filter(c => c && c.targetClass === activeClass);
       if (classCourses.length === 0) {
         select.innerHTML = `<option value="">No courses created for ${activeClass}</option>`;
       } else {
         classCourses.forEach(c => {
           const opt = document.createElement('option');
           opt.value = c.code || c.title;
-          opt.innerText = `${c.title} (${c.code || ''})`;
+          const isMine = c.teacherUsername === activeSessionUser.username;
+          opt.innerText = `${c.title} (${c.code || ''}) ${isMine ? '★ (My Course)' : ''}`;
           select.appendChild(opt);
         });
       }
@@ -1252,7 +1286,7 @@
       const activeClass = document.getElementById('teacherActiveManagedClass').value;
       const selDate = document.getElementById('attendanceDatePicker').value || new Date().toISOString().split('T')[0];
 
-      // DEDUPLICATED STUDENTS
+      // DEDUPLICATED CLEAN LIST
       const students = getDeduplicatedStudentsForClass(activeClass);
       document.getElementById('statClassEnrolledStudents').innerText = students.length;
 
@@ -1289,7 +1323,7 @@
         });
       }
 
-      const activeCourse = allCloudCourses.find(c => c.targetClass === activeClass);
+      const activeCourse = allCloudCourses.find(c => c && c.targetClass === activeClass);
       const totalCourseDays = activeCourse ? (parseInt(activeCourse.totalDays) || 10) : 10;
       
       const allAttSnap = await rtdb.ref(`attendance/${activeClass}`).once('value');
@@ -1320,19 +1354,35 @@
       loadClassAttendanceForDate();
     }
 
-    // 100% WEIGHTED MARKS EVALUATION (CW1:10, CW2:10, CAT:30, EXAM:50) WITHOUT DUPLICATION
+    // STRICT COURSE MARKS ISOLATION (TEACHER ACCESS CONTROL)
     async function loadCourseMarksForClass() {
       const activeClass = document.getElementById('teacherActiveManagedClass').value;
       const courseCode = document.getElementById('teacherMarkCourseSelector').value;
       
-      // DEDUPLICATED STUDENTS
       const students = getDeduplicatedStudentsForClass(activeClass);
       const tbody = document.getElementById('trainerMarksTbody');
+      const noticeBox = document.getElementById('courseInstructorNotice');
+      const saveBtn = document.getElementById('btnSaveCourseMarks');
       tbody.innerHTML = "";
 
       if (!courseCode || students.length === 0) {
         tbody.innerHTML = `<tr><td colspan="8" style="text-align:center; color:#94a3b8;">No course selected or no enrolled students in ${activeClass}.</td></tr>`;
+        noticeBox.innerHTML = "";
         return;
+      }
+
+      const courseObj = allCloudCourses.find(c => c && c.targetClass === activeClass && (c.code === courseCode || c.title === courseCode));
+      const isElevated = isElevatedAcademicStaff(activeSessionUser);
+      const isCourseInstructor = courseObj && (courseObj.teacherUsername === activeSessionUser.username || courseObj.teacher === activeSessionUser.name);
+
+      const canEdit = isElevated || isCourseInstructor;
+
+      if (!canEdit) {
+        noticeBox.innerHTML = `<span style="color:#b45309;"><i class="fa-solid fa-lock"></i> Read-Only: This course is managed by <strong>${courseObj ? courseObj.teacher : 'Another Instructor'}</strong>. You cannot alter these marks.</span>`;
+        saveBtn.style.display = "none";
+      } else {
+        noticeBox.innerHTML = `<span style="color:#047857;"><i class="fa-solid fa-lock-open"></i> Authorized: You are the verified instructor for this course.</span>`;
+        saveBtn.style.display = "inline-flex";
       }
 
       const snap = await rtdb.ref(`marks/${activeClass}/${cleanFirebaseKey(courseCode)}`).once('value');
@@ -1340,7 +1390,7 @@
 
       students.forEach(s => {
         const u = cleanFirebaseKey(s.username).toLowerCase();
-        const m = marksData[u] || { cw1: 8, cw2: 9, cat: 26, exam: 44 };
+        const m = marksData[u] || { cw1: 0, cw2: 0, cat: 0, exam: 0 };
         
         const cw1 = Math.min(10, Math.max(0, parseInt(m.cw1) || 0));
         const cw2 = Math.min(10, Math.max(0, parseInt(m.cw2) || 0));
@@ -1354,10 +1404,10 @@
         tr.innerHTML = `
           <td><strong>${s.name}</strong></td>
           <td><code>${s.username}</code></td>
-          <td><input type="number" class="grade-input mark-cw1" value="${cw1}" min="0" max="10" oninput="recomputeRowTotal(this)"></td>
-          <td><input type="number" class="grade-input mark-cw2" value="${cw2}" min="0" max="10" oninput="recomputeRowTotal(this)"></td>
-          <td><input type="number" class="grade-input mark-cat" value="${cat}" min="0" max="30" oninput="recomputeRowTotal(this)"></td>
-          <td><input type="number" class="grade-input mark-exam" value="${exam}" min="0" max="50" oninput="recomputeRowTotal(this)"></td>
+          <td><input type="number" class="grade-input mark-cw1" value="${cw1}" min="0" max="10" ${!canEdit ? 'disabled' : ''} oninput="recomputeRowTotal(this)"></td>
+          <td><input type="number" class="grade-input mark-cw2" value="${cw2}" min="0" max="10" ${!canEdit ? 'disabled' : ''} oninput="recomputeRowTotal(this)"></td>
+          <td><input type="number" class="grade-input mark-cat" value="${cat}" min="0" max="30" ${!canEdit ? 'disabled' : ''} oninput="recomputeRowTotal(this)"></td>
+          <td><input type="number" class="grade-input mark-exam" value="${exam}" min="0" max="50" ${!canEdit ? 'disabled' : ''} oninput="recomputeRowTotal(this)"></td>
           <td><strong class="row-total-display" style="color:${isComp ? '#047857' : '#b45309'};">${total}%</strong></td>
           <td><span class="grade-badge row-badge ${isComp ? 'grade-competent' : 'grade-draft'}">${isComp ? 'Competent' : 'In Progress'}</span></td>
         `;
@@ -1387,6 +1437,13 @@
       const activeClass = document.getElementById('teacherActiveManagedClass').value;
       const courseCode = document.getElementById('teacherMarkCourseSelector').value;
       if (!courseCode) return alert("Select or create a course first!");
+
+      const courseObj = allCloudCourses.find(c => c && c.targetClass === activeClass && (c.code === courseCode || c.title === courseCode));
+      const canEdit = isElevatedAcademicStaff(activeSessionUser) || (courseObj && (courseObj.teacherUsername === activeSessionUser.username || courseObj.teacher === activeSessionUser.name));
+
+      if (!canEdit) {
+        return alert("Unauthorized: You do not have permission to modify marks for this course.");
+      }
 
       let payload = {};
       document.querySelectorAll('#trainerMarksTbody tr').forEach(r => {
@@ -1427,7 +1484,6 @@
       link.click();
     }
 
-    // DIRECT PC FILE READING (BASE64) & DRAFT/PUBLISH
     function handleFileSelected(e) {
       const file = e.target.files[0];
       if (!file) return;
@@ -1462,6 +1518,7 @@
         fileData: uploadedFileBase64,
         status: status,
         teacher: activeSessionUser ? activeSessionUser.name : "Trainer",
+        teacherUsername: activeSessionUser ? activeSessionUser.username : "",
         date: new Date().toLocaleDateString('en-GB')
       };
 
@@ -1474,7 +1531,6 @@
       e.target.reset();
     }
 
-    // TEACHER NOTES TABLE WITH WORKING PUBLISH, EDIT & DELETE BUTTONS
     function renderTeacherNotesTable() {
       const activeClass = document.getElementById('teacherActiveManagedClass').value;
       const tbody = document.getElementById('trainerNotesTbody');
@@ -1517,7 +1573,6 @@
       });
     }
 
-    // DIRECT SAFE FIREBASE PUBLISH WITHOUT PATH BRACKET ERRORS
     async function triggerPublishNoteDirect(noteId) {
       if (!noteId) return alert("Invalid note ID!");
       const cleanKey = cleanFirebaseKey(noteId);
@@ -1547,8 +1602,8 @@
       const status = document.getElementById('editNoteStatus').value;
 
       const cleanKey = cleanFirebaseKey(id);
-      await rtdb.ref('notes/' + cleanKey + '/title').set(title);
-      await rtdb.ref('notes/' + cleanKey + '/status').set(status);
+      await rtdb.ref(`notes/${cleanKey}/title`).set(title);
+      await rtdb.ref(`notes/${cleanKey}/status`).set(status);
 
       alert("Note updated successfully!");
       closeModal('editNoteModal');
@@ -1617,7 +1672,7 @@
       openModal('docReaderModal');
     }
 
-    // ASSIGNMENTS CREATION
+    // ASSIGNMENTS
     function toggleAssignmentBuilderMode() {
       const mode = document.getElementById('modalAssignMode').value;
       document.getElementById('mcqBuilderSection').style.display = mode === 'auto' ? 'block' : 'none';
@@ -1641,11 +1696,12 @@
         mode: mode,
         dueDate: dueDate,
         maxMarks: marks,
-        question: mode === 'auto' ? document.getElementById('modalMcqQuestion').value.trim() : "Submit exercises.",
+        question: mode === 'auto' ? document.getElementById('modalMcqQuestion').value.trim() : "Submit practical exercises.",
         optA: mode === 'auto' ? document.getElementById('modalOptA').value.trim() : "",
         optB: mode === 'auto' ? document.getElementById('modalOptB').value.trim() : "",
         optC: mode === 'auto' ? document.getElementById('modalOptC').value.trim() : "",
         correctAnswer: mode === 'auto' ? document.getElementById('modalCorrectAnswer').value : "",
+        teacherUsername: activeSessionUser.username,
         submissions: {}
       };
 
@@ -1717,9 +1773,14 @@
     async function renderStudentCourseDetails() {
       if (!activeSessionUser) return;
       const studentClass = `${activeSessionUser.level || ''} ${activeSessionUser.dept || ''}`.trim();
-      const selectedValue = document.getElementById('studentCourseSelector').value;
+      const selectedValue = (document.getElementById('studentCourseSelector').value || '').toLowerCase();
       
-      const course = allCloudCourses.find(c => c && c.targetClass === studentClass && (c.code === selectedValue || c.title === selectedValue || selectedValue.includes(c.code)));
+      const course = allCloudCourses.find(c => {
+        if (!c || c.targetClass !== studentClass) return false;
+        const code = (c.code || '').toLowerCase();
+        const title = (c.title || '').toLowerCase();
+        return code === selectedValue || title === selectedValue || selectedValue.includes(code);
+      });
 
       if (course) {
         document.getElementById('studentCourseTeacherBadge').innerText = `Instructor: ${course.teacher || 'Trainer'}`;
@@ -1733,7 +1794,7 @@
         document.getElementById('studentCourseGradeDisplay').innerText = total + "%";
       }
 
-      // Attendance Calculation
+      // Dynamic Attendance Percentage
       const totalCourseDays = course ? (parseInt(course.totalDays) || 10) : 10;
       const snap = await rtdb.ref(`attendance/${studentClass}`).once('value');
       const allAtt = snap.val() || {};
@@ -1820,7 +1881,7 @@
       });
     }
 
-    // STUDENT NOTES TABLE WITH FUZZY COURSE MATCHING
+    // FUZZY ROBUST NORMALIZATION FOR STUDENT NOTES
     function renderStudentNotesTable() {
       if (!activeSessionUser) return;
       const studentClass = `${activeSessionUser.level || ''} ${activeSessionUser.dept || ''}`.trim();
@@ -1947,7 +2008,7 @@
       renderStudentAssignmentsTable();
     }
 
-    // GENERAL MODALS
+    // MODAL DIALOGS
     function openModal(id) { document.getElementById(id).style.display = 'flex'; }
     function closeModal(id) { document.getElementById(id).style.display = 'none'; }
 
@@ -1977,7 +2038,8 @@
         startDate: startDate,
         catDate: catDate,
         examDate: examDate,
-        teacher: activeSessionUser ? activeSessionUser.name : "Trainer"
+        teacher: activeSessionUser ? activeSessionUser.name : "Trainer",
+        teacherUsername: activeSessionUser ? activeSessionUser.username : ""
       };
 
       allCloudCourses.push(newCourse);
