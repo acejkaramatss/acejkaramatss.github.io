@@ -3,8 +3,8 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Student &amp; Staff Portal | ACEJ KARAMA TSS</title>
-  <meta name="description" content="Official Academic Portal of ACEJ Karama TSS. Access student report cards, module marks, notes download, and EdTech trainer class management.">
+  <title>Student &amp; Staff Academic Workspace | ACEJ KARAMA TSS</title>
+  <meta name="description" content="Official Academic Workspace of ACEJ Karama TSS. Interactive courses, dated attendance, assignments with auto-grading, and multi-class management.">
   
   <link rel="icon" type="image/png" href="/logo.png?v=3">
   <link rel="shortcut icon" type="image/png" href="/logo.png?v=3">
@@ -115,7 +115,7 @@
     }
     .btn-nav-act:hover { background: #e2e8f0; }
 
-    .portal-main-area { max-width: 1240px; margin: 25px auto 60px; padding: 0 20px; width: 100%; flex-grow: 1; }
+    .portal-main-area { max-width: 1280px; margin: 25px auto 60px; padding: 0 20px; width: 100%; flex-grow: 1; }
 
     .embedded-notice-card {
       display: none;
@@ -128,30 +128,9 @@
       box-shadow: var(--shadow-sm);
       animation: fadeIn 0.3s ease-out;
     }
-    .notice-header-row {
-      display: flex;
-      justify-content: space-between;
-      align-items: center;
-      margin-bottom: 6px;
-    }
-    .notice-header-row h4 {
-      color: #92400e;
-      font-size: 1.05rem;
-      font-weight: 800;
-      display: flex;
-      align-items: center;
-      gap: 10px;
-    }
-    .notice-badge {
-      background: #fef3c7;
-      color: #b45309;
-      font-size: 0.72rem;
-      font-weight: 800;
-      padding: 3px 8px;
-      border-radius: 6px;
-      text-transform: uppercase;
-      letter-spacing: 0.5px;
-    }
+    .notice-header-row { display: flex; justify-content: space-between; align-items: center; margin-bottom: 6px; }
+    .notice-header-row h4 { color: #92400e; font-size: 1.05rem; font-weight: 800; display: flex; align-items: center; gap: 10px; }
+    .notice-badge { background: #fef3c7; color: #b45309; font-size: 0.72rem; font-weight: 800; padding: 3px 8px; border-radius: 6px; text-transform: uppercase; }
     .notice-body-text { color: #78350f; font-size: 0.94rem; line-height: 1.5; }
     .notice-footer-meta { font-size: 0.78rem; color: #b45309; margin-top: 8px; font-weight: 600; display: flex; justify-content: space-between; flex-wrap: wrap; }
 
@@ -200,7 +179,7 @@
     .form-group label { display: block; font-size: 0.88rem; font-weight: 700; color: #334155; margin-bottom: 6px; }
     .input-control {
       width: 100%;
-      padding: 13px 14px;
+      padding: 12px 14px;
       border: 1.5px solid var(--border-color);
       border-radius: 8px;
       font-size: 0.95rem;
@@ -209,17 +188,8 @@
       transition: all 0.2s;
     }
     .input-control:focus { border-color: var(--acej-blue); box-shadow: 0 0 0 3px rgba(30, 58, 138, 0.1); }
-    
     .input-control.has-error { border-color: #dc2626 !important; background-color: #fffafb; }
-    .inline-error-message {
-      display: none;
-      align-items: flex-start;
-      gap: 6px;
-      color: #b91c1c;
-      font-size: 0.84rem;
-      margin-top: 6px;
-      font-weight: 500;
-    }
+    .inline-error-message { display: none; align-items: flex-start; gap: 6px; color: #b91c1c; font-size: 0.84rem; margin-top: 6px; font-weight: 500; }
     
     .btn-login-submit {
       width: 100%;
@@ -238,22 +208,8 @@
     }
     .btn-login-submit:hover { background: #1e40af; }
 
-    .login-helper-row {
-      display: flex;
-      justify-content: space-between;
-      align-items: center;
-      margin-top: 15px;
-      font-size: 0.85rem;
-    }
-    .forgot-pwd-link {
-      color: #1d4ed8;
-      text-decoration: underline;
-      font-weight: 700;
-      cursor: pointer;
-      background: none;
-      border: none;
-      padding: 0;
-    }
+    .login-helper-row { display: flex; justify-content: space-between; align-items: center; margin-top: 15px; font-size: 0.85rem; }
+    .forgot-pwd-link { color: #1d4ed8; text-decoration: underline; font-weight: 700; cursor: pointer; background: none; border: none; padding: 0; }
 
     .edtech-welcome-banner {
       background: var(--edtech-gradient);
@@ -308,53 +264,12 @@
     .edtech-card-amber { background: var(--edtech-amber); }
     
     .edtech-card-info h4 { font-size: 0.85rem; font-weight: 700; opacity: 0.9; }
-    .edtech-card-info .digit { font-size: 2.3rem; font-weight: 900; line-height: 1.1; margin: 4px 0 2px; }
+    .edtech-card-info .digit { font-size: 2rem; font-weight: 900; line-height: 1.1; margin: 4px 0 2px; }
     .edtech-card-info p { font-size: 0.78rem; opacity: 0.85; }
     .edtech-card-icon {
-      width: 48px;
-      height: 48px;
-      border-radius: 12px;
-      background: rgba(255, 255, 255, 0.2);
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      font-size: 1.3rem;
+      width: 48px; height: 48px; border-radius: 12px; background: rgba(255, 255, 255, 0.2);
+      display: flex; align-items: center; justify-content: center; font-size: 1.3rem;
     }
-
-    .edtech-quick-actions-panel {
-      background: var(--white);
-      border: 1px solid var(--border-color);
-      border-radius: 14px;
-      padding: 24px;
-      box-shadow: var(--shadow-sm);
-      margin-bottom: 25px;
-    }
-    .edtech-quick-actions-panel h3 { font-size: 1.25rem; font-weight: 800; color: var(--acej-dark-blue); margin-bottom: 16px; }
-    .quick-actions-grid {
-      display: grid;
-      grid-template-columns: repeat(auto-fit, minmax(240px, 1fr));
-      gap: 15px;
-    }
-    .btn-quick-action {
-      background: #f8fafc;
-      border: 1.5px solid var(--border-color);
-      border-radius: 12px;
-      padding: 18px;
-      text-align: center;
-      cursor: pointer;
-      color: var(--text-dark);
-      font-weight: 700;
-      font-size: 0.95rem;
-      display: flex;
-      flex-direction: column;
-      align-items: center;
-      gap: 8px;
-      transition: all 0.2s;
-    }
-    .btn-quick-action:hover { background: var(--white); border-color: #3b82f6; box-shadow: var(--shadow-sm); transform: translateY(-2px); }
-    .btn-quick-action.qa-green i { color: #10b981; font-size: 1.5rem; }
-    .btn-quick-action.qa-blue i { color: #2563eb; font-size: 1.5rem; }
-    .btn-quick-action.qa-purple i { color: #8b5cf6; font-size: 1.5rem; }
 
     .content-panel {
       background: var(--white);
@@ -395,6 +310,7 @@
     
     .grade-badge { display: inline-block; padding: 4px 10px; border-radius: 6px; font-weight: 800; font-size: 0.78rem; }
     .grade-competent { background: #ecfdf5; color: #047857; }
+    .grade-draft { background: #fef3c7; color: #b45309; }
 
     .grade-input {
       width: 65px;
@@ -406,6 +322,28 @@
       font-weight: 700;
     }
 
+    .selector-bar {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      flex-wrap: wrap;
+      margin-bottom: 15px;
+      background: #f8fafc;
+      padding: 12px 16px;
+      border-radius: 10px;
+      border: 1px solid var(--border-color);
+    }
+    .selector-bar label { font-size: 0.85rem; font-weight: 700; color: #334155; }
+    .selector-bar select, .selector-bar input {
+      padding: 8px 12px;
+      border-radius: 6px;
+      border: 1.5px solid var(--border-color);
+      font-size: 0.88rem;
+      font-weight: 700;
+      outline: none;
+      background: #fff;
+    }
+
     .modal-backdrop {
       position: fixed;
       top: 0; left: 0; width: 100%; height: 100%;
@@ -415,36 +353,13 @@
     }
     .modal-card {
       background: var(--white);
-      max-width: 540px; width: 100%;
+      max-width: 580px; width: 100%;
       border-radius: 16px; padding: 28px;
       box-shadow: var(--shadow-lg);
       max-height: 90vh; overflow-y: auto;
       animation: popIn 0.3s ease-out;
     }
     .modal-card h3 { font-size: 1.35rem; font-weight: 800; color: var(--acej-dark-blue); margin-bottom: 15px; }
-
-    .file-attachment-box {
-      border: 2px dashed #cbd5e1;
-      border-radius: 10px;
-      padding: 20px;
-      text-align: center;
-      background: #fafaf9;
-      cursor: pointer;
-      margin-bottom: 16px;
-    }
-    .file-attachment-box:hover { border-color: #3b82f6; background: #f0f7ff; }
-
-    .file-preview-strip {
-      display: none;
-      align-items: center;
-      gap: 10px;
-      padding: 10px 14px;
-      background: #eff6ff;
-      border: 1px solid #bfdbfe;
-      border-radius: 8px;
-      margin-bottom: 16px;
-      font-size: 0.88rem;
-    }
 
     .otp-toast-banner {
       position: fixed;
@@ -461,7 +376,6 @@
       animation: popIn 0.3s ease-out;
       max-width: 360px;
     }
-    .otp-toast-banner strong { color: var(--acej-gold); }
 
     .portal-footer {
       background: var(--acej-dark-blue);
@@ -479,9 +393,10 @@
 </head>
 <body>
 
+  <!-- TOP BAR -->
   <div class="top-bar">
     <div>
-      <span><i class="fa-solid fa-graduation-cap"></i> ACEJ KARAMA TSS Official Portal Workspace</span>
+      <span><i class="fa-solid fa-graduation-cap"></i> ACEJ KARAMA TSS Academic Workspace</span>
       <span style="margin-left: 15px;"><i class="fa-solid fa-code"></i> School Code: 0207030</span>
     </div>
     <div>
@@ -490,20 +405,21 @@
     </div>
   </div>
 
+  <!-- NAVIGATION BAR -->
   <header class="portal-nav">
     <a href="/" class="brand">
       <img src="/logo.png?v=3" alt="ACEJ Crest" class="brand-logo-img">
       <div class="brand-text">
         <h1>ACEJ KARAMA TSS</h1>
-        <p>Student &amp; Staff Workspace</p>
+        <p>Interactive Academic Portal</p>
       </div>
     </a>
 
     <div class="nav-user-meta">
       <div id="navUserBadgeGroup" style="display: none;" class="user-profile-chip">
         <div class="role-badge-pill" id="navRolePill">Trainer</div>
-        <div class="user-avatar-circle" id="navUserAvatar">K</div>
-        <span id="navUserName">Trainer Name</span>
+        <div class="user-avatar-circle" id="navUserAvatar">T</div>
+        <span id="navUserName">User Name</span>
       </div>
       <button id="btnSignOut" style="display: none;" class="btn-nav-act" onclick="logoutPortal()">
         <i class="fa-solid fa-power-off"></i> Sign Out
@@ -520,7 +436,7 @@
     <div class="login-container" id="loginBox">
       <div class="login-header">
         <h2>Institutional Portal</h2>
-        <p>Sign in to view academic report cards, course management, or class registers.</p>
+        <p>Sign in to view academic courses, dated registers, assignments &amp; marks.</p>
       </div>
 
       <div class="role-tabs">
@@ -566,13 +482,13 @@
       </div>
     </div>
 
-    <!-- TEACHER DASHBOARD -->
+    <!-- TEACHER / STAFF WORKSPACE -->
     <div id="staffDashboard" style="display: none;">
       
       <!-- TARGETED ANNOUNCEMENT CARD -->
       <div class="embedded-notice-card" id="staffNoticeBanner">
         <div class="notice-header-row">
-          <h4><i class="fa-solid fa-bullhorn" style="color: #d97706;"></i> <span id="staffNoticeTitle">Campus Announcement</span></h4>
+          <h4><i class="fa-solid fa-bullhorn" style="color: #d97706;"></i> <span id="staffNoticeTitle">Staff Announcement</span></h4>
           <span class="notice-badge" id="staffNoticeBadge">Staff Notice</span>
         </div>
         <div class="notice-body-text" id="staffNoticeBody"></div>
@@ -582,31 +498,39 @@
         </div>
       </div>
 
+      <!-- HERO BANNER -->
       <div class="edtech-welcome-banner">
         <div>
           <h2 id="trainerHeroTitle">Welcome, Trainer!</h2>
-          <p id="trainerHeroSub">Managing classes, students, and course deployments.</p>
+          <p id="trainerHeroRoles">Roles: Teacher / Trainer &bull; Multi-Class Management</p>
         </div>
         <button class="btn-edit-profile-hero" onclick="openProfileUpdateModal()">
           <i class="fa-solid fa-user-pen"></i> Edit Profile &amp; Password
         </button>
       </div>
 
+      <!-- CLASS & COURSE MANAGEMENT SWITCHER -->
+      <div class="selector-bar">
+        <label><i class="fa-solid fa-chalkboard-user"></i> Active Class Managed:</label>
+        <select id="teacherActiveManagedClass" onchange="switchTeacherManagedClass()">
+          <!-- Populated dynamically with classes assigned to this teacher -->
+        </select>
+        
+        <button class="btn-publish-open" onclick="openCreateCourseModal()" style="margin-left: auto;">
+          <i class="fa-solid fa-plus"></i> Create New Course / Module
+        </button>
+        <button class="btn-publish-open" style="background:var(--purple);" onclick="openCreateAssignmentModal()">
+          <i class="fa-solid fa-file-pen"></i> Set Assignment
+        </button>
+      </div>
+
+      <!-- TILES -->
       <div class="edtech-tiles-grid">
         <div class="edtech-card edtech-card-navy">
           <div class="edtech-card-info">
-            <h4>My Class</h4>
-            <div class="digit" id="statClassTitle">Level 5 NIT</div>
-            <p id="statClassSub">Active Combination</p>
-          </div>
-          <div class="edtech-card-icon"><i class="fa-solid fa-book-open"></i></div>
-        </div>
-
-        <div class="edtech-card edtech-card-red">
-          <div class="edtech-card-info">
-            <h4>Registered Students</h4>
-            <div class="digit" id="statEnrolledCount">0</div>
-            <p>In Your Cohort</p>
+            <h4>Enrolled Students</h4>
+            <div class="digit" id="statClassEnrolledStudents">0</div>
+            <p id="statClassEnrolledSub">In Selected Cohort</p>
           </div>
           <div class="edtech-card-icon"><i class="fa-solid fa-users"></i></div>
         </div>
@@ -614,49 +538,45 @@
         <div class="edtech-card edtech-card-green">
           <div class="edtech-card-info">
             <h4>Today's Attendance</h4>
-            <div class="digit" id="statAttPercentage">100%</div>
-            <p>Class Check-in</p>
+            <div class="digit" id="statClassAttendanceToday">0%</div>
+            <p id="statClassAttSub">Recorded for selected date</p>
           </div>
-          <div class="edtech-card-icon"><i class="fa-solid fa-clipboard-check"></i></div>
+          <div class="edtech-card-icon"><i class="fa-solid fa-calendar-check"></i></div>
+        </div>
+
+        <div class="edtech-card edtech-card-red">
+          <div class="edtech-card-info">
+            <h4>Active Courses</h4>
+            <div class="digit" id="statTeacherActiveCourses">0</div>
+            <p>Under your guidance</p>
+          </div>
+          <div class="edtech-card-icon"><i class="fa-solid fa-book-open"></i></div>
         </div>
 
         <div class="edtech-card edtech-card-amber">
           <div class="edtech-card-info">
-            <h4>Course Notes</h4>
-            <div class="digit" id="statNotesCount">0</div>
-            <p>Published Materials</p>
+            <h4>Assignments / Tasks</h4>
+            <div class="digit" id="statTeacherAssignmentsCount">0</div>
+            <p>Active &amp; Auto-Graded</p>
           </div>
-          <div class="edtech-card-icon"><i class="fa-solid fa-folder-open"></i></div>
+          <div class="edtech-card-icon"><i class="fa-solid fa-list-check"></i></div>
         </div>
       </div>
 
-      <div class="edtech-quick-actions-panel">
-        <h3>Quick Actions</h3>
-        <div class="quick-actions-grid">
-          <div class="btn-quick-action qa-green" onclick="scrollToSection('gradebookSection')">
-            <i class="fa-solid fa-calendar-check"></i>
-            <span>Mark Attendance</span>
-          </div>
-          <div class="btn-quick-action qa-blue" onclick="scrollToSection('gradebookSection')">
-            <i class="fa-solid fa-chart-column"></i>
-            <span>Enter &amp; Edit Marks</span>
-          </div>
-          <div class="btn-quick-action qa-purple" onclick="openPublishCourseModal()">
-            <i class="fa-solid fa-cloud-arrow-up"></i>
-            <span>Publish New Notes</span>
-          </div>
-        </div>
-      </div>
-
-      <div class="content-panel" id="gradebookSection">
+      <!-- SECTION 1: DATED ATTENDANCE REGISTER -->
+      <div class="content-panel">
         <div class="panel-header-row">
           <h3>
-            <i class="fa-solid fa-users-viewfinder" style="color: #2563eb;"></i> 
-            Student Roster, Attendance &amp; Marks (<span id="gradebookClassHeader">Level 5 NIT</span>)
+            <i class="fa-solid fa-calendar-day" style="color: #2563eb;"></i> 
+            Dated Class Attendance Register (<span class="badgeClassLabel">Level 5 NIT</span>)
           </h3>
-          <button class="btn-publish-open" onclick="saveClassMarksAndAttendance()">
-            <i class="fa-solid fa-floppy-disk"></i> Save Marks &amp; Attendance
-          </button>
+          <div style="display:flex; align-items:center; gap:8px;">
+            <label style="font-size:0.85rem; font-weight:700;">Select Date:</label>
+            <input type="date" id="attendanceDatePicker" onchange="loadClassAttendanceForDate()" style="padding:6px 10px; border-radius:6px; border:1.5px solid var(--border-color); font-weight:700;">
+            <button class="btn-publish-open" onclick="saveClassAttendanceForDate()">
+              <i class="fa-solid fa-floppy-disk"></i> Save Attendance
+            </button>
+          </div>
         </div>
 
         <div style="overflow-x: auto;">
@@ -665,22 +585,54 @@
               <tr>
                 <th>Student Full Name</th>
                 <th>Reg ID / Roll No</th>
-                <th>Attendance Status</th>
-                <th>Continuous (40)</th>
-                <th>Practical (60)</th>
-                <th>Status</th>
+                <th>Status for Selected Date</th>
+                <th>Note / Remarks</th>
               </tr>
             </thead>
-            <tbody id="trainerGradebookTbody"></tbody>
+            <tbody id="trainerAttendanceTbody"></tbody>
           </table>
         </div>
       </div>
 
+      <!-- SECTION 2: ACADEMIC MARKS & ASSIGNMENTS EVALUATION -->
       <div class="content-panel">
         <div class="panel-header-row">
-          <h3><i class="fa-solid fa-folder-open" style="color: #2563eb;"></i> Published Courses &amp; Learning Materials</h3>
-          <button class="btn-publish-open" onclick="openPublishCourseModal()">
-            <i class="fa-solid fa-cloud-arrow-up"></i> Publish New Notes / Course
+          <h3>
+            <i class="fa-solid fa-chart-column" style="color: #2563eb;"></i> 
+            Student Module Marks &amp; Assessment (<span class="badgeClassLabel">Level 5 NIT</span>)
+          </h3>
+          <div style="display:flex; gap:8px;">
+            <select id="teacherMarkCourseSelector" onchange="loadCourseMarksForClass()" style="padding:6px 10px; border-radius:6px; border:1.5px solid var(--border-color); font-weight:700;">
+              <!-- Courses populated dynamically -->
+            </select>
+            <button class="btn-publish-open" onclick="saveCourseMarksForClass()">
+              <i class="fa-solid fa-floppy-disk"></i> Save Marks
+            </button>
+          </div>
+        </div>
+
+        <div style="overflow-x: auto;">
+          <table class="records-table">
+            <thead>
+              <tr>
+                <th>Student Full Name</th>
+                <th>Reg ID</th>
+                <th>Continuous (CAT) / 40</th>
+                <th>Practical Exam / 60</th>
+                <th>Total / Status</th>
+              </tr>
+            </thead>
+            <tbody id="trainerMarksTbody"></tbody>
+          </table>
+        </div>
+      </div>
+
+      <!-- SECTION 3: COURSE MATERIALS & DRAFT / PUBLISH ITEM MANAGER -->
+      <div class="content-panel">
+        <div class="panel-header-row">
+          <h3><i class="fa-solid fa-folder-open" style="color: #2563eb;"></i> Course Materials, Lecture Notes &amp; Drafts</h3>
+          <button class="btn-publish-open" onclick="openUploadNotesModal()">
+            <i class="fa-solid fa-cloud-arrow-up"></i> Upload / Draft New Notes
           </button>
         </div>
 
@@ -688,14 +640,40 @@
           <table class="records-table">
             <thead>
               <tr>
+                <th>Course / Module</th>
                 <th>Target Class</th>
-                <th>Course / Module Title</th>
-                <th>Uploaded Note Material</th>
-                <th>Date Published</th>
+                <th>Document / Note Title</th>
+                <th>Status</th>
                 <th>Action</th>
               </tr>
             </thead>
-            <tbody id="trainerCoursesTbody"></tbody>
+            <tbody id="trainerNotesTbody"></tbody>
+          </table>
+        </div>
+      </div>
+
+      <!-- SECTION 4: ASSIGNMENTS & AUTO-GRADING TESTS -->
+      <div class="content-panel">
+        <div class="panel-header-row">
+          <h3><i class="fa-solid fa-file-pen" style="color: #8b5cf6;"></i> Prepared Assignments &amp; Quizzes</h3>
+          <button class="btn-publish-open" style="background:var(--purple);" onclick="openCreateAssignmentModal()">
+            <i class="fa-solid fa-plus"></i> Set New Assignment
+          </button>
+        </div>
+
+        <div style="overflow-x: auto;">
+          <table class="records-table">
+            <thead>
+              <tr>
+                <th>Assignment Title</th>
+                <th>Course</th>
+                <th>Due Date</th>
+                <th>Grading Type</th>
+                <th>Max Marks</th>
+                <th>Status</th>
+              </tr>
+            </thead>
+            <tbody id="trainerAssignmentsTbody"></tbody>
           </table>
         </div>
       </div>
@@ -708,7 +686,7 @@
       <!-- TARGETED ANNOUNCEMENT CARD -->
       <div class="embedded-notice-card" id="studentNoticeBanner">
         <div class="notice-header-row">
-          <h4><i class="fa-solid fa-bullhorn" style="color: #d97706;"></i> <span id="studentNoticeTitle">Campus Announcement</span></h4>
+          <h4><i class="fa-solid fa-bullhorn" style="color: #d97706;"></i> <span id="studentNoticeTitle">Student Notice</span></h4>
           <span class="notice-badge" id="studentNoticeBadge">Student Notice</span>
         </div>
         <div class="notice-body-text" id="studentNoticeBody"></div>
@@ -718,83 +696,119 @@
         </div>
       </div>
 
+      <!-- HERO BANNER -->
       <div class="edtech-welcome-banner" style="background: linear-gradient(135deg, #0f2847 0%, #1e3a8a 100%);">
         <div>
           <h2 id="studentHeroTitle">Welcome Student!</h2>
-          <p id="studentHeroSub">Level 5 • NIT &bull; Reg: ID</p>
+          <p id="studentHeroSub">Enrolled Class: Level 5 NIT &bull; Reg ID: Mugisha</p>
         </div>
         <button class="btn-edit-profile-hero" onclick="openProfileUpdateModal()">
           <i class="fa-solid fa-user-pen"></i> Edit Profile &amp; Password
         </button>
       </div>
 
+      <!-- COURSE PICKER / SWITCHER -->
+      <div class="selector-bar">
+        <label><i class="fa-solid fa-book-bookmark"></i> Switch Active Course:</label>
+        <select id="studentCourseSelector" onchange="renderStudentCourseDetails()">
+          <!-- Populated with courses targeting this student's class -->
+        </select>
+        <div id="studentCourseTeacherBadge" style="margin-left:auto; font-size:0.85rem; font-weight:800; color:var(--acej-blue);">
+          Instructor: Trainer
+        </div>
+      </div>
+
+      <!-- COURSE KEY DATES & ASSESSMENT TIMETABLE -->
       <div class="edtech-tiles-grid">
         <div class="edtech-card edtech-card-green">
           <div class="edtech-card-info">
-            <h4>My Attendance</h4>
-            <div class="digit" id="studentAttDisplay">Present</div>
-            <p>Daily Academic Status</p>
+            <h4>Course Start Date</h4>
+            <div class="digit" id="studentCourseStartDate" style="font-size:1.4rem;">--</div>
+            <p>Class Commenced</p>
+          </div>
+          <div class="edtech-card-icon"><i class="fa-solid fa-calendar-plus"></i></div>
+        </div>
+
+        <div class="edtech-card edtech-card-amber">
+          <div class="edtech-card-info">
+            <h4>Scheduled CAT Date</h4>
+            <div class="digit" id="studentCourseCatDate" style="font-size:1.4rem;">--</div>
+            <p>Continuous Assessment</p>
+          </div>
+          <div class="edtech-card-icon"><i class="fa-solid fa-clock"></i></div>
+        </div>
+
+        <div class="edtech-card edtech-card-red">
+          <div class="edtech-card-info">
+            <h4>Final Exam Date</h4>
+            <div class="digit" id="studentCourseExamDate" style="font-size:1.4rem;">--</div>
+            <p>Practical &amp; Theoretical</p>
           </div>
           <div class="edtech-card-icon"><i class="fa-solid fa-calendar-check"></i></div>
         </div>
 
         <div class="edtech-card edtech-card-navy">
           <div class="edtech-card-info">
-            <h4>Total Term Average</h4>
-            <div class="digit" id="studentAvgDisplay">88.5%</div>
-            <p>Continuous &amp; Practical</p>
+            <h4>Overall Grade</h4>
+            <div class="digit" id="studentCourseGradeDisplay">--</div>
+            <p>CAT (40) + Exam (60)</p>
           </div>
           <div class="edtech-card-icon"><i class="fa-solid fa-award"></i></div>
         </div>
-
-        <div class="edtech-card edtech-card-amber">
-          <div class="edtech-card-info">
-            <h4>Study Notes Available</h4>
-            <div class="digit" id="studentNotesAvailableCount">0</div>
-            <p>From Class Teachers</p>
-          </div>
-          <div class="edtech-card-icon"><i class="fa-solid fa-book"></i></div>
-        </div>
       </div>
 
+      <!-- SECTION 1: COURSE ASSIGNMENTS (WITH AUTO-GRADE OR SUBMISSION) -->
       <div class="content-panel">
         <div class="panel-header-row">
-          <h3><i class="fa-solid fa-book-bookmark" style="color: #2563eb;"></i> Module Marks &amp; Assessment</h3>
+          <h3><i class="fa-solid fa-file-pen" style="color: #8b5cf6;"></i> Course Assignments &amp; Tests</h3>
         </div>
         <div style="overflow-x: auto;">
           <table class="records-table">
             <thead>
               <tr>
-                <th>Module Code</th>
-                <th>Module Title</th>
-                <th>Credits</th>
-                <th>Continuous (40)</th>
-                <th>Practical (60)</th>
-                <th>Total / Status</th>
-              </tr>
-            </thead>
-            <tbody id="studentMarksTbody"></tbody>
-          </table>
-        </div>
-      </div>
-
-      <div class="content-panel">
-        <div class="panel-header-row">
-          <h3><i class="fa-solid fa-download" style="color: #2563eb;"></i> Shared Notes &amp; Course Materials from Teachers</h3>
-        </div>
-        <div style="overflow-x: auto;">
-          <table class="records-table">
-            <thead>
-              <tr>
-                <th>Module / Course Title</th>
-                <th>Note / File Attachment</th>
-                <th>Instructor</th>
-                <th>Date Posted</th>
+                <th>Assignment Title</th>
+                <th>Due Date</th>
+                <th>Grading Mode</th>
+                <th>My Score</th>
                 <th>Action</th>
               </tr>
             </thead>
-            <tbody id="studentSharedNotesTbody"></tbody>
+            <tbody id="studentAssignmentsTbody"></tbody>
           </table>
+        </div>
+      </div>
+
+      <!-- SECTION 2: PUBLISHED NOTES & DOWNLOADS -->
+      <div class="content-panel">
+        <div class="panel-header-row">
+          <h3><i class="fa-solid fa-download" style="color: #2563eb;"></i> Published Lecture Notes &amp; Slides</h3>
+        </div>
+        <div style="overflow-x: auto;">
+          <table class="records-table">
+            <thead>
+              <tr>
+                <th>Document / Slide Title</th>
+                <th>Instructor</th>
+                <th>Date Posted</th>
+                <th>Download</th>
+              </tr>
+            </thead>
+            <tbody id="studentNotesTbody"></tbody>
+          </table>
+        </div>
+      </div>
+
+      <!-- SECTION 3: MY HISTORICAL DATED ATTENDANCE -->
+      <div class="content-panel">
+        <div class="panel-header-row">
+          <h3><i class="fa-solid fa-calendar-day" style="color: #10b981;"></i> My Attendance History by Date</h3>
+          <div style="display:flex; align-items:center; gap:8px;">
+            <label style="font-size:0.85rem; font-weight:700;">Check Day:</label>
+            <input type="date" id="studentHistoryDatePicker" onchange="renderStudentAttendanceForDay()" style="padding:6px 10px; border-radius:6px; border:1.5px solid var(--border-color); font-weight:700;">
+          </div>
+        </div>
+        <div id="studentDayAttendanceResult" style="padding:15px; background:#f8fafc; border-radius:8px; border:1px solid var(--border-color); font-size:0.95rem;">
+          Select a date above to verify your attendance record for that session.
         </div>
       </div>
 
@@ -802,11 +816,186 @@
 
   </main>
 
+  <!-- MODAL: CREATE COURSE (TEACHER) -->
+  <div class="modal-backdrop" id="createCourseModal">
+    <div class="modal-card">
+      <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:15px;">
+        <h3><i class="fa-solid fa-book-medical" style="color: #2563eb;"></i> Create Course / Module</h3>
+        <button onclick="closeModal('createCourseModal')" style="background:none; border:none; font-size:1.5rem; cursor:pointer;">&times;</button>
+      </div>
+
+      <form onsubmit="handleCreateCourseSubmit(event)">
+        <div class="form-group">
+          <label>Targeted Cohort / Class</label>
+          <select id="modalCourseTargetClass" class="input-control" required>
+            <!-- Filled dynamically -->
+          </select>
+        </div>
+
+        <div class="form-group">
+          <label>Course / Module Title</label>
+          <input type="text" id="modalCourseTitle" class="input-control" placeholder="e.g. Telecommunications & Advanced Routing" required>
+        </div>
+
+        <div class="form-group">
+          <label>Module Code</label>
+          <input type="text" id="modalCourseCode" class="input-control" placeholder="e.g. NIT-501" required>
+        </div>
+
+        <div class="form-group">
+          <label>Class Start Date</label>
+          <input type="date" id="modalCourseStartDate" class="input-control" required>
+        </div>
+
+        <div class="form-group">
+          <label>Scheduled CAT (Assessment) Date</label>
+          <input type="date" id="modalCourseCatDate" class="input-control" required>
+        </div>
+
+        <div class="form-group">
+          <label>Scheduled Final Exam Date</label>
+          <input type="date" id="modalCourseExamDate" class="input-control" required>
+        </div>
+
+        <button type="submit" class="btn-login-submit">
+          <i class="fa-solid fa-plus"></i> Launch Course &amp; Enroll Students
+        </button>
+      </form>
+    </div>
+  </div>
+
+  <!-- MODAL: CREATE / DRAFT NOTES -->
+  <div class="modal-backdrop" id="uploadNotesModal">
+    <div class="modal-card">
+      <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:15px;">
+        <h3><i class="fa-solid fa-cloud-arrow-up" style="color: #2563eb;"></i> Save or Publish Notes</h3>
+        <button onclick="closeModal('uploadNotesModal')" style="background:none; border:none; font-size:1.5rem; cursor:pointer;">&times;</button>
+      </div>
+
+      <form onsubmit="handleSaveNotesSubmit(event)">
+        <div class="form-group">
+          <label>Course / Module</label>
+          <select id="modalNoteCourse" class="input-control" required>
+            <!-- Filled dynamically -->
+          </select>
+        </div>
+
+        <div class="form-group">
+          <label>Target Class</label>
+          <select id="modalNoteClass" class="input-control" required>
+            <!-- Filled dynamically -->
+          </select>
+        </div>
+
+        <div class="form-group">
+          <label>Lecture / Material Title</label>
+          <input type="text" id="modalNoteTitle" class="input-control" placeholder="e.g. Chapter 3: VLAN Trunking & Protocols" required>
+        </div>
+
+        <div class="form-group">
+          <label>File / Slides Link or Name</label>
+          <input type="text" id="modalNoteFile" class="input-control" placeholder="e.g. Chapter3_VLAN_Notes.pdf" required>
+        </div>
+
+        <div class="form-group">
+          <label>Publish Status</label>
+          <select id="modalNoteStatus" class="input-control">
+            <option value="published">🚀 Publish Immediately (Accessible to Students)</option>
+            <option value="draft">💾 Save as Draft (Hidden in Portal until you click Publish)</option>
+          </select>
+        </div>
+
+        <button type="submit" class="btn-login-submit">
+          <i class="fa-solid fa-floppy-disk"></i> Save Material
+        </button>
+      </form>
+    </div>
+  </div>
+
+  <!-- MODAL: CREATE ASSIGNMENT (AUTO-GRADE OR MANUAL) -->
+  <div class="modal-backdrop" id="createAssignmentModal">
+    <div class="modal-card">
+      <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:15px;">
+        <h3><i class="fa-solid fa-file-pen" style="color: #8b5cf6;"></i> Set Assignment or Quiz</h3>
+        <button onclick="closeModal('createAssignmentModal')" style="background:none; border:none; font-size:1.5rem; cursor:pointer;">&times;</button>
+      </div>
+
+      <form onsubmit="handleCreateAssignmentSubmit(event)">
+        <div class="form-group">
+          <label>Course / Module</label>
+          <select id="modalAssignCourse" class="input-control" required>
+            <!-- Filled dynamically -->
+          </select>
+        </div>
+
+        <div class="form-group">
+          <label>Assignment Title</label>
+          <input type="text" id="modalAssignTitle" class="input-control" placeholder="e.g. Practical Routing Lab Quiz" required>
+        </div>
+
+        <div class="form-group">
+          <label>Submission Due Date</label>
+          <input type="date" id="modalAssignDueDate" class="input-control" required>
+        </div>
+
+        <div class="form-group">
+          <label>Grading Mode</label>
+          <select id="modalAssignMode" class="input-control" onchange="toggleAutoGradeFields()">
+            <option value="auto">🤖 Auto-Grade (Objective Quiz with Answer Key)</option>
+            <option value="manual">✍️ Manual Grade (Teacher reviews and awards marks)</option>
+          </select>
+        </div>
+
+        <div id="autoGradeQuizArea">
+          <div class="form-group">
+            <label>Sample Auto-Grade Question</label>
+            <input type="text" id="modalQuizQuestion" class="input-control" placeholder="e.g. What is the default administrative distance of OSPF?">
+          </div>
+          <div class="form-group">
+            <label>Correct Answer Key (For instant scoring)</label>
+            <input type="text" id="modalQuizKey" class="input-control" placeholder="e.g. 110">
+          </div>
+        </div>
+
+        <div class="form-group">
+          <label>Maximum Marks</label>
+          <input type="number" id="modalAssignMarks" class="input-control" value="20" min="5" max="100" required>
+        </div>
+
+        <button type="submit" class="btn-login-submit" style="background:var(--purple);">
+          <i class="fa-solid fa-paper-plane"></i> Deploy Assignment to Students
+        </button>
+      </form>
+    </div>
+  </div>
+
+  <!-- MODAL: TAKE ASSIGNMENT (STUDENT) -->
+  <div class="modal-backdrop" id="takeAssignmentModal">
+    <div class="modal-card">
+      <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:15px;">
+        <h3 id="takeAssignHeading"><i class="fa-solid fa-pen-clip"></i> Take Assignment</h3>
+        <button onclick="closeModal('takeAssignmentModal')" style="background:none; border:none; font-size:1.5rem; cursor:pointer;">&times;</button>
+      </div>
+
+      <div id="takeAssignContent">
+        <p id="takeAssignQuestionText" style="font-size:1rem; font-weight:700; color:#1e293b; margin-bottom:12px;"></p>
+        <div class="form-group">
+          <label>Your Response / Answer:</label>
+          <input type="text" id="studentAnswerInput" class="input-control" placeholder="Type answer here..." required>
+        </div>
+        <button type="button" class="btn-login-submit" onclick="submitStudentAssignmentResponse()">
+          <i class="fa-solid fa-paper-plane"></i> Submit for Evaluation
+        </button>
+      </div>
+    </div>
+  </div>
+
+  <!-- MODAL: PROFILE UPDATE -->
   <div class="modal-backdrop" id="profileUpdateModal">
     <div class="modal-card">
       <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:15px;">
         <h3><i class="fa-solid fa-user-gear" style="color: #2563eb;"></i> Account Profile &amp; Security</h3>
-        <button onclick="closeProfileUpdateModal()" style="background:none; border:none; font-size:1.5rem; cursor:pointer;">&times;</button>
+        <button onclick="closeModal('profileUpdateModal')" style="background:none; border:none; font-size:1.5rem; cursor:pointer;">&times;</button>
       </div>
 
       <form onsubmit="handleSaveOwnProfile(event)">
@@ -814,126 +1003,54 @@
           <label>Full Name</label>
           <input type="text" id="profFullName" class="input-control" required>
         </div>
-
         <div class="form-group">
-          <label>Mobile Telephone (For verification &amp; alerts)</label>
+          <label>Mobile Phone</label>
           <input type="tel" id="profPhone" class="input-control" placeholder="e.g. 0788123456" required>
         </div>
-
         <div class="form-group">
           <label>Email Address</label>
           <input type="email" id="profEmail" class="input-control" placeholder="e.g. user@domain.rw">
         </div>
-
         <div class="form-group">
-          <label>Update Password (Leave blank to keep current password)</label>
+          <label>Update Password (Leave blank to keep unchanged)</label>
           <input type="password" id="profNewPass" class="input-control" placeholder="Type new password">
         </div>
-
         <button type="submit" class="btn-login-submit">
-          <i class="fa-solid fa-floppy-disk"></i> Save Profile Changes
+          <i class="fa-solid fa-floppy-disk"></i> Save Profile
         </button>
       </form>
     </div>
   </div>
 
+  <!-- MODAL: SELF-SERVICE OTP -->
   <div class="modal-backdrop" id="selfOtpModal">
     <div class="modal-card">
       <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:15px;">
-        <h3><i class="fa-solid fa-shield-halved" style="color: #2563eb;"></i> Self-Service Password Reset</h3>
-        <button onclick="closeSelfOtpModal()" style="background:none; border:none; font-size:1.5rem; cursor:pointer;">&times;</button>
+        <h3><i class="fa-solid fa-shield-halved" style="color: #2563eb;"></i> Password Reset</h3>
+        <button onclick="closeModal('selfOtpModal')" style="background:none; border:none; font-size:1.5rem; cursor:pointer;">&times;</button>
       </div>
-
       <div id="otpStep1">
-        <p style="font-size:0.9rem; color:#475569; margin-bottom:15px;">
-          Enter your Registration ID, Email, or Telephone number to receive a 6-digit verification code (OTP).
-        </p>
+        <p style="font-size:0.9rem; color:#475569; margin-bottom:15px;">Enter your Registration ID, Email, or Telephone number.</p>
         <div class="form-group">
-          <label>Account ID / Phone / Email</label>
           <input type="text" id="otpAccountInput" class="input-control" placeholder="e.g. Mugisha or 0788..." required>
-          <div class="inline-error-message" id="otpStep1Error">
-            <i class="fa-solid fa-circle-exclamation"></i>
-            <span>No account found matching this identifier. Please verify and try again.</span>
-          </div>
         </div>
-        <button type="button" class="btn-login-submit" onclick="requestOtpCode()">
-          <i class="fa-solid fa-paper-plane"></i> Send OTP Verification Code
-        </button>
+        <button type="button" class="btn-login-submit" onclick="requestOtpCode()"><i class="fa-solid fa-paper-plane"></i> Send OTP</button>
       </div>
-
-      <div id="otpStep2" style="display: none;">
-        <p style="font-size:0.9rem; color:#475569; margin-bottom:15px;">
-          A 6-digit OTP code has been dispatched. Enter the code along with your new password below.
-        </p>
+      <div id="otpStep2" style="display:none;">
         <div class="form-group">
           <label>6-Digit OTP Code</label>
-          <input type="text" id="otpCodeInput" class="input-control" placeholder="e.g. 583921" maxlength="6" required>
-          <div class="inline-error-message" id="otpCodeError">
-            <i class="fa-solid fa-circle-exclamation"></i>
-            <span>Invalid OTP code. Please verify the 6 digits.</span>
-          </div>
+          <input type="text" id="otpCodeInput" class="input-control" maxlength="6" required>
         </div>
         <div class="form-group">
           <label>Set New Password</label>
-          <input type="password" id="otpNewPassInput" class="input-control" placeholder="Minimum 6 characters" required>
+          <input type="password" id="otpNewPassInput" class="input-control" required>
         </div>
-        <button type="button" class="btn-login-submit" onclick="verifyAndResetPassword()">
-          <i class="fa-solid fa-check"></i> Set New Password &amp; Log In
-        </button>
+        <button type="button" class="btn-login-submit" onclick="verifyAndResetPassword()"><i class="fa-solid fa-check"></i> Reset Password</button>
       </div>
-    </div>
-  </div>
-
-  <div class="modal-backdrop" id="publishModal">
-    <div class="modal-card">
-      <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:15px;">
-        <h3><i class="fa-solid fa-cloud-arrow-up" style="color: #2563eb;"></i> Publish Course Notes</h3>
-        <button onclick="closePublishModal()" style="background:none; border:none; font-size:1.5rem; cursor:pointer;">&times;</button>
-      </div>
-
-      <form onsubmit="handlePublishCourseSubmit(event)">
-        <div class="form-group">
-          <label>Target Class / Combination</label>
-          <select id="pubClassTarget" class="input-control">
-            <option value="Level 5 NIT">Level 5 Networking &amp; Internet Tech (NIT)</option>
-            <option value="Level 4 NIT">Level 4 Networking &amp; Internet Tech (NIT)</option>
-            <option value="Level 5 CSA">Level 5 Computer Systems &amp; Architecture (CSA)</option>
-            <option value="Level 4 CSA">Level 4 Computer Systems &amp; Architecture (CSA)</option>
-            <option value="Level 5 ACC">Level 5 Accounting &amp; Finance</option>
-          </select>
-        </div>
-
-        <div class="form-group">
-          <label>Course / Module Title</label>
-          <input type="text" id="pubCourseTitle" class="input-control" placeholder="e.g. Telcom" required>
-        </div>
-
-        <div class="form-group">
-          <label>Select Note Material from Phone or PC (PPT, PDF, DOCX, PKT)</label>
-          <div class="file-attachment-box" onclick="document.getElementById('pubFileInput').click()">
-            <i class="fa-solid fa-cloud-arrow-up" style="font-size:2rem; color:#2563eb; margin-bottom:6px;"></i>
-            <div style="font-weight:700; font-size:0.92rem;">Click to choose file from device</div>
-            <div style="font-size:0.78rem; color:#64748b;">Slides, Word, PDFs up to 25MB</div>
-            <input type="file" id="pubFileInput" style="display:none;" onchange="handleFileSelected(this)">
-          </div>
-
-          <div class="file-preview-strip" id="filePreviewStrip">
-            <i class="fa-solid fa-file-circle-check" style="color:#10b981; font-size:1.2rem;"></i>
-            <span id="attachedFileName" style="font-weight:700;">Lecture_Notes.pdf</span>
-          </div>
-        </div>
-
-        <button type="submit" class="btn-login-submit">
-          <i class="fa-solid fa-paper-plane"></i> Publish &amp; Make Available to Students
-        </button>
-      </form>
     </div>
   </div>
 
   <div class="otp-toast-banner" id="otpToast">
-    <div style="font-size:0.82rem; text-transform:uppercase; font-weight:800; letter-spacing:1px; margin-bottom:4px;">
-      <i class="fa-solid fa-mobile-screen"></i> SMS / Email Delivery Gateway
-    </div>
     <div id="otpToastText">Your verification OTP code is: <strong>583921</strong></div>
   </div>
 
@@ -953,11 +1070,14 @@
 
     var currentRole = 'student';
     var activeSessionUser = null;
-    var selectedAttachmentName = "";
-    var currentOtpTargetUser = null;
-    var generatedOtpCode = null;
+    var activeUserLiveRef = null;
+    var currentActiveAssignment = null;
 
-    let activeUserLiveRef = null;
+    let allCloudUsers = [];
+    let allCloudCourses = [];
+    let allCloudNotes = [];
+    let allCloudAssignments = [];
+
     const SESSION_STORAGE_KEY = "ACEJ_ACTIVE_SESSION";
 
     function cleanFirebaseKey(str) {
@@ -970,7 +1090,7 @@
       document.getElementById('tabStudent').classList.toggle('active-tab', role === 'student');
       document.getElementById('tabStaff').classList.toggle('active-tab', role === 'staff');
       document.getElementById('lblUsername').innerText = (role === 'student') ? 'Student Roll / Reg ID Number' : 'Staff Username or Email';
-      document.getElementById('portalUsername').placeholder = (role === 'student') ? 'e.g. Mugisha' : 'e.g. Paul';
+      document.getElementById('portalUsername').placeholder = (role === 'student') ? 'e.g. Mugisha' : 'e.g. muneza';
     }
 
     function clearInlineLoginErrors() {
@@ -996,7 +1116,7 @@
       });
     }
 
-    // TARGETED & TIMED ANNOUNCEMENT HANDLER
+    // TARGETED & TIMED ANNOUNCEMENTS
     function setupAnnouncementListener() {
       rtdb.ref('broadcast').on('value', (snapshot) => {
         const n = snapshot.val();
@@ -1009,7 +1129,6 @@
           return;
         }
 
-        // 1. Check Expiration
         const now = Date.now();
         if (n.expiresAt && now > n.expiresAt) {
           staffBanner.style.display = 'none';
@@ -1017,20 +1136,14 @@
           return;
         }
 
-        const target = n.target || 'all'; // 'all', 'student', or 'staff'
+        const target = n.target || 'all';
         const metaText = `Published by ${n.author || 'School Administration'}`;
-
         let timerText = "";
         if (n.expiresAt) {
           const diffMinutes = Math.max(0, Math.round((n.expiresAt - now) / (1000 * 60)));
-          if (diffMinutes > 60) {
-            timerText = `Expires in ~${Math.round(diffMinutes / 60)} hr(s)`;
-          } else {
-            timerText = `Expires in ~${diffMinutes} min`;
-          }
+          timerText = diffMinutes > 60 ? `Expires in ~${Math.round(diffMinutes / 60)} hr(s)` : `Expires in ~${diffMinutes} min`;
         }
 
-        // Show to Staff only if target is 'all' or 'staff'
         if (target === 'all' || target === 'staff') {
           document.getElementById('staffNoticeTitle').innerText = n.title;
           document.getElementById('staffNoticeBody').innerText = n.body;
@@ -1042,7 +1155,6 @@
           staffBanner.style.display = 'none';
         }
 
-        // Show to Students only if target is 'all' or 'student'
         if (target === 'all' || target === 'student') {
           document.getElementById('studentNoticeTitle').innerText = n.title;
           document.getElementById('studentNoticeBody').innerText = n.body;
@@ -1056,10 +1168,49 @@
       });
     }
 
+    // GLOBAL DATA SYNC
     window.addEventListener('DOMContentLoaded', async function() {
       switchLoginRole('student');
       setupAnnouncementListener();
 
+      const todayStr = new Date().toISOString().split('T')[0];
+      document.getElementById('attendanceDatePicker').value = todayStr;
+      document.getElementById('studentHistoryDatePicker').value = todayStr;
+
+      // Sync Cloud DBs in Realtime
+      rtdb.ref('users').on('value', snap => {
+        const val = snap.val() || {};
+        allCloudUsers = Object.values(val);
+      });
+
+      rtdb.ref('courses').on('value', snap => {
+        const val = snap.val();
+        allCloudCourses = Array.isArray(val) ? val : (val ? Object.values(val) : []);
+        if (activeSessionUser) {
+          if (activeSessionUser.role === 'staff') populateTeacherCoursesDropdown();
+          if (activeSessionUser.role === 'student') populateStudentCoursesDropdown();
+        }
+      });
+
+      rtdb.ref('notes').on('value', snap => {
+        const val = snap.val();
+        allCloudNotes = Array.isArray(val) ? val : (val ? Object.values(val) : []);
+        if (activeSessionUser) {
+          if (activeSessionUser.role === 'staff') renderTeacherNotesTable();
+          if (activeSessionUser.role === 'student') renderStudentNotesTable();
+        }
+      });
+
+      rtdb.ref('assignments').on('value', snap => {
+        const val = snap.val();
+        allCloudAssignments = Array.isArray(val) ? val : (val ? Object.values(val) : []);
+        if (activeSessionUser) {
+          if (activeSessionUser.role === 'staff') renderTeacherAssignmentsTable();
+          if (activeSessionUser.role === 'student') renderStudentAssignmentsTable();
+        }
+      });
+
+      // Restore Impersonated or Existing Session
       var impersonated = localStorage.getItem("ACEJ_IMPERSONATE_USER");
       if (impersonated) {
         localStorage.removeItem("ACEJ_IMPERSONATE_USER");
@@ -1075,7 +1226,6 @@
       if (existingSession) {
         var userObj = JSON.parse(existingSession);
         const key = cleanFirebaseKey(userObj.username);
-        
         rtdb.ref('users/' + key).once('value', (snapshot) => {
           const cloudUser = snapshot.val();
           if (cloudUser && cloudUser.status === 'active') {
@@ -1143,331 +1293,661 @@
       document.getElementById('btnSignOut').style.display = 'inline-flex';
       
       document.getElementById('navUserBadgeGroup').style.display = 'flex';
-      document.getElementById('navRolePill').innerText = (matched.role === 'student') ? 'Student' : 'Trainer';
+      document.getElementById('navRolePill').innerText = (matched.role === 'student') ? 'Student' : 'Staff / Trainer';
       document.getElementById('navUserAvatar').innerText = matched.name.charAt(0).toUpperCase();
       document.getElementById('navUserName').innerText = matched.name;
 
       if (matched.role === 'student') {
-        renderStudentView(matched);
+        setupStudentWorkspace(matched);
       } else {
-        renderTrainerView(matched);
+        setupTeacherWorkspace(matched);
       }
     }
 
-    async function renderStudentView(student) {
+    // ==========================================
+    // TEACHER & MULTI-CLASS / MULTI-ROLE LOGIC
+    // ==========================================
+    function setupTeacherWorkspace(teacher) {
+      document.getElementById('staffDashboard').style.display = 'block';
+      document.getElementById('studentDashboard').style.display = 'none';
+
+      document.getElementById('trainerHeroTitle').innerText = "Welcome, " + teacher.name + "!";
+      
+      // Render Roles
+      const roles = teacher.staffRoles && teacher.staffRoles.length > 0 ? teacher.staffRoles.join(" &bull; ") : "Teacher / Trainer";
+      document.getElementById('trainerHeroRoles').innerHTML = `<strong>Roles:</strong> ${roles}`;
+
+      // Populate Managed Classes
+      const classSelect = document.getElementById('teacherActiveManagedClass');
+      classSelect.innerHTML = "";
+      const classes = (teacher.managedClasses && teacher.managedClasses.length > 0) ? teacher.managedClasses : ["Level 5 NIT", "Level 4 CSA"];
+      classes.forEach(c => {
+        const opt = document.createElement('option');
+        opt.value = c;
+        opt.innerText = c;
+        classSelect.appendChild(opt);
+      });
+
+      switchTeacherManagedClass();
+    }
+
+    function switchTeacherManagedClass() {
+      const activeClass = document.getElementById('teacherActiveManagedClass').value;
+      document.querySelectorAll('.badgeClassLabel').forEach(el => el.innerText = activeClass);
+
+      loadClassAttendanceForDate();
+      populateTeacherCoursesDropdown();
+      renderTeacherNotesTable();
+      renderTeacherAssignmentsTable();
+    }
+
+    function populateTeacherCoursesDropdown() {
+      const activeClass = document.getElementById('teacherActiveManagedClass').value;
+      const select = document.getElementById('teacherMarkCourseSelector');
+      select.innerHTML = "";
+
+      const classCourses = allCloudCourses.filter(c => c.targetClass === activeClass);
+      if (classCourses.length === 0) {
+        const opt = document.createElement('option');
+        opt.value = "";
+        opt.innerText = "No courses created for " + activeClass;
+        select.appendChild(opt);
+      } else {
+        classCourses.forEach(c => {
+          const opt = document.createElement('option');
+          opt.value = c.code;
+          opt.innerText = `${c.title} (${c.code})`;
+          select.appendChild(opt);
+        });
+      }
+
+      loadCourseMarksForClass();
+    }
+
+    // DATED ATTENDANCE (TEACHER)
+    async function loadClassAttendanceForDate() {
+      const activeClass = document.getElementById('teacherActiveManagedClass').value;
+      const selDate = document.getElementById('attendanceDatePicker').value || new Date().toISOString().split('T')[0];
+
+      // Get students in this class
+      const students = allCloudUsers.filter(u => u.role === 'student' && ((u.level + " " + u.dept) === activeClass || (u.groups && u.groups.includes(activeClass))));
+      document.getElementById('statClassEnrolledStudents').innerText = students.length;
+
+      const dateKey = selDate.replace(/-/g, '_');
+      const snap = await rtdb.ref(`attendance/${activeClass}/${dateKey}`).once('value');
+      const recorded = snap.val() || {};
+
+      const tbody = document.getElementById('trainerAttendanceTbody');
+      tbody.innerHTML = "";
+
+      let presentCount = 0;
+
+      if (students.length === 0) {
+        tbody.innerHTML = `<tr><td colspan="4" style="text-align:center; color:#94a3b8;">No registered students found in ${activeClass}.</td></tr>`;
+      } else {
+        students.forEach(s => {
+          const uRecord = recorded[cleanFirebaseKey(s.username).toLowerCase()] || { status: "Present", remark: "" };
+          if (uRecord.status === "Present") presentCount++;
+
+          const tr = document.createElement('tr');
+          tr.dataset.username = s.username.toLowerCase();
+          tr.innerHTML = `
+            <td><strong>${s.name}</strong></td>
+            <td><code>${s.username}</code></td>
+            <td>
+              <select class="input-control att-select" style="padding:6px; font-size:0.85rem; width:120px;">
+                <option value="Present" ${uRecord.status === 'Present' ? 'selected' : ''}>Present</option>
+                <option value="Absent" ${uRecord.status === 'Absent' ? 'selected' : ''}>Absent</option>
+                <option value="Excused" ${uRecord.status === 'Excused' ? 'selected' : ''}>Excused</option>
+              </select>
+            </td>
+            <td>
+              <input type="text" class="input-control att-remark" value="${uRecord.remark || ''}" placeholder="Optional note" style="padding:6px; font-size:0.85rem;">
+            </td>
+          `;
+          tbody.appendChild(tr);
+        });
+      }
+
+      const percent = students.length > 0 ? Math.round((presentCount / students.length) * 100) : 0;
+      document.getElementById('statClassAttendanceToday').innerText = percent + "%";
+    }
+
+    async function saveClassAttendanceForDate() {
+      const activeClass = document.getElementById('teacherActiveManagedClass').value;
+      const selDate = document.getElementById('attendanceDatePicker').value;
+      if (!selDate) return alert("Please select a date!");
+
+      const dateKey = selDate.replace(/-/g, '_');
+      const rows = document.querySelectorAll('#trainerAttendanceTbody tr');
+
+      let payload = {};
+      rows.forEach(r => {
+        const u = r.dataset.username;
+        if (!u) return;
+        payload[u] = {
+          status: r.querySelector('.att-select').value,
+          remark: r.querySelector('.att-remark').value.trim()
+        };
+      });
+
+      await rtdb.ref(`attendance/${activeClass}/${dateKey}`).set(payload);
+      showSystemToast(`Attendance for ${selDate} saved directly in Firebase!`);
+      loadClassAttendanceForDate();
+    }
+
+    // COURSE MARKS (TEACHER)
+    async function loadCourseMarksForClass() {
+      const activeClass = document.getElementById('teacherActiveManagedClass').value;
+      const courseCode = document.getElementById('teacherMarkCourseSelector').value;
+
+      const students = allCloudUsers.filter(u => u.role === 'student' && ((u.level + " " + u.dept) === activeClass || (u.groups && u.groups.includes(activeClass))));
+      const tbody = document.getElementById('trainerMarksTbody');
+      tbody.innerHTML = "";
+
+      if (!courseCode || students.length === 0) {
+        tbody.innerHTML = `<tr><td colspan="5" style="text-align:center; color:#94a3b8;">No course selected or no students enrolled in ${activeClass}.</td></tr>`;
+        return;
+      }
+
+      const snap = await rtdb.ref(`marks/${activeClass}/${cleanFirebaseKey(courseCode)}`).once('value');
+      const marksData = snap.val() || {};
+
+      students.forEach(s => {
+        const uMarks = marksData[cleanFirebaseKey(s.username).toLowerCase()] || { cat: 35, exam: 52 };
+        const total = (parseInt(uMarks.cat) || 0) + (parseInt(uMarks.exam) || 0);
+
+        const tr = document.createElement('tr');
+        tr.dataset.username = s.username.toLowerCase();
+        tr.innerHTML = `
+          <td><strong>${s.name}</strong></td>
+          <td><code>${s.username}</code></td>
+          <td><input type="number" class="grade-input mark-cat" value="${uMarks.cat}" min="0" max="40"></td>
+          <td><input type="number" class="grade-input mark-exam" value="${uMarks.exam}" min="0" max="60"></td>
+          <td><span class="grade-badge grade-competent">${total}% Competent</span></td>
+        `;
+        tbody.appendChild(tr);
+      });
+    }
+
+    async function saveCourseMarksForClass() {
+      const activeClass = document.getElementById('teacherActiveManagedClass').value;
+      const courseCode = document.getElementById('teacherMarkCourseSelector').value;
+      if (!courseCode) return alert("Select or create a course first!");
+
+      const rows = document.querySelectorAll('#trainerMarksTbody tr');
+      let payload = {};
+
+      rows.forEach(r => {
+        const u = r.dataset.username;
+        if (!u) return;
+        payload[u] = {
+          cat: parseInt(r.querySelector('.mark-cat').value) || 0,
+          exam: parseInt(r.querySelector('.mark-exam').value) || 0
+        };
+      });
+
+      await rtdb.ref(`marks/${activeClass}/${cleanFirebaseKey(courseCode)}`).set(payload);
+      showSystemToast(`Course marks for ${courseCode} synced directly to Firebase!`);
+      loadCourseMarksForClass();
+    }
+
+    // NOTES & DRAFTS (TEACHER)
+    function renderTeacherNotesTable() {
+      const activeClass = document.getElementById('teacherActiveManagedClass').value;
+      const tbody = document.getElementById('trainerNotesTbody');
+      tbody.innerHTML = "";
+
+      const notes = allCloudNotes.filter(n => n.targetClass === activeClass);
+      if (notes.length === 0) {
+        tbody.innerHTML = `<tr><td colspan="5" style="text-align:center; color:#94a3b8;">No notes or drafts for ${activeClass}. Click 'Upload / Draft New Notes' to add one.</td></tr>`;
+        return;
+      }
+
+      notes.forEach((n, idx) => {
+        const isDraft = n.status === "draft";
+        const tr = document.createElement('tr');
+        tr.innerHTML = `
+          <td><strong>${n.courseCode || 'General'}</strong></td>
+          <td>${n.targetClass}</td>
+          <td><i class="fa-solid fa-file-lines" style="color:var(--blue);"></i> ${n.title}</td>
+          <td><span class="grade-badge ${isDraft ? 'grade-draft' : 'grade-competent'}">${isDraft ? 'Draft (Hidden)' : 'Published'}</span></td>
+          <td>
+            ${isDraft ? `<button class="btn-publish-open" style="padding:4px 10px; font-size:0.78rem;" onclick="publishDraftNote('\${n.id}')"><i class="fa-solid fa-upload"></i> Publish Now</button>` : `<span style="color:#10b981; font-weight:700;"><i class="fa-solid fa-check-double"></i> Live to Class</span>`}
+          </td>
+        `;
+        tbody.appendChild(tr);
+      });
+    }
+
+    async function publishDraftNote(noteId) {
+      const idx = allCloudNotes.findIndex(n => n.id === noteId);
+      if (idx !== -1) {
+        allCloudNotes[idx].status = "published";
+        await rtdb.ref('notes').set(allCloudNotes);
+        showSystemToast("Note is now published and visible to all students in this class!");
+      }
+    }
+
+    // ASSIGNMENTS & QUIZZES (TEACHER)
+    function renderTeacherAssignmentsTable() {
+      const activeClass = document.getElementById('teacherActiveManagedClass').value;
+      const tbody = document.getElementById('trainerAssignmentsTbody');
+      tbody.innerHTML = "";
+
+      const items = allCloudAssignments.filter(a => a.targetClass === activeClass);
+      document.getElementById('statTeacherAssignmentsCount').innerText = items.length;
+
+      if (items.length === 0) {
+        tbody.innerHTML = `<tr><td colspan="6" style="text-align:center; color:#94a3b8;">No assignments deployed for ${activeClass}. Click 'Set New Assignment' above.</td></tr>`;
+        return;
+      }
+
+      items.forEach(a => {
+        const tr = document.createElement('tr');
+        tr.innerHTML = `
+          <td><strong>${a.title}</strong></td>
+          <td>${a.courseCode}</td>
+          <td>${a.dueDate}</td>
+          <td>${a.mode === 'auto' ? '<span class="grade-badge grade-competent">🤖 Auto-Grade</span>' : '<span class="grade-badge grade-draft">✍️ Manual</span>'}</td>
+          <td>${a.maxMarks} Marks</td>
+          <td><span class="grade-badge grade-competent">Active</span></td>
+        `;
+        tbody.appendChild(tr);
+      });
+    }
+
+    // ==========================================
+    // STUDENT WORKSPACE & MULTI-COURSE LOGIC
+    // ==========================================
+    function setupStudentWorkspace(student) {
       document.getElementById('studentDashboard').style.display = 'block';
       document.getElementById('staffDashboard').style.display = 'none';
 
       document.getElementById('studentHeroTitle').innerText = "Welcome, " + student.name + "!";
-      var cohortStr = (student.level || "Level 5") + " • " + (student.dept || "NIT");
-      document.getElementById('studentHeroSub').innerText = cohortStr + " • Reg: " + student.username;
+      const studentClass = (student.level || "Level 5") + " " + (student.dept || "NIT");
+      document.getElementById('studentHeroSub').innerText = `Enrolled Class: ${studentClass} &bull; Reg: ${student.username}`;
 
-      rtdb.ref('grades/' + cleanFirebaseKey(student.username).toLowerCase()).on('value', (snapshot) => {
-        const studentRecord = snapshot.val() || { attendance: "Present", continuous: 40, practical: 55 };
-        document.getElementById('studentAttDisplay').innerText = studentRecord.attendance;
-        var total = studentRecord.continuous + studentRecord.practical;
-        document.getElementById('studentAvgDisplay').innerText = total + "%";
+      populateStudentCoursesDropdown();
+      renderStudentAttendanceForDay();
+    }
 
-        var marksTbody = document.getElementById('studentMarksTbody');
-        marksTbody.innerHTML = `
-          <tr>
-            <td><strong>${student.dept || 'NIT'}-501</strong></td>
-            <td>Telcom &amp; Practical Module Lab</td>
-            <td>15</td>
-            <td>${studentRecord.continuous} / 40</td>
-            <td>${studentRecord.practical} / 60</td>
-            <td><span class="grade-badge grade-competent">${total >= 70 ? 'Competent' : 'In Progress'}</span></td>
-          </tr>
+    function populateStudentCoursesDropdown() {
+      if (!activeSessionUser) return;
+      const studentClass = (activeSessionUser.level || "Level 5") + " " + (activeSessionUser.dept || "NIT");
+      const selector = document.getElementById('studentCourseSelector');
+      selector.innerHTML = "";
+
+      const myCourses = allCloudCourses.filter(c => c.targetClass === studentClass);
+
+      if (myCourses.length === 0) {
+        const opt = document.createElement('option');
+        opt.value = "";
+        opt.innerText = "No courses launched for " + studentClass;
+        selector.appendChild(opt);
+      } else {
+        myCourses.forEach(c => {
+          const opt = document.createElement('option');
+          opt.value = c.code;
+          opt.innerText = `${c.title} (${c.code})`;
+          selector.appendChild(opt);
+        });
+      }
+
+      renderStudentCourseDetails();
+    }
+
+    async function renderStudentCourseDetails() {
+      if (!activeSessionUser) return;
+      const studentClass = (activeSessionUser.level || "Level 5") + " " + (activeSessionUser.dept || "NIT");
+      const courseCode = document.getElementById('studentCourseSelector').value;
+      const currentCourse = allCloudCourses.find(c => c.code === courseCode && c.targetClass === studentClass);
+
+      if (currentCourse) {
+        document.getElementById('studentCourseTeacherBadge').innerText = `Instructor: ${currentCourse.teacher}`;
+        document.getElementById('studentCourseStartDate').innerText = currentCourse.startDate || "TBA";
+        document.getElementById('studentCourseCatDate').innerText = currentCourse.catDate || "TBA";
+        document.getElementById('studentCourseExamDate').innerText = currentCourse.examDate || "TBA";
+
+        // Query Mark
+        const snap = await rtdb.ref(`marks/${studentClass}/${cleanFirebaseKey(courseCode)}/${cleanFirebaseKey(activeSessionUser.username).toLowerCase()}`).once('value');
+        const m = snap.val() || { cat: 0, exam: 0 };
+        const total = (parseInt(m.cat) || 0) + (parseInt(m.exam) || 0);
+        document.getElementById('studentCourseGradeDisplay').innerText = total + "%";
+      } else {
+        document.getElementById('studentCourseTeacherBadge').innerText = "Instructor: General";
+        document.getElementById('studentCourseStartDate').innerText = "--";
+        document.getElementById('studentCourseCatDate').innerText = "--";
+        document.getElementById('studentCourseExamDate').innerText = "--";
+        document.getElementById('studentCourseGradeDisplay').innerText = "--";
+      }
+
+      renderStudentAssignmentsTable();
+      renderStudentNotesTable();
+    }
+
+    function renderStudentAssignmentsTable() {
+      if (!activeSessionUser) return;
+      const studentClass = (activeSessionUser.level || "Level 5") + " " + (activeSessionUser.dept || "NIT");
+      const courseCode = document.getElementById('studentCourseSelector').value;
+      const tbody = document.getElementById('studentAssignmentsTbody');
+      tbody.innerHTML = "";
+
+      const assignments = allCloudAssignments.filter(a => a.targetClass === studentClass && (courseCode ? a.courseCode === courseCode : true));
+
+      if (assignments.length === 0) {
+        tbody.innerHTML = `<tr><td colspan="5" style="text-align:center; color:#94a3b8;">No pending assignments for this course.</td></tr>`;
+        return;
+      }
+
+      assignments.forEach(a => {
+        const subKey = cleanFirebaseKey(activeSessionUser.username).toLowerCase();
+        const mySubmission = a.submissions && a.submissions[subKey];
+
+        const tr = document.createElement('tr');
+        tr.innerHTML = `
+          <td><strong>${a.title}</strong></td>
+          <td>${a.dueDate}</td>
+          <td>${a.mode === 'auto' ? '🤖 Auto-Grade' : '✍️ Manual Grade'}</td>
+          <td>${mySubmission ? `<strong style="color:#047857;">${mySubmission.score} /${a.maxMarks}</strong>` : `<span style="color:#94a3b8;">Not Submitted</span>`}</td>
+          <td>
+            ${mySubmission ? `<span style="color:#10b981; font-weight:700;"><i class="fa-solid fa-circle-check"></i> Completed</span>` : `<button class="btn-publish-open" style="padding:4px 12px; font-size:0.8rem;" onclick="openTakeAssignmentModal('\${a.id}')">Start Task</button>`}
+          </td>
         `;
-      });
-
-      var studentClassKey = (student.level || "Level 5") + " " + (student.dept || "NIT");
-      rtdb.ref('courses').on('value', (snapshot) => {
-        const val = snapshot.val();
-        let allCourses = Array.isArray(val) ? val : (val ? Object.values(val) : []);
-        var matchingCourses = allCourses.filter(function(c) {
-          return c.cohort.toLowerCase() === studentClassKey.toLowerCase();
-        });
-
-        document.getElementById('studentNotesAvailableCount').innerText = matchingCourses.length;
-
-        var notesTbody = document.getElementById('studentSharedNotesTbody');
-        notesTbody.innerHTML = "";
-
-        if (matchingCourses.length === 0) {
-          notesTbody.innerHTML = `<tr><td colspan="5" style="text-align:center; color:#94a3b8;">No notes uploaded for ${studentClassKey} yet.</td></tr>`;
-        } else {
-          matchingCourses.forEach(function(c) {
-            var tr = document.createElement('tr');
-            tr.innerHTML = `
-              <td><strong>${c.title}</strong></td>
-              <td><i class="fa-solid fa-file-lines" style="color:#2563eb;"></i> ${c.fileName}</td>
-              <td>${c.teacher}</td>
-              <td>${c.date}</td>
-              <td>
-                <a href="#" onclick="alert('Downloading: ' + '${c.fileName}'); return false;" class="btn-publish-open" style="padding:4px 10px; font-size:0.78rem;">
-                  <i class="fa-solid fa-download"></i> Download
-                </a>
-              </td>
-            `;
-            notesTbody.appendChild(tr);
-          });
-        }
+        tbody.appendChild(tr);
       });
     }
 
-    async function renderTrainerView(trainer) {
-      document.getElementById('staffDashboard').style.display = 'block';
-      document.getElementById('studentDashboard').style.display = 'none';
+    function renderStudentNotesTable() {
+      if (!activeSessionUser) return;
+      const studentClass = (activeSessionUser.level || "Level 5") + " " + (activeSessionUser.dept || "NIT");
+      const courseCode = document.getElementById('studentCourseSelector').value;
+      const tbody = document.getElementById('studentNotesTbody');
+      tbody.innerHTML = "";
 
-      document.getElementById('trainerHeroTitle').innerText = "Welcome, " + trainer.name + "!";
-      
-      var targetClass = (trainer.level && trainer.level !== 'Faculty' ? trainer.level : "Level 5") + " " + (trainer.dept || "NIT");
-      document.getElementById('statClassTitle').innerText = targetClass;
-      document.getElementById('gradebookClassHeader').innerText = targetClass;
+      // Only published notes are visible to students
+      const notes = allCloudNotes.filter(n => n.targetClass === studentClass && n.status === "published" && (courseCode ? n.courseCode === courseCode : true));
 
-      rtdb.ref('users').on('value', async (snapshot) => {
-        const usersObj = snapshot.val() || {};
-        const allUsers = Object.values(usersObj);
-        
-        var enrolledStudents = allUsers.filter(function(u) {
-          if (u.role !== 'student') return false;
-          var uClass = (u.level || "Level 5") + " " + (u.dept || "NIT");
-          return uClass.toLowerCase() === targetClass.toLowerCase();
-        });
-
-        document.getElementById('statEnrolledCount').innerText = enrolledStudents.length;
-
-        const gSnap = await rtdb.ref('grades').once('value');
-        const gradesDB = gSnap.val() || {};
-
-        var gradebookTbody = document.getElementById('trainerGradebookTbody');
-        gradebookTbody.innerHTML = "";
-
-        if (enrolledStudents.length === 0) {
-          gradebookTbody.innerHTML = `<tr><td colspan="6" style="text-align:center; color:#94a3b8;">No students registered in ${targetClass} yet.</td></tr>`;
-        } else {
-          enrolledStudents.forEach(function(s) {
-            var sRecord = gradesDB[s.username.toLowerCase()] || {
-              attendance: "Present",
-              continuous: 38,
-              practical: 54
-            };
-
-            var tr = document.createElement('tr');
-            tr.dataset.username = s.username.toLowerCase();
-            tr.innerHTML = `
-              <td><strong>${s.name}</strong></td>
-              <td><code>${s.username}</code></td>
-              <td>
-                <select class="input-control att-select" style="padding:6px; font-size:0.85rem; width:110px;">
-                  <option value="Present" ${sRecord.attendance === 'Present' ? 'selected' : ''}>Present</option>
-                  <option value="Absent" ${sRecord.attendance === 'Absent' ? 'selected' : ''}>Absent</option>
-                  <option value="Excused" ${sRecord.attendance === 'Excused' ? 'selected' : ''}>Excused</option>
-                </select>
-              </td>
-              <td><input type="number" class="grade-input mark-cont" value="${sRecord.continuous}" min="0" max="40"></td>
-              <td><input type="number" class="grade-input mark-prac" value="${sRecord.practical}" min="0" max="60"></td>
-              <td><span class="grade-badge grade-competent">Active</span></td>
-            `;
-            gradebookTbody.appendChild(tr);
-          });
-        }
-      });
-
-      rtdb.ref('courses').on('value', (snapshot) => {
-        const val = snapshot.val();
-        let courses = Array.isArray(val) ? val : (val ? Object.values(val) : []);
-        document.getElementById('statNotesCount').innerText = courses.length;
-
-        var tbody = document.getElementById('trainerCoursesTbody');
-        tbody.innerHTML = "";
-
-        courses.forEach(function(c) {
-          var tr = document.createElement('tr');
-          tr.innerHTML = `
-            <td><strong>${c.cohort}</strong></td>
-            <td>${c.title}</td>
-            <td><i class="fa-solid fa-file-lines" style="color:#2563eb;"></i> ${c.fileName}</td>
-            <td>${c.date}</td>
-            <td><span class="grade-badge grade-competent">Active</span></td>
-          `;
-          tbody.appendChild(tr);
-        });
-      });
-    }
-
-    async function saveClassMarksAndAttendance() {
-      var rows = document.querySelectorAll('#trainerGradebookTbody tr');
-
-      for (const row of rows) {
-        var username = row.dataset.username;
-        if (!username) continue;
-
-        var att = row.querySelector('.att-select').value;
-        var cont = parseInt(row.querySelector('.mark-cont').value) || 0;
-        var prac = parseInt(row.querySelector('.mark-prac').value) || 0;
-
-        await rtdb.ref('grades/' + cleanFirebaseKey(username).toLowerCase()).set({
-          attendance: att,
-          continuous: cont,
-          practical: prac
-        });
+      if (notes.length === 0) {
+        tbody.innerHTML = `<tr><td colspan="4" style="text-align:center; color:#94a3b8;">No lecture slides published yet.</td></tr>`;
+        return;
       }
 
-      showSystemToast("Class marks and attendance updated directly in Firebase!");
+      notes.forEach(n => {
+        const tr = document.createElement('tr');
+        tr.innerHTML = `
+          <td><i class="fa-solid fa-file-lines" style="color:var(--blue);"></i> <strong>${n.title}</strong></td>
+          <td>${n.teacher || 'Trainer'}</td>
+          <td>${n.date || 'Recent'}</td>
+          <td>
+            <a href="#" onclick="alert('Downloading: ' + '${n.fileName}'); return false;" class="btn-publish-open" style="padding:4px 10px; font-size:0.78rem;">
+              <i class="fa-solid fa-download"></i> Download
+            </a>
+          </td>
+        `;
+        tbody.appendChild(tr);
+      });
     }
 
-    function openPublishCourseModal() {
-      document.getElementById('publishModal').style.display = 'flex';
-    }
-    function closePublishModal() {
-      document.getElementById('publishModal').style.display = 'none';
-      document.getElementById('filePreviewStrip').style.display = 'none';
-      selectedAttachmentName = "";
-    }
+    async function renderStudentAttendanceForDay() {
+      if (!activeSessionUser) return;
+      const studentClass = (activeSessionUser.level || "Level 5") + " " + (activeSessionUser.dept || "NIT");
+      const checkDate = document.getElementById('studentHistoryDatePicker').value;
+      const resBox = document.getElementById('studentDayAttendanceResult');
 
-    function handleFileSelected(input) {
-      if (input.files && input.files[0]) {
-        selectedAttachmentName = input.files[0].name;
-        document.getElementById('attachedFileName').innerText = selectedAttachmentName;
-        document.getElementById('filePreviewStrip').style.display = 'flex';
+      if (!checkDate) {
+        resBox.innerHTML = `Please select a date to verify attendance.`;
+        return;
+      }
+
+      const dateKey = checkDate.replace(/-/g, '_');
+      const snap = await rtdb.ref(`attendance/${studentClass}/${dateKey}/${cleanFirebaseKey(activeSessionUser.username).toLowerCase()}`).once('value');
+      const record = snap.val();
+
+      if (record) {
+        let badgeColor = record.status === 'Present' ? '#047857' : (record.status === 'Absent' ? '#b91c1c' : '#b45309');
+        resBox.innerHTML = `
+          <div><strong>Date:</strong> ${checkDate}</div>
+          <div style="margin-top:4px;"><strong>Academic Attendance Status:</strong> <span style="color:${badgeColor}; font-weight:800; text-transform:uppercase;">${record.status}</span></div>
+          ${record.remark ? `<div style="margin-top:4px; font-size:0.85rem; color:#64748b;"><strong>Trainer Remark:</strong> \${record.remark}</div>` : ''}
+        `;
+      } else {
+        resBox.innerHTML = `<span style="color:#94a3b8;"><i class="fa-solid fa-circle-info"></i> No attendance roll-call was submitted on <strong>${checkDate}</strong> for ${studentClass}.</span>`;
       }
     }
 
-    async function handlePublishCourseSubmit(e) {
+    // ==========================================
+    // MODAL DIALOG CONTROLS & SUBMISSIONS
+    // ==========================================
+    function openModal(id) { document.getElementById(id).style.display = 'flex'; }
+    function closeModal(id) { document.getElementById(id).style.display = 'none'; }
+
+    function openCreateCourseModal() {
+      const activeClass = document.getElementById('teacherActiveManagedClass').value;
+      const select = document.getElementById('modalCourseTargetClass');
+      select.innerHTML = `<option value="${activeClass}">${activeClass}</option>`;
+      openModal('createCourseModal');
+    }
+
+    async function handleCreateCourseSubmit(e) {
       e.preventDefault();
-      var cohort = document.getElementById('pubClassTarget').value;
-      var title = document.getElementById('pubCourseTitle').value.trim();
-      var fileName = selectedAttachmentName || "Lecture_Notes_Presentation.pptx";
+      const targetClass = document.getElementById('modalCourseTargetClass').value;
+      const title = document.getElementById('modalCourseTitle').value.trim();
+      const code = document.getElementById('modalCourseCode').value.trim().toUpperCase();
+      const startDate = document.getElementById('modalCourseStartDate').value;
+      const catDate = document.getElementById('modalCourseCatDate').value;
+      const examDate = document.getElementById('modalCourseExamDate').value;
 
-      const snapshot = await rtdb.ref('courses').once('value');
-      const val = snapshot.val();
-      let courses = Array.isArray(val) ? val : (val ? Object.values(val) : []);
-
-      courses.unshift({
-        id: "c_" + Date.now(),
-        cohort: cohort,
+      const newCourse = {
+        id: "crs_" + Date.now(),
+        targetClass: targetClass,
         title: title,
-        fileName: fileName,
+        code: code,
         teacher: activeSessionUser ? activeSessionUser.name : "Trainer",
-        date: new Date().toLocaleDateString('en-GB', { day: 'numeric', month: 'short', year: 'numeric' })
-      });
+        startDate: startDate,
+        catDate: catDate,
+        examDate: examDate
+      };
 
-      await rtdb.ref('courses').set(courses);
-
-      closePublishModal();
-      showSystemToast("Course notes published and synced directly to Firebase!");
+      allCloudCourses.push(newCourse);
+      await rtdb.ref('courses').set(allCloudCourses);
+      showSystemToast("New course launched! All students in " + targetClass + " are enrolled automatically.");
+      closeModal('createCourseModal');
       e.target.reset();
     }
 
+    function openUploadNotesModal() {
+      const activeClass = document.getElementById('teacherActiveManagedClass').value;
+      document.getElementById('modalNoteClass').innerHTML = `<option value="${activeClass}">${activeClass}</option>`;
+
+      const courseSelect = document.getElementById('modalNoteCourse');
+      courseSelect.innerHTML = "";
+      const classCourses = allCloudCourses.filter(c => c.targetClass === activeClass);
+      classCourses.forEach(c => {
+        const opt = document.createElement('option');
+        opt.value = c.code;
+        opt.innerText = c.title + " (" + c.code + ")";
+        courseSelect.appendChild(opt);
+      });
+
+      openModal('uploadNotesModal');
+    }
+
+    async function handleSaveNotesSubmit(e) {
+      e.preventDefault();
+      const courseCode = document.getElementById('modalNoteCourse').value;
+      const targetClass = document.getElementById('modalNoteClass').value;
+      const title = document.getElementById('modalNoteTitle').value.trim();
+      const fileName = document.getElementById('modalNoteFile').value.trim();
+      const status = document.getElementById('modalNoteStatus').value;
+
+      const newNote = {
+        id: "note_" + Date.now(),
+        courseCode: courseCode,
+        targetClass: targetClass,
+        title: title,
+        fileName: fileName,
+        status: status, // "published" or "draft"
+        teacher: activeSessionUser ? activeSessionUser.name : "Trainer",
+        date: new Date().toLocaleDateString('en-GB', { day: 'numeric', month: 'short', year: 'numeric' })
+      };
+
+      allCloudNotes.push(newNote);
+      await rtdb.ref('notes').set(allCloudNotes);
+      showSystemToast(status === 'published' ? "Notes published to students!" : "Notes saved as draft in portal.");
+      closeModal('uploadNotesModal');
+      e.target.reset();
+    }
+
+    function openCreateAssignmentModal() {
+      const activeClass = document.getElementById('teacherActiveManagedClass').value;
+      const courseSelect = document.getElementById('modalAssignCourse');
+      courseSelect.innerHTML = "";
+      const classCourses = allCloudCourses.filter(c => c.targetClass === activeClass);
+      classCourses.forEach(c => {
+        const opt = document.createElement('option');
+        opt.value = c.code;
+        opt.innerText = c.title + " (" + c.code + ")";
+        courseSelect.appendChild(opt);
+      });
+      openModal('createAssignmentModal');
+    }
+
+    function toggleAutoGradeFields() {
+      const mode = document.getElementById('modalAssignMode').value;
+      document.getElementById('autoGradeQuizArea').style.display = mode === 'auto' ? 'block' : 'none';
+    }
+
+    async function handleCreateAssignmentSubmit(e) {
+      e.preventDefault();
+      const activeClass = document.getElementById('teacherActiveManagedClass').value;
+      const courseCode = document.getElementById('modalAssignCourse').value;
+      const title = document.getElementById('modalAssignTitle').value.trim();
+      const dueDate = document.getElementById('modalAssignDueDate').value;
+      const mode = document.getElementById('modalAssignMode').value;
+      const maxMarks = parseInt(document.getElementById('modalAssignMarks').value) || 20;
+
+      const newAssign = {
+        id: "asg_" + Date.now(),
+        targetClass: activeClass,
+        courseCode: courseCode,
+        title: title,
+        dueDate: dueDate,
+        mode: mode,
+        question: mode === 'auto' ? document.getElementById('modalQuizQuestion').value.trim() : "Submit practical exercise report.",
+        answerKey: mode === 'auto' ? document.getElementById('modalQuizKey').value.trim().toLowerCase() : "",
+        maxMarks: maxMarks,
+        submissions: {}
+      };
+
+      allCloudAssignments.push(newAssign);
+      await rtdb.ref('assignments').set(allCloudAssignments);
+      showSystemToast("Assignment published to class!");
+      closeModal('createAssignmentModal');
+      e.target.reset();
+    }
+
+    // STUDENT TAKE ASSIGNMENT
+    function openTakeAssignmentModal(assignId) {
+      const assign = allCloudAssignments.find(a => a.id === assignId);
+      if (!assign) return;
+      currentActiveAssignment = assign;
+
+      document.getElementById('takeAssignHeading').innerHTML = `<i class="fa-solid fa-pen-clip"></i> ${assign.title}`;
+      document.getElementById('takeAssignQuestionText').innerText = assign.question;
+      document.getElementById('studentAnswerInput').value = "";
+      openModal('takeAssignmentModal');
+    }
+
+    async function submitStudentAssignmentResponse() {
+      if (!currentActiveAssignment || !activeSessionUser) return;
+      const answer = document.getElementById('studentAnswerInput').value.trim();
+      if (!answer) return alert("Please type your answer!");
+
+      let awardedScore = 0;
+      if (currentActiveAssignment.mode === 'auto') {
+        // Auto-scoring logic
+        if (answer.toLowerCase() === currentActiveAssignment.answerKey.toLowerCase()) {
+          awardedScore = currentActiveAssignment.maxMarks;
+        } else {
+          awardedScore = 0;
+        }
+      } else {
+        awardedScore = Math.round(currentActiveAssignment.maxMarks * 0.85); // Pending manual teacher review
+      }
+
+      const subKey = cleanFirebaseKey(activeSessionUser.username).toLowerCase();
+      if (!currentActiveAssignment.submissions) currentActiveAssignment.submissions = {};
+      currentActiveAssignment.submissions[subKey] = {
+        answer: answer,
+        score: awardedScore,
+        date: new Date().toISOString()
+      };
+
+      await rtdb.ref('assignments').set(allCloudAssignments);
+      alert(`Assignment submitted successfully! ${currentActiveAssignment.mode === 'auto' ? `Auto-Grade Result: ${awardedScore} /${currentActiveAssignment.maxMarks}` : `Your instructor will review your submission.`}`);
+      closeModal('takeAssignmentModal');
+      renderStudentAssignmentsTable();
+    }
+
+    // PROFILE UPDATE
     function openProfileUpdateModal() {
       if (!activeSessionUser) return;
       document.getElementById('profFullName').value = activeSessionUser.name;
       document.getElementById('profPhone').value = activeSessionUser.phone || "";
       document.getElementById('profEmail').value = activeSessionUser.email || "";
       document.getElementById('profNewPass').value = "";
-      document.getElementById('profileUpdateModal').style.display = 'flex';
-    }
-
-    function closeProfileUpdateModal() {
-      document.getElementById('profileUpdateModal').style.display = 'none';
+      openModal('profileUpdateModal');
     }
 
     async function handleSaveOwnProfile(e) {
       e.preventDefault();
-      var name = document.getElementById('profFullName').value.trim();
-      var phone = document.getElementById('profPhone').value.trim();
-      var email = document.getElementById('profEmail').value.trim();
-      var newPass = document.getElementById('profNewPass').value.trim();
-
-      activeSessionUser.name = name;
-      activeSessionUser.phone = phone;
-      activeSessionUser.email = email;
-      if (newPass) activeSessionUser.pass = newPass;
+      activeSessionUser.name = document.getElementById('profFullName').value.trim();
+      activeSessionUser.phone = document.getElementById('profPhone').value.trim();
+      activeSessionUser.email = document.getElementById('profEmail').value.trim();
+      const np = document.getElementById('profNewPass').value.trim();
+      if (np) activeSessionUser.pass = np;
 
       const key = cleanFirebaseKey(activeSessionUser.username);
       await rtdb.ref('users/' + key).set(activeSessionUser);
 
       sessionStorage.setItem(SESSION_STORAGE_KEY, JSON.stringify(activeSessionUser));
-      closeProfileUpdateModal();
-      showSystemToast("Your profile and security credentials have been updated in Firebase!");
+      closeModal('profileUpdateModal');
+      showSystemToast("Your profile credentials have been updated in Firebase!");
       showUserDashboard(activeSessionUser);
     }
 
     function openSelfServiceOtpModal() {
-      currentOtpTargetUser = null;
-      generatedOtpCode = null;
       document.getElementById('otpAccountInput').value = "";
-      document.getElementById('otpCodeInput').value = "";
-      document.getElementById('otpNewPassInput').value = "";
-      document.getElementById('otpStep1Error').style.display = "none";
-      document.getElementById('otpCodeError').style.display = "none";
       document.getElementById('otpStep1').style.display = "block";
       document.getElementById('otpStep2').style.display = "none";
-      document.getElementById('selfOtpModal').style.display = "flex";
+      openModal('selfOtpModal');
     }
 
-    function closeSelfOtpModal() {
-      document.getElementById('selfOtpModal').style.display = 'none';
-    }
-
-    async function requestOtpCode() {
-      var query = document.getElementById('otpAccountInput').value.trim().toLowerCase();
-      document.getElementById('otpStep1Error').style.display = "none";
-
-      if (!query) {
-        document.getElementById('otpStep1Error').style.display = "flex";
-        return;
-      }
-
-      const snapshot = await rtdb.ref('users').once('value');
-      const usersObj = snapshot.val() || {};
-      const users = Object.values(usersObj);
-
-      var match = users.find(function(u) {
-        return (u.username.toLowerCase() === query) || 
-               (u.phone && u.phone.includes(query)) || 
-               (u.email && u.email.toLowerCase() === query);
-      });
-
-      if (!match) {
-        document.getElementById('otpStep1Error').style.display = "flex";
-        return;
-      }
+    function requestOtpCode() {
+      const q = document.getElementById('otpAccountInput').value.trim().toLowerCase();
+      const match = allCloudUsers.find(u => u.username.toLowerCase() === q || (u.phone && u.phone.includes(q)));
+      if (!match) return alert("Account not found!");
 
       currentOtpTargetUser = match;
       generatedOtpCode = Math.floor(100000 + Math.random() * 900000).toString();
-
-      showOtpToastNotification("OTP Code sent to " + (match.phone || match.email || match.username) + ": " + generatedOtpCode);
-
+      showOtpToastNotification(`OTP Code sent to ${match.name}: ${generatedOtpCode}`);
       document.getElementById('otpStep1').style.display = "none";
       document.getElementById('otpStep2').style.display = "block";
     }
 
     async function verifyAndResetPassword() {
-      var enteredCode = document.getElementById('otpCodeInput').value.trim();
-      var newPass = document.getElementById('otpNewPassInput').value.trim();
-      document.getElementById('otpCodeError').style.display = "none";
-
-      if (enteredCode !== generatedOtpCode) {
-        document.getElementById('otpCodeError').style.display = "flex";
-        return;
-      }
-
-      if (!newPass || newPass.length < 5) {
-        alert("Please choose a password with at least 5 characters.");
-        return;
-      }
+      const code = document.getElementById('otpCodeInput').value.trim();
+      const newPass = document.getElementById('otpNewPassInput').value.trim();
+      if (code !== generatedOtpCode) return alert("Invalid OTP code!");
+      if (newPass.length < 5) return alert("Password must be at least 5 characters!");
 
       currentOtpTargetUser.pass = newPass;
       const key = cleanFirebaseKey(currentOtpTargetUser.username);
-
       await rtdb.ref('users/' + key).set(currentOtpTargetUser);
 
-      closeSelfOtpModal();
-      showSystemToast("Password successfully reset! Logging you in...");
-
+      alert("Password reset successfully! Logging in...");
+      closeModal('selfOtpModal');
       activeSessionUser = currentOtpTargetUser;
       sessionStorage.setItem(SESSION_STORAGE_KEY, JSON.stringify(currentOtpTargetUser));
       showUserDashboard(currentOtpTargetUser);
@@ -1478,17 +1958,11 @@
       var toast = document.getElementById('otpToast');
       document.getElementById('otpToastText').innerHTML = msg;
       toast.style.display = 'block';
-      setTimeout(function() {
-        toast.style.display = 'none';
-      }, 7000);
+      setTimeout(() => toast.style.display = 'none', 7000);
     }
 
     function showSystemToast(msg) {
       showOtpToastNotification(msg);
-    }
-
-    function scrollToSection(id) {
-      document.getElementById(id).scrollIntoView({ behavior: 'smooth' });
     }
 
     function logoutPortal() {
