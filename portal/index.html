@@ -495,7 +495,7 @@
         </div>
       </div>
 
-      <!-- ATTENDANCE REGISTER (LOCKED TO AUTHORIZED INSTRUCTOR) -->
+      <!-- ATTENDANCE REGISTER -->
       <div class="content-panel">
         <div class="panel-header-row">
           <h3>
@@ -794,7 +794,7 @@
     </div>
   </div>
 
-  <!-- UPLOAD / DRAFT NOTES MODAL (RESTRICTED TO TEACHER'S AUTHORIZED COURSES) -->
+  <!-- UPLOAD / DRAFT NOTES MODAL -->
   <div class="modal-backdrop" id="uploadNotesModal">
     <div class="modal-card">
       <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:15px;">
@@ -848,7 +848,7 @@
       </div>
 
       <form onsubmit="handleSaveEditedNote(event)">
-        <input type="hidden" id="editNoteId">
+        <input type="hidden" id="editNoteFirebaseKey">
         <div class="form-group">
           <label>Lecture / Material Title</label>
           <input type="text" id="editNoteTitle" class="input-control" required>
@@ -1017,7 +1017,7 @@
 
     let allCloudUsers = [];
     let allCloudCourses = [];
-    let allCloudNotes = {};
+    let allCloudNotes = [];
     let allCloudAssignments = [];
     let allCloudMarks = {};
 
@@ -1059,7 +1059,7 @@
       });
     }
 
-    // STRICT UNIQUE STUDENT FILTER FOR CLASSES (FIXES DUPLICATION IN MARKS AND ATTENDANCE)
+    // STRICT UNIQUE STUDENT FILTER
     function getDeduplicatedStudentsForClass(targetClass) {
       const seen = new Set();
       const uniqueList = [];
@@ -1088,11 +1088,41 @@
       return roles.includes("Exam Officer") || roles.includes("Dean of Discipline") || roles.includes("Director of Studies");
     }
 
-    // CHECK IF STAFF TEACHES THIS COURSE SPECIFICALLY
     function isStaffAuthorizedForCourse(courseObj, staffUser) {
       if (!staffUser || !courseObj) return false;
       if (isElevatedAcademicStaff(staffUser)) return true;
-      return (courseObj.teacherUsername && courseObj.teacherUsername === staffUser.username) || (courseObj.teacher && courseObj.teacher === staffUser.name);
+      return (courseObj.teacherUsername && courseObj.teacherUsername === staffUser.username) || 
+             (courseObj.teacher && courseObj.teacher === staffUser.name);
+    }
+
+    // AUTHORSHIP CHECK: ALLOW TEACHER WHO UPLOADED OR ADMIN TO MANAGE NOTES
+    function canManageNote(note, user) {
+      if (!note || !user) return false;
+      if (isElevatedAcademicStaff(user)) return true;
+      if (note.teacherUsername && user.username && note.teacherUsername.toLowerCase() === user.username.toLowerCase()) return true;
+      if (note.teacher && user.name && note.teacher.trim().toLowerCase() === user.name.trim().toLowerCase()) return true;
+      return false;
+    }
+
+    // NORMALIZE NOTES REGARDLESS OF FIREBASE STORAGE FORMAT (ARRAY OR OBJECT)
+    function parseCloudNotes(val) {
+      if (!val) return [];
+      const list = [];
+      if (Array.isArray(val)) {
+        val.forEach((item, index) => {
+          if (item) {
+            list.push({ ...item, _key: String(index), id: item.id || String(index) });
+          }
+        });
+      } else if (typeof val === 'object') {
+        Object.keys(val).forEach(k => {
+          const item = val[k];
+          if (item && typeof item === 'object') {
+            list.push({ ...item, _key: k, id: item.id || k });
+          }
+        });
+      }
+      return list;
     }
 
     window.addEventListener('DOMContentLoaded', async function() {
@@ -1123,8 +1153,9 @@
         }
       });
 
+      // REALTIME NOTES PARSER
       rtdb.ref('notes').on('value', snap => {
-        allCloudNotes = snap.val() || {};
+        allCloudNotes = parseCloudNotes(snap.val());
         if (activeSessionUser) {
           if (activeSessionUser.role === 'staff') renderTeacherNotesTable();
           if (activeSessionUser.role === 'student') renderStudentNotesTable();
@@ -1283,7 +1314,6 @@
       loadCourseMarksForClass();
     }
 
-    // ATTENDANCE RESTRICTED TO COURSE TEACHER
     async function loadClassAttendanceForDate() {
       const activeClass = document.getElementById('teacherActiveManagedClass').value;
       const selDate = document.getElementById('attendanceDatePicker').value || new Date().toISOString().split('T')[0];
@@ -1300,7 +1330,6 @@
       const notice = document.getElementById('attendanceAuthNotice');
       tbody.innerHTML = "";
 
-      // Check if current teacher teaches any course in this class
       const teachesAnyInClass = allCloudCourses.some(c => c && c.targetClass === activeClass && isStaffAuthorizedForCourse(c, activeSessionUser));
       const canManageAttendance = isElevatedAcademicStaff(activeSessionUser) || teachesAnyInClass;
 
@@ -1546,13 +1575,13 @@
       e.target.reset();
     }
 
+    // TEACHER NOTES TABLE WITH DIRECT KEY ACTIONS (FIXES "NOTE NOT FOUND")
     function renderTeacherNotesTable() {
       const activeClass = document.getElementById('teacherActiveManagedClass').value;
       const tbody = document.getElementById('trainerNotesTbody');
       tbody.innerHTML = "";
 
-      const notesKeys = Object.keys(allCloudNotes);
-      const notes = notesKeys.map(k => allCloudNotes[k]).filter(n => n && n.targetClass === activeClass);
+      const notes = allCloudNotes.filter(n => n && n.targetClass === activeClass);
 
       if (notes.length === 0) {
         tbody.innerHTML = `<tr><td colspan="6" style="text-align:center; color:#94a3b8;">No course materials uploaded yet.</td></tr>`;
@@ -1561,7 +1590,7 @@
 
       notes.forEach(n => {
         const isDraft = n.status === 'draft';
-        const isAuthor = isElevatedAcademicStaff(activeSessionUser) || (n.teacherUsername === activeSessionUser.username || n.teacher === activeSessionUser.name);
+        const isAuthor = canManageNote(n, activeSessionUser);
         const tr = document.createElement('tr');
         
         tr.innerHTML = `
@@ -1571,17 +1600,17 @@
           <td><code>${n.fileName}</code></td>
           <td><span class="grade-badge ${isDraft ? 'grade-draft' : 'grade-competent'}">${isDraft ? 'Draft (Hidden)' : 'Published'}</span></td>
           <td style="white-space:nowrap;">
-            <button class="btn-publish-open btn-view-note" style="padding:4px 8px; font-size:0.75rem;" data-id="${n.id}">
+            <button class="btn-publish-open btn-view-note" style="padding:4px 8px; font-size:0.75rem;" data-key="${n._key}">
               <i class="fa-solid fa-eye"></i> View
             </button>
-            ${isDraft && isAuthor ? `<button class="btn-publish-open btn-publish-action" style="padding:4px 8px; font-size:0.75rem; background:#10b981;" data-id="\${n.id}">
+            ${isDraft && isAuthor ? `<button class="btn-publish-open btn-publish-action" style="padding:4px 8px; font-size:0.75rem; background:#10b981;" data-key="\${n._key}">
               <i class="fa-solid fa-cloud-arrow-up"></i> Publish
             </button>` : ''}
             ${isAuthor ? `
-              <button class="btn-publish-open btn-edit-note" style="padding:4px 8px; font-size:0.75rem; background:#64748b;" data-id="\${n.id}">
+              <button class="btn-publish-open btn-edit-note" style="padding:4px 8px; font-size:0.75rem; background:#64748b;" data-key="\${n._key}">
                 <i class="fa-solid fa-pen"></i> Edit
               </button>
-              <button class="btn-publish-open btn-publish-del btn-del-note" style="padding:4px 8px; font-size:0.75rem;" data-id="\${n.id}">
+              <button class="btn-publish-open btn-publish-del btn-del-note" style="padding:4px 8px; font-size:0.75rem;" data-key="\${n._key}">
                 <i class="fa-solid fa-trash"></i>
               </button>
             ` : `<span style="font-size:0.75rem; color:#94a3b8;">(\${n.teacher || 'Other'})</span>`}
@@ -1590,38 +1619,37 @@
         tbody.appendChild(tr);
       });
 
-      // Bind dynamic listeners
+      // Bind events using exact Firebase server keys
       document.querySelectorAll('.btn-view-note').forEach(btn => {
-        btn.onclick = () => viewDocumentInPortal(btn.dataset.id);
+        btn.onclick = () => viewDocumentInPortal(btn.dataset.key);
       });
       document.querySelectorAll('.btn-publish-action').forEach(btn => {
-        btn.onclick = () => triggerPublishNoteDirect(btn.dataset.id);
+        btn.onclick = () => triggerPublishNoteDirect(btn.dataset.key);
       });
       document.querySelectorAll('.btn-edit-note').forEach(btn => {
-        btn.onclick = () => openEditNoteModal(btn.dataset.id);
+        btn.onclick = () => openEditNoteModal(btn.dataset.key);
       });
       document.querySelectorAll('.btn-del-note').forEach(btn => {
-        btn.onclick = () => deleteUploadedNote(btn.dataset.id);
+        btn.onclick = () => deleteUploadedNote(btn.dataset.key);
       });
     }
 
-    async function triggerPublishNoteDirect(noteId) {
-      if (!noteId) return alert("Invalid note ID!");
-      const cleanKey = cleanFirebaseKey(noteId);
-      
+    // DIRECT SAFE FIREBASE PUBLISH BY REAL FIREBASE KEY
+    async function triggerPublishNoteDirect(fbKey) {
+      if (!fbKey) return alert("Invalid note key!");
       try {
-        await rtdb.ref('notes/' + cleanKey + '/status').set('published');
+        await rtdb.ref('notes/' + fbKey + '/status').set('published');
         alert("Course material published successfully! All students can now read it.");
       } catch (err) {
         alert("Failed to publish: " + err.message);
       }
     }
 
-    function openEditNoteModal(noteId) {
-      const note = allCloudNotes[noteId] || Object.values(allCloudNotes).find(n => n && n.id === noteId);
+    function openEditNoteModal(fbKey) {
+      const note = allCloudNotes.find(n => n && n._key === fbKey);
       if (!note) return alert("Note not found!");
 
-      document.getElementById('editNoteId').value = note.id;
+      document.getElementById('editNoteFirebaseKey').value = fbKey;
       document.getElementById('editNoteTitle').value = note.title;
       document.getElementById('editNoteStatus').value = note.status || 'draft';
       openModal('editNoteModal');
@@ -1629,26 +1657,27 @@
 
     async function handleSaveEditedNote(e) {
       e.preventDefault();
-      const id = document.getElementById('editNoteId').value;
+      const fbKey = document.getElementById('editNoteFirebaseKey').value;
       const title = document.getElementById('editNoteTitle').value.trim();
       const status = document.getElementById('editNoteStatus').value;
 
-      const cleanKey = cleanFirebaseKey(id);
-      await rtdb.ref(`notes/${cleanKey}/title`).set(title);
-      await rtdb.ref(`notes/${cleanKey}/status`).set(status);
-
-      alert("Note updated successfully!");
-      closeModal('editNoteModal');
+      try {
+        await rtdb.ref('notes/' + fbKey + '/title').set(title);
+        await rtdb.ref('notes/' + fbKey + '/status').set(status);
+        alert("Note updated successfully!");
+        closeModal('editNoteModal');
+      } catch (err) {
+        alert("Failed to update: " + err.message);
+      }
     }
 
-    async function deleteUploadedNote(noteId) {
-      const note = allCloudNotes[noteId] || Object.values(allCloudNotes).find(n => n && n.id === noteId);
+    async function deleteUploadedNote(fbKey) {
+      const note = allCloudNotes.find(n => n && n._key === fbKey);
       const title = note ? note.title : "this note";
       if (!confirm(`Permanently delete "${title}"? This will remove the file from Firebase across all devices.`)) return;
 
-      const cleanKey = cleanFirebaseKey(noteId);
       try {
-        await rtdb.ref('notes/' + cleanKey).remove();
+        await rtdb.ref('notes/' + fbKey).remove();
         alert("Note deleted successfully.");
       } catch (err) {
         alert("Delete failed: " + err.message);
@@ -1667,8 +1696,8 @@
       return new Blob([uInt8Array], { type: contentType });
     }
 
-    function viewDocumentInPortal(noteId) {
-      const note = allCloudNotes[noteId] || Object.values(allCloudNotes).find(n => n && n.id === noteId);
+    function viewDocumentInPortal(fbKey) {
+      const note = allCloudNotes.find(n => n && n._key === fbKey);
       if (!note || !note.fileData) return alert("Document not found!");
 
       const fileName = note.fileName || "document";
@@ -1828,7 +1857,6 @@
         document.getElementById('studentCourseGradeDisplay').innerText = total + "%";
       }
 
-      // Dynamic Attendance Percentage
       const totalCourseDays = course ? (parseInt(course.totalDays) || 10) : 10;
       const snap = await rtdb.ref(`attendance/${studentClass}`).once('value');
       const allAtt = snap.val() || {};
@@ -1922,8 +1950,7 @@
       const tbody = document.getElementById('studentNotesTbody');
       tbody.innerHTML = "";
 
-      const notesKeys = Object.keys(allCloudNotes);
-      const notes = notesKeys.map(k => allCloudNotes[k]).filter(n => {
+      const notes = allCloudNotes.filter(n => {
         if (!n || n.targetClass !== studentClass || n.status !== 'published') return false;
         if (!currentSelected) return true;
         
@@ -1943,7 +1970,7 @@
           <td>${n.teacher}</td>
           <td>${n.date}</td>
           <td>
-            <button class="btn-publish-open btn-view-note" style="padding:4px 10px; font-size:0.75rem;" data-id="${n.id}">
+            <button class="btn-publish-open btn-view-note" style="padding:4px 10px; font-size:0.75rem;" data-key="${n._key}">
               <i class="fa-solid fa-eye"></i> View
             </button>
             <a href="${n.fileData}" download="${n.fileName}" class="btn-publish-open" style="padding:4px 10px; font-size:0.75rem; background:#047857;">
@@ -1955,7 +1982,7 @@
       });
 
       document.querySelectorAll('.btn-view-note').forEach(btn => {
-        btn.onclick = () => viewDocumentInPortal(btn.dataset.id);
+        btn.onclick = () => viewDocumentInPortal(btn.dataset.key);
       });
     }
 
@@ -2045,7 +2072,7 @@
       renderStudentAssignmentsTable();
     }
 
-    // GENERAL MODALS
+    // MODAL DIALOGS
     function openModal(id) { document.getElementById(id).style.display = 'flex'; }
     function closeModal(id) { document.getElementById(id).style.display = 'none'; }
 
@@ -2092,7 +2119,6 @@
       const select = document.getElementById('modalNoteCourse');
       select.innerHTML = "";
       
-      // ONLY ALLOW COURSES THAT THE TEACHER IS AUTHORIZED FOR
       const eligibleCourses = allCloudCourses.filter(c => c && c.targetClass === activeClass && isStaffAuthorizedForCourse(c, activeSessionUser));
 
       if (eligibleCourses.length === 0) {
