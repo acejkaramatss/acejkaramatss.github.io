@@ -258,6 +258,7 @@
       display: inline-flex;
       align-items: center;
       gap: 6px;
+      text-decoration: none;
     }
     .btn-publish-open:hover { background: #1e40af; }
 
@@ -315,26 +316,20 @@
       max-height: 90vh; overflow-y: auto;
     }
 
-    /* IN-PORTAL DOCUMENT READER MODAL */
+    /* DOCUMENT READER MODAL */
     .reader-modal-card {
-      max-width: 900px; width: 95%; height: 85vh;
+      max-width: 960px; width: 95%; height: 88vh;
       display: flex; flex-direction: column;
     }
     .reader-frame {
-      flex: 1; width: 100%; border: 1px solid var(--border-color);
-      border-radius: 8px; margin: 15px 0;
+      flex: 1; width: 100%; border: 1.5px solid var(--border-color);
+      border-radius: 8px; margin: 15px 0; background: #525659;
     }
 
-    .file-dropzone {
-      border: 2px dashed #94a3b8;
-      border-radius: 8px;
-      padding: 20px;
-      text-align: center;
-      background: #f8fafc;
-      cursor: pointer;
-      margin-top: 6px;
+    .unsupported-doc-box {
+      flex: 1; display: flex; flex-direction: column; align-items: center; justify-content: center;
+      background: #f8fafc; border: 2px dashed #cbd5e1; border-radius: 12px; margin: 15px 0; padding: 30px; text-align: center;
     }
-    .file-dropzone:hover { border-color: var(--blue); background: #eff6ff; }
   </style>
 </head>
 <body>
@@ -484,7 +479,7 @@
         </div>
       </div>
 
-      <!-- SECTION 1: DATED ATTENDANCE REGISTER (10 DAYS = 10% PER DAY) -->
+      <!-- ATTENDANCE REGISTER -->
       <div class="content-panel">
         <div class="panel-header-row">
           <h3>
@@ -515,7 +510,7 @@
         </div>
       </div>
 
-      <!-- SECTION 2: 100% WEIGHTED ASSESSMENT (CW1:10, CW2:10, CAT:30, EXAM:50) -->
+      <!-- 100% WEIGHTED ASSESSMENT -->
       <div class="content-panel">
         <div class="panel-header-row">
           <h3>
@@ -552,7 +547,7 @@
         </div>
       </div>
 
-      <!-- SECTION 3: COURSE NOTES UPLOAD (FILE FROM PC & DRAFT/PUBLISH) -->
+      <!-- COURSE NOTES UPLOAD TABLE -->
       <div class="content-panel">
         <div class="panel-header-row">
           <h3><i class="fa-solid fa-folder-open" style="color: #2563eb;"></i> Course Lecture Materials &amp; Notes</h3>
@@ -578,7 +573,7 @@
         </div>
       </div>
 
-      <!-- SECTION 4: ASSIGNMENTS & AUTO-GRADING TESTS -->
+      <!-- ASSIGNMENTS TABLE -->
       <div class="content-panel">
         <div class="panel-header-row">
           <h3><i class="fa-solid fa-file-pen" style="color: #8b5cf6;"></i> Prepared Quizzes &amp; Assignments</h3>
@@ -618,7 +613,6 @@
         </div>
       </div>
 
-      <!-- MULTI-COURSE TRANSCRIPT / SELECTOR -->
       <div class="selector-bar">
         <label><i class="fa-solid fa-book-bookmark"></i> Switch Active Course:</label>
         <select id="studentCourseSelector" onchange="renderStudentCourseDetails()"></select>
@@ -627,7 +621,7 @@
         </div>
       </div>
 
-      <!-- KEY DATES & MARKS -->
+      <!-- TILES -->
       <div class="edtech-tiles-grid">
         <div class="edtech-card edtech-card-green">
           <div class="edtech-card-info">
@@ -666,7 +660,7 @@
         </div>
       </div>
 
-      <!-- ALL COURSES TRANSCRIPT SUMMARY -->
+      <!-- TRANSCRIPT TABLE -->
       <div class="content-panel">
         <div class="panel-header-row">
           <h3><i class="fa-solid fa-list-check" style="color: #2563eb;"></i> My Complete Courses Transcript</h3>
@@ -691,7 +685,7 @@
         </div>
       </div>
 
-      <!-- ASSIGNMENTS -->
+      <!-- STUDENT ASSIGNMENTS -->
       <div class="content-panel">
         <div class="panel-header-row">
           <h3><i class="fa-solid fa-file-pen" style="color: #8b5cf6;"></i> Course Tasks &amp; Quizzes</h3>
@@ -712,7 +706,7 @@
         </div>
       </div>
 
-      <!-- LECTURE NOTES (WITH IN-PORTAL VIEW & DOWNLOAD) -->
+      <!-- STUDENT LECTURE NOTES -->
       <div class="content-panel">
         <div class="panel-header-row">
           <h3><i class="fa-solid fa-book-open-reader" style="color: #2563eb;"></i> Course Lecture Materials</h3>
@@ -747,17 +741,32 @@
         <h3 id="readerDocTitle"><i class="fa-solid fa-book-open"></i> Course Document Reader</h3>
         <button onclick="closeModal('docReaderModal')" style="background:none; border:none; font-size:1.6rem; cursor:pointer;">&times;</button>
       </div>
-      <iframe id="docReaderFrame" class="reader-frame" src=""></iframe>
-      <div style="display:flex; justify-content:flex-end; gap:10px;">
+
+      <!-- Embedded Iframe for Previewable Files -->
+      <iframe id="docReaderFrame" class="reader-frame" src="" style="display:none;"></iframe>
+
+      <!-- Fallback Card for Unsupported Files (.odg, .docx, .pptx) -->
+      <div id="unsupportedDocBox" class="unsupported-doc-box" style="display:none;">
+        <i class="fa-solid fa-file-lines" style="font-size:3.5rem; color:var(--blue); margin-bottom:12px;"></i>
+        <h4 id="unsupportedDocName" style="font-size:1.15rem; color:var(--text-dark); margin-bottom:6px;">Document</h4>
+        <p style="font-size:0.9rem; color:var(--text-muted); max-width:440px; margin-bottom:18px;">
+          This file format is optimized for offline applications (such as LibreOffice or Microsoft Office). You can download and open it directly on your computer or phone.
+        </p>
+        <a id="unsupportedDownloadBtn" href="" download class="btn-publish-open" style="font-size:0.95rem; padding:10px 22px;">
+          <i class="fa-solid fa-download"></i> Download File Now
+        </a>
+      </div>
+
+      <div style="display:flex; justify-content:flex-end; gap:10px; margin-top:10px;">
         <a id="readerDownloadBtn" href="" download class="btn-publish-open">
-          <i class="fa-solid fa-download"></i> Download Copy
+          <i class="fa-solid fa-download"></i> Download
         </a>
         <button class="btn-nav-act" onclick="closeModal('docReaderModal')">Close</button>
       </div>
     </div>
   </div>
 
-  <!-- UPLOAD / DRAFT NOTES MODAL (WITH DIRECT FILE UPLOAD FROM PC) -->
+  <!-- UPLOAD / DRAFT NOTES MODAL -->
   <div class="modal-backdrop" id="uploadNotesModal">
     <div class="modal-card">
       <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:15px;">
@@ -778,11 +787,11 @@
 
         <div class="form-group">
           <label>Lecture / Material Title</label>
-          <input type="text" id="modalNoteTitle" class="input-control" placeholder="e.g. Module 3: Routing Protocol Configurations" required>
+          <input type="text" id="modalNoteTitle" class="input-control" placeholder="e.g. Unit 1: General & Applied Ethics" required>
         </div>
 
         <div class="form-group">
-          <label>Upload File from PC (PDF, DOCX, PPTX, Image, Text)</label>
+          <label>Upload File from PC (PDF, Documents, Slides, Images)</label>
           <input type="file" id="modalNoteFileInput" class="input-control" onchange="handleFileSelected(event)" required>
           <div id="fileUploadStatus" style="font-size:0.8rem; color:#64748b; margin-top:4px;"></div>
         </div>
@@ -846,7 +855,7 @@
     </div>
   </div>
 
-  <!-- CREATE ASSIGNMENT MODAL (WITH MCQ / EASY FORM & AUTO-GRADE) -->
+  <!-- CREATE ASSIGNMENT MODAL -->
   <div class="modal-backdrop" id="createAssignmentModal">
     <div class="modal-card">
       <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:15px;">
@@ -917,7 +926,7 @@
     </div>
   </div>
 
-  <!-- STUDENT TAKE ASSIGNMENT MODAL -->
+  <!-- TAKE ASSIGNMENT MODAL -->
   <div class="modal-backdrop" id="takeAssignmentModal">
     <div class="modal-card">
       <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:15px;">
@@ -950,10 +959,11 @@
     var currentActiveAssignment = null;
     var uploadedFileBase64 = "";
     var uploadedFileName = "";
+    var currentCreatedBlobUrl = null;
 
     let allCloudUsers = [];
     let allCloudCourses = [];
-    let allCloudNotes = [];
+    let allCloudNotes = {};
     let allCloudAssignments = [];
     let allCloudMarks = {};
 
@@ -1018,9 +1028,9 @@
         }
       });
 
+      // NOTES REALTIME LISTENER (STORED OBJECT-BASED)
       rtdb.ref('notes').on('value', snap => {
-        const val = snap.val();
-        allCloudNotes = Array.isArray(val) ? val : (val ? Object.values(val) : []);
+        allCloudNotes = snap.val() || {};
         if (activeSessionUser) {
           if (activeSessionUser.role === 'staff') renderTeacherNotesTable();
           if (activeSessionUser.role === 'student') renderStudentNotesTable();
@@ -1095,6 +1105,11 @@
         return;
       }
 
+      if (userMatch.status !== 'active') {
+        alert("This account is currently suspended. Please contact the administrator.");
+        return;
+      }
+
       activeSessionUser = userMatch;
       sessionStorage.setItem(SESSION_STORAGE_KEY, JSON.stringify(userMatch));
       showUserDashboard(userMatch);
@@ -1166,7 +1181,6 @@
       loadCourseMarksForClass();
     }
 
-    // DATED ATTENDANCE WITH COURSE PROGRESS (10 DAYS = 10% PER DAY)
     async function loadClassAttendanceForDate() {
       const activeClass = document.getElementById('teacherActiveManagedClass').value;
       const selDate = document.getElementById('attendanceDatePicker').value || new Date().toISOString().split('T')[0];
@@ -1202,7 +1216,6 @@
         tbody.appendChild(tr);
       });
 
-      // Calculate Course Attendance based on course scheduled days
       const activeCourse = allCloudCourses.find(c => c.targetClass === activeClass);
       const totalCourseDays = activeCourse ? (parseInt(activeCourse.totalDays) || 10) : 10;
       
@@ -1234,7 +1247,6 @@
       loadClassAttendanceForDate();
     }
 
-    // 100% WEIGHTED MARKS EVALUATION (CW1:10, CW2:10, CAT:30, EXAM:50)
     async function loadCourseMarksForClass() {
       const activeClass = document.getElementById('teacherActiveManagedClass').value;
       const courseCode = document.getElementById('teacherMarkCourseSelector').value;
@@ -1341,8 +1353,9 @@
         return alert("Please select a file to upload from your PC!");
       }
 
+      const noteKey = "note_" + Date.now();
       const newNote = {
-        id: "note_" + Date.now(),
+        id: noteKey,
         courseCode: course,
         targetClass: targetClass,
         title: title,
@@ -1353,8 +1366,8 @@
         date: new Date().toLocaleDateString('en-GB')
       };
 
-      allCloudNotes.push(newNote);
-      await rtdb.ref('notes').set(allCloudNotes);
+      // Direct write by unique ID
+      await rtdb.ref('notes/' + noteKey).set(newNote);
 
       alert(status === 'published' ? "Course material published to students!" : "Material saved as Draft in portal.");
       closeModal('uploadNotesModal');
@@ -1368,7 +1381,9 @@
       const tbody = document.getElementById('trainerNotesTbody');
       tbody.innerHTML = "";
 
-      const notes = allCloudNotes.filter(n => n.targetClass === activeClass);
+      const notesKeys = Object.keys(allCloudNotes);
+      const notes = notesKeys.map(k => allCloudNotes[k]).filter(n => n && n.targetClass === activeClass);
+
       if (notes.length === 0) {
         tbody.innerHTML = `<tr><td colspan="6" style="text-align:center; color:#94a3b8;">No course materials uploaded yet.</td></tr>`;
         return;
@@ -1385,31 +1400,76 @@
           <td><span class="grade-badge ${isDraft ? 'grade-draft' : 'grade-competent'}">${isDraft ? 'Draft (Hidden)' : 'Published'}</span></td>
           <td>
             <button class="btn-publish-open" style="padding:4px 8px; font-size:0.75rem;" onclick="viewDocumentInPortal('${n.id}')"><i class="fa-solid fa-eye"></i> View</button>
-            ${isDraft ? `<button class="btn-publish-open" style="padding:4px 8px; font-size:0.75rem; background:#10b981;" onclick="publishDraftNote('\${n.id}')">Publish</button>` : ''}
+            ${isDraft ? `<button class="btn-publish-open" style="padding:4px 8px; font-size:0.75rem; background:#10b981;" onclick="publishDraftNote('\${n.id}')"><i class="fa-solid fa-cloud-arrow-up"></i> Publish</button>` : ''}
           </td>
         `;
         tbody.appendChild(tr);
       });
     }
 
+    // DIRECT FIREBASE NODE UPDATE FOR PUBLISH (FIXES PUBLISH BUTTON)
     async function publishDraftNote(noteId) {
-      const idx = allCloudNotes.findIndex(n => n.id === noteId);
-      if (idx !== -1) {
-        allCloudNotes[idx].status = "published";
-        await rtdb.ref('notes').set(allCloudNotes);
-        alert("Material published to class!");
+      if (!confirm("Publish this material so all students in this class can view and read it?")) return;
+      try {
+        await rtdb.ref('notes/' + noteId + '/status').set('published');
+        alert("Course material published successfully!");
+      } catch (err) {
+        alert("Failed to publish: " + err.message);
       }
     }
 
-    // IN-PORTAL DOCUMENT READER
+    // BASE64 TO BLOB HELPER
+    function base64ToBlob(base64Data) {
+      const parts = base64Data.split(';base64,');
+      const contentType = parts[0].split(':')[1];
+      const raw = window.atob(parts[1]);
+      const rawLength = raw.length;
+      const uInt8Array = new Uint8Array(rawLength);
+      for (let i = 0; i < rawLength; ++i) {
+        uInt8Array[i] = raw.charCodeAt(i);
+      }
+      return new Blob([uInt8Array], { type: contentType });
+    }
+
+    // SMART DOCUMENT READER (HANDLES PDF, IMAGES & ODG/OFFICE FALLBACKS)
     function viewDocumentInPortal(noteId) {
-      const note = allCloudNotes.find(n => n.id === noteId);
+      const note = allCloudNotes[noteId] || Object.values(allCloudNotes).find(n => n.id === noteId);
       if (!note || !note.fileData) return alert("Document not found!");
 
-      document.getElementById('readerDocTitle').innerHTML = `<i class="fa-solid fa-book-open"></i> ${note.title} (${note.fileName})`;
-      document.getElementById('docReaderFrame').src = note.fileData;
-      document.getElementById('readerDownloadBtn').href = note.fileData;
-      document.getElementById('readerDownloadBtn').download = note.fileName;
+      const fileName = note.fileName || "document";
+      const ext = fileName.split('.').pop().toLowerCase();
+      
+      document.getElementById('readerDocTitle').innerHTML = `<i class="fa-solid fa-book-open"></i> ${note.title} (${fileName})`;
+
+      if (currentCreatedBlobUrl) {
+        URL.revokeObjectURL(currentCreatedBlobUrl);
+        currentCreatedBlobUrl = null;
+      }
+
+      const iframe = document.getElementById('docReaderFrame');
+      const fallbackBox = document.getElementById('unsupportedDocBox');
+      const downloadBtn = document.getElementById('readerDownloadBtn');
+
+      downloadBtn.href = note.fileData;
+      downloadBtn.download = fileName;
+
+      // Render native preview for PDF, Text, and Images
+      if (['pdf', 'png', 'jpg', 'jpeg', 'webp', 'txt'].includes(ext)) {
+        fallbackBox.style.display = 'none';
+        iframe.style.display = 'block';
+
+        const blob = base64ToBlob(note.fileData);
+        currentCreatedBlobUrl = URL.createObjectURL(blob);
+        iframe.src = currentCreatedBlobUrl;
+      } else {
+        // Fallback for .odg, .docx, .pptx, etc.
+        iframe.style.display = 'none';
+        fallbackBox.style.display = 'flex';
+        document.getElementById('unsupportedDocName').innerText = `${fileName} (${ext.toUpperCase()} File)`;
+        document.getElementById('unsupportedDownloadBtn').href = note.fileData;
+        document.getElementById('unsupportedDownloadBtn').download = fileName;
+      }
+
       openModal('docReaderModal');
     }
 
@@ -1571,7 +1631,9 @@
       const tbody = document.getElementById('studentNotesTbody');
       tbody.innerHTML = "";
 
-      const notes = allCloudNotes.filter(n => n.targetClass === studentClass && n.status === 'published' && (!course || n.courseCode === course));
+      const notesKeys = Object.keys(allCloudNotes);
+      const notes = notesKeys.map(k => allCloudNotes[k]).filter(n => n && n.targetClass === studentClass && n.status === 'published' && (!course || n.courseCode === course));
+
       if (notes.length === 0) {
         tbody.innerHTML = `<tr><td colspan="4" style="text-align:center; color:#94a3b8;">No notes published for this module yet.</td></tr>`;
         return;
@@ -1585,7 +1647,7 @@
           <td>${n.date}</td>
           <td>
             <button class="btn-publish-open" style="padding:4px 10px; font-size:0.75rem;" onclick="viewDocumentInPortal('${n.id}')">
-              <i class="fa-solid fa-eye"></i> View in Portal
+              <i class="fa-solid fa-eye"></i> View
             </button>
             <a href="${n.fileData}" download="${n.fileName}" class="btn-publish-open" style="padding:4px 10px; font-size:0.75rem; background:#047857;">
               <i class="fa-solid fa-download"></i> Download
