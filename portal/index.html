@@ -495,7 +495,7 @@
         </div>
       </div>
 
-      <!-- ATTENDANCE REGISTER -->
+      <!-- ATTENDANCE REGISTER (LOCKED TO AUTHORIZED INSTRUCTOR) -->
       <div class="content-panel">
         <div class="panel-header-row">
           <h3>
@@ -1059,26 +1059,25 @@
       });
     }
 
-    // STRICT UNIQUE STUDENT FILTER
+    // STRICT MAP-BASED DEDUPLICATION: GUARANTEES EACH USERNAME APPEARS EXACTLY ONCE
     function getDeduplicatedStudentsForClass(targetClass) {
-      const seen = new Set();
-      const uniqueList = [];
+      const studentMap = new Map();
+      const targetLower = targetClass.trim().toLowerCase();
 
       allCloudUsers.forEach(u => {
-        if (!u || u.role !== 'student') return;
-        const uClass = `${u.level || ''} ${u.dept || ''}`.trim();
-        const isInGroup = Array.isArray(u.groups) && u.groups.includes(targetClass);
+        if (!u || (u.role && u.role.toLowerCase() !== 'student')) return;
+        const uClass = `${u.level || ''} ${u.dept || ''}`.trim().toLowerCase();
+        const isInGroup = Array.isArray(u.groups) && u.groups.some(g => String(g).trim().toLowerCase() === targetLower);
 
-        if (uClass === targetClass || isInGroup) {
-          const userIdentifier = (u.username || u.id || '').toLowerCase();
-          if (userIdentifier && !seen.has(userIdentifier)) {
-            seen.add(userIdentifier);
-            uniqueList.push(u);
+        if (uClass === targetLower || isInGroup) {
+          const userIdentifier = (u.username || u.id || '').trim().toLowerCase();
+          if (userIdentifier && !studentMap.has(userIdentifier)) {
+            studentMap.set(userIdentifier, u);
           }
         }
       });
 
-      return uniqueList;
+      return Array.from(studentMap.values());
     }
 
     function isElevatedAcademicStaff(user) {
@@ -1091,11 +1090,10 @@
     function isStaffAuthorizedForCourse(courseObj, staffUser) {
       if (!staffUser || !courseObj) return false;
       if (isElevatedAcademicStaff(staffUser)) return true;
-      return (courseObj.teacherUsername && courseObj.teacherUsername === staffUser.username) || 
-             (courseObj.teacher && courseObj.teacher === staffUser.name);
+      return (courseObj.teacherUsername && courseObj.teacherUsername.toLowerCase() === staffUser.username.toLowerCase()) || 
+             (courseObj.teacher && courseObj.teacher.trim().toLowerCase() === staffUser.name.trim().toLowerCase());
     }
 
-    // AUTHORSHIP CHECK: ALLOW TEACHER WHO UPLOADED OR ADMIN TO MANAGE NOTES
     function canManageNote(note, user) {
       if (!note || !user) return false;
       if (isElevatedAcademicStaff(user)) return true;
@@ -1104,7 +1102,7 @@
       return false;
     }
 
-    // NORMALIZE NOTES REGARDLESS OF FIREBASE STORAGE FORMAT (ARRAY OR OBJECT)
+    // NORMALIZE NOTES WITH FIREBASE KEYS
     function parseCloudNotes(val) {
       if (!val) return [];
       const list = [];
@@ -1153,7 +1151,6 @@
         }
       });
 
-      // REALTIME NOTES PARSER
       rtdb.ref('notes').on('value', snap => {
         allCloudNotes = parseCloudNotes(snap.val());
         if (activeSessionUser) {
@@ -1408,6 +1405,7 @@
       const activeClass = document.getElementById('teacherActiveManagedClass').value;
       const courseCode = document.getElementById('teacherMarkCourseSelector').value;
       
+      // UNIQUE DEDUPLICATED LIST
       const students = getDeduplicatedStudentsForClass(activeClass);
       const tbody = document.getElementById('trainerMarksTbody');
       const noticeBox = document.getElementById('courseInstructorNotice');
@@ -1575,7 +1573,7 @@
       e.target.reset();
     }
 
-    // TEACHER NOTES TABLE WITH DIRECT KEY ACTIONS (FIXES "NOTE NOT FOUND")
+    // TEACHER NOTES TABLE WITH DIRECT EVENT HANDLERS (ELIMINATES PATH STRING PARSING ERRORS)
     function renderTeacherNotesTable() {
       const activeClass = document.getElementById('teacherActiveManagedClass').value;
       const tbody = document.getElementById('trainerNotesTbody');
@@ -1593,63 +1591,99 @@
         const isAuthor = canManageNote(n, activeSessionUser);
         const tr = document.createElement('tr');
         
-        tr.innerHTML = `
-          <td><strong>${n.courseCode}</strong></td>
-          <td>${n.targetClass}</td>
-          <td>${n.title}</td>
-          <td><code>${n.fileName}</code></td>
-          <td><span class="grade-badge ${isDraft ? 'grade-draft' : 'grade-competent'}">${isDraft ? 'Draft (Hidden)' : 'Published'}</span></td>
-          <td style="white-space:nowrap;">
-            <button class="btn-publish-open btn-view-note" style="padding:4px 8px; font-size:0.75rem;" data-key="${n._key}">
-              <i class="fa-solid fa-eye"></i> View
-            </button>
-            ${isDraft && isAuthor ? `<button class="btn-publish-open btn-publish-action" style="padding:4px 8px; font-size:0.75rem; background:#10b981;" data-key="\${n._key}">
-              <i class="fa-solid fa-cloud-arrow-up"></i> Publish
-            </button>` : ''}
-            ${isAuthor ? `
-              <button class="btn-publish-open btn-edit-note" style="padding:4px 8px; font-size:0.75rem; background:#64748b;" data-key="\${n._key}">
-                <i class="fa-solid fa-pen"></i> Edit
-              </button>
-              <button class="btn-publish-open btn-publish-del btn-del-note" style="padding:4px 8px; font-size:0.75rem;" data-key="\${n._key}">
-                <i class="fa-solid fa-trash"></i>
-              </button>
-            ` : `<span style="font-size:0.75rem; color:#94a3b8;">(\${n.teacher || 'Other'})</span>`}
-          </td>
-        `;
+        const tdCourse = document.createElement('td');
+        tdCourse.innerHTML = `<strong>${n.courseCode}</strong>`;
+        
+        const tdClass = document.createElement('td');
+        tdClass.innerText = n.targetClass;
+
+        const tdTitle = document.createElement('td');
+        tdTitle.innerText = n.title;
+
+        const tdFile = document.createElement('td');
+        tdFile.innerHTML = `<code>${n.fileName}</code>`;
+
+        const tdStatus = document.createElement('td');
+        tdStatus.innerHTML = `<span class="grade-badge ${isDraft ? 'grade-draft' : 'grade-competent'}">${isDraft ? 'Draft (Hidden)' : 'Published'}</span>`;
+
+        const tdAction = document.createElement('td');
+        tdAction.style.whiteSpace = "nowrap";
+
+        // View Button
+        const btnView = document.createElement('button');
+        btnView.className = 'btn-publish-open';
+        btnView.style.cssText = 'padding:4px 8px; font-size:0.75rem; margin-right:4px;';
+        btnView.innerHTML = '<i class="fa-solid fa-eye"></i> View';
+        btnView.addEventListener('click', function() {
+          viewDocumentInPortal(n);
+        });
+        tdAction.appendChild(btnView);
+
+        // Publish Button (Direct child update without template strings)
+        if (isDraft && isAuthor) {
+          const btnPub = document.createElement('button');
+          btnPub.className = 'btn-publish-open';
+          btnPub.style.cssText = 'padding:4px 8px; font-size:0.75rem; background:#10b981; margin-right:4px;';
+          btnPub.innerHTML = '<i class="fa-solid fa-cloud-arrow-up"></i> Publish';
+          btnPub.addEventListener('click', function() {
+            publishNoteDirect(n._key);
+          });
+          tdAction.appendChild(btnPub);
+        }
+
+        // Edit Button
+        if (isAuthor) {
+          const btnEdit = document.createElement('button');
+          btnEdit.className = 'btn-publish-open';
+          btnEdit.style.cssText = 'padding:4px 8px; font-size:0.75rem; background:#64748b; margin-right:4px;';
+          btnEdit.innerHTML = '<i class="fa-solid fa-pen"></i> Edit';
+          btnEdit.addEventListener('click', function() {
+            openEditNoteModal(n);
+          });
+          tdAction.appendChild(btnEdit);
+
+          // Delete Button
+          const btnDel = document.createElement('button');
+          btnDel.className = 'btn-publish-open btn-publish-del';
+          btnDel.style.cssText = 'padding:4px 8px; font-size:0.75rem;';
+          btnDel.innerHTML = '<i class="fa-solid fa-trash"></i>';
+          btnDel.addEventListener('click', function() {
+            deleteNoteDirect(n._key, n.title);
+          });
+          tdAction.appendChild(btnDel);
+        } else {
+          const spanOther = document.createElement('span');
+          spanOther.style.cssText = 'font-size:0.75rem; color:#94a3b8; margin-left:4px;';
+          spanOther.innerText = `(${n.teacher || 'Other'})`;
+          tdAction.appendChild(spanOther);
+        }
+
+        tr.appendChild(tdCourse);
+        tr.appendChild(tdClass);
+        tr.appendChild(tdTitle);
+        tr.appendChild(tdFile);
+        tr.appendChild(tdStatus);
+        tr.appendChild(tdAction);
+
         tbody.appendChild(tr);
       });
-
-      // Bind events using exact Firebase server keys
-      document.querySelectorAll('.btn-view-note').forEach(btn => {
-        btn.onclick = () => viewDocumentInPortal(btn.dataset.key);
-      });
-      document.querySelectorAll('.btn-publish-action').forEach(btn => {
-        btn.onclick = () => triggerPublishNoteDirect(btn.dataset.key);
-      });
-      document.querySelectorAll('.btn-edit-note').forEach(btn => {
-        btn.onclick = () => openEditNoteModal(btn.dataset.key);
-      });
-      document.querySelectorAll('.btn-del-note').forEach(btn => {
-        btn.onclick = () => deleteUploadedNote(btn.dataset.key);
-      });
     }
 
-    // DIRECT SAFE FIREBASE PUBLISH BY REAL FIREBASE KEY
-    async function triggerPublishNoteDirect(fbKey) {
+    // DIRECT SAFE FIREBASE PUBLISH WITHOUT STRING INTERPOLATION ERRORS
+    function publishNoteDirect(fbKey) {
       if (!fbKey) return alert("Invalid note key!");
-      try {
-        await rtdb.ref('notes/' + fbKey + '/status').set('published');
-        alert("Course material published successfully! All students can now read it.");
-      } catch (err) {
-        alert("Failed to publish: " + err.message);
-      }
+      rtdb.ref('notes').child(String(fbKey)).child('status').set('published')
+        .then(() => {
+          alert("Course material published successfully! All students can now read it.");
+        })
+        .catch(err => {
+          alert("Failed to publish: " + err.message);
+        });
     }
 
-    function openEditNoteModal(fbKey) {
-      const note = allCloudNotes.find(n => n && n._key === fbKey);
+    function openEditNoteModal(note) {
       if (!note) return alert("Note not found!");
-
-      document.getElementById('editNoteFirebaseKey').value = fbKey;
+      document.getElementById('editNoteFirebaseKey').value = note._key;
       document.getElementById('editNoteTitle').value = note.title;
       document.getElementById('editNoteStatus').value = note.status || 'draft';
       openModal('editNoteModal');
@@ -1662,8 +1696,8 @@
       const status = document.getElementById('editNoteStatus').value;
 
       try {
-        await rtdb.ref('notes/' + fbKey + '/title').set(title);
-        await rtdb.ref('notes/' + fbKey + '/status').set(status);
+        await rtdb.ref('notes').child(String(fbKey)).child('title').set(title);
+        await rtdb.ref('notes').child(String(fbKey)).child('status').set(status);
         alert("Note updated successfully!");
         closeModal('editNoteModal');
       } catch (err) {
@@ -1671,17 +1705,16 @@
       }
     }
 
-    async function deleteUploadedNote(fbKey) {
-      const note = allCloudNotes.find(n => n && n._key === fbKey);
-      const title = note ? note.title : "this note";
-      if (!confirm(`Permanently delete "${title}"? This will remove the file from Firebase across all devices.`)) return;
+    function deleteNoteDirect(fbKey, title) {
+      if (!confirm('Permanently delete "' + (title || 'this note') + '"? This will remove the file from Firebase across all devices.')) return;
 
-      try {
-        await rtdb.ref('notes/' + fbKey).remove();
-        alert("Note deleted successfully.");
-      } catch (err) {
-        alert("Delete failed: " + err.message);
-      }
+      rtdb.ref('notes').child(String(fbKey)).remove()
+        .then(() => {
+          alert("Note deleted successfully.");
+        })
+        .catch(err => {
+          alert("Delete failed: " + err.message);
+        });
     }
 
     function base64ToBlob(base64Data) {
@@ -1696,8 +1729,7 @@
       return new Blob([uInt8Array], { type: contentType });
     }
 
-    function viewDocumentInPortal(fbKey) {
-      const note = allCloudNotes.find(n => n && n._key === fbKey);
+    function viewDocumentInPortal(note) {
       if (!note || !note.fileData) return alert("Document not found!");
 
       const fileName = note.fileName || "document";
@@ -1769,7 +1801,7 @@
       };
 
       allCloudAssignments.push(newAssign);
-      await rtdb.ref('assignments/' + assignKey).set(newAssign);
+      await rtdb.ref('assignments').child(assignKey).set(newAssign);
       alert("Assignment deployed successfully!");
       closeModal('createAssignmentModal');
       e.target.reset();
@@ -1857,6 +1889,7 @@
         document.getElementById('studentCourseGradeDisplay').innerText = total + "%";
       }
 
+      // Dynamic Attendance Percentage
       const totalCourseDays = course ? (parseInt(course.totalDays) || 10) : 10;
       const snap = await rtdb.ref(`attendance/${studentClass}`).once('value');
       const allAtt = snap.val() || {};
@@ -1943,6 +1976,7 @@
       });
     }
 
+    // STUDENT NOTES TABLE WITH DIRECT ELEMENT BINDING
     function renderStudentNotesTable() {
       if (!activeSessionUser) return;
       const studentClass = `${activeSessionUser.level || ''} ${activeSessionUser.dept || ''}`.trim();
@@ -1965,24 +1999,42 @@
 
       notes.forEach(n => {
         const tr = document.createElement('tr');
-        tr.innerHTML = `
-          <td><strong>${n.title}</strong> (${n.fileName})</td>
-          <td>${n.teacher}</td>
-          <td>${n.date}</td>
-          <td>
-            <button class="btn-publish-open btn-view-note" style="padding:4px 10px; font-size:0.75rem;" data-key="${n._key}">
-              <i class="fa-solid fa-eye"></i> View
-            </button>
-            <a href="${n.fileData}" download="${n.fileName}" class="btn-publish-open" style="padding:4px 10px; font-size:0.75rem; background:#047857;">
-              <i class="fa-solid fa-download"></i> Download
-            </a>
-          </td>
-        `;
-        tbody.appendChild(tr);
-      });
+        
+        const tdTitle = document.createElement('td');
+        tdTitle.innerHTML = `<strong>${n.title}</strong> (${n.fileName})`;
 
-      document.querySelectorAll('.btn-view-note').forEach(btn => {
-        btn.onclick = () => viewDocumentInPortal(btn.dataset.key);
+        const tdTeacher = document.createElement('td');
+        tdTeacher.innerText = n.teacher;
+
+        const tdDate = document.createElement('td');
+        tdDate.innerText = n.date;
+
+        const tdAction = document.createElement('td');
+
+        const btnView = document.createElement('button');
+        btnView.className = 'btn-publish-open';
+        btnView.style.cssText = 'padding:4px 10px; font-size:0.75rem; margin-right:6px;';
+        btnView.innerHTML = '<i class="fa-solid fa-eye"></i> View';
+        btnView.addEventListener('click', function() {
+          viewDocumentInPortal(n);
+        });
+
+        const aDownload = document.createElement('a');
+        aDownload.className = 'btn-publish-open';
+        aDownload.style.cssText = 'padding:4px 10px; font-size:0.75rem; background:#047857;';
+        aDownload.innerHTML = '<i class="fa-solid fa-download"></i> Download';
+        aDownload.href = n.fileData;
+        aDownload.download = n.fileName;
+
+        tdAction.appendChild(btnView);
+        tdAction.appendChild(aDownload);
+
+        tr.appendChild(tdTitle);
+        tr.appendChild(tdTeacher);
+        tr.appendChild(tdDate);
+        tr.appendChild(tdAction);
+
+        tbody.appendChild(tr);
       });
     }
 
@@ -2066,7 +2118,7 @@
       if (!currentActiveAssignment.submissions) currentActiveAssignment.submissions = {};
       currentActiveAssignment.submissions[u] = { answer: ans, score: score, date: new Date().toISOString() };
 
-      await rtdb.ref('assignments/' + cleanFirebaseKey(currentActiveAssignment.id)).set(currentActiveAssignment);
+      await rtdb.ref('assignments').child(cleanFirebaseKey(currentActiveAssignment.id)).set(currentActiveAssignment);
       alert(currentActiveAssignment.mode === 'auto' ? `Auto-Grade Result: ${score} / ${currentActiveAssignment.maxMarks} Marks!` : "Submission received for evaluation.");
       closeModal('takeAssignmentModal');
       renderStudentAssignmentsTable();
@@ -2107,7 +2159,7 @@
       };
 
       allCloudCourses.push(newCourse);
-      await rtdb.ref('courses/' + courseKey).set(newCourse);
+      await rtdb.ref('courses').child(courseKey).set(newCourse);
       alert("Course created and students enrolled!");
       closeModal('createCourseModal');
       e.target.reset();
