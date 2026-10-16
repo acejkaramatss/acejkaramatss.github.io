@@ -227,16 +227,6 @@
       border-radius: 4px;
       margin: 2px;
     }
-    .priv-pill {
-      display: inline-block;
-      background: #ede9fe;
-      color: #6d28d9;
-      font-size: 0.72rem;
-      font-weight: 700;
-      padding: 2px 6px;
-      border-radius: 4px;
-      margin: 2px;
-    }
 
     .btn-tbl { padding: 5px 8px; border-radius: 4px; font-size: 0.78rem; font-weight: 700; border: 1px solid var(--border); background: var(--white); cursor: pointer; }
     .btn-tbl-login { color: #047857; }
@@ -256,7 +246,7 @@
       background: #f1f5f9;
       border: 1px solid var(--border);
       border-radius: 6px;
-      padding: 4px 10px;
+      padding: 5px 12px;
       font-size: 0.78rem;
       font-weight: 700;
       cursor: pointer;
@@ -277,7 +267,7 @@
     }
     .modal-content {
       background: var(--white);
-      max-width: 580px; width: 100%;
+      max-width: 600px; width: 100%;
       border-radius: 14px; padding: 28px;
       box-shadow: var(--shadow-lg);
       border: 2px solid var(--gold);
@@ -315,7 +305,7 @@
       <i class="fa-solid fa-user-shield"></i>
     </div>
     <h2>Super Admin Portal</h2>
-    <p>Sign in with your master credentials to manage all school accounts, roles, and privileges.</p>
+    <p>Sign in with your master credentials to manage all school accounts, roles, and academic marks.</p>
     <form onsubmit="handleAdminLogin(event)">
       <input type="text" id="adminUser" class="auth-input" placeholder="Super Admin Username" required>
       <input type="password" id="adminPass" class="auth-input" placeholder="Password" required>
@@ -338,50 +328,60 @@
         <div class="stat-digit" id="statTotalStudents" style="color: var(--blue);">0</div>
       </div>
       <div class="stat-box">
-        <div class="stat-label">Staff &amp; Multi-Role Faculty</div>
+        <div class="stat-label">Staff &amp; Trainers</div>
         <div class="stat-digit" id="statTotalStaff" style="color: var(--gold-dark);">0</div>
       </div>
       <div class="stat-box">
-        <div class="stat-label">Created Groups / Folders</div>
-        <div class="stat-digit" id="statTotalGroups" style="color: var(--purple);">0</div>
+        <div class="stat-label">Active Classes</div>
+        <div class="stat-digit" id="statTotalClasses" style="color: var(--purple);">7</div>
       </div>
     </div>
 
-    <!-- TARGETED & TIMED ANNOUNCEMENT BROADCASTER -->
-    <div class="card-panel" style="border-left: 5px solid var(--gold);">
-      <div class="card-title" style="color: var(--navy);">
-        <i class="fa-solid fa-bullhorn" style="color: var(--gold-dark);"></i> Broadcast Targeted Announcement
+    <!-- ACADEMIC CLASS PROGRESS & MARKS INSPECTOR (NEW) -->
+    <div class="card-panel" style="border-left: 5px solid var(--blue);">
+      <div class="panel-header-row" style="display:flex; justify-content:space-between; align-items:center; flex-wrap:wrap; gap:10px; margin-bottom:12px;">
+        <div class="card-title" style="margin-bottom:0;">
+          <i class="fa-solid fa-graduation-cap" style="color: var(--blue);"></i> Class Academic Progress &amp; Student Marks Inspector
+        </div>
+        <div style="display:flex; gap:8px;">
+          <button class="btn-action" style="background:var(--navy); color:#fff;" onclick="exportMarksToCSV()">
+            <i class="fa-solid fa-file-csv"></i> Download Class Marks (CSV)
+          </button>
+        </div>
       </div>
+
       <p style="font-size: 0.85rem; color: #64748b; margin-bottom: 12px;">
-        Publish an official announcement to specific audiences with an optional auto-expiration timer.
+        Select an academic class below to view all enrolled students, their continuous assessment (CW1, CW2, CAT), exam scores, and competency status:
       </p>
-      
-      <form onsubmit="handleSendBroadcast(event)" style="display: flex; gap: 10px; flex-wrap: wrap;">
-        <input type="text" id="broadcastTitle" placeholder="Announcement Title" style="flex: 1 1 200px; padding: 10px 12px; border: 1.5px solid var(--border); border-radius: 6px; font-size: 0.9rem;" required>
-        <input type="text" id="broadcastBody" placeholder="Message details..." style="flex: 2 1 280px; padding: 10px 12px; border: 1.5px solid var(--border); border-radius: 6px; font-size: 0.9rem;" required>
 
-        <select id="broadcastTarget" style="flex: 1 1 160px; padding: 10px 12px; border: 1.5px solid var(--border); border-radius: 6px; font-size: 0.9rem; font-weight: 700; background: #fff;">
-          <option value="all">👥 All (Students & Staff)</option>
-          <option value="student">🎓 Students Only</option>
-          <option value="staff">👨‍🏫 Teachers / Staff Only</option>
-        </select>
+      <div class="group-filter-strip" id="classSelectorButtons">
+        <button class="filter-btn active" onclick="inspectClassMarks('Level 5 NIT', this)">Level 5 NIT</button>
+        <button class="filter-btn" onclick="inspectClassMarks('Level 4 NIT', this)">Level 4 NIT</button>
+        <button class="filter-btn" onclick="inspectClassMarks('Level 5 CSA', this)">Level 5 CSA</button>
+        <button class="filter-btn" onclick="inspectClassMarks('Level 4 CSA', this)">Level 4 CSA</button>
+        <button class="filter-btn" onclick="inspectClassMarks('Level 5 ACC', this)">Level 5 ACC</button>
+        <button class="filter-btn" onclick="inspectClassMarks('Level 4 ACC', this)">Level 4 ACC</button>
+        <button class="filter-btn" onclick="inspectClassMarks('Level 3 General', this)">Level 3 General</button>
+      </div>
 
-        <select id="broadcastDuration" style="flex: 1 1 150px; padding: 10px 12px; border: 1.5px solid var(--border); border-radius: 6px; font-size: 0.9rem; font-weight: 700; background: #fff;">
-          <option value="0">⏱️ No Expiration</option>
-          <option value="1">⏱️ 1 Hour</option>
-          <option value="6">⏱️ 6 Hours</option>
-          <option value="12">⏱️ 12 Hours</option>
-          <option value="24" selected>⏱️ 24 Hours (1 Day)</option>
-          <option value="72">⏱️ 3 Days</option>
-          <option value="168">⏱️ 7 Days</option>
-        </select>
-
-        <button type="submit" class="btn-create" style="width: auto; padding: 10px 22px;">
-          <i class="fa-solid fa-paper-plane"></i> Publish
-        </button>
-      </form>
-
-      <div id="activeBroadcastDisplay" style="margin-top: 14px; font-size: 0.88rem;"></div>
+      <div class="table-container">
+        <table class="user-table">
+          <thead>
+            <tr>
+              <th>Reg ID</th>
+              <th>Student Full Name</th>
+              <th>Class / Dept</th>
+              <th>CW 1 (10)</th>
+              <th>CW 2 (10)</th>
+              <th>CAT (30)</th>
+              <th>Exam (50)</th>
+              <th>Total (100%)</th>
+              <th>Competency</th>
+            </tr>
+          </thead>
+          <tbody id="classInspectorTableBody"></tbody>
+        </table>
+      </div>
     </div>
 
     <div class="grid-forms-tables">
@@ -393,120 +393,49 @@
           <div class="card-title">
             <i class="fa-solid fa-folder-tree" style="color: var(--purple);"></i> User Groups &amp; Folders
           </div>
-          <p style="font-size: 0.82rem; color: #64748b; margin-bottom: 10px;">
-            Create organizational folders to classify users, or click the <i class="fa-solid fa-trash" style="color:#ef4444;"></i> icon to delete unwanted folders.
-          </p>
-          
           <form onsubmit="handleCreateGroup(event)" style="display:flex; gap:8px; margin-bottom: 15px;">
             <input type="text" id="newGroupNameInput" placeholder="New Group / Folder Name" style="flex:1; padding:9px 12px; border:1.5px solid var(--border); border-radius:6px; font-size:0.88rem;" required>
             <button type="submit" class="btn-create" style="width:auto; padding:9px 16px; font-size:0.85rem; background:var(--purple);">
               <i class="fa-solid fa-plus"></i> Add
             </button>
           </form>
-
-          <label style="font-size: 0.82rem; font-weight: 700; color: #334155; display:block; margin-bottom:6px;">Current Folders:</label>
           <div id="activeFoldersBadgeList" style="display: flex; flex-wrap: wrap; gap: 4px;"></div>
         </div>
 
-        <!-- CREATE USER WITH MULTI-ROLE & MULTI-CLASS CAPABILITIES -->
+        <!-- CREATE USER -->
         <div class="card-panel">
           <div class="card-title">
-            <i class="fa-solid fa-user-plus" style="color: var(--blue);"></i> Register Account &amp; Staff Roles
+            <i class="fa-solid fa-user-plus" style="color: var(--blue);"></i> Register Account
           </div>
           <form onsubmit="handleCreateUser(event)">
-            
             <div class="form-ctrl">
-              <label>Primary Account Category</label>
+              <label>Account Category</label>
               <select id="newRole" onchange="toggleFormRoleFields()">
-                <option value="student">Student / Candidate</option>
-                <option value="staff" selected>Trainer / Staff Member</option>
+                <option value="student" selected>Student / Candidate</option>
+                <option value="staff">Trainer / Staff Member</option>
                 <option value="admin">Administrator / Officer</option>
               </select>
             </div>
 
             <div class="form-ctrl">
               <label>Full Name</label>
-              <input type="text" id="newName" placeholder="e.g., Muneza Germain" required>
+              <input type="text" id="newName" placeholder="e.g., Mugisha David" required>
             </div>
 
             <div class="form-ctrl">
-              <label id="lblNewUsername">Username / Reg ID</label>
-              <input type="text" id="newUsername" placeholder="e.g., muneza" required>
+              <label id="lblNewUsername">Student Roll / Reg ID</label>
+              <input type="text" id="newUsername" placeholder="e.g., Mugisha" required>
             </div>
 
             <div class="form-ctrl">
               <label>Initial Password</label>
-              <input type="text" id="newPassword" placeholder="e.g., Muneza@2026" required>
+              <input type="text" id="newPassword" placeholder="e.g., Mugisha@123" required>
             </div>
 
-            <!-- STAFF SPECIFIC MULTI-ROLE PRIVILEGES -->
-            <div id="staffPrivilegesWrapper">
+            <!-- STUDENT FIELDS -->
+            <div id="studentFieldsWrapper">
               <div class="form-ctrl">
-                <label><i class="fa-solid fa-user-shield" style="color:var(--purple);"></i> Assigned Staff Roles &amp; Responsibilities</label>
-                <div class="privilege-checklist-box">
-                  <div class="priv-item">
-                    <input type="checkbox" id="roleTeacher" value="Teacher / Trainer" checked>
-                    <label for="roleTeacher">Teacher / Trainer (Publish Notes & Marks)</label>
-                  </div>
-                  <div class="priv-item">
-                    <input type="checkbox" id="roleStock" value="Stock & Inventory Manager">
-                    <label for="roleStock">Stock &amp; Inventory Manager</label>
-                  </div>
-                  <div class="priv-item">
-                    <input type="checkbox" id="roleDiscipline" value="Dean of Discipline">
-                    <label for="roleDiscipline">Dean of Discipline / Student Affairs</label>
-                  </div>
-                  <div class="priv-item">
-                    <input type="checkbox" id="roleExam" value="Exam Officer">
-                    <label for="roleExam">Exam Officer / Academic Registrar</label>
-                  </div>
-                  <div class="priv-item">
-                    <input type="checkbox" id="roleHod" value="Head of Department">
-                    <label for="roleHod">Head of Department (HoD)</label>
-                  </div>
-                </div>
-              </div>
-
-              <!-- MULTI-CLASS MANAGEMENT ASSIGNMENTS -->
-              <div class="form-ctrl">
-                <label><i class="fa-solid fa-chalkboard" style="color:var(--blue);"></i> Assigned Classes to Manage (Multi-Class)</label>
-                <div class="privilege-checklist-box">
-                  <div class="priv-item">
-                    <input type="checkbox" id="clsL5NIT" value="Level 5 NIT" checked>
-                    <label for="clsL5NIT">Level 5 Networking &amp; Internet Tech (NIT)</label>
-                  </div>
-                  <div class="priv-item">
-                    <input type="checkbox" id="clsL4NIT" value="Level 4 NIT">
-                    <label for="clsL4NIT">Level 4 Networking &amp; Internet Tech (NIT)</label>
-                  </div>
-                  <div class="priv-item">
-                    <input type="checkbox" id="clsL5CSA" value="Level 5 CSA">
-                    <label for="clsL5CSA">Level 5 Computer Systems &amp; Arch (CSA)</label>
-                  </div>
-                  <div class="priv-item">
-                    <input type="checkbox" id="clsL4CSA" value="Level 4 CSA">
-                    <label for="clsL4CSA">Level 4 Computer Systems &amp; Arch (CSA)</label>
-                  </div>
-                  <div class="priv-item">
-                    <input type="checkbox" id="clsL5ACC" value="Level 5 ACC">
-                    <label for="clsL5ACC">Level 5 Accounting &amp; Finance</label>
-                  </div>
-                  <div class="priv-item">
-                    <input type="checkbox" id="clsL4ACC" value="Level 4 ACC">
-                    <label for="clsL4ACC">Level 4 Accounting &amp; Finance</label>
-                  </div>
-                  <div class="priv-item">
-                    <input type="checkbox" id="clsL3GEN" value="Level 3 General">
-                    <label for="clsL3GEN">Level 3 Foundation TSS</label>
-                  </div>
-                </div>
-              </div>
-            </div>
-
-            <!-- STUDENT SPECIFIC COMBINATIONS -->
-            <div id="studentFieldsWrapper" style="display: none;">
-              <div class="form-ctrl">
-                <label>Trade / Combination</label>
+                <label>Trade / Department</label>
                 <select id="newDepartment">
                   <option value="NIT">Networking &amp; Internet Tech (NIT)</option>
                   <option value="CSA">Computer Systems &amp; Arch (CSA)</option>
@@ -518,10 +447,36 @@
               <div class="form-ctrl">
                 <label>Class Level</label>
                 <select id="newLevel">
-                  <option value="Level 3">Level 3 (Senior 4)</option>
-                  <option value="Level 4">Level 4 (Senior 5)</option>
                   <option value="Level 5" selected>Level 5 (Senior 6 Finalist)</option>
+                  <option value="Level 4">Level 4 (Senior 5)</option>
+                  <option value="Level 3">Level 3 (Senior 4)</option>
                 </select>
+              </div>
+            </div>
+
+            <!-- STAFF FIELDS -->
+            <div id="staffPrivilegesWrapper" style="display:none;">
+              <div class="form-ctrl">
+                <label>Assigned Staff Responsibilities</label>
+                <div class="privilege-checklist-box">
+                  <div class="priv-item"><input type="checkbox" id="roleTeacher" value="Teacher / Trainer" checked><label for="roleTeacher">Teacher / Trainer</label></div>
+                  <div class="priv-item"><input type="checkbox" id="roleStock" value="Stock & Inventory Manager"><label for="roleStock">Stock &amp; Inventory Manager</label></div>
+                  <div class="priv-item"><input type="checkbox" id="roleDiscipline" value="Dean of Discipline"><label for="roleDiscipline">Dean of Discipline</label></div>
+                  <div class="priv-item"><input type="checkbox" id="roleExam" value="Exam Officer"><label for="roleExam">Exam Officer</label></div>
+                </div>
+              </div>
+
+              <div class="form-ctrl">
+                <label>Assigned Classes to Teach / Manage</label>
+                <div class="privilege-checklist-box">
+                  <div class="priv-item"><input type="checkbox" id="clsL5NIT" value="Level 5 NIT" checked><label for="clsL5NIT">Level 5 NIT</label></div>
+                  <div class="priv-item"><input type="checkbox" id="clsL4NIT" value="Level 4 NIT"><label for="clsL4NIT">Level 4 NIT</label></div>
+                  <div class="priv-item"><input type="checkbox" id="clsL5CSA" value="Level 5 CSA"><label for="clsL5CSA">Level 5 CSA</label></div>
+                  <div class="priv-item"><input type="checkbox" id="clsL4CSA" value="Level 4 CSA"><label for="clsL4CSA">Level 4 CSA</label></div>
+                  <div class="priv-item"><input type="checkbox" id="clsL5ACC" value="Level 5 ACC"><label for="clsL5ACC">Level 5 ACC</label></div>
+                  <div class="priv-item"><input type="checkbox" id="clsL4ACC" value="Level 4 ACC"><label for="clsL4ACC">Level 4 ACC</label></div>
+                  <div class="priv-item"><input type="checkbox" id="clsL3GEN" value="Level 3 General"><label for="clsL3GEN">Level 3 General</label></div>
+                </div>
               </div>
             </div>
 
@@ -531,7 +486,7 @@
             </div>
 
             <button type="submit" id="btnRegisterSubmit" class="btn-create">
-              <i class="fa-solid fa-check"></i> Register Account &amp; Save Privileges
+              <i class="fa-solid fa-check"></i> Register Account &amp; Save
             </button>
           </form>
         </div>
@@ -541,7 +496,7 @@
       <div class="card-panel">
         <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 12px; flex-wrap: wrap; gap: 10px;">
           <div class="card-title" style="margin-bottom: 0;">
-            <i class="fa-solid fa-users-gear" style="color: var(--blue);"></i> Registered Accounts &amp; Profiles
+            <i class="fa-solid fa-users-gear" style="color: var(--blue);"></i> Registered Accounts Directory
           </div>
           <input type="text" id="searchUser" placeholder="Search name or ID..." onkeyup="filterUsersTable()" style="padding: 7px 12px; border: 1.5px solid var(--border); border-radius: 6px; font-size: 0.85rem; width: 220px;">
         </div>
@@ -559,7 +514,7 @@
                 <th>Full Name</th>
                 <th>Username</th>
                 <th>Password</th>
-                <th>Roles / Managed Classes</th>
+                <th>Assigned Class / Roles</th>
                 <th>Status</th>
                 <th>Actions</th>
               </tr>
@@ -572,12 +527,12 @@
     </div>
   </div>
 
-  <!-- EDIT USER MODAL -->
+  <!-- EDIT USER MODAL (CLASS & DEPARTMENT SWITCHING CAPABILITY) -->
   <div class="modal-backdrop" id="editModal">
     <div class="modal-content">
       <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:15px;">
         <h3 style="color:var(--navy); font-size:1.2rem; font-weight:800;">
-          <i class="fa-solid fa-user-pen"></i> Edit Profile &amp; Staff Privileges
+          <i class="fa-solid fa-user-pen"></i> Edit Profile &amp; Change Student Class
         </h3>
         <button onclick="closeEditModal()" style="border:none; background:none; font-size:1.4rem; cursor:pointer;">&times;</button>
       </div>
@@ -601,7 +556,7 @@
         </div>
 
         <div class="form-ctrl">
-          <label>Category</label>
+          <label>Account Category</label>
           <select id="editRole" onchange="toggleEditRoleFields()">
             <option value="student">Student / Candidate</option>
             <option value="staff">Trainer / Staff</option>
@@ -609,14 +564,36 @@
           </select>
         </div>
 
-        <div id="editStaffPrivilegesArea">
+        <!-- STUDENT CLASS LEVEL & DEPARTMENT (NEW) -->
+        <div id="editStudentClassArea">
           <div class="form-ctrl">
-            <label>Assigned Staff Roles</label>
-            <div class="privilege-checklist-box" id="editStaffRolesList"></div>
+            <label>Student Class Level</label>
+            <select id="editLevel">
+              <option value="Level 5">Level 5 (Senior 6 Finalist)</option>
+              <option value="Level 4">Level 4 (Senior 5)</option>
+              <option value="Level 3">Level 3 (Senior 4)</option>
+            </select>
           </div>
 
           <div class="form-ctrl">
-            <label>Assigned Classes to Manage</label>
+            <label>Trade / Department Combination</label>
+            <select id="editDepartment">
+              <option value="NIT">Networking &amp; Internet Tech (NIT)</option>
+              <option value="CSA">Computer Systems &amp; Arch (CSA)</option>
+              <option value="ACC">Accounting &amp; Finance</option>
+              <option value="GEN">General Administration</option>
+            </select>
+          </div>
+        </div>
+
+        <!-- STAFF ROLES & CLASSES -->
+        <div id="editStaffPrivilegesArea" style="display:none;">
+          <div class="form-ctrl">
+            <label>Assigned Staff Responsibilities</label>
+            <div class="privilege-checklist-box" id="editStaffRolesList"></div>
+          </div>
+          <div class="form-ctrl">
+            <label>Assigned Classes to Teach</label>
             <div class="privilege-checklist-box" id="editStaffClassesList"></div>
           </div>
         </div>
@@ -627,7 +604,7 @@
         </div>
 
         <button type="submit" class="btn-create" style="margin-top:10px;">
-          <i class="fa-solid fa-floppy-disk"></i> Save &amp; Sync Privileges
+          <i class="fa-solid fa-floppy-disk"></i> Save &amp; Update Firebase
         </button>
       </form>
     </div>
@@ -645,28 +622,15 @@
     const MASTER_ADMIN_USER = "Ismael";
     const MASTER_ADMIN_PASS = "Acej@84011";
 
-    const ALL_AVAILABLE_STAFF_ROLES = [
-      "Teacher / Trainer",
-      "Stock & Inventory Manager",
-      "Dean of Discipline",
-      "Exam Officer",
-      "Head of Department"
-    ];
-
-    const ALL_AVAILABLE_CLASSES = [
-      "Level 5 NIT",
-      "Level 4 NIT",
-      "Level 5 CSA",
-      "Level 4 CSA",
-      "Level 5 ACC",
-      "Level 4 ACC",
-      "Level 3 General"
-    ];
-
+    const ALL_AVAILABLE_STAFF_ROLES = ["Teacher / Trainer", "Stock & Inventory Manager", "Dean of Discipline", "Exam Officer"];
+    const ALL_AVAILABLE_CLASSES = ["Level 5 NIT", "Level 4 NIT", "Level 5 CSA", "Level 4 CSA", "Level 5 ACC", "Level 4 ACC", "Level 3 General"];
     const DEFAULT_GROUPS = ["Core Class", "Tech Club", "AERG Itetero", "Prefects", "Exam Board", "Students"];
+
     let liveUsersList = [];
     let liveGroupsList = DEFAULT_GROUPS;
     let activeFilterGroup = "all";
+    let inspectedClass = "Level 5 NIT";
+    let allLiveMarks = {};
 
     function cleanFirebaseKey(str) {
       return String(str || '').trim().replace(/[.#$\[\]\/]/g, '_');
@@ -699,6 +663,7 @@
       rtdb.ref('users').on('value', (snapshot) => {
         liveUsersList = parseCloudUsers(snapshot.val());
         renderData();
+        renderInspectedClassMarks();
       });
 
       rtdb.ref('groups').on('value', (snapshot) => {
@@ -709,39 +674,9 @@
         }
       });
 
-      rtdb.ref('broadcast').on('value', (snapshot) => {
-        const n = snapshot.val();
-        const disp = document.getElementById('activeBroadcastDisplay');
-        if (n && n.title) {
-          const now = Date.now();
-          if (n.expiresAt && now > n.expiresAt) {
-            rtdb.ref('broadcast').remove();
-            disp.innerHTML = `<span style="color:#94a3b8;">No active announcement.</span>`;
-            return;
-          }
-
-          let audienceLabel = "👥 All (Students & Staff)";
-          if (n.target === "student") audienceLabel = "🎓 Students Only";
-          if (n.target === "staff") audienceLabel = "👨‍🏫 Teachers / Staff Only";
-
-          let timeLeftStr = "No expiration";
-          if (n.expiresAt) {
-            const diffHours = Math.max(0, Math.round((n.expiresAt - now) / (1000 * 60 * 60)));
-            timeLeftStr = `Expires in ~${diffHours} hr(s)`;
-          }
-
-          disp.innerHTML = `
-            <div style="background:#fffbeb; border:1px solid #fde68a; padding:10px 14px; border-radius:8px;">
-              <strong>Active Notice:</strong> <em>"${n.title}"</em> — ${n.body}<br>
-              <span style="font-size:0.8rem; color:#b45309; font-weight:700;">
-                Target: ${audienceLabel} &bull; ${timeLeftStr}
-              </span>
-              <button onclick="clearBroadcast()" style="margin-left:10px; padding:3px 8px; font-size:0.75rem; border-radius:4px; border:1px solid #cbd5e1; cursor:pointer; background:#fff;">Dismiss / Delete</button>
-            </div>
-          `;
-        } else {
-          disp.innerHTML = `<span style="color:#94a3b8;">No active broadcast announcement.</span>`;
-        }
+      rtdb.ref('marks').on('value', (snapshot) => {
+        allLiveMarks = snapshot.val() || {};
+        renderInspectedClassMarks();
       });
     }
 
@@ -782,108 +717,99 @@
       initRealtimeListeners();
     }
 
-    async function handleCreateGroup(e) {
-      e.preventDefault();
-      const nameInput = document.getElementById('newGroupNameInput');
-      const gName = nameInput.value.trim();
-      if (!gName) return;
+    // INSPECT CLASS MARKS & PROGRESS (NEW)
+    function inspectClassMarks(className, btn) {
+      inspectedClass = className;
+      document.querySelectorAll('#classSelectorButtons button').forEach(b => b.classList.remove('active'));
+      if (btn) btn.classList.add('active');
+      renderInspectedClassMarks();
+    }
 
-      if (liveGroupsList.some(g => g.toLowerCase() === gName.toLowerCase())) {
-        alert("A group with this name already exists!");
+    function renderInspectedClassMarks() {
+      const tbody = document.getElementById('classInspectorTableBody');
+      tbody.innerHTML = "";
+
+      const classStudents = liveUsersList.filter(u => u.role === 'student' && ((u.level + " " + u.dept) === inspectedClass || (u.groups && u.groups.includes(inspectedClass))));
+
+      if (classStudents.length === 0) {
+        tbody.innerHTML = `<tr><td colspan="9" style="text-align:center; color:#94a3b8; padding:20px;">No registered students found in ${inspectedClass}.</td></tr>`;
         return;
       }
 
-      liveGroupsList.push(gName);
-      renderGroupControls();
-      nameInput.value = "";
-      await rtdb.ref('groups').set(liveGroupsList);
-    }
+      classStudents.forEach(s => {
+        const uKey = cleanFirebaseKey(s.username).toLowerCase();
+        let cw1 = 0, cw2 = 0, cat = 0, exam = 0;
 
-    async function deleteGroup(gName) {
-      if (!confirm(`Delete folder "${gName}"? Users will stay registered, but this folder tag will be removed.`)) return;
-
-      liveGroupsList = liveGroupsList.filter(g => g.toLowerCase() !== gName.toLowerCase());
-      await rtdb.ref('groups').set(liveGroupsList);
-
-      liveUsersList.forEach(u => {
-        if (u.groups && u.groups.includes(gName)) {
-          u.groups = u.groups.filter(g => g !== gName);
-          const key = cleanFirebaseKey(u._fbKey || u.username);
-          rtdb.ref('users/' + key).set(u);
+        if (allLiveMarks[inspectedClass]) {
+          Object.keys(allLiveMarks[inspectedClass]).forEach(courseKey => {
+            const courseData = allLiveMarks[inspectedClass][courseKey];
+            if (courseData && courseData[uKey]) {
+              cw1 = Math.max(cw1, parseInt(courseData[uKey].cw1) || 0);
+              cw2 = Math.max(cw2, parseInt(courseData[uKey].cw2) || 0);
+              cat = Math.max(cat, parseInt(courseData[uKey].cat) || 0);
+              exam = Math.max(exam, parseInt(courseData[uKey].exam) || 0);
+            }
+          });
         }
+
+        const total = cw1 + cw2 + cat + exam;
+        const isCompetent = total >= 70;
+
+        const tr = document.createElement('tr');
+        tr.innerHTML = `
+          <td><code>${s.username}</code></td>
+          <td><strong>${s.name}</strong></td>
+          <td><span class="group-pill">${s.level || 'L5'} ${s.dept || 'NIT'}</span></td>
+          <td><strong>${cw1}</strong> / 10</td>
+          <td><strong>${cw2}</strong> / 10</td>
+          <td><strong>${cat}</strong> / 30</td>
+          <td><strong>${exam}</strong> / 50</td>
+          <td><strong style="font-size:1.05rem; color:${isCompetent ? '#047857' : '#b45309'};">${total}%</strong></td>
+          <td><span class="badge-status ${isCompetent ? 'status-active' : 'status-disabled'}">${isCompetent ? 'Competent' : 'In Progress'}</span></td>
+        `;
+        tbody.appendChild(tr);
       });
     }
 
-    function renderGroupControls() {
-      document.getElementById('statTotalGroups').innerText = liveGroupsList.length;
+    function exportMarksToCSV() {
+      const classStudents = liveUsersList.filter(u => u.role === 'student' && ((u.level + " " + u.dept) === inspectedClass || (u.groups && u.groups.includes(inspectedClass))));
+      if (classStudents.length === 0) return alert("No students to export in " + inspectedClass);
 
-      const regList = document.getElementById('registerGroupsCheckboxList');
-      regList.innerHTML = "";
-      liveGroupsList.forEach((g, idx) => {
-        const item = document.createElement('div');
-        item.className = "priv-item";
-        item.innerHTML = `
-          <input type="checkbox" id="regGrp_${idx}" value="${g}">
-          <label for="regGrp_${idx}">${g}</label>
-        `;
-        regList.appendChild(item);
+      let csv = "Reg ID,Full Name,Class,CW1 (10),CW2 (10),CAT (30),Exam (50),Total (100%),Competency\n";
+      classStudents.forEach(s => {
+        const uKey = cleanFirebaseKey(s.username).toLowerCase();
+        let cw1 = 0, cw2 = 0, cat = 0, exam = 0;
+        if (allLiveMarks[inspectedClass]) {
+          Object.keys(allLiveMarks[inspectedClass]).forEach(cKey => {
+            const cData = allLiveMarks[inspectedClass][cKey];
+            if (cData && cData[uKey]) {
+              cw1 = Math.max(cw1, parseInt(cData[uKey].cw1) || 0);
+              cw2 = Math.max(cw2, parseInt(cData[uKey].cw2) || 0);
+              cat = Math.max(cat, parseInt(cData[uKey].cat) || 0);
+              exam = Math.max(exam, parseInt(cData[uKey].exam) || 0);
+            }
+          });
+        }
+        const total = cw1 + cw2 + cat + exam;
+        csv += `"${s.username}","${s.name}","${inspectedClass}",${cw1},${cw2},${cat},${exam},${total}%,"${total >= 70 ? 'Competent' : 'In Progress'}"\n`;
       });
 
-      const badgeList = document.getElementById('activeFoldersBadgeList');
-      badgeList.innerHTML = "";
-      liveGroupsList.forEach(g => {
-        const pill = document.createElement('span');
-        pill.className = "folder-item-pill";
-        pill.innerHTML = `
-          <i class="fa-solid fa-folder" style="color:var(--purple);"></i> ${g}
-          <button type="button" title="Delete Folder" onclick="deleteGroup('${g.replace(/'/g, "\\'")}')">&times;</button>
-        `;
-        badgeList.appendChild(pill);
-      });
-
-      const filterBox = document.getElementById('groupFilterButtons');
-      filterBox.innerHTML = `
-        <span style="font-size:0.8rem; font-weight:800; color:#64748b; margin-right:4px;"><i class="fa-solid fa-filter"></i> Group Folder:</span>
-        <button class="filter-btn ${activeFilterGroup === 'all' ? 'active' : ''}" onclick="setGroupFilter('all', this)">All Users</button>
-      `;
-      liveGroupsList.forEach(g => {
-        const btn = document.createElement('button');
-        btn.className = `filter-btn ${activeFilterGroup === g ? 'active' : ''}`;
-        btn.innerText = g;
-        btn.onclick = function() { setGroupFilter(g, this); };
-        filterBox.appendChild(btn);
-      });
-    }
-
-    function setGroupFilter(group, btn) {
-      activeFilterGroup = group;
-      document.querySelectorAll('.filter-btn').forEach(b => b.classList.remove('active'));
-      btn.classList.add('active');
-      renderData();
+      const blob = new Blob([csv], { type: "text/csv;charset=utf-8;" });
+      const link = document.createElement("a");
+      link.href = URL.createObjectURL(blob);
+      link.download = `${inspectedClass.replace(/\s+/g, '_')}_Marks_Sheet.csv`;
+      link.click();
     }
 
     function toggleFormRoleFields() {
       const role = document.getElementById('newRole').value;
-      const staffWrapper = document.getElementById('staffPrivilegesWrapper');
-      const studentWrapper = document.getElementById('studentFieldsWrapper');
-      const lblUser = document.getElementById('lblNewUsername');
-
-      if (role === 'student') {
-        lblUser.innerText = "Student Roll / Reg ID";
-        staffWrapper.style.display = "none";
-        studentWrapper.style.display = "block";
-      } else {
-        lblUser.innerText = "Staff / Admin Username";
-        staffWrapper.style.display = "block";
-        studentWrapper.style.display = "none";
-      }
+      document.getElementById('studentFieldsWrapper').style.display = role === 'student' ? 'block' : 'none';
+      document.getElementById('staffPrivilegesWrapper').style.display = role === 'staff' ? 'block' : 'none';
+      document.getElementById('lblNewUsername').innerText = role === 'student' ? 'Student Roll / Reg ID' : 'Staff / Admin Username';
     }
 
     async function handleCreateUser(e) {
       e.preventDefault();
-      const submitBtn = document.getElementById('btnRegisterSubmit');
-      const origText = submitBtn.innerHTML;
-
       const role = document.getElementById('newRole').value;
       const name = document.getElementById('newName').value.trim();
       const username = document.getElementById('newUsername').value.trim();
@@ -894,39 +820,22 @@
         return;
       }
 
-      // Collect Multi-roles (Staff)
       const assignedRoles = [];
+      const managedClasses = [];
       if (role === 'staff') {
         if (document.getElementById('roleTeacher').checked) assignedRoles.push("Teacher / Trainer");
         if (document.getElementById('roleStock').checked) assignedRoles.push("Stock & Inventory Manager");
         if (document.getElementById('roleDiscipline').checked) assignedRoles.push("Dean of Discipline");
         if (document.getElementById('roleExam').checked) assignedRoles.push("Exam Officer");
-        if (document.getElementById('roleHod').checked) assignedRoles.push("Head of Department");
+
+        ALL_AVAILABLE_CLASSES.forEach((c, idx) => {
+          const el = document.querySelectorAll('#staffPrivilegesWrapper input[type="checkbox"]')[idx + 4];
+          if (el && el.checked) managedClasses.push(c);
+        });
       }
 
-      // Collect Multi-classes (Staff)
-      const managedClasses = [];
-      if (role === 'staff') {
-        if (document.getElementById('clsL5NIT').checked) managedClasses.push("Level 5 NIT");
-        if (document.getElementById('clsL4NIT').checked) managedClasses.push("Level 4 NIT");
-        if (document.getElementById('clsL5CSA').checked) managedClasses.push("Level 5 CSA");
-        if (document.getElementById('clsL4CSA').checked) managedClasses.push("Level 4 CSA");
-        if (document.getElementById('clsL5ACC').checked) managedClasses.push("Level 5 ACC");
-        if (document.getElementById('clsL4ACC').checked) managedClasses.push("Level 4 ACC");
-        if (document.getElementById('clsL3GEN').checked) managedClasses.push("Level 3 General");
-      }
-
-      // General Folders
       const selectedGroups = [];
-      document.querySelectorAll('#registerGroupsCheckboxList input[type="checkbox"]:checked').forEach(cb => {
-        selectedGroups.push(cb.value);
-      });
-
-      const dept = role === 'student' ? document.getElementById('newDepartment').value : 'Faculty';
-      const level = role === 'student' ? document.getElementById('newLevel').value : 'Faculty';
-
-      submitBtn.disabled = true;
-      submitBtn.innerHTML = '<i class="fa-solid fa-spinner fa-spin"></i> Saving directly to Firebase...';
+      document.querySelectorAll('#registerGroupsCheckboxList input[type="checkbox"]:checked').forEach(cb => selectedGroups.push(cb.value));
 
       const newUser = {
         id: "usr_" + Date.now().toString(),
@@ -934,8 +843,8 @@
         name: name,
         username: username,
         pass: pass,
-        dept: dept,
-        level: level,
+        dept: role === 'student' ? document.getElementById('newDepartment').value : 'Faculty',
+        level: role === 'student' ? document.getElementById('newLevel').value : 'Faculty',
         staffRoles: assignedRoles,
         managedClasses: managedClasses,
         status: "active",
@@ -945,30 +854,12 @@
 
       const key = cleanFirebaseKey(username);
       await rtdb.ref('users/' + key).set(newUser);
-
-      alert(`User ${name} registered directly with custom staff roles and classes!`);
-      submitBtn.disabled = false;
-      submitBtn.innerHTML = origText;
+      alert(`User ${name} registered directly in Firebase!`);
       e.target.reset();
       toggleFormRoleFields();
     }
 
-    async function deleteUserByExactKey(fbKey, displayName) {
-      if (!confirm(`Permanently delete ${displayName}? This will remove them immediately across all devices.`)) {
-        return;
-      }
-      const key = cleanFirebaseKey(fbKey);
-      await rtdb.ref('users/' + key).remove();
-    }
-
-    function impersonateUser(username) {
-      const user = liveUsersList.find(u => u.username.toLowerCase() === username.toLowerCase());
-      if (user) {
-        localStorage.setItem("ACEJ_IMPERSONATE_USER", JSON.stringify(user));
-        window.open("/portal/", "_blank");
-      }
-    }
-
+    // OPEN EDIT MODAL (ALLOWS EDITING CLASS FOR CREATED STUDENTS)
     function openEditModal(fbKey) {
       const user = liveUsersList.find(u => (u._fbKey === fbKey || u.username === fbKey));
       if (!user) return;
@@ -977,7 +868,13 @@
       document.getElementById('editName').value = user.name;
       document.getElementById('editUsername').value = user.username;
       document.getElementById('editPassword').value = user.pass;
-      document.getElementById('editRole').value = user.role || "staff";
+      document.getElementById('editRole').value = user.role || "student";
+
+      // If Student, fill Level and Dept
+      if (user.role === 'student') {
+        document.getElementById('editLevel').value = user.level || "Level 5";
+        document.getElementById('editDepartment').value = user.dept || "NIT";
+      }
 
       toggleEditRoleFields();
 
@@ -988,10 +885,7 @@
       ALL_AVAILABLE_STAFF_ROLES.forEach((r, idx) => {
         const item = document.createElement('div');
         item.className = "priv-item";
-        item.innerHTML = `
-          <input type="checkbox" id="editRole_${idx}" value="${r}" ${userRoles.includes(r) ? 'checked' : ''}>
-          <label for="editRole_${idx}">${r}</label>
-        `;
+        item.innerHTML = `<input type="checkbox" id="editRole_${idx}" value="${r}" ${userRoles.includes(r) ? 'checked' : ''}><label for="editRole_${idx}">${r}</label>`;
         rolesBox.appendChild(item);
       });
 
@@ -1002,10 +896,7 @@
       ALL_AVAILABLE_CLASSES.forEach((c, idx) => {
         const item = document.createElement('div');
         item.className = "priv-item";
-        item.innerHTML = `
-          <input type="checkbox" id="editClass_${idx}" value="${c}" ${userClasses.includes(c) ? 'checked' : ''}>
-          <label for="editClass_${idx}">${c}</label>
-        `;
+        item.innerHTML = `<input type="checkbox" id="editClass_${idx}" value="${c}" ${userClasses.includes(c) ? 'checked' : ''}><label for="editClass_${idx}">${c}</label>`;
         classesBox.appendChild(item);
       });
 
@@ -1016,10 +907,7 @@
       liveGroupsList.forEach((g, idx) => {
         const item = document.createElement('div');
         item.className = "priv-item";
-        item.innerHTML = `
-          <input type="checkbox" id="editGrp_${idx}" value="${g}" ${userGroups.includes(g) ? 'checked' : ''}>
-          <label for="editGrp_${idx}">${g}</label>
-        `;
+        item.innerHTML = `<input type="checkbox" id="editGrp_${idx}" value="${g}" ${userGroups.includes(g) ? 'checked' : ''}><label for="editGrp_${idx}">${g}</label>`;
         editList.appendChild(item);
       });
 
@@ -1028,6 +916,7 @@
 
     function toggleEditRoleFields() {
       const role = document.getElementById('editRole').value;
+      document.getElementById('editStudentClassArea').style.display = role === 'student' ? 'block' : 'none';
       document.getElementById('editStaffPrivilegesArea').style.display = (role === 'staff' || role === 'admin') ? 'block' : 'none';
     }
 
@@ -1047,25 +936,21 @@
         user.pass = document.getElementById('editPassword').value.trim();
         user.role = document.getElementById('editRole').value;
 
-        // Staff Roles
+        if (user.role === 'student') {
+          user.level = document.getElementById('editLevel').value;
+          user.dept = document.getElementById('editDepartment').value;
+        }
+
         const updatedRoles = [];
-        document.querySelectorAll('#editStaffRolesList input[type="checkbox"]:checked').forEach(cb => {
-          updatedRoles.push(cb.value);
-        });
+        document.querySelectorAll('#editStaffRolesList input[type="checkbox"]:checked').forEach(cb => updatedRoles.push(cb.value));
         user.staffRoles = updatedRoles;
 
-        // Managed Classes
         const updatedClasses = [];
-        document.querySelectorAll('#editStaffClassesList input[type="checkbox"]:checked').forEach(cb => {
-          updatedClasses.push(cb.value);
-        });
+        document.querySelectorAll('#editStaffClassesList input[type="checkbox"]:checked').forEach(cb => updatedClasses.push(cb.value));
         user.managedClasses = updatedClasses;
 
-        // General Groups
         const updatedGroups = [];
-        document.querySelectorAll('#editGroupsCheckboxList input[type="checkbox"]:checked').forEach(cb => {
-          updatedGroups.push(cb.value);
-        });
+        document.querySelectorAll('#editGroupsCheckboxList input[type="checkbox"]:checked').forEach(cb => updatedGroups.push(cb.value));
         user.groups = updatedGroups;
 
         if (cleanFirebaseKey(originalKey) !== cleanFirebaseKey(newUsername)) {
@@ -1073,118 +958,120 @@
         }
 
         await rtdb.ref('users/' + cleanFirebaseKey(newUsername)).set(user);
-
-        alert(`Account ${user.name} updated with customized roles and managed classes!`);
+        alert(`Account ${user.name} updated!`);
         closeEditModal();
       }
     }
 
-    async function toggleUserStatus(fbKey) {
-      const u = liveUsersList.find(user => (user._fbKey === fbKey || user.username === fbKey));
-      if (u) {
-        u.status = u.status === 'active' ? 'disabled' : 'active';
-        const key = cleanFirebaseKey(u._fbKey || u.username);
-        await rtdb.ref('users/' + key).set(u);
-      }
+    async function deleteUserByExactKey(fbKey, displayName) {
+      if (!confirm(`Permanently delete ${displayName}? This will remove them immediately across all devices.`)) return;
+      await rtdb.ref('users/' + cleanFirebaseKey(fbKey)).remove();
     }
 
-    async function handleSendBroadcast(e) {
+    async function handleCreateGroup(e) {
       e.preventDefault();
-      const title = document.getElementById('broadcastTitle').value.trim();
-      const body = document.getElementById('broadcastBody').value.trim();
-      const target = document.getElementById('broadcastTarget').value;
-      const durationHours = parseInt(document.getElementById('broadcastDuration').value);
+      const nameInput = document.getElementById('newGroupNameInput');
+      const gName = nameInput.value.trim();
+      if (!gName) return;
 
-      let expiresAt = null;
-      if (durationHours > 0) {
-        expiresAt = Date.now() + (durationHours * 60 * 60 * 1000);
+      if (!liveGroupsList.includes(gName)) {
+        liveGroupsList.push(gName);
+        await rtdb.ref('groups').set(liveGroupsList);
       }
-
-      const notice = {
-        title: title,
-        body: body,
-        target: target,
-        durationHours: durationHours,
-        createdAt: Date.now(),
-        expiresAt: expiresAt,
-        author: sessionStorage.getItem("ACEJ_ADMIN_ROLE") || "Super Admin"
-      };
-
-      await rtdb.ref('broadcast').set(notice);
-      alert("Targeted announcement published with live auto-expiration!");
-      e.target.reset();
+      nameInput.value = "";
     }
 
-    async function clearBroadcast() {
-      await rtdb.ref('broadcast').remove();
+    async function deleteGroup(gName) {
+      if (!confirm(`Delete folder "${gName}"?`)) return;
+      liveGroupsList = liveGroupsList.filter(g => g !== gName);
+      await rtdb.ref('groups').set(liveGroupsList);
+    }
+
+    function renderGroupControls() {
+      document.getElementById('statTotalGroups').innerText = liveGroupsList.length;
+
+      const regList = document.getElementById('registerGroupsCheckboxList');
+      regList.innerHTML = "";
+      liveGroupsList.forEach((g, idx) => {
+        const item = document.createElement('div');
+        item.className = "priv-item";
+        item.innerHTML = `<input type="checkbox" id="regGrp_${idx}" value="${g}"><label for="regGrp_${idx}">${g}</label>`;
+        regList.appendChild(item);
+      });
+
+      const badgeList = document.getElementById('activeFoldersBadgeList');
+      badgeList.innerHTML = "";
+      liveGroupsList.forEach(g => {
+        const pill = document.createElement('span');
+        pill.className = "folder-item-pill";
+        pill.innerHTML = `<i class="fa-solid fa-folder" style="color:var(--purple);"></i> ${g} <button type="button" onclick="deleteGroup('${g.replace(/'/g, "\\'")}')">&times;</button>`;
+        badgeList.appendChild(pill);
+      });
+
+      const filterBox = document.getElementById('groupFilterButtons');
+      filterBox.innerHTML = `<span style="font-size:0.8rem; font-weight:800; color:#64748b; margin-right:4px;"><i class="fa-solid fa-filter"></i> Group Folder:</span><button class="filter-btn ${activeFilterGroup === 'all' ? 'active' : ''}" onclick="setGroupFilter('all', this)">All Users</button>`;
+      liveGroupsList.forEach(g => {
+        const btn = document.createElement('button');
+        btn.className = `filter-btn ${activeFilterGroup === g ? 'active' : ''}`;
+        btn.innerText = g;
+        btn.onclick = function() { setGroupFilter(g, this); };
+        filterBox.appendChild(btn);
+      });
+    }
+
+    function setGroupFilter(group, btn) {
+      activeFilterGroup = group;
+      document.querySelectorAll('.filter-btn').forEach(b => b.classList.remove('active'));
+      btn.classList.add('active');
+      renderData();
     }
 
     function renderData() {
       const userTbody = document.getElementById('userTableBody');
       userTbody.innerHTML = "";
-      let countStudents = 0, countStaff = 0, countAdmins = 0;
+      let countStudents = 0, countStaff = 0;
 
-      const filteredUsers = liveUsersList.filter(u => {
-        if (activeFilterGroup === "all") return true;
-        return (u.groups || []).includes(activeFilterGroup);
-      });
+      const filteredUsers = liveUsersList.filter(u => activeFilterGroup === "all" || (u.groups && u.groups.includes(activeFilterGroup)));
 
       liveUsersList.forEach(u => {
         if (u.role === 'student') countStudents++;
         else if (u.role === 'staff') countStaff++;
-        else if (u.role === 'admin' || u.role === 'super') countAdmins++;
       });
 
-      if (filteredUsers.length === 0) {
-        userTbody.innerHTML = `<tr><td colspan="7" style="text-align:center; color:#94a3b8; padding: 25px;">No users found in this group/folder.</td></tr>`;
-      } else {
-        filteredUsers.forEach(u => {
-          let roleBadgeClass = 'role-student';
-          if (u.role === 'staff') roleBadgeClass = 'role-staff';
-          if (u.role === 'admin') roleBadgeClass = 'role-admin';
+      filteredUsers.forEach(u => {
+        const isStudent = u.role === 'student';
+        let subInfo = "";
+        if (isStudent) {
+          subInfo = `<span class="group-pill" style="background:#e0f2fe; color:#0369a1;"><i class="fa-solid fa-chalkboard"></i> ${u.level || 'L5'} ${u.dept || 'NIT'}</span>`;
+        } else {
+          const roles = (u.staffRoles || []).map(r => `<span class="group-pill">${r}</span>`).join(" ");
+          subInfo = roles || `<span class="group-pill">Trainer</span>`;
+        }
 
-          let rolesAndClassesHtml = "";
-          if (u.role === 'staff') {
-            const rolesPills = (u.staffRoles || []).map(r => `<span class="priv-pill"><i class="fa-solid fa-briefcase"></i> ${r}</span>`).join(" ");
-            const classesPills = (u.managedClasses || []).map(c => `<span class="group-pill" style="background:#e0f2fe; color:#0369a1;"><i class="fa-solid fa-chalkboard"></i> ${c}</span>`).join(" ");
-            rolesAndClassesHtml = `<div>${rolesPills || '<span style="color:#94a3b8; font-size:0.75rem;">Teacher</span>'}</div><div style="margin-top:3px;">${classesPills || '<span style="color:#94a3b8; font-size:0.75rem;">General Classes</span>'}</div>`;
-          } else {
-            rolesAndClassesHtml = (u.groups || []).map(g => `<span class="group-pill">${g}</span>`).join(" ") || `<em>${u.level || 'General'}</em>`;
-          }
-
-          const keyRef = u._fbKey || u.username;
-
-          const tr = document.createElement('tr');
-          tr.innerHTML = `
-            <td><span class="badge-role ${roleBadgeClass}">${u.role}</span></td>
-            <td><strong>${u.name}</strong></td>
-            <td><code>${u.username}</code></td>
-            <td><code>${u.pass}</code></td>
-            <td>${rolesAndClassesHtml}</td>
-            <td><span class="badge-status ${u.status === 'active' ? 'status-active' : 'status-disabled'}">${u.status}</span></td>
-            <td>
-              <button class="btn-tbl btn-tbl-login" title="1-Click Open User Portal" onclick="impersonateUser('${u.username}')">
-                <i class="fa-solid fa-arrow-right-to-bracket"></i>
-              </button>
-              <button class="btn-tbl btn-tbl-edit" title="Edit Roles &amp; Classes" onclick="openEditModal('${keyRef}')">
-                <i class="fa-solid fa-pen-to-square"></i>
-              </button>
-              <button class="btn-tbl" title="Toggle Status" onclick="toggleUserStatus('${keyRef}')">
-                <i class="fa-solid fa-power-off"></i>
-              </button>
-              <button class="btn-tbl btn-tbl-del" title="Delete User Permanently" onclick="deleteUserByExactKey('${keyRef}', '${u.name}')">
-                <i class="fa-solid fa-trash"></i>
-              </button>
-            </td>
-          `;
-          userTbody.appendChild(tr);
-        });
-      }
+        const keyRef = u._fbKey || u.username;
+        const tr = document.createElement('tr');
+        tr.innerHTML = `
+          <td><span class="badge-role ${isStudent ? 'role-student' : 'role-staff'}">${u.role}</span></td>
+          <td><strong>${u.name}</strong></td>
+          <td><code>${u.username}</code></td>
+          <td><code>${u.pass}</code></td>
+          <td>${subInfo}</td>
+          <td><span class="badge-status ${u.status === 'active' ? 'status-active' : 'status-disabled'}">${u.status}</span></td>
+          <td>
+            <button class="btn-tbl btn-tbl-edit" title="Edit Class &amp; Privileges" onclick="openEditModal('${keyRef}')">
+              <i class="fa-solid fa-pen-to-square"></i>
+            </button>
+            <button class="btn-tbl btn-tbl-del" title="Delete User" onclick="deleteUserByExactKey('${keyRef}', '${u.name}')">
+              <i class="fa-solid fa-trash"></i>
+            </button>
+          </td>
+        `;
+        userTbody.appendChild(tr);
+      });
 
       document.getElementById('statTotalUsers').innerText = liveUsersList.length;
       document.getElementById('statTotalStudents').innerText = countStudents;
       document.getElementById('statTotalStaff').innerText = countStaff;
-      document.getElementById('statTotalGroups').innerText = liveGroupsList.length;
     }
 
     function filterUsersTable() {
