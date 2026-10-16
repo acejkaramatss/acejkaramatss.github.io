@@ -15,7 +15,7 @@
   <script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-app.js"></script>
   <script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-database.js"></script>
 
-  <!-- ANTI-FLICKER SCRIPT (PREVENTS FLASH OF LOGIN FORM ON REFRESH) -->
+  <!-- ANTI-FLICKER SCRIPT -->
   <script>
     (function() {
       const active = sessionStorage.getItem("ACEJ_ACTIVE_SESSION");
@@ -50,7 +50,6 @@
     * { box-sizing: border-box; margin: 0; padding: 0; font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif; }
     body { color: var(--text-dark); background-color: var(--bg-light); line-height: 1.6; min-height: 100vh; display: flex; flex-direction: column; }
 
-    /* Hide login box immediately during page reload if session exists */
     html.session-restoring #loginBox { display: none !important; }
 
     .top-bar {
@@ -496,7 +495,7 @@
         </div>
       </div>
 
-      <!-- ATTENDANCE REGISTER -->
+      <!-- ATTENDANCE REGISTER (LOCKED TO AUTHORIZED INSTRUCTOR) -->
       <div class="content-panel">
         <div class="panel-header-row">
           <h3>
@@ -506,11 +505,13 @@
           <div style="display:flex; align-items:center; gap:8px;">
             <label style="font-size:0.85rem; font-weight:700;">Date:</label>
             <input type="date" id="attendanceDatePicker" onchange="loadClassAttendanceForDate()" style="padding:6px 10px; border-radius:6px; border:1.5px solid var(--border-color); font-weight:700;">
-            <button class="btn-publish-open" onclick="saveClassAttendanceForDate()">
+            <button id="btnSaveAttendance" class="btn-publish-open" onclick="saveClassAttendanceForDate()">
               <i class="fa-solid fa-floppy-disk"></i> Save Attendance
             </button>
           </div>
         </div>
+
+        <div id="attendanceAuthNotice" style="font-size:0.82rem; margin-bottom:10px; font-weight:700;"></div>
 
         <div style="overflow-x: auto;">
           <table class="records-table">
@@ -527,7 +528,7 @@
         </div>
       </div>
 
-      <!-- 100% WEIGHTED ASSESSMENT (ISOLATED TO COURSE INSTRUCTOR) -->
+      <!-- 100% WEIGHTED ASSESSMENT (ISOLATED TO COURSE INSTRUCTOR, NO DUPLICATES) -->
       <div class="content-panel">
         <div class="panel-header-row">
           <h3>
@@ -763,10 +764,6 @@
 
   </main>
 
-  <!-- ============================================== -->
-  <!-- MODALS                                         -->
-  <!-- ============================================== -->
-
   <!-- IN-PORTAL DOCUMENT READER MODAL -->
   <div class="modal-backdrop" id="docReaderModal">
     <div class="modal-card reader-modal-card">
@@ -797,7 +794,7 @@
     </div>
   </div>
 
-  <!-- UPLOAD / DRAFT NOTES MODAL -->
+  <!-- UPLOAD / DRAFT NOTES MODAL (RESTRICTED TO TEACHER'S AUTHORIZED COURSES) -->
   <div class="modal-backdrop" id="uploadNotesModal">
     <div class="modal-card">
       <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:15px;">
@@ -807,7 +804,7 @@
 
       <form onsubmit="handleSaveNotesSubmit(event)">
         <div class="form-group">
-          <label>Course / Module</label>
+          <label>Course / Module (Only courses you teach)</label>
           <select id="modalNoteCourse" class="input-control" required></select>
         </div>
 
@@ -922,7 +919,7 @@
 
       <form onsubmit="handleCreateAssignmentSubmit(event)">
         <div class="form-group">
-          <label>Course / Module</label>
+          <label>Course / Module (Only courses you teach)</label>
           <select id="modalAssignCourse" class="input-control" required></select>
         </div>
 
@@ -1062,7 +1059,7 @@
       });
     }
 
-    // HELPER: PER-CLASS UNIQUE STUDENT DEDUPLICATION
+    // STRICT UNIQUE STUDENT FILTER FOR CLASSES (FIXES DUPLICATION IN MARKS AND ATTENDANCE)
     function getDeduplicatedStudentsForClass(targetClass) {
       const seen = new Set();
       const uniqueList = [];
@@ -1084,12 +1081,18 @@
       return uniqueList;
     }
 
-    // PRIVILEGE CHECK: ADMIN, DOS, OR EXAM OFFICER HAVE FULL OVERRIDE
     function isElevatedAcademicStaff(user) {
       if (!user) return false;
       if (user.role === 'admin' || user.role === 'super') return true;
       const roles = user.staffRoles || [];
       return roles.includes("Exam Officer") || roles.includes("Dean of Discipline") || roles.includes("Director of Studies");
+    }
+
+    // CHECK IF STAFF TEACHES THIS COURSE SPECIFICALLY
+    function isStaffAuthorizedForCourse(courseObj, staffUser) {
+      if (!staffUser || !courseObj) return false;
+      if (isElevatedAcademicStaff(staffUser)) return true;
+      return (courseObj.teacherUsername && courseObj.teacherUsername === staffUser.username) || (courseObj.teacher && courseObj.teacher === staffUser.name);
     }
 
     window.addEventListener('DOMContentLoaded', async function() {
@@ -1099,7 +1102,6 @@
       document.getElementById('attendanceDatePicker').value = todayStr;
       document.getElementById('studentHistoryDatePicker').value = todayStr;
 
-      // Realtime Firebase Listeners
       rtdb.ref('users').on('value', snap => {
         const val = snap.val() || {};
         allCloudUsers = Object.values(val);
@@ -1149,7 +1151,6 @@
         }
       });
 
-      // Immediate session restore without screen flash
       var existingSession = sessionStorage.getItem(SESSION_STORAGE_KEY);
       if (existingSession) {
         var userObj = JSON.parse(existingSession);
@@ -1274,7 +1275,7 @@
         classCourses.forEach(c => {
           const opt = document.createElement('option');
           opt.value = c.code || c.title;
-          const isMine = c.teacherUsername === activeSessionUser.username;
+          const isMine = isStaffAuthorizedForCourse(c, activeSessionUser);
           opt.innerText = `${c.title} (${c.code || ''}) ${isMine ? '★ (My Course)' : ''}`;
           select.appendChild(opt);
         });
@@ -1282,11 +1283,11 @@
       loadCourseMarksForClass();
     }
 
+    // ATTENDANCE RESTRICTED TO COURSE TEACHER
     async function loadClassAttendanceForDate() {
       const activeClass = document.getElementById('teacherActiveManagedClass').value;
       const selDate = document.getElementById('attendanceDatePicker').value || new Date().toISOString().split('T')[0];
 
-      // DEDUPLICATED CLEAN LIST
       const students = getDeduplicatedStudentsForClass(activeClass);
       document.getElementById('statClassEnrolledStudents').innerText = students.length;
 
@@ -1295,7 +1296,21 @@
       const recorded = snap.val() || {};
 
       const tbody = document.getElementById('trainerAttendanceTbody');
+      const saveBtn = document.getElementById('btnSaveAttendance');
+      const notice = document.getElementById('attendanceAuthNotice');
       tbody.innerHTML = "";
+
+      // Check if current teacher teaches any course in this class
+      const teachesAnyInClass = allCloudCourses.some(c => c && c.targetClass === activeClass && isStaffAuthorizedForCourse(c, activeSessionUser));
+      const canManageAttendance = isElevatedAcademicStaff(activeSessionUser) || teachesAnyInClass;
+
+      if (!canManageAttendance) {
+        notice.innerHTML = `<span style="color:#b45309;"><i class="fa-solid fa-lock"></i> Read-Only Attendance: You are not assigned as an instructor for ${activeClass}.</span>`;
+        if (saveBtn) saveBtn.style.display = "none";
+      } else {
+        notice.innerHTML = `<span style="color:#047857;"><i class="fa-solid fa-lock-open"></i> Authorized: You teach courses in this class.</span>`;
+        if (saveBtn) saveBtn.style.display = "inline-flex";
+      }
 
       if (students.length === 0) {
         tbody.innerHTML = `<tr><td colspan="4" style="text-align:center; color:#94a3b8;">No registered students found in ${activeClass}.</td></tr>`;
@@ -1309,14 +1324,14 @@
             <td><strong>${s.name}</strong></td>
             <td><code>${s.username}</code></td>
             <td>
-              <select class="input-control att-select" style="padding:6px; font-size:0.85rem; width:120px;">
+              <select class="input-control att-select" ${!canManageAttendance ? 'disabled' : ''} style="padding:6px; font-size:0.85rem; width:120px;">
                 <option value="Present" ${uRecord.status === 'Present' ? 'selected' : ''}>Present</option>
                 <option value="Absent" ${uRecord.status === 'Absent' ? 'selected' : ''}>Absent</option>
                 <option value="Excused" ${uRecord.status === 'Excused' ? 'selected' : ''}>Excused</option>
               </select>
             </td>
             <td>
-              <input type="text" class="input-control att-remark" value="${uRecord.remark || ''}" placeholder="Note" style="padding:6px; font-size:0.85rem;">
+              <input type="text" class="input-control att-remark" ${!canManageAttendance ? 'disabled' : ''} value="${uRecord.remark || ''}" placeholder="Note" style="padding:6px; font-size:0.85rem;">
             </td>
           `;
           tbody.appendChild(tr);
@@ -1335,6 +1350,11 @@
 
     async function saveClassAttendanceForDate() {
       const activeClass = document.getElementById('teacherActiveManagedClass').value;
+      const teachesAnyInClass = allCloudCourses.some(c => c && c.targetClass === activeClass && isStaffAuthorizedForCourse(c, activeSessionUser));
+      if (!isElevatedAcademicStaff(activeSessionUser) && !teachesAnyInClass) {
+        return alert("Unauthorized: You do not have permission to record attendance for this class.");
+      }
+
       const selDate = document.getElementById('attendanceDatePicker').value;
       const dateKey = selDate.replace(/-/g, '_');
 
@@ -1354,7 +1374,7 @@
       loadClassAttendanceForDate();
     }
 
-    // STRICT COURSE MARKS ISOLATION (TEACHER ACCESS CONTROL)
+    // STRICT DEDUPLICATION AND COURSE ISOLATION IN MARKS
     async function loadCourseMarksForClass() {
       const activeClass = document.getElementById('teacherActiveManagedClass').value;
       const courseCode = document.getElementById('teacherMarkCourseSelector').value;
@@ -1372,17 +1392,14 @@
       }
 
       const courseObj = allCloudCourses.find(c => c && c.targetClass === activeClass && (c.code === courseCode || c.title === courseCode));
-      const isElevated = isElevatedAcademicStaff(activeSessionUser);
-      const isCourseInstructor = courseObj && (courseObj.teacherUsername === activeSessionUser.username || courseObj.teacher === activeSessionUser.name);
-
-      const canEdit = isElevated || isCourseInstructor;
+      const canEdit = isStaffAuthorizedForCourse(courseObj, activeSessionUser);
 
       if (!canEdit) {
         noticeBox.innerHTML = `<span style="color:#b45309;"><i class="fa-solid fa-lock"></i> Read-Only: This course is managed by <strong>${courseObj ? courseObj.teacher : 'Another Instructor'}</strong>. You cannot alter these marks.</span>`;
-        saveBtn.style.display = "none";
+        if (saveBtn) saveBtn.style.display = "none";
       } else {
         noticeBox.innerHTML = `<span style="color:#047857;"><i class="fa-solid fa-lock-open"></i> Authorized: You are the verified instructor for this course.</span>`;
-        saveBtn.style.display = "inline-flex";
+        if (saveBtn) saveBtn.style.display = "inline-flex";
       }
 
       const snap = await rtdb.ref(`marks/${activeClass}/${cleanFirebaseKey(courseCode)}`).once('value');
@@ -1439,9 +1456,7 @@
       if (!courseCode) return alert("Select or create a course first!");
 
       const courseObj = allCloudCourses.find(c => c && c.targetClass === activeClass && (c.code === courseCode || c.title === courseCode));
-      const canEdit = isElevatedAcademicStaff(activeSessionUser) || (courseObj && (courseObj.teacherUsername === activeSessionUser.username || courseObj.teacher === activeSessionUser.name));
-
-      if (!canEdit) {
+      if (!isStaffAuthorizedForCourse(courseObj, activeSessionUser)) {
         return alert("Unauthorized: You do not have permission to modify marks for this course.");
       }
 
@@ -1546,6 +1561,7 @@
 
       notes.forEach(n => {
         const isDraft = n.status === 'draft';
+        const isAuthor = isElevatedAcademicStaff(activeSessionUser) || (n.teacherUsername === activeSessionUser.username || n.teacher === activeSessionUser.name);
         const tr = document.createElement('tr');
         
         tr.innerHTML = `
@@ -1555,21 +1571,37 @@
           <td><code>${n.fileName}</code></td>
           <td><span class="grade-badge ${isDraft ? 'grade-draft' : 'grade-competent'}">${isDraft ? 'Draft (Hidden)' : 'Published'}</span></td>
           <td style="white-space:nowrap;">
-            <button class="btn-publish-open" style="padding:4px 8px; font-size:0.75rem;" onclick="viewDocumentInPortal('${n.id}')">
+            <button class="btn-publish-open btn-view-note" style="padding:4px 8px; font-size:0.75rem;" data-id="${n.id}">
               <i class="fa-solid fa-eye"></i> View
             </button>
-            ${isDraft ? `<button class="btn-publish-open" style="padding:4px 8px; font-size:0.75rem; background:#10b981;" onclick="triggerPublishNoteDirect('\${n.id}')">
+            ${isDraft && isAuthor ? `<button class="btn-publish-open btn-publish-action" style="padding:4px 8px; font-size:0.75rem; background:#10b981;" data-id="\${n.id}">
               <i class="fa-solid fa-cloud-arrow-up"></i> Publish
             </button>` : ''}
-            <button class="btn-publish-open" style="padding:4px 8px; font-size:0.75rem; background:#64748b;" onclick="openEditNoteModal('${n.id}')">
-              <i class="fa-solid fa-pen"></i> Edit
-            </button>
-            <button class="btn-publish-open btn-publish-del" style="padding:4px 8px; font-size:0.75rem;" onclick="deleteUploadedNote('${n.id}', '${n.title.replace(/'/g, "\\'")}')">
-              <i class="fa-solid fa-trash"></i>
-            </button>
+            ${isAuthor ? `
+              <button class="btn-publish-open btn-edit-note" style="padding:4px 8px; font-size:0.75rem; background:#64748b;" data-id="\${n.id}">
+                <i class="fa-solid fa-pen"></i> Edit
+              </button>
+              <button class="btn-publish-open btn-publish-del btn-del-note" style="padding:4px 8px; font-size:0.75rem;" data-id="\${n.id}">
+                <i class="fa-solid fa-trash"></i>
+              </button>
+            ` : `<span style="font-size:0.75rem; color:#94a3b8;">(\${n.teacher || 'Other'})</span>`}
           </td>
         `;
         tbody.appendChild(tr);
+      });
+
+      // Bind dynamic listeners
+      document.querySelectorAll('.btn-view-note').forEach(btn => {
+        btn.onclick = () => viewDocumentInPortal(btn.dataset.id);
+      });
+      document.querySelectorAll('.btn-publish-action').forEach(btn => {
+        btn.onclick = () => triggerPublishNoteDirect(btn.dataset.id);
+      });
+      document.querySelectorAll('.btn-edit-note').forEach(btn => {
+        btn.onclick = () => openEditNoteModal(btn.dataset.id);
+      });
+      document.querySelectorAll('.btn-del-note').forEach(btn => {
+        btn.onclick = () => deleteUploadedNote(btn.dataset.id);
       });
     }
 
@@ -1586,7 +1618,7 @@
     }
 
     function openEditNoteModal(noteId) {
-      const note = allCloudNotes[noteId] || Object.values(allCloudNotes).find(n => n.id === noteId);
+      const note = allCloudNotes[noteId] || Object.values(allCloudNotes).find(n => n && n.id === noteId);
       if (!note) return alert("Note not found!");
 
       document.getElementById('editNoteId').value = note.id;
@@ -1609,8 +1641,10 @@
       closeModal('editNoteModal');
     }
 
-    async function deleteUploadedNote(noteId, title) {
-      if (!confirm(`Permanently delete "${title}"? This will remove the file from Firebase.`)) return;
+    async function deleteUploadedNote(noteId) {
+      const note = allCloudNotes[noteId] || Object.values(allCloudNotes).find(n => n && n.id === noteId);
+      const title = note ? note.title : "this note";
+      if (!confirm(`Permanently delete "${title}"? This will remove the file from Firebase across all devices.`)) return;
 
       const cleanKey = cleanFirebaseKey(noteId);
       try {
@@ -1634,7 +1668,7 @@
     }
 
     function viewDocumentInPortal(noteId) {
-      const note = allCloudNotes[noteId] || Object.values(allCloudNotes).find(n => n.id === noteId);
+      const note = allCloudNotes[noteId] || Object.values(allCloudNotes).find(n => n && n.id === noteId);
       if (!note || !note.fileData) return alert("Document not found!");
 
       const fileName = note.fileName || "document";
@@ -1881,7 +1915,6 @@
       });
     }
 
-    // FUZZY ROBUST NORMALIZATION FOR STUDENT NOTES
     function renderStudentNotesTable() {
       if (!activeSessionUser) return;
       const studentClass = `${activeSessionUser.level || ''} ${activeSessionUser.dept || ''}`.trim();
@@ -1910,7 +1943,7 @@
           <td>${n.teacher}</td>
           <td>${n.date}</td>
           <td>
-            <button class="btn-publish-open" style="padding:4px 10px; font-size:0.75rem;" onclick="viewDocumentInPortal('${n.id}')">
+            <button class="btn-publish-open btn-view-note" style="padding:4px 10px; font-size:0.75rem;" data-id="${n.id}">
               <i class="fa-solid fa-eye"></i> View
             </button>
             <a href="${n.fileData}" download="${n.fileName}" class="btn-publish-open" style="padding:4px 10px; font-size:0.75rem; background:#047857;">
@@ -1919,6 +1952,10 @@
           </td>
         `;
         tbody.appendChild(tr);
+      });
+
+      document.querySelectorAll('.btn-view-note').forEach(btn => {
+        btn.onclick = () => viewDocumentInPortal(btn.dataset.id);
       });
     }
 
@@ -2008,7 +2045,7 @@
       renderStudentAssignmentsTable();
     }
 
-    // MODAL DIALOGS
+    // GENERAL MODALS
     function openModal(id) { document.getElementById(id).style.display = 'flex'; }
     function closeModal(id) { document.getElementById(id).style.display = 'none'; }
 
@@ -2054,9 +2091,17 @@
       document.getElementById('modalNoteClass').innerHTML = `<option value="${activeClass}">${activeClass}</option>`;
       const select = document.getElementById('modalNoteCourse');
       select.innerHTML = "";
-      allCloudCourses.filter(c => c && c.targetClass === activeClass).forEach(c => {
-        select.innerHTML += `<option value="${c.code || c.title}">${c.title} (${c.code || ''})</option>`;
-      });
+      
+      // ONLY ALLOW COURSES THAT THE TEACHER IS AUTHORIZED FOR
+      const eligibleCourses = allCloudCourses.filter(c => c && c.targetClass === activeClass && isStaffAuthorizedForCourse(c, activeSessionUser));
+
+      if (eligibleCourses.length === 0) {
+        select.innerHTML = `<option value="">No authorized courses for you in ${activeClass}</option>`;
+      } else {
+        eligibleCourses.forEach(c => {
+          select.innerHTML += `<option value="${c.code || c.title}">${c.title} (${c.code || ''})</option>`;
+        });
+      }
       openModal('uploadNotesModal');
     }
 
@@ -2064,9 +2109,16 @@
       const activeClass = document.getElementById('teacherActiveManagedClass').value;
       const select = document.getElementById('modalAssignCourse');
       select.innerHTML = "";
-      allCloudCourses.filter(c => c && c.targetClass === activeClass).forEach(c => {
-        select.innerHTML += `<option value="${c.code || c.title}">${c.title} (${c.code || ''})</option>`;
-      });
+      
+      const eligibleCourses = allCloudCourses.filter(c => c && c.targetClass === activeClass && isStaffAuthorizedForCourse(c, activeSessionUser));
+
+      if (eligibleCourses.length === 0) {
+        select.innerHTML = `<option value="">No authorized courses for you in ${activeClass}</option>`;
+      } else {
+        eligibleCourses.forEach(c => {
+          select.innerHTML += `<option value="${c.code || c.title}">${c.title} (${c.code || ''})</option>`;
+        });
+      }
       openModal('createAssignmentModal');
     }
 
