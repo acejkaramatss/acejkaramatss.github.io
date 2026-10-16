@@ -1,1110 +1,642 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Super Admin Management Console | ACEJ KARAMA TSS</title>
-  <meta name="description" content="Super Admin user, role privilege, and credential management console for ACEJ Karama TSS portal.">
-  
-  <link rel="icon" type="image/png" href="/logo.png?v=3">
-  <link rel="shortcut icon" type="image/png" href="/logo.png?v=3">
-  <link rel="apple-touch-icon" href="/logo.png?v=3">
-  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
-
-  <!-- OFFICIAL FIREBASE REALTIME WEBSOCKET SDK -->
-  <script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-app.js"></script>
-  <script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-database.js"></script>
-  
-  <style>
-    :root {
-      --navy: #002D6E;
-      --blue: #0047AB;
-      --gold: #FFC72C;
-      --gold-dark: #b45309;
-      --dark: #0f172a;
-      --light-bg: #f8fafc;
-      --white: #ffffff;
-      --border: #e2e8f0;
-      --green: #10b981;
-      --red: #ef4444;
-      --purple: #7e22ce;
-      --shadow: 0 4px 14px rgba(0, 45, 110, 0.08);
-      --shadow-lg: 0 14px 30px rgba(0, 45, 110, 0.15);
-    }
-
-    * { box-sizing: border-box; margin: 0; padding: 0; font-family: 'Segoe UI', system-ui, sans-serif; }
-    body { background-color: var(--light-bg); color: var(--dark); min-height: 100vh; display: flex; flex-direction: column; }
-
-    .admin-header {
-      background: var(--navy);
-      color: var(--white);
-      padding: 12px 5%;
-      display: flex;
-      justify-content: space-between;
-      align-items: center;
-      border-bottom: 3px solid var(--gold);
-    }
-    .brand-title { display: flex; align-items: center; gap: 12px; font-weight: 800; font-size: 1.15rem; }
-    .brand-logo-img { height: 42px; width: 42px; object-fit: contain; }
-    .brand-title span { color: var(--gold); }
-    .header-controls { display: flex; align-items: center; gap: 12px; }
-    
-    .sync-status-indicator {
-      display: inline-flex;
-      align-items: center;
-      gap: 6px;
-      font-size: 0.8rem;
-      background: rgba(16, 185, 129, 0.2);
-      border: 1px solid #10b981;
-      color: #6ee7b7;
-      padding: 5px 12px;
-      border-radius: 20px;
-      font-weight: 700;
-      cursor: pointer;
-    }
-
-    .btn-action {
-      background: rgba(255, 255, 255, 0.15);
-      color: var(--white);
-      border: 1px solid rgba(255, 255, 255, 0.3);
-      padding: 7px 14px;
-      border-radius: 6px;
-      font-size: 0.85rem;
-      font-weight: 700;
-      cursor: pointer;
-      text-decoration: none;
-      display: inline-flex;
-      align-items: center;
-      gap: 6px;
-      transition: background 0.2s;
-    }
-    .btn-action:hover { background: rgba(255, 255, 255, 0.3); }
-
-    .auth-overlay {
-      max-width: 440px;
-      margin: 80px auto;
-      background: var(--white);
-      border: 1px solid var(--border);
-      border-radius: 16px;
-      padding: 35px 30px;
-      box-shadow: var(--shadow);
-      text-align: center;
-    }
-    .auth-overlay h2 { font-size: 1.5rem; color: var(--navy); margin-bottom: 8px; font-weight: 900; }
-    .auth-overlay p { font-size: 0.9rem; color: #64748b; margin-bottom: 24px; }
-    .auth-input {
-      width: 100%;
-      padding: 12px 14px;
-      border: 1.5px solid var(--border);
-      border-radius: 8px;
-      font-size: 0.95rem;
-      margin-bottom: 16px;
-      outline: none;
-    }
-    .btn-auth-submit {
-      width: 100%;
-      background: var(--navy);
-      color: var(--white);
-      padding: 13px;
-      border: none;
-      border-radius: 8px;
-      font-weight: 800;
-      cursor: pointer;
-      font-size: 1rem;
-    }
-
-    .admin-console { display: none; max-width: 1400px; margin: 30px auto; padding: 0 20px; width: 100%; }
-
-    .stats-row {
-      display: grid;
-      grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
-      gap: 20px;
-      margin-bottom: 25px;
-    }
-    .stat-box { background: var(--white); border: 1px solid var(--border); border-radius: 12px; padding: 20px; box-shadow: var(--shadow); }
-    .stat-label { font-size: 0.78rem; text-transform: uppercase; font-weight: 800; color: #64748b; letter-spacing: 1px; }
-    .stat-digit { font-size: 1.8rem; font-weight: 900; color: var(--navy); margin-top: 4px; }
-
-    .grid-forms-tables {
-      display: grid;
-      grid-template-columns: 440px 1fr;
-      gap: 25px;
-      align-items: start;
-    }
-
-    .card-panel {
-      background: var(--white);
-      border: 1px solid var(--border);
-      border-radius: 14px;
-      padding: 24px;
-      box-shadow: var(--shadow);
-      margin-bottom: 25px;
-    }
-    .card-title { font-size: 1.15rem; font-weight: 800; color: var(--navy); margin-bottom: 16px; display: flex; align-items: center; gap: 8px; }
-    
-    .form-ctrl { margin-bottom: 14px; }
-    .form-ctrl label { display: block; font-size: 0.85rem; font-weight: 700; color: #334155; margin-bottom: 5px; }
-    .form-ctrl input, .form-ctrl select {
-      width: 100%;
-      padding: 10px 12px;
-      border: 1.5px solid var(--border);
-      border-radius: 6px;
-      font-size: 0.9rem;
-      outline: none;
-    }
-
-    .folder-item-pill {
-      display: inline-flex;
-      align-items: center;
-      gap: 6px;
-      background: #f1f5f9;
-      border: 1px solid var(--border);
-      padding: 4px 10px;
-      border-radius: 6px;
-      font-size: 0.8rem;
-      font-weight: 700;
-      color: #334155;
-      margin: 3px;
-    }
-    .folder-item-pill button {
-      background: none;
-      border: none;
-      color: #ef4444;
-      cursor: pointer;
-      font-size: 0.85rem;
-      padding: 0 2px;
-    }
-
-    .privilege-checklist-box {
-      background: #f8fafc;
-      border: 1.5px solid var(--border);
-      border-radius: 8px;
-      padding: 12px 14px;
-      margin-bottom: 14px;
-      max-height: 160px;
-      overflow-y: auto;
-    }
-    .priv-item { display: flex; align-items: center; gap: 8px; font-size: 0.85rem; color: #334155; margin-bottom: 6px; }
-    .priv-item input { accent-color: var(--blue); width: 16px; height: 16px; }
-
-    .btn-create {
-      width: 100%;
-      background: var(--blue);
-      color: var(--white);
-      border: none;
-      padding: 12px;
-      border-radius: 6px;
-      font-weight: 800;
-      font-size: 0.95rem;
-      cursor: pointer;
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      gap: 8px;
-    }
-    .btn-create:hover { background: var(--navy); }
-
-    .table-container { overflow-x: auto; }
-    .user-table { width: 100%; border-collapse: collapse; font-size: 0.88rem; }
-    .user-table th, .user-table td { padding: 12px 14px; border-bottom: 1px solid var(--border); text-align: left; }
-    .user-table th { background: #f8fafc; font-weight: 700; color: #475569; }
-
-    .badge-role { display: inline-block; padding: 3px 8px; border-radius: 4px; font-size: 0.72rem; font-weight: 800; text-transform: uppercase; }
-    .role-student { background: #eff6ff; color: #1d4ed8; }
-    .role-staff { background: #fef3c7; color: #b45309; }
-    .role-admin { background: #f5f3ff; color: var(--purple); }
-    
-    .badge-status { display: inline-block; padding: 3px 8px; border-radius: 4px; font-size: 0.72rem; font-weight: 800; }
-    .status-active { background: #ecfdf5; color: #047857; }
-    .status-disabled { background: #fef2f2; color: #b91c1c; }
-
-    .group-pill {
-      display: inline-block;
-      background: #e2e8f0;
-      color: #334155;
-      font-size: 0.72rem;
-      font-weight: 700;
-      padding: 2px 6px;
-      border-radius: 4px;
-      margin: 2px;
-    }
-
-    .btn-tbl { padding: 5px 8px; border-radius: 4px; font-size: 0.78rem; font-weight: 700; border: 1px solid var(--border); background: var(--white); cursor: pointer; }
-    .btn-tbl-login { color: #047857; }
-    .btn-tbl-login:hover { background: #ecfdf5; border-color: #10b981; }
-    .btn-tbl-edit { color: var(--blue); }
-    .btn-tbl-edit:hover { background: #eff6ff; border-color: var(--blue); }
-    .btn-tbl-del:hover { background: #fee2e2; color: #b91c1c; border-color: #fca5a5; }
-
-    .group-filter-strip {
-      display: flex;
-      gap: 8px;
-      flex-wrap: wrap;
-      margin-bottom: 14px;
-      align-items: center;
-    }
-    .filter-btn {
-      background: #f1f5f9;
-      border: 1px solid var(--border);
-      border-radius: 6px;
-      padding: 5px 12px;
-      font-size: 0.78rem;
-      font-weight: 700;
-      cursor: pointer;
-      color: #475569;
-    }
-    .filter-btn.active {
-      background: var(--navy);
-      color: var(--white);
-      border-color: var(--navy);
-    }
-
-    .modal-backdrop {
-      position: fixed;
-      top: 0; left: 0; width: 100%; height: 100%;
-      background: rgba(15, 23, 42, 0.7);
-      display: none; align-items: center; justify-content: center;
-      z-index: 2000; padding: 20px; backdrop-filter: blur(4px);
-    }
-    .modal-content {
-      background: var(--white);
-      max-width: 600px; width: 100%;
-      border-radius: 14px; padding: 28px;
-      box-shadow: var(--shadow-lg);
-      border: 2px solid var(--gold);
-      max-height: 90vh;
-      overflow-y: auto;
-    }
-
-    @media (max-width: 960px) { .grid-forms-tables { grid-template-columns: 1fr; } }
-  </style>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Super Admin Management Console | ACEJ KARAMA TSS</title>
+<link rel="icon" type="image/png" href="/logo.png?v=3">
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+<script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-app.js"></script>
+<script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-database.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/4.4.1/chart.umd.min.js"></script>
+<style>
+:root{--navy:#002D6E;--blue:#0047AB;--gold:#FFC72C;--dark:#0f172a;--bg:#f1f5f9;--white:#fff;--border:#e2e8f0;--green:#10b981;--red:#ef4444;--purple:#7e22ce;--muted:#64748b;--shadow:0 4px 14px rgba(0,45,110,.08)}
+*{box-sizing:border-box;margin:0;padding:0;font-family:'Segoe UI',system-ui,sans-serif}
+body{background:var(--bg);color:var(--dark);min-height:100vh}
+header.top{background:var(--navy);color:#fff;padding:10px 20px;display:flex;justify-content:space-between;align-items:center;border-bottom:3px solid var(--gold);position:sticky;top:0;z-index:50}
+.brand{display:flex;align-items:center;gap:10px;font-weight:800}.brand img{height:38px;width:38px;object-fit:contain}.brand span{color:var(--gold)}
+.hc{display:flex;gap:10px;align-items:center;flex-wrap:wrap}
+.sync{font-size:.78rem;padding:5px 12px;border-radius:20px;font-weight:700;border:1px solid var(--green);color:#6ee7b7;background:rgba(16,185,129,.2)}
+.sync.off{border-color:#f87171;color:#fca5a5;background:rgba(239,68,68,.2)}
+.btn{background:var(--blue);color:#fff;border:none;padding:8px 14px;border-radius:6px;font-weight:700;font-size:.85rem;cursor:pointer;display:inline-flex;gap:6px;align-items:center;text-decoration:none}
+.btn:hover{background:var(--navy)}.btn.ghost{background:rgba(255,255,255,.15);border:1px solid rgba(255,255,255,.3)}
+.btn.sm{padding:5px 9px;font-size:.78rem}.btn.red{background:var(--red)}.btn.green{background:var(--green)}.btn.gold{background:var(--gold);color:var(--navy)}.btn.purple{background:var(--purple)}
+.btn[disabled]{opacity:.4;cursor:not-allowed}
+#login{max-width:420px;margin:80px auto;background:#fff;border-radius:16px;padding:34px 28px;box-shadow:var(--shadow);text-align:center}
+#login h2{color:var(--navy);margin:10px 0 6px}#login p{color:var(--muted);font-size:.9rem;margin-bottom:20px}
+input,select,textarea{width:100%;padding:10px 12px;border:1.5px solid var(--border);border-radius:6px;font-size:.9rem;outline:none;background:#fff}
+input:focus,select:focus,textarea:focus{border-color:var(--blue)}
+#app{display:none;min-height:calc(100vh - 62px)}
+.layout{display:grid;grid-template-columns:230px 1fr;min-height:calc(100vh - 62px)}
+nav.side{background:#fff;border-right:1px solid var(--border);padding:14px 10px;position:sticky;top:62px;height:calc(100vh - 62px);overflow-y:auto}
+nav.side button{width:100%;text-align:left;background:none;border:none;padding:11px 12px;border-radius:8px;font-weight:700;color:#475569;cursor:pointer;display:flex;gap:10px;align-items:center;margin-bottom:3px;font-size:.88rem}
+nav.side button:hover{background:#f1f5f9}nav.side button.active{background:var(--navy);color:#fff}
+nav.side .sep{font-size:.68rem;text-transform:uppercase;color:#94a3b8;font-weight:800;letter-spacing:1px;margin:14px 10px 6px}
+main{padding:22px;overflow-x:hidden}
+.tab{display:none}.tab.show{display:block}
+h2.pt{color:var(--navy);font-size:1.35rem;margin-bottom:16px;display:flex;gap:10px;align-items:center}
+.card{background:#fff;border:1px solid var(--border);border-radius:14px;padding:20px;box-shadow:var(--shadow);margin-bottom:20px}
+.card h3{color:var(--navy);font-size:1.02rem;margin-bottom:12px;display:flex;gap:8px;align-items:center}
+.stats{display:grid;grid-template-columns:repeat(auto-fit,minmax(170px,1fr));gap:16px;margin-bottom:20px}
+.stat{background:#fff;border:1px solid var(--border);border-radius:12px;padding:16px;box-shadow:var(--shadow);border-left:4px solid var(--blue)}
+.stat .l{font-size:.72rem;text-transform:uppercase;font-weight:800;color:var(--muted);letter-spacing:1px}.stat .d{font-size:1.8rem;font-weight:900;color:var(--navy)}
+.g2{display:grid;grid-template-columns:1fr 1fr;gap:20px}.g3{display:grid;grid-template-columns:repeat(auto-fill,minmax(270px,1fr));gap:16px}
+.fc{margin-bottom:12px}.fc label{display:block;font-size:.82rem;font-weight:700;color:#334155;margin-bottom:4px}
+.row2{display:grid;grid-template-columns:1fr 1fr;gap:12px}
+.tiles{display:grid;grid-template-columns:repeat(auto-fill,minmax(140px,1fr));gap:10px;margin-bottom:16px}
+.tile{border:2px solid var(--border);border-radius:12px;padding:14px 8px;text-align:center;cursor:pointer;background:#fff;transition:.15s;font-weight:700;font-size:.82rem;color:#334155}
+.tile i{font-size:1.5rem;display:block;margin-bottom:6px;color:var(--blue)}.tile:hover{border-color:var(--blue);transform:translateY(-2px)}
+.tile.sel{border-color:var(--gold);background:#fffbeb;box-shadow:0 0 0 3px rgba(255,199,44,.35)}
+.chk{background:#f8fafc;border:1.5px solid var(--border);border-radius:8px;padding:10px 12px;max-height:190px;overflow-y:auto;display:grid;grid-template-columns:repeat(auto-fill,minmax(190px,1fr));gap:4px 10px}
+.chk label{display:flex;gap:7px;align-items:center;font-size:.83rem;margin:0;font-weight:500;cursor:pointer}.chk input{width:15px;height:15px}
+.chk .gh{grid-column:1/-1;font-size:.7rem;text-transform:uppercase;font-weight:800;color:var(--muted);margin-top:6px}
+.tbl{overflow-x:auto}table{width:100%;border-collapse:collapse;font-size:.86rem}
+th,td{padding:10px 12px;border-bottom:1px solid var(--border);text-align:left;vertical-align:middle}th{background:#f8fafc;color:#475569;font-weight:700;white-space:nowrap}
+.pill{display:inline-block;padding:2px 8px;border-radius:5px;font-size:.7rem;font-weight:800;margin:1px;background:#e2e8f0;color:#334155}
+.pill.student{background:#eff6ff;color:#1d4ed8}.pill.staff{background:#fef3c7;color:#b45309}.pill.admin{background:#f5f3ff;color:var(--purple)}
+.pill.ok{background:#ecfdf5;color:#047857}.pill.bad{background:#fef2f2;color:#b91c1c}.pill.role{background:#e0f2fe;color:#0369a1}
+.strip{display:flex;gap:6px;flex-wrap:wrap;margin-bottom:12px;align-items:center}
+.fb{background:#f1f5f9;border:1px solid var(--border);border-radius:6px;padding:5px 11px;font-size:.78rem;font-weight:700;cursor:pointer;color:#475569}
+.fb.active{background:var(--navy);color:#fff;border-color:var(--navy)}
+.modal{position:fixed;inset:0;background:rgba(15,23,42,.7);display:none;align-items:center;justify-content:center;z-index:200;padding:20px;backdrop-filter:blur(4px)}
+.modal .mc{background:#fff;max-width:640px;width:100%;border-radius:14px;padding:26px;border:2px solid var(--gold);max-height:92vh;overflow-y:auto}
+.tree details{margin-left:14px;margin-bottom:4px}.tree summary{cursor:pointer;font-weight:700;padding:4px 0;color:var(--navy)}
+.tree .leaf{margin-left:26px;font-size:.84rem;padding:2px 0;color:#334155}
+.cc{border-left:5px solid var(--blue)}.cc .big{font-size:1.4rem;font-weight:900;color:var(--navy)}
+.bar{height:8px;background:#e2e8f0;border-radius:6px;overflow:hidden;margin:6px 0}.bar i{display:block;height:100%;background:var(--green)}
+.perm-chips .pill{background:#ecfdf5;color:#047857}
+.super-badge{background:var(--gold);color:var(--navy);padding:2px 8px;border-radius:5px;font-size:.7rem;font-weight:900}
+.imp-banner{background:#fffbeb;border:1px solid var(--gold);padding:10px 14px;border-radius:8px;font-size:.84rem;margin-bottom:14px}
+@media(max-width:900px){.layout{grid-template-columns:1fr}nav.side{position:static;height:auto;display:flex;overflow-x:auto;gap:4px}nav.side button{width:auto;white-space:nowrap}nav.side .sep{display:none}.g2,.row2{grid-template-columns:1fr}}
+</style>
 </head>
 <body>
+<header class="top">
+  <div class="brand"><img src="/logo.png?v=3" alt="" onerror="this.style.display='none'"><div>ACEJ KARAMA TSS &bull; <span id="who">Management Console</span></div></div>
+  <div class="hc">
+    <div class="sync" id="sync"><i class="fa-solid fa-bolt"></i> <span>Connecting…</span></div>
+    <a class="btn ghost" href="/portal/" target="_blank"><i class="fa-solid fa-arrow-up-right-from-square"></i> Portal</a>
+    <button class="btn ghost" id="btnOut" style="display:none" data-act="logout"><i class="fa-solid fa-power-off"></i> Exit</button>
+  </div>
+</header>
 
-  <!-- ADMIN HEADER -->
-  <header class="admin-header">
-    <div class="brand-title">
-      <img src="/logo.png?v=3" alt="ACEJ Crest" class="brand-logo-img">
-      <div>ACEJ KARAMA TSS &bull; <span id="adminHeaderBadge">Super Admin Console</span></div>
+<section id="login">
+  <div style="font-size:2.4rem;color:var(--navy)"><i class="fa-solid fa-user-shield"></i></div>
+  <h2>Management Console</h2>
+  <p>Sign in as Super Admin or as an authorised administrator.</p>
+  <form id="loginForm">
+    <div class="fc"><input id="lu" placeholder="Username" required autocomplete="username"></div>
+    <div class="fc"><input id="lp" type="password" placeholder="Password" required autocomplete="current-password"></div>
+    <button class="btn" style="width:100%;justify-content:center;padding:12px"><i class="fa-solid fa-unlock"></i> Sign in</button>
+  </form>
+</section>
+
+<div id="app"><div class="layout">
+<nav class="side" id="nav">
+  <button data-tab="dash" class="active"><i class="fa-solid fa-chart-pie"></i> Dashboard</button>
+  <div class="sep">People</div>
+  <button data-tab="users" data-perm="users.view"><i class="fa-solid fa-users"></i> All Accounts</button>
+  <button data-tab="create" data-perm="users.create"><i class="fa-solid fa-user-plus"></i> Create Account</button>
+  <button data-tab="folders" data-perm="groups.manage"><i class="fa-solid fa-folder-tree"></i> Groups &amp; Folders</button>
+  <div class="sep">Academics</div>
+  <button data-tab="classes" data-perm="classes.view"><i class="fa-solid fa-school"></i> Classes &amp; Teachers</button>
+  <button data-tab="marks" data-perm="marks.view"><i class="fa-solid fa-graduation-cap"></i> Marks Inspector</button>
+  <button data-tab="announce" data-perm="announce.post"><i class="fa-solid fa-bullhorn"></i> Announcements</button>
+  <div class="sep">System</div>
+  <button data-tab="roles" data-super="1"><i class="fa-solid fa-key"></i> Roles &amp; Privileges</button>
+  <button data-tab="audit" data-super="1"><i class="fa-solid fa-clipboard-list"></i> Audit Log</button>
+</nav>
+
+<main>
+<!-- DASHBOARD -->
+<section class="tab show" id="tab-dash">
+  <h2 class="pt"><i class="fa-solid fa-chart-pie"></i> Dashboard <span id="superBadge" class="super-badge" style="display:none">SUPER ADMIN</span></h2>
+  <div class="stats">
+    <div class="stat"><div class="l">Total accounts</div><div class="d" id="sTotal">0</div></div>
+    <div class="stat" style="border-color:#1d4ed8"><div class="l">Students</div><div class="d" id="sStu">0</div></div>
+    <div class="stat" style="border-color:#b45309"><div class="l">Staff</div><div class="d" id="sStaff">0</div></div>
+    <div class="stat" style="border-color:var(--purple)"><div class="l">Admins</div><div class="d" id="sAdm">0</div></div>
+    <div class="stat" style="border-color:var(--green)"><div class="l">Groups</div><div class="d" id="sGrp">0</div></div>
+    <div class="stat" style="border-color:var(--red)"><div class="l">Disabled</div><div class="d" id="sDis">0</div></div>
+  </div>
+  <div class="g2">
+    <div class="card"><h3><i class="fa-solid fa-chart-bar"></i> Students per class</h3><canvas id="chClass" height="200"></canvas></div>
+    <div class="card"><h3><i class="fa-solid fa-chart-pie"></i> Accounts by role</h3><canvas id="chRole" height="200"></canvas></div>
+  </div>
+  <div class="card"><h3><i class="fa-solid fa-bolt"></i> Quick actions</h3>
+    <div class="strip">
+      <button class="btn" data-go="create"><i class="fa-solid fa-user-plus"></i> New account</button>
+      <button class="btn purple" data-go="folders"><i class="fa-solid fa-folder-plus"></i> New group</button>
+      <button class="btn gold" data-go="classes"><i class="fa-solid fa-school"></i> View classes</button>
+      <button class="btn green" data-act="exportUsers"><i class="fa-solid fa-file-csv"></i> Export accounts</button>
     </div>
-    <div class="header-controls">
-      <div class="sync-status-indicator" id="cloudSyncStatus" onclick="initRealtimeListeners()" title="Click to refresh connection">
-        <i class="fa-solid fa-bolt"></i> <span>Connected (Direct Sync)</span>
+  </div>
+</section>
+
+<!-- USERS -->
+<section class="tab" id="tab-users">
+  <h2 class="pt"><i class="fa-solid fa-users"></i> All Accounts</h2>
+  <div class="card">
+    <div class="strip" style="justify-content:space-between">
+      <div class="strip" id="catFilter" style="margin:0"></div>
+      <input id="search" placeholder="Search name, ID, role…" style="width:240px">
+    </div>
+    <div class="strip" id="grpFilter"></div>
+    <div id="impNote" class="imp-banner" style="display:none"><i class="fa-solid fa-eye"></i> <b>Open Portal</b> lets you view any user's portal exactly as they see it, without their password. Every use is recorded in the Audit Log.</div>
+    <div class="tbl"><table><thead><tr><th>Type</th><th>Full name</th><th>Username</th><th>Password</th><th>Class / Roles</th><th>Status</th><th>Actions</th></tr></thead><tbody id="uBody"></tbody></table></div>
+  </div>
+</section>
+
+<!-- CREATE -->
+<section class="tab" id="tab-create">
+  <h2 class="pt"><i class="fa-solid fa-user-plus"></i> Create Account</h2>
+  <div class="card">
+    <h3>1. Who is this account for?</h3>
+    <div class="tiles" id="tiles"></div>
+    <form id="createForm">
+      <h3>2. Basic details</h3>
+      <div class="row2">
+        <div class="fc"><label>Full name</label><input id="cName" required></div>
+        <div class="fc"><label id="lblUser">Username / Reg ID</label><input id="cUser" required></div>
       </div>
-      <a href="/portal/" target="_blank" class="btn-action">
-        <i class="fa-solid fa-arrow-up-right-from-square"></i> Student &amp; Staff Portal
-      </a>
-      <button class="btn-action" id="btnAdminLogout" style="display: none;" onclick="adminLogout()">
-        <i class="fa-solid fa-power-off"></i> Exit Admin
-      </button>
-    </div>
-  </header>
-
-  <!-- AUTH LOCK -->
-  <main class="auth-overlay" id="adminLoginBox">
-    <div style="font-size: 2.4rem; color: var(--navy); margin-bottom: 12px;">
-      <i class="fa-solid fa-user-shield"></i>
-    </div>
-    <h2>Super Admin Portal</h2>
-    <p>Sign in with your master credentials to manage all school accounts, roles, and academic marks.</p>
-    <form onsubmit="handleAdminLogin(event)">
-      <input type="text" id="adminUser" class="auth-input" placeholder="Super Admin Username" required>
-      <input type="password" id="adminPass" class="auth-input" placeholder="Password" required>
-      <button type="submit" class="btn-auth-submit">
-        <i class="fa-solid fa-unlock"></i> Unlock Management Console
-      </button>
+      <div class="fc"><label>Initial password</label><div style="display:flex;gap:8px"><input id="cPass" required><button type="button" class="btn sm" data-act="genPass">Generate</button></div></div>
+      <div id="cStudent">
+        <div class="row2">
+          <div class="fc"><label>Trade / Department</label><select id="cDept"></select></div>
+          <div class="fc"><label>Class level</label><select id="cLevel"></select></div>
+        </div>
+      </div>
+      <div id="cStaff" style="display:none">
+        <h3>3. Roles (what this person does)</h3>
+        <div class="fc"><div class="chk" id="cRoles"></div></div>
+        <div class="fc"><label>Classes they teach / manage</label><div class="chk" id="cClasses"></div></div>
+      </div>
+      <div class="fc"><label>Groups / Folders</label><div class="chk" id="cGroups"></div></div>
+      <details class="fc"><summary style="cursor:pointer;font-weight:700;color:var(--navy)">Advanced: extra privileges for this person only</summary><div class="chk" id="cPerms" style="margin-top:8px"></div></details>
+      <div class="fc"><label>Effective privileges</label><div class="perm-chips" id="cPreview"></div></div>
+      <button class="btn" style="width:100%;justify-content:center;padding:12px"><i class="fa-solid fa-check"></i> Create account</button>
     </form>
-  </main>
+  </div>
+  <div class="card">
+    <h3><i class="fa-solid fa-file-import"></i> Bulk import students (CSV)</h3>
+    <p style="font-size:.82rem;color:var(--muted);margin-bottom:8px">One per line: <code>Full Name,Username,Password,Dept(NIT/CSA/ACC/GEN),Level(Level 5/Level 4/Level 3)</code></p>
+    <textarea id="bulk" rows="5" placeholder="Mugisha David,Mugisha,Mugisha@123,NIT,Level 5"></textarea>
+    <button class="btn green" style="margin-top:10px" data-act="bulkImport"><i class="fa-solid fa-upload"></i> Import</button>
+  </div>
+</section>
 
-  <!-- DASHBOARD -->
-  <div class="admin-console" id="adminDashboard">
-    
-    <div class="stats-row">
-      <div class="stat-box">
-        <div class="stat-label">Total Accounts</div>
-        <div class="stat-digit" id="statTotalUsers">0</div>
-      </div>
-      <div class="stat-box">
-        <div class="stat-label">Students</div>
-        <div class="stat-digit" id="statTotalStudents" style="color: var(--blue);">0</div>
-      </div>
-      <div class="stat-box">
-        <div class="stat-label">Staff &amp; Trainers</div>
-        <div class="stat-digit" id="statTotalStaff" style="color: var(--gold-dark);">0</div>
-      </div>
-      <div class="stat-box">
-        <div class="stat-label">Active Classes</div>
-        <div class="stat-digit" id="statTotalClasses" style="color: var(--purple);">7</div>
-      </div>
+<!-- FOLDERS -->
+<section class="tab" id="tab-folders">
+  <h2 class="pt"><i class="fa-solid fa-folder-tree"></i> Groups &amp; Folders</h2>
+  <div class="g2">
+    <div class="card">
+      <h3>Custom groups</h3>
+      <form id="grpForm" style="display:flex;gap:8px;margin-bottom:12px"><input id="gName" placeholder="New group / folder name" required><button class="btn purple"><i class="fa-solid fa-plus"></i> Add</button></form>
+      <div id="grpList"></div>
     </div>
-
-    <!-- CLASS ACADEMIC PROGRESS & MARKS INSPECTOR -->
-    <div class="card-panel" style="border-left: 5px solid var(--blue);">
-      <div class="panel-header-row" style="display:flex; justify-content:space-between; align-items:center; flex-wrap:wrap; gap:10px; margin-bottom:12px;">
-        <div class="card-title" style="margin-bottom:0;">
-          <i class="fa-solid fa-graduation-cap" style="color: var(--blue);"></i> Class Academic Progress &amp; Student Marks Inspector
-        </div>
-        <div style="display:flex; gap:8px;">
-          <button class="btn-action" style="background:var(--navy); color:#fff;" onclick="exportMarksToCSV()">
-            <i class="fa-solid fa-file-csv"></i> Download Class Marks (CSV)
-          </button>
-        </div>
-      </div>
-
-      <p style="font-size: 0.85rem; color: #64748b; margin-bottom: 12px;">
-        Select an academic class below to view all enrolled students, continuous assessment (CW1, CW2, CAT), exam scores, and competency status:
-      </p>
-
-      <div class="group-filter-strip" id="classSelectorButtons">
-        <button class="filter-btn active" onclick="inspectClassMarks('Level 5 NIT', this)">Level 5 NIT</button>
-        <button class="filter-btn" onclick="inspectClassMarks('Level 4 NIT', this)">Level 4 NIT</button>
-        <button class="filter-btn" onclick="inspectClassMarks('Level 5 CSA', this)">Level 5 CSA</button>
-        <button class="filter-btn" onclick="inspectClassMarks('Level 4 CSA', this)">Level 4 CSA</button>
-        <button class="filter-btn" onclick="inspectClassMarks('Level 5 ACC', this)">Level 5 ACC</button>
-        <button class="filter-btn" onclick="inspectClassMarks('Level 4 ACC', this)">Level 4 ACC</button>
-        <button class="filter-btn" onclick="inspectClassMarks('Level 3 General', this)">Level 3 General</button>
-      </div>
-
-      <div class="table-container">
-        <table class="user-table">
-          <thead>
-            <tr>
-              <th>Reg ID</th>
-              <th>Student Full Name</th>
-              <th>Class / Dept</th>
-              <th>CW 1 (10)</th>
-              <th>CW 2 (10)</th>
-              <th>CAT (30)</th>
-              <th>Exam (50)</th>
-              <th>Total (100%)</th>
-              <th>Competency</th>
-            </tr>
-          </thead>
-          <tbody id="classInspectorTableBody"></tbody>
-        </table>
-      </div>
-    </div>
-
-    <div class="grid-forms-tables">
-      
-      <!-- LEFT COLUMN -->
-      <div>
-        <!-- FOLDERS MANAGER -->
-        <div class="card-panel">
-          <div class="card-title">
-            <i class="fa-solid fa-folder-tree" style="color: var(--purple);"></i> User Groups &amp; Folders
-          </div>
-          <form onsubmit="handleCreateGroup(event)" style="display:flex; gap:8px; margin-bottom: 15px;">
-            <input type="text" id="newGroupNameInput" placeholder="New Group / Folder Name" style="flex:1; padding:9px 12px; border:1.5px solid var(--border); border-radius:6px; font-size:0.88rem;" required>
-            <button type="submit" class="btn-create" style="width:auto; padding:9px 16px; font-size:0.85rem; background:var(--purple);">
-              <i class="fa-solid fa-plus"></i> Add
-            </button>
-          </form>
-          <div id="activeFoldersBadgeList" style="display: flex; flex-wrap: wrap; gap: 4px;"></div>
-        </div>
-
-        <!-- CREATE USER -->
-        <div class="card-panel">
-          <div class="card-title">
-            <i class="fa-solid fa-user-plus" style="color: var(--blue);"></i> Register Account
-          </div>
-          <form onsubmit="handleCreateUser(event)">
-            <div class="form-ctrl">
-              <label>Account Category</label>
-              <select id="newRole" onchange="toggleFormRoleFields()">
-                <option value="student" selected>Student / Candidate</option>
-                <option value="staff">Trainer / Staff Member</option>
-                <option value="admin">Administrator / Officer</option>
-              </select>
-            </div>
-
-            <div class="form-ctrl">
-              <label>Full Name</label>
-              <input type="text" id="newName" placeholder="e.g., Mugisha David" required>
-            </div>
-
-            <div class="form-ctrl">
-              <label id="lblNewUsername">Student Roll / Reg ID</label>
-              <input type="text" id="newUsername" placeholder="e.g., Mugisha" required>
-            </div>
-
-            <div class="form-ctrl">
-              <label>Initial Password</label>
-              <input type="text" id="newPassword" placeholder="e.g., Mugisha@123" required>
-            </div>
-
-            <!-- STUDENT FIELDS -->
-            <div id="studentFieldsWrapper">
-              <div class="form-ctrl">
-                <label>Trade / Department</label>
-                <select id="newDepartment">
-                  <option value="NIT">Networking &amp; Internet Tech (NIT)</option>
-                  <option value="CSA">Computer Systems &amp; Arch (CSA)</option>
-                  <option value="ACC">Accounting &amp; Finance</option>
-                  <option value="GEN">General Administration</option>
-                </select>
-              </div>
-
-              <div class="form-ctrl">
-                <label>Class Level</label>
-                <select id="newLevel">
-                  <option value="Level 5" selected>Level 5 (Senior 6 Finalist)</option>
-                  <option value="Level 4">Level 4 (Senior 5)</option>
-                  <option value="Level 3">Level 3 (Senior 4)</option>
-                </select>
-              </div>
-            </div>
-
-            <!-- STAFF FIELDS -->
-            <div id="staffPrivilegesWrapper" style="display:none;">
-              <div class="form-ctrl">
-                <label>Assigned Staff Responsibilities</label>
-                <div class="privilege-checklist-box">
-                  <div class="priv-item"><input type="checkbox" id="roleTeacher" value="Teacher / Trainer" checked><label for="roleTeacher">Teacher / Trainer</label></div>
-                  <div class="priv-item"><input type="checkbox" id="roleStock" value="Stock & Inventory Manager"><label for="roleStock">Stock &amp; Inventory Manager</label></div>
-                  <div class="priv-item"><input type="checkbox" id="roleDiscipline" value="Dean of Discipline"><label for="roleDiscipline">Dean of Discipline</label></div>
-                  <div class="priv-item"><input type="checkbox" id="roleExam" value="Exam Officer"><label for="roleExam">Exam Officer</label></div>
-                </div>
-              </div>
-
-              <div class="form-ctrl">
-                <label>Assigned Classes to Teach / Manage</label>
-                <div class="privilege-checklist-box">
-                  <div class="priv-item"><input type="checkbox" id="clsL5NIT" value="Level 5 NIT" checked><label for="clsL5NIT">Level 5 NIT</label></div>
-                  <div class="priv-item"><input type="checkbox" id="clsL4NIT" value="Level 4 NIT"><label for="clsL4NIT">Level 4 NIT</label></div>
-                  <div class="priv-item"><input type="checkbox" id="clsL5CSA" value="Level 5 CSA"><label for="clsL5CSA">Level 5 CSA</label></div>
-                  <div class="priv-item"><input type="checkbox" id="clsL4CSA" value="Level 4 CSA"><label for="clsL4CSA">Level 4 CSA</label></div>
-                  <div class="priv-item"><input type="checkbox" id="clsL5ACC" value="Level 5 ACC"><label for="clsL5ACC">Level 5 ACC</label></div>
-                  <div class="priv-item"><input type="checkbox" id="clsL4ACC" value="Level 4 ACC"><label for="clsL4ACC">Level 4 ACC</label></div>
-                  <div class="priv-item"><input type="checkbox" id="clsL3GEN" value="Level 3 General"><label for="clsL3GEN">Level 3 General</label></div>
-                </div>
-              </div>
-            </div>
-
-            <div class="form-ctrl">
-              <label>Assign to General Groups / Folders</label>
-              <div class="groups-container-box" id="registerGroupsCheckboxList"></div>
-            </div>
-
-            <button type="submit" id="btnRegisterSubmit" class="btn-create">
-              <i class="fa-solid fa-check"></i> Register Account &amp; Save
-            </button>
-          </form>
-        </div>
-      </div>
-
-      <!-- RIGHT: LIVE DIRECTORY -->
-      <div class="card-panel">
-        <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 12px; flex-wrap: wrap; gap: 10px;">
-          <div class="card-title" style="margin-bottom: 0;">
-            <i class="fa-solid fa-users-gear" style="color: var(--blue);"></i> Registered Accounts Directory
-          </div>
-          <input type="text" id="searchUser" placeholder="Search name or ID..." onkeyup="filterUsersTable()" style="padding: 7px 12px; border: 1.5px solid var(--border); border-radius: 6px; font-size: 0.85rem; width: 220px;">
-        </div>
-
-        <div class="group-filter-strip" id="groupFilterButtons">
-          <span style="font-size:0.8rem; font-weight:800; color:#64748b; margin-right:4px;"><i class="fa-solid fa-filter"></i> Group Folder:</span>
-          <button class="filter-btn active" onclick="setGroupFilter('all', this)">All Users</button>
-        </div>
-
-        <div class="table-container">
-          <table class="user-table">
-            <thead>
-              <tr>
-                <th>Type</th>
-                <th>Full Name</th>
-                <th>Username</th>
-                <th>Password</th>
-                <th>Assigned Class / Roles</th>
-                <th>Status</th>
-                <th>Actions</th>
-              </tr>
-            </thead>
-            <tbody id="userTableBody"></tbody>
-          </table>
-        </div>
-      </div>
-
+    <div class="card">
+      <h3>Organised view (auto-sorted)</h3>
+      <div class="tree" id="tree"></div>
     </div>
   </div>
+  <div class="card" id="grpDetail" style="display:none"></div>
+</section>
 
-  <!-- EDIT USER MODAL -->
-  <div class="modal-backdrop" id="editModal">
-    <div class="modal-content">
-      <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:15px;">
-        <h3 style="color:var(--navy); font-size:1.2rem; font-weight:800;">
-          <i class="fa-solid fa-user-pen"></i> Edit Profile &amp; Change Student Class
-        </h3>
-        <button onclick="closeEditModal()" style="border:none; background:none; font-size:1.4rem; cursor:pointer;">&times;</button>
-      </div>
+<!-- CLASSES -->
+<section class="tab" id="tab-classes">
+  <h2 class="pt"><i class="fa-solid fa-school"></i> Classes &amp; Teachers</h2>
+  <div class="g3" id="classCards"></div>
+  <div class="card" id="classDetail" style="display:none"></div>
+  <div class="card"><h3><i class="fa-solid fa-chalkboard-user"></i> Teacher workload</h3><div class="tbl"><table><thead><tr><th>Teacher</th><th>Roles</th><th>Classes</th><th>Students reached</th></tr></thead><tbody id="tBody"></tbody></table></div></div>
+</section>
 
-      <form onsubmit="handleSaveUserEdit(event)">
-        <input type="hidden" id="editOriginalKey">
-
-        <div class="form-ctrl">
-          <label>Full Name</label>
-          <input type="text" id="editName" required>
-        </div>
-
-        <div class="form-ctrl">
-          <label>Username / Reg ID</label>
-          <input type="text" id="editUsername" required>
-        </div>
-
-        <div class="form-ctrl">
-          <label>Password</label>
-          <input type="text" id="editPassword" required>
-        </div>
-
-        <div class="form-ctrl">
-          <label>Account Category</label>
-          <select id="editRole" onchange="toggleEditRoleFields()">
-            <option value="student">Student / Candidate</option>
-            <option value="staff">Trainer / Staff</option>
-            <option value="admin">Administrator / Officer</option>
-          </select>
-        </div>
-
-        <!-- STUDENT CLASS LEVEL & DEPARTMENT -->
-        <div id="editStudentClassArea">
-          <div class="form-ctrl">
-            <label>Student Class Level</label>
-            <select id="editLevel">
-              <option value="Level 5">Level 5 (Senior 6 Finalist)</option>
-              <option value="Level 4">Level 4 (Senior 5)</option>
-              <option value="Level 3">Level 3 (Senior 4)</option>
-            </select>
-          </div>
-
-          <div class="form-ctrl">
-            <label>Trade / Department Combination</label>
-            <select id="editDepartment">
-              <option value="NIT">Networking &amp; Internet Tech (NIT)</option>
-              <option value="CSA">Computer Systems &amp; Arch (CSA)</option>
-              <option value="ACC">Accounting &amp; Finance</option>
-              <option value="GEN">General Administration</option>
-            </select>
-          </div>
-        </div>
-
-        <!-- STAFF ROLES & CLASSES -->
-        <div id="editStaffPrivilegesArea" style="display:none;">
-          <div class="form-ctrl">
-            <label>Assigned Staff Responsibilities</label>
-            <div class="privilege-checklist-box" id="editStaffRolesList"></div>
-          </div>
-          <div class="form-ctrl">
-            <label>Assigned Classes to Teach</label>
-            <div class="privilege-checklist-box" id="editStaffClassesList"></div>
-          </div>
-        </div>
-
-        <div class="form-ctrl">
-          <label>General Groups / Folders</label>
-          <div class="groups-container-box" id="editGroupsCheckboxList"></div>
-        </div>
-
-        <button type="submit" class="btn-create" style="margin-top:10px;">
-          <i class="fa-solid fa-floppy-disk"></i> Save &amp; Update Firebase
-        </button>
-      </form>
-    </div>
+<!-- MARKS -->
+<section class="tab" id="tab-marks">
+  <h2 class="pt"><i class="fa-solid fa-graduation-cap"></i> Marks Inspector</h2>
+  <div class="card">
+    <div class="strip" style="justify-content:space-between"><div class="strip" id="clsBtns" style="margin:0"></div><button class="btn" data-act="exportMarks"><i class="fa-solid fa-file-csv"></i> Download CSV</button></div>
+    <div class="tbl"><table><thead><tr><th>Reg ID</th><th>Name</th><th>CW1 (10)</th><th>CW2 (10)</th><th>CAT (30)</th><th>Exam (50)</th><th>Total</th><th>Status</th></tr></thead><tbody id="mBody"></tbody></table></div>
   </div>
-
-  <script>
-    const firebaseConfig = {
-      databaseURL: "https://acej-portal-default-rtdb.firebaseio.com"
-    };
-    if (!firebase.apps.length) {
-      firebase.initializeApp(firebaseConfig);
-    }
-    const rtdb = firebase.database();
-
-    const MASTER_ADMIN_USER = "Ismael";
-    const MASTER_ADMIN_PASS = "Acej@84011";
-
-    const ALL_AVAILABLE_STAFF_ROLES = ["Teacher / Trainer", "Stock & Inventory Manager", "Dean of Discipline", "Exam Officer"];
-    const ALL_AVAILABLE_CLASSES = ["Level 5 NIT", "Level 4 NIT", "Level 5 CSA", "Level 4 CSA", "Level 5 ACC", "Level 4 ACC", "Level 3 General"];
-    const DEFAULT_GROUPS = ["Core Class", "Tech Club", "AERG Itetero", "Prefects", "Exam Board", "Students"];
-
-    let liveUsersList = [];
-    let liveGroupsList = DEFAULT_GROUPS;
-    let activeFilterGroup = "all";
-    let inspectedClass = "Level 5 NIT";
-    let allLiveMarks = {};
-
-    function cleanFirebaseKey(str) {
-      return String(str || '').trim().replace(/[.#$\[\]\/]/g, '_');
-    }
-
-    // ROBUST DATA PARSER: Extracts users whether saved as Array, Indexed Map, or Direct Key Objects
-    function parseCloudUsers(data) {
-      if (!data) return [];
-      let list = [];
-      if (Array.isArray(data)) {
-        data.forEach((item, index) => {
-          if (item) {
-            item._fbKey = String(index);
-            if (!item.name && item.username) item.name = item.username;
-            if (!item.username && item.name) item.username = item.name;
-            list.push(item);
-          }
-        });
-      } else if (typeof data === 'object') {
-        Object.keys(data).forEach(key => {
-          const item = data[key];
-          if (item && typeof item === 'object') {
-            item._fbKey = key;
-            if (!item.username) item.username = key;
-            if (!item.name) item.name = item.username || key;
-            list.push(item);
-          }
-        });
-      }
-      return list;
-    }
-
-    function initRealtimeListeners() {
-      rtdb.ref('users').on('value', (snapshot) => {
-        liveUsersList = parseCloudUsers(snapshot.val());
-        renderData();
-        renderInspectedClassMarks();
-      });
-
-      rtdb.ref('groups').on('value', (snapshot) => {
-        const val = snapshot.val();
-        if (val && Array.isArray(val)) {
-          liveGroupsList = val;
-          renderGroupControls();
-        }
-      });
-
-      rtdb.ref('marks').on('value', (snapshot) => {
-        allLiveMarks = snapshot.val() || {};
-        renderInspectedClassMarks();
-      });
-    }
-
-    function handleAdminLogin(e) {
-      e.preventDefault();
-      const user = document.getElementById('adminUser').value.trim();
-      const pass = document.getElementById('adminPass').value.trim();
-
-      const matchedAdmin = liveUsersList.find(u => u.username && u.username.toLowerCase() === user.toLowerCase() && u.pass === pass && (u.role === 'admin' || u.role === 'super'));
-
-      if (user === MASTER_ADMIN_USER && pass === MASTER_ADMIN_PASS) {
-        sessionStorage.setItem("ACEJ_ADMIN_AUTH", "true");
-        sessionStorage.setItem("ACEJ_ADMIN_ROLE", "Super Admin (Ismael)");
-        showAdminConsole();
-      } else if (matchedAdmin && matchedAdmin.status === 'active') {
-        sessionStorage.setItem("ACEJ_ADMIN_AUTH", "true");
-        sessionStorage.setItem("ACEJ_ADMIN_ROLE", "Sub-Admin (" + matchedAdmin.name + ")");
-        showAdminConsole();
-      } else {
-        alert("Invalid credentials. Please verify your Super Admin username and password.");
-      }
-    }
-
-    function adminLogout() {
-      sessionStorage.removeItem("ACEJ_ADMIN_AUTH");
-      sessionStorage.removeItem("ACEJ_ADMIN_ROLE");
-      document.getElementById('adminDashboard').style.display = "none";
-      document.getElementById('adminLoginBox').style.display = "block";
-      document.getElementById('btnAdminLogout').style.display = "none";
-    }
-
-    function showAdminConsole() {
-      document.getElementById('adminLoginBox').style.display = "none";
-      document.getElementById('adminDashboard').style.display = "block";
-      document.getElementById('btnAdminLogout').style.display = "inline-flex";
-      document.getElementById('adminHeaderBadge').innerText = sessionStorage.getItem("ACEJ_ADMIN_ROLE") || "Super Admin";
-      renderGroupControls();
-      initRealtimeListeners();
-    }
-
-    function inspectClassMarks(className, btn) {
-      inspectedClass = className;
-      document.querySelectorAll('#classSelectorButtons button').forEach(b => b.classList.remove('active'));
-      if (btn) btn.classList.add('active');
-      renderInspectedClassMarks();
-    }
-
-    function renderInspectedClassMarks() {
-      const tbody = document.getElementById('classInspectorTableBody');
-      if (!tbody) return;
-      tbody.innerHTML = "";
-
-      const classStudents = liveUsersList.filter(u => u.role === 'student' && ((u.level + " " + u.dept) === inspectedClass || (u.groups && u.groups.includes(inspectedClass))));
-
-      if (classStudents.length === 0) {
-        tbody.innerHTML = `<tr><td colspan="9" style="text-align:center; color:#94a3b8; padding:20px;">No registered students found in ${inspectedClass}.</td></tr>`;
-        return;
-      }
-
-      classStudents.forEach(s => {
-        const uKey = cleanFirebaseKey(s.username).toLowerCase();
-        let cw1 = 0, cw2 = 0, cat = 0, exam = 0;
-
-        if (allLiveMarks[inspectedClass]) {
-          Object.keys(allLiveMarks[inspectedClass]).forEach(courseKey => {
-            const courseData = allLiveMarks[inspectedClass][courseKey];
-            if (courseData && courseData[uKey]) {
-              cw1 = Math.max(cw1, parseInt(courseData[uKey].cw1) || 0);
-              cw2 = Math.max(cw2, parseInt(courseData[uKey].cw2) || 0);
-              cat = Math.max(cat, parseInt(courseData[uKey].cat) || 0);
-              exam = Math.max(exam, parseInt(courseData[uKey].exam) || 0);
-            }
-          });
-        }
-
-        const total = cw1 + cw2 + cat + exam;
-        const isCompetent = total >= 70;
-
-        const tr = document.createElement('tr');
-        tr.innerHTML = `
-          <td><code>${s.username || s.id}</code></td>
-          <td><strong>${s.name || s.username}</strong></td>
-          <td><span class="group-pill">${s.level || 'L5'} ${s.dept || 'NIT'}</span></td>
-          <td><strong>${cw1}</strong> / 10</td>
-          <td><strong>${cw2}</strong> / 10</td>
-          <td><strong>${cat}</strong> / 30</td>
-          <td><strong>${exam}</strong> / 50</td>
-          <td><strong style="font-size:1.05rem; color:${isCompetent ? '#047857' : '#b45309'};">${total}%</strong></td>
-          <td><span class="badge-status ${isCompetent ? 'status-active' : 'status-disabled'}">${isCompetent ? 'Competent' : 'In Progress'}</span></td>
-        `;
-        tbody.appendChild(tr);
-      });
-    }
-
-    function exportMarksToCSV() {
-      const classStudents = liveUsersList.filter(u => u.role === 'student' && ((u.level + " " + u.dept) === inspectedClass || (u.groups && u.groups.includes(inspectedClass))));
-      if (classStudents.length === 0) return alert("No students to export in " + inspectedClass);
-
-      let csv = "Reg ID,Full Name,Class,CW1 (10),CW2 (10),CAT (30),Exam (50),Total (100%),Competency\n";
-      classStudents.forEach(s => {
-        const uKey = cleanFirebaseKey(s.username).toLowerCase();
-        let cw1 = 0, cw2 = 0, cat = 0, exam = 0;
-        if (allLiveMarks[inspectedClass]) {
-          Object.keys(allLiveMarks[inspectedClass]).forEach(cKey => {
-            const cData = allLiveMarks[inspectedClass][cKey];
-            if (cData && cData[uKey]) {
-              cw1 = Math.max(cw1, parseInt(cData[uKey].cw1) || 0);
-              cw2 = Math.max(cw2, parseInt(cData[uKey].cw2) || 0);
-              cat = Math.max(cat, parseInt(cData[uKey].cat) || 0);
-              exam = Math.max(exam, parseInt(cData[uKey].exam) || 0);
-            }
-          });
-        }
-        const total = cw1 + cw2 + cat + exam;
-        csv += `"${s.username}","${s.name}","${inspectedClass}",${cw1},${cw2},${cat},${exam},${total}%,"${total >= 70 ? 'Competent' : 'In Progress'}"\n`;
-      });
-
-      const blob = new Blob([csv], { type: "text/csv;charset=utf-8;" });
-      const link = document.createElement("a");
-      link.href = URL.createObjectURL(blob);
-      link.download = `${inspectedClass.replace(/\s+/g, '_')}_Marks_Sheet.csv`;
-      link.click();
-    }
-
-    function toggleFormRoleFields() {
-      const role = document.getElementById('newRole').value;
-      document.getElementById('studentFieldsWrapper').style.display = role === 'student' ? 'block' : 'none';
-      document.getElementById('staffPrivilegesWrapper').style.display = role === 'staff' ? 'block' : 'none';
-      document.getElementById('lblNewUsername').innerText = role === 'student' ? 'Student Roll / Reg ID' : 'Staff / Admin Username';
-    }
-
-    async function handleCreateUser(e) {
-      e.preventDefault();
-      const role = document.getElementById('newRole').value;
-      const name = document.getElementById('newName').value.trim();
-      const username = document.getElementById('newUsername').value.trim();
-      const pass = document.getElementById('newPassword').value.trim();
-
-      if (liveUsersList.some(u => u.username && u.username.toLowerCase() === username.toLowerCase())) {
-        alert("An account with this Reg ID or Username already exists!");
-        return;
-      }
-
-      const assignedRoles = [];
-      const managedClasses = [];
-      if (role === 'staff') {
-        if (document.getElementById('roleTeacher').checked) assignedRoles.push("Teacher / Trainer");
-        if (document.getElementById('roleStock').checked) assignedRoles.push("Stock & Inventory Manager");
-        if (document.getElementById('roleDiscipline').checked) assignedRoles.push("Dean of Discipline");
-        if (document.getElementById('roleExam').checked) assignedRoles.push("Exam Officer");
-
-        ALL_AVAILABLE_CLASSES.forEach((c, idx) => {
-          const el = document.querySelectorAll('#staffPrivilegesWrapper input[type="checkbox"]')[idx + 4];
-          if (el && el.checked) managedClasses.push(c);
-        });
-      }
-
-      const selectedGroups = [];
-      document.querySelectorAll('#registerGroupsCheckboxList input[type="checkbox"]:checked').forEach(cb => selectedGroups.push(cb.value));
-
-      const newUser = {
-        id: "usr_" + Date.now().toString(),
-        role: role,
-        name: name,
-        username: username,
-        pass: pass,
-        dept: role === 'student' ? document.getElementById('newDepartment').value : 'Faculty',
-        level: role === 'student' ? document.getElementById('newLevel').value : 'Faculty',
-        staffRoles: assignedRoles,
-        managedClasses: managedClasses,
-        status: "active",
-        groups: selectedGroups,
-        firstLogin: false
-      };
-
-      const key = cleanFirebaseKey(username);
-      await rtdb.ref('users/' + key).set(newUser);
-      alert(`User ${name} registered directly in Firebase!`);
-      e.target.reset();
-      toggleFormRoleFields();
-    }
-
-    function openEditModal(fbKey) {
-      const user = liveUsersList.find(u => (u._fbKey === fbKey || u.username === fbKey));
-      if (!user) return;
-
-      document.getElementById('editOriginalKey').value = user._fbKey || user.username;
-      document.getElementById('editName').value = user.name || "";
-      document.getElementById('editUsername').value = user.username || "";
-      document.getElementById('editPassword').value = user.pass || "";
-      document.getElementById('editRole').value = user.role || "student";
-
-      if (user.role === 'student') {
-        document.getElementById('editLevel').value = user.level || "Level 5";
-        document.getElementById('editDepartment').value = user.dept || "NIT";
-      }
-
-      toggleEditRoleFields();
-
-      // Render Staff Roles
-      const rolesBox = document.getElementById('editStaffRolesList');
-      rolesBox.innerHTML = "";
-      const userRoles = user.staffRoles || [];
-      ALL_AVAILABLE_STAFF_ROLES.forEach((r, idx) => {
-        const item = document.createElement('div');
-        item.className = "priv-item";
-        item.innerHTML = `<input type="checkbox" id="editRole_${idx}" value="${r}" ${userRoles.includes(r) ? 'checked' : ''}><label for="editRole_${idx}">${r}</label>`;
-        rolesBox.appendChild(item);
-      });
-
-      // Render Managed Classes
-      const classesBox = document.getElementById('editStaffClassesList');
-      classesBox.innerHTML = "";
-      const userClasses = user.managedClasses || [];
-      ALL_AVAILABLE_CLASSES.forEach((c, idx) => {
-        const item = document.createElement('div');
-        item.className = "priv-item";
-        item.innerHTML = `<input type="checkbox" id="editClass_${idx}" value="${c}" ${userClasses.includes(c) ? 'checked' : ''}><label for="editClass_${idx}">${c}</label>`;
-        classesBox.appendChild(item);
-      });
-
-      // Render Groups
-      const editList = document.getElementById('editGroupsCheckboxList');
-      editList.innerHTML = "";
-      const userGroups = user.groups || [];
-      liveGroupsList.forEach((g, idx) => {
-        const item = document.createElement('div');
-        item.className = "priv-item";
-        item.innerHTML = `<input type="checkbox" id="editGrp_${idx}" value="${g}" ${userGroups.includes(g) ? 'checked' : ''}><label for="editGrp_${idx}">${g}</label>`;
-        editList.appendChild(item);
-      });
-
-      document.getElementById('editModal').style.display = "flex";
-    }
-
-    function toggleEditRoleFields() {
-      const role = document.getElementById('editRole').value;
-      document.getElementById('editStudentClassArea').style.display = role === 'student' ? 'block' : 'none';
-      document.getElementById('editStaffPrivilegesArea').style.display = (role === 'staff' || role === 'admin') ? 'block' : 'none';
-    }
-
-    function closeEditModal() {
-      document.getElementById('editModal').style.display = "none";
-    }
-
-    async function handleSaveUserEdit(e) {
-      e.preventDefault();
-      const originalKey = document.getElementById('editOriginalKey').value;
-      const user = liveUsersList.find(u => (u._fbKey === originalKey || u.username === originalKey));
-
-      if (user) {
-        const newUsername = document.getElementById('editUsername').value.trim();
-        user.name = document.getElementById('editName').value.trim();
-        user.username = newUsername;
-        user.pass = document.getElementById('editPassword').value.trim();
-        user.role = document.getElementById('editRole').value;
-
-        if (user.role === 'student') {
-          user.level = document.getElementById('editLevel').value;
-          user.dept = document.getElementById('editDepartment').value;
-        }
-
-        const updatedRoles = [];
-        document.querySelectorAll('#editStaffRolesList input[type="checkbox"]:checked').forEach(cb => updatedRoles.push(cb.value));
-        user.staffRoles = updatedRoles;
-
-        const updatedClasses = [];
-        document.querySelectorAll('#editStaffClassesList input[type="checkbox"]:checked').forEach(cb => updatedClasses.push(cb.value));
-        user.managedClasses = updatedClasses;
-
-        const updatedGroups = [];
-        document.querySelectorAll('#editGroupsCheckboxList input[type="checkbox"]:checked').forEach(cb => updatedGroups.push(cb.value));
-        user.groups = updatedGroups;
-
-        if (cleanFirebaseKey(originalKey) !== cleanFirebaseKey(newUsername)) {
-          await rtdb.ref('users/' + cleanFirebaseKey(originalKey)).remove();
-        }
-
-        await rtdb.ref('users/' + cleanFirebaseKey(newUsername)).set(user);
-        alert(`Account ${user.name} updated successfully!`);
-        closeEditModal();
-      }
-    }
-
-    async function deleteUserByExactKey(fbKey, displayName) {
-      if (!confirm(`Permanently delete ${displayName}? This will remove them immediately across all devices.`)) return;
-      await rtdb.ref('users/' + cleanFirebaseKey(fbKey)).remove();
-    }
-
-    async function handleCreateGroup(e) {
-      e.preventDefault();
-      const nameInput = document.getElementById('newGroupNameInput');
-      const gName = nameInput.value.trim();
-      if (!gName) return;
-
-      if (!liveGroupsList.includes(gName)) {
-        liveGroupsList.push(gName);
-        await rtdb.ref('groups').set(liveGroupsList);
-      }
-      nameInput.value = "";
-    }
-
-    async function deleteGroup(gName) {
-      if (!confirm(`Delete folder "${gName}"?`)) return;
-      liveGroupsList = liveGroupsList.filter(g => g !== gName);
-      await rtdb.ref('groups').set(liveGroupsList);
-    }
-
-    function renderGroupControls() {
-      document.getElementById('statTotalGroups').innerText = liveGroupsList.length;
-
-      const regList = document.getElementById('registerGroupsCheckboxList');
-      if (regList) {
-        regList.innerHTML = "";
-        liveGroupsList.forEach((g, idx) => {
-          const item = document.createElement('div');
-          item.className = "priv-item";
-          item.innerHTML = `<input type="checkbox" id="regGrp_${idx}" value="${g}"><label for="regGrp_${idx}">${g}</label>`;
-          regList.appendChild(item);
-        });
-      }
-
-      const badgeList = document.getElementById('activeFoldersBadgeList');
-      if (badgeList) {
-        badgeList.innerHTML = "";
-        liveGroupsList.forEach(g => {
-          const pill = document.createElement('span');
-          pill.className = "folder-item-pill";
-          pill.innerHTML = `<i class="fa-solid fa-folder" style="color:var(--purple);"></i> ${g} <button type="button" onclick="deleteGroup('${g.replace(/'/g, "\\'")}')">&times;</button>`;
-          badgeList.appendChild(pill);
-        });
-      }
-
-      const filterBox = document.getElementById('groupFilterButtons');
-      if (filterBox) {
-        filterBox.innerHTML = `<span style="font-size:0.8rem; font-weight:800; color:#64748b; margin-right:4px;"><i class="fa-solid fa-filter"></i> Group Folder:</span><button class="filter-btn ${activeFilterGroup === 'all' ? 'active' : ''}" onclick="setGroupFilter('all', this)">All Users</button>`;
-        liveGroupsList.forEach(g => {
-          const btn = document.createElement('button');
-          btn.className = `filter-btn ${activeFilterGroup === g ? 'active' : ''}`;
-          btn.innerText = g;
-          btn.onclick = function() { setGroupFilter(g, this); };
-          filterBox.appendChild(btn);
-        });
-      }
-    }
-
-    function setGroupFilter(group, btn) {
-      activeFilterGroup = group;
-      document.querySelectorAll('.filter-btn').forEach(b => b.classList.remove('active'));
-      if (btn) btn.classList.add('active');
-      renderData();
-    }
-
-    function renderData() {
-      const userTbody = document.getElementById('userTableBody');
-      if (!userTbody) return;
-      userTbody.innerHTML = "";
-
-      let countStudents = 0, countStaff = 0;
-
-      // FIXED FILTER: If "all", include every user without requiring a groups array
-      const filteredUsers = liveUsersList.filter(u => {
-        if (activeFilterGroup === "all") return true;
-        return Array.isArray(u.groups) && u.groups.includes(activeFilterGroup);
-      });
-
-      liveUsersList.forEach(u => {
-        if (u.role === 'student') countStudents++;
-        else if (u.role === 'staff' || u.role === 'admin') countStaff++;
-      });
-
-      if (filteredUsers.length === 0) {
-        userTbody.innerHTML = `<tr><td colspan="7" style="text-align:center; color:#94a3b8; padding:25px;">No accounts found in this view.</td></tr>`;
-      } else {
-        filteredUsers.forEach(u => {
-          const isStudent = u.role === 'student';
-          let subInfo = "";
-          if (isStudent) {
-            subInfo = `<span class="group-pill" style="background:#e0f2fe; color:#0369a1;"><i class="fa-solid fa-chalkboard"></i> ${u.level || 'L5'} ${u.dept || 'NIT'}</span>`;
-          } else {
-            const roles = (u.staffRoles || []).map(r => `<span class="group-pill">${r}</span>`).join(" ");
-            subInfo = roles || `<span class="group-pill">Trainer</span>`;
-          }
-
-          const keyRef = u._fbKey || u.username;
-          const tr = document.createElement('tr');
-          tr.innerHTML = `
-            <td><span class="badge-role ${isStudent ? 'role-student' : 'role-staff'}">${u.role || 'user'}</span></td>
-            <td><strong>${u.name || u.username}</strong></td>
-            <td><code>${u.username || u.id}</code></td>
-            <td><code>${u.pass || '••••••'}</code></td>
-            <td>${subInfo}</td>
-            <td><span class="badge-status ${u.status === 'active' ? 'status-active' : 'status-disabled'}">${u.status || 'active'}</span></td>
-            <td>
-              <button class="btn-tbl btn-tbl-edit" title="Edit Profile &amp; Class" onclick="openEditModal('${keyRef}')">
-                <i class="fa-solid fa-pen-to-square"></i>
-              </button>
-              <button class="btn-tbl btn-tbl-del" title="Delete User" onclick="deleteUserByExactKey('${keyRef}', '${u.name || u.username}')">
-                <i class="fa-solid fa-trash"></i>
-              </button>
-            </td>
-          `;
-          userTbody.appendChild(tr);
-        });
-      }
-
-      document.getElementById('statTotalUsers').innerText = liveUsersList.length;
-      document.getElementById('statTotalStudents').innerText = countStudents;
-      document.getElementById('statTotalStaff').innerText = countStaff;
-    }
-
-    function filterUsersTable() {
-      const q = document.getElementById('searchUser').value.toLowerCase();
-      document.querySelectorAll('#userTableBody tr').forEach(r => {
-        r.style.display = r.innerText.toLowerCase().includes(q) ? '' : 'none';
-      });
-    }
-
-    if (sessionStorage.getItem("ACEJ_ADMIN_AUTH") === "true") {
-      showAdminConsole();
-    } else {
-      initRealtimeListeners();
-    }
-  </script>
+</section>
+
+<!-- ANNOUNCE -->
+<section class="tab" id="tab-announce">
+  <h2 class="pt"><i class="fa-solid fa-bullhorn"></i> Announcements</h2>
+  <div class="g2">
+    <div class="card"><h3>Post announcement</h3>
+      <form id="annForm">
+        <div class="fc"><input id="aTitle" placeholder="Title" required></div>
+        <div class="fc"><textarea id="aMsg" rows="4" placeholder="Message" required></textarea></div>
+        <div class="fc"><select id="aTo"><option value="all">Everyone</option><option value="student">Students only</option><option value="staff">Staff only</option></select></div>
+        <button class="btn"><i class="fa-solid fa-paper-plane"></i> Publish</button>
+      </form></div>
+    <div class="card"><h3>Published</h3><div id="annList"></div></div>
+  </div>
+</section>
+
+<!-- ROLES -->
+<section class="tab" id="tab-roles">
+  <h2 class="pt"><i class="fa-solid fa-key"></i> Roles &amp; Privileges</h2>
+  <div class="imp-banner"><i class="fa-solid fa-shield-halved"></i> Only the Super Admin can edit roles. Administrators never get <b>Open Portal (no-password access)</b>, role editing or the audit log, whatever roles they hold.</div>
+  <div class="card"><h3>Create a new role</h3>
+    <form id="roleForm" class="row2"><input id="rName" placeholder="Role name e.g. Librarian" required><input id="rDesc" placeholder="Short description"><button class="btn green" style="grid-column:1/-1;justify-content:center"><i class="fa-solid fa-plus"></i> Add role</button></form></div>
+  <div class="g3" id="roleCards"></div>
+</section>
+
+<!-- AUDIT -->
+<section class="tab" id="tab-audit">
+  <h2 class="pt"><i class="fa-solid fa-clipboard-list"></i> Audit Log</h2>
+  <div class="card"><div class="tbl"><table><thead><tr><th>Time</th><th>By</th><th>Action</th><th>Detail</th></tr></thead><tbody id="auBody"></tbody></table></div></div>
+</section>
+</main></div></div>
+
+<!-- EDIT MODAL -->
+<div class="modal" id="editModal"><div class="mc">
+  <div style="display:flex;justify-content:space-between;margin-bottom:12px"><h3 style="color:var(--navy)"><i class="fa-solid fa-user-pen"></i> Edit account</h3><button data-act="closeEdit" style="border:none;background:none;font-size:1.5rem;cursor:pointer">&times;</button></div>
+  <form id="editForm">
+    <input type="hidden" id="eKey">
+    <div class="row2"><div class="fc"><label>Full name</label><input id="eName" required></div><div class="fc"><label>Username</label><input id="eUser" required></div></div>
+    <div class="row2"><div class="fc"><label>Password</label><input id="ePass" required></div>
+    <div class="fc"><label>Category</label><select id="eRole"><option value="student">Student</option><option value="staff">Staff</option><option value="admin">Administrator</option></select></div></div>
+    <div id="eStu" class="row2"><div class="fc"><label>Level</label><select id="eLevel"></select></div><div class="fc"><label>Department</label><select id="eDept"></select></div></div>
+    <div id="eStf"><div class="fc"><label>Roles</label><div class="chk" id="eRoles"></div></div><div class="fc"><label>Classes</label><div class="chk" id="eClasses"></div></div>
+      <details class="fc"><summary style="cursor:pointer;font-weight:700;color:var(--navy)">Extra privileges</summary><div class="chk" id="ePerms" style="margin-top:8px"></div></details></div>
+    <div class="fc"><label>Groups / Folders</label><div class="chk" id="eGroups"></div></div>
+    <button class="btn" style="width:100%;justify-content:center;padding:12px"><i class="fa-solid fa-floppy-disk"></i> Save changes</button>
+  </form>
+</div></div>
+
+<script>
+/* ============ CONFIG ============ */
+firebase.initializeApp({databaseURL:"https://acej-portal-default-rtdb.firebaseio.com"});
+const db=firebase.database();
+// NOTE: the master credential is visible to anyone who views this page's source.
+// See the security note delivered with this file before going live.
+const MASTER={user:"Ismael",pass:"Acej@84011"};
+
+const DEPTS={NIT:"Networking & Internet Tech (NIT)",CSA:"Computer Systems & Arch (CSA)",ACC:"Accounting & Finance (ACC)",GEN:"General Administration"};
+const LEVELS=["Level 5","Level 4","Level 3"];
+const CLASSES=["Level 5 NIT","Level 4 NIT","Level 5 CSA","Level 4 CSA","Level 5 ACC","Level 4 ACC","Level 3 General"];
+const DEFAULT_GROUPS=["Core Class","Tech Club","AERG Itetero","Prefects","Exam Board","Students"];
+
+// Grantable privileges (Open Portal / roles / audit are Super-Admin-only and not listed here)
+const PERMS={
+ "Accounts":{"users.view":"View accounts","users.create":"Create accounts","users.edit":"Edit accounts","users.delete":"Delete accounts","groups.manage":"Manage groups & folders"},
+ "Academics":{"classes.view":"View classes & teachers","classes.manage":"Manage class assignments","marks.view":"View marks","marks.edit":"Enter / edit marks","marks.approve":"Approve & publish marks","exams.manage":"Manage exams","attendance.manage":"Take attendance","timetable.manage":"Manage timetable","library.manage":"Manage library"},
+ "Operations":{"discipline.manage":"Manage discipline records","stock.manage":"Manage stock & inventory","finance.manage":"Manage fees & finance","reports.view":"View reports","announce.post":"Post announcements"}
+};
+const ALL_PERMS=Object.values(PERMS).flatMap(o=>Object.keys(o));
+const PLABEL=Object.assign({},...Object.values(PERMS));
+const DEFAULT_ROLES={
+ "Administrator":{desc:"Day-to-day school administration (below Super Admin)",perms:["users.view","users.create","users.edit","groups.manage","classes.view","marks.view","reports.view","announce.post"]},
+ "Director of Studies (DOS)":{desc:"Oversees academics, marks & timetable",perms:["users.view","classes.view","classes.manage","marks.view","marks.approve","timetable.manage","reports.view","exams.manage"]},
+ "Teacher / Trainer":{desc:"Teaches classes and records marks",perms:["classes.view","marks.view","marks.edit","attendance.manage"]},
+ "Stock & Inventory Manager":{desc:"School store and inventory",perms:["stock.manage","reports.view"]},
+ "Dean of Discipline":{desc:"Student discipline and conduct",perms:["users.view","discipline.manage","attendance.manage"]},
+ "Exam Officer":{desc:"Runs exams and approves results",perms:["classes.view","marks.view","marks.approve","exams.manage"]},
+ "Librarian":{desc:"Library catalogue and loans",perms:["library.manage"]},
+ "Bursar / Accountant":{desc:"Fees and school finances",perms:["finance.manage","reports.view","users.view"]},
+ "Registrar":{desc:"Admissions and student records",perms:["users.view","users.create","users.edit","classes.view"]},
+ "Secretary":{desc:"Office work and announcements",perms:["users.view","announce.post"]},
+ "ICT Officer":{desc:"Technical support for accounts",perms:["users.view","users.edit"]}
+};
+const TILES=[
+ {id:"student",icon:"fa-user-graduate",label:"Student",cat:"student",roles:[]},
+ {id:"teacher",icon:"fa-chalkboard-user",label:"Teacher / Trainer",cat:"staff",roles:["Teacher / Trainer"]},
+ {id:"dos",icon:"fa-book-open-reader",label:"Director of Studies",cat:"staff",roles:["Director of Studies (DOS)"]},
+ {id:"stock",icon:"fa-boxes-stacked",label:"Stock Manager",cat:"staff",roles:["Stock & Inventory Manager"]},
+ {id:"dean",icon:"fa-gavel",label:"Dean of Discipline",cat:"staff",roles:["Dean of Discipline"]},
+ {id:"exam",icon:"fa-file-pen",label:"Exam Officer",cat:"staff",roles:["Exam Officer"]},
+ {id:"lib",icon:"fa-book",label:"Librarian",cat:"staff",roles:["Librarian"]},
+ {id:"bursar",icon:"fa-coins",label:"Bursar",cat:"staff",roles:["Bursar / Accountant"]},
+ {id:"admin",icon:"fa-user-gear",label:"Administrator",cat:"admin",roles:["Administrator"]}
+];
+
+/* ============ STATE ============ */
+const S={users:[],groups:DEFAULT_GROUPS.slice(),roles:DEFAULT_ROLES,marks:{},audit:[],ann:{}};
+let ME=null,tile="student",catF="all",grpF="all",curClass=CLASSES[0],listening=false,charts={};
+const $=id=>document.getElementById(id);
+const esc=s=>String(s==null?"":s).replace(/[&<>"']/g,c=>({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#39;"}[c]));
+const ck=s=>String(s||"").trim().replace(/[.#$\[\]\/]/g,"_");
+const classOf=u=>(u.level||"")+" "+(u.dept==="GEN"?"General":(u.dept||""));
+const isSuper=()=>ME&&ME.isSuper;
+const myPerms=()=>{if(!ME)return new Set();if(ME.isSuper)return new Set(ALL_PERMS);const u=ME.user||{};const s=new Set(u.customPerms||[]);(u.staffRoles||[]).forEach(r=>((S.roles[ck(r)]||S.roles[r]||{}).perms||[]).forEach(p=>s.add(p)));if(u.role==="admin"&&!(u.staffRoles||[]).length)(DEFAULT_ROLES.Administrator.perms).forEach(p=>s.add(p));return s};
+const can=p=>myPerms().has(p);
+const roleList=()=>Object.keys(S.roles);
+function parseUsers(d){const l=[];if(!d)return l;const add=(k,i)=>{if(i&&typeof i==="object"){i._k=String(k);if(!i.username)i.username=String(k);if(!i.name)i.name=i.username;l.push(i)}};Array.isArray(d)?d.forEach((i,k)=>add(k,i)):Object.keys(d).forEach(k=>add(k,d[k]));return l}
+function userKey(u){return ck(u.username)}
+function clean(u){const c=Object.assign({},u);delete c._k;return c}
+function log(action,detail){db.ref("audit").push({ts:Date.now(),by:ME?ME.name:"?",action,detail:detail||""})}
+function toast(m){const t=document.createElement("div");t.textContent=m;t.style.cssText="position:fixed;bottom:20px;right:20px;background:#0f172a;color:#fff;padding:12px 18px;border-radius:8px;z-index:999;font-weight:600;box-shadow:0 6px 20px rgba(0,0,0,.3)";document.body.appendChild(t);setTimeout(()=>t.remove(),2600)}
+
+/* ============ REALTIME (push-based, no polling) ============ */
+function listen(){
+  if(listening)return;listening=true;
+  db.ref(".info/connected").on("value",s=>{const on=s.val()===true;$("sync").className="sync"+(on?"":" off");$("sync").querySelector("span").textContent=on?"Live sync · connected":"Offline · reconnecting…"});
+  db.ref("users").on("value",s=>{S.users=parseUsers(s.val());renderAll()});
+  db.ref("groups").on("value",s=>{const v=s.val();S.groups=Array.isArray(v)?v:(v?Object.values(v):DEFAULT_GROUPS.slice());renderAll()});
+  db.ref("roleDefs").on("value",s=>{const v=s.val();if(!v){if(isSuper())db.ref("roleDefs").set(keyed(DEFAULT_ROLES));S.roles=keyed(DEFAULT_ROLES)}else S.roles=v;renderAll()});
+  db.ref("marks").on("value",s=>{S.marks=s.val()||{};renderMarks();renderClasses();renderDash()});
+  db.ref("announcements").on("value",s=>{S.ann=s.val()||{};renderAnn()});
+  if(isSuper())db.ref("audit").limitToLast(150).on("value",s=>{S.audit=Object.values(s.val()||{}).sort((a,b)=>b.ts-a.ts);renderAudit()});
+}
+function keyed(o){const r={};Object.keys(o).forEach(n=>r[ck(n)]={name:n,desc:o[n].desc||"",perms:o[n].perms||[]});return r}
+// roles are stored as {key:{name,desc,perms}}; normalise for display
+function rolesByName(){const r={};Object.values(S.roles).forEach(x=>{if(x&&x.name)r[x.name]=x});return r}
+S.roles=keyed(DEFAULT_ROLES);
+const roleNames=()=>Object.values(S.roles).map(r=>r.name).filter(Boolean);
+const permsOfRole=n=>(rolesByName()[n]||{}).perms||[];
+// override myPerms role lookup to use names
+const _mp=myPerms;myPerms=function(){if(!ME)return new Set();if(ME.isSuper)return new Set(ALL_PERMS);const u=ME.user||{};const s=new Set(u.customPerms||[]);(u.staffRoles||[]).forEach(r=>permsOfRole(r).forEach(p=>s.add(p)));if(u.role==="admin"&&!(u.staffRoles||[]).length)DEFAULT_ROLES.Administrator.perms.forEach(p=>s.add(p));return s};
+
+/* ============ AUTH ============ */
+$("loginForm").addEventListener("submit",async e=>{
+  e.preventDefault();
+  const u=$("lu").value.trim(),p=$("lp").value.trim();
+  if(u===MASTER.user&&p===MASTER.pass){ME={isSuper:true,name:"Super Admin ("+MASTER.user+")",username:MASTER.user};return enter()}
+  const snap=await db.ref("users").once("value");
+  const list=parseUsers(snap.val());
+  const m=list.find(x=>x.username&&x.username.toLowerCase()===u.toLowerCase()&&x.pass===p&&x.role==="admin"&&(x.status||"active")==="active");
+  if(!m)return alert("Invalid credentials, or this account is not an active administrator.");
+  ME={isSuper:false,name:"Admin ("+m.name+")",username:m.username,user:m};enter();
+});
+function enter(){
+  sessionStorage.setItem("ACEJ_ADMIN",JSON.stringify({isSuper:ME.isSuper,username:ME.username,name:ME.name}));
+  $("login").style.display="none";$("app").style.display="block";$("btnOut").style.display="inline-flex";
+  $("who").textContent=ME.name;$("superBadge").style.display=ME.isSuper?"inline-block":"none";
+  listen();applyGates();renderAll();go("dash");
+  if(ME.isSuper)log("login","Super Admin signed in");else log("login","Administrator signed in");
+}
+function logout(){sessionStorage.removeItem("ACEJ_ADMIN");location.reload()}
+(async()=>{const s=sessionStorage.getItem("ACEJ_ADMIN");if(!s)return;const x=JSON.parse(s);ME=x;if(!x.isSuper){const sn=await db.ref("users/"+ck(x.username)).once("value");ME.user=sn.val();if(!ME.user||ME.user.role!=="admin")return logout()}enter()})();
+function applyGates(){
+  document.querySelectorAll("#nav button").forEach(b=>{
+    let ok=true;if(b.dataset.super)ok=isSuper();else if(b.dataset.perm)ok=can(b.dataset.perm);
+    b.style.display=ok?"":"none";
+  });
+  $("impNote").style.display=isSuper()?"block":"none";
+}
+
+/* ============ NAV ============ */
+function go(t){
+  document.querySelectorAll(".tab").forEach(x=>x.classList.toggle("show",x.id==="tab-"+t));
+  document.querySelectorAll("#nav button").forEach(b=>b.classList.toggle("active",b.dataset.tab===t));
+  if(t==="dash")renderDash();
+}
+
+/* ============ RENDER ============ */
+function renderAll(){if(!ME)return;applyGates();renderDash();renderUsers();renderCreateLists();renderFolders();renderClasses();renderMarks();renderRoles();renderAnn();renderAudit()}
+
+function chart(id,type,labels,data,colors){
+  if(typeof Chart==="undefined")return;
+  if(charts[id]){charts[id].data.labels=labels;charts[id].data.datasets[0].data=data;charts[id].update();return}
+  charts[id]=new Chart($(id),{type,data:{labels,datasets:[{data,backgroundColor:colors,borderRadius:6}]},options:{plugins:{legend:{display:type==="doughnut",position:"bottom"}},scales:type==="bar"?{y:{beginAtZero:true,ticks:{precision:0}}}:{}}});
+}
+function renderDash(){
+  const U=S.users;
+  $("sTotal").textContent=U.length;
+  $("sStu").textContent=U.filter(u=>u.role==="student").length;
+  $("sStaff").textContent=U.filter(u=>u.role==="staff").length;
+  $("sAdm").textContent=U.filter(u=>u.role==="admin").length;
+  $("sGrp").textContent=S.groups.length;
+  $("sDis").textContent=U.filter(u=>u.status==="disabled").length;
+  chart("chClass","bar",CLASSES,CLASSES.map(c=>U.filter(u=>u.role==="student"&&classOf(u)===c).length),"#0047AB");
+  const rc={};U.forEach(u=>{if(u.role==="student")rc.Student=(rc.Student||0)+1;else if((u.staffRoles||[]).length)u.staffRoles.forEach(r=>rc[r]=(rc[r]||0)+1);else rc[u.role==="admin"?"Administrator":"Staff"]=(rc[u.role==="admin"?"Administrator":"Staff"]||0)+1});
+  chart("chRole","doughnut",Object.keys(rc),Object.values(rc),["#0047AB","#FFC72C","#7e22ce","#10b981","#ef4444","#0ea5e9","#f97316","#64748b","#84cc16","#ec4899","#14b8a6"]);
+}
+
+function userSub(u){
+  if(u.role==="student")return `<span class="pill role"><i class="fa-solid fa-chalkboard"></i> ${esc(classOf(u))}</span>`;
+  return (u.staffRoles||[]).map(r=>`<span class="pill">${esc(r)}</span>`).join("")||`<span class="pill">Staff</span>`;
+}
+function canTouch(u){return isSuper()||u.role!=="admin"}
+function renderUsers(){
+  const cf=$("catFilter");
+  cf.innerHTML=["all","student","staff","admin"].map(c=>`<button class="fb ${catF===c?"active":""}" data-cat="${c}">${c==="all"?"All":c[0].toUpperCase()+c.slice(1)}</button>`).join("");
+  $("grpFilter").innerHTML=`<span style="font-size:.78rem;font-weight:800;color:var(--muted)"><i class="fa-solid fa-folder"></i> Folder:</span><button class="fb ${grpF==="all"?"active":""}" data-grp="all">All</button>`+S.groups.map(g=>`<button class="fb ${grpF===g?"active":""}" data-grp="${esc(g)}">${esc(g)}</button>`).join("");
+  const q=$("search").value.toLowerCase();
+  const rows=S.users.filter(u=>(catF==="all"||u.role===catF)&&(grpF==="all"||(u.groups||[]).includes(grpF))).filter(u=>!q||(u.name+" "+u.username+" "+(u.staffRoles||[]).join(" ")+" "+classOf(u)).toLowerCase().includes(q))
+    .sort((a,b)=>(a.role+a.name).localeCompare(b.role+b.name));
+  $("uBody").innerHTML=rows.length?rows.map(u=>{
+    const k=esc(u._k),t=canTouch(u);
+    return `<tr><td><span class="pill ${esc(u.role)}">${esc(u.role||"user")}</span></td><td><b>${esc(u.name)}</b></td><td><code>${esc(u.username)}</code></td>
+    <td>${isSuper()?`<code class="pw" data-pw="${esc(u.pass||"")}">••••••</code> <button class="btn sm" style="padding:2px 6px" data-act="reveal"><i class="fa-solid fa-eye"></i></button>`:`<span style="color:#94a3b8">hidden</span>`}</td>
+    <td>${userSub(u)}</td><td><span class="pill ${u.status==="disabled"?"bad":"ok"}">${esc(u.status||"active")}</span></td>
+    <td style="white-space:nowrap">
+      ${isSuper()?`<button class="btn sm green" title="Open their portal without password" data-act="impersonate" data-k="${k}"><i class="fa-solid fa-eye"></i> Open Portal</button>`:""}
+      <button class="btn sm" data-act="edit" data-k="${k}" ${t&&can("users.edit")?"":"disabled"}><i class="fa-solid fa-pen"></i></button>
+      <button class="btn sm gold" data-act="toggle" data-k="${k}" ${t&&can("users.edit")?"":"disabled"} title="Enable / disable"><i class="fa-solid fa-ban"></i></button>
+      <button class="btn sm red" data-act="del" data-k="${k}" ${t&&can("users.delete")?"":"disabled"}><i class="fa-solid fa-trash"></i></button>
+    </td></tr>`}).join(""):`<tr><td colspan="7" style="text-align:center;color:#94a3b8;padding:24px">No accounts in this view.</td></tr>`;
+}
+
+/* ----- create ----- */
+function chkList(el,items,sel,name){
+  el.innerHTML=items.map((i,x)=>`<label><input type="checkbox" name="${name}" value="${esc(i)}" ${sel.includes(i)?"checked":""}>${esc(i)}</label>`).join("");
+}
+function checked(sel){return [...document.querySelectorAll(sel+" input:checked")].map(i=>i.value)}
+function renderCreateLists(){
+  $("tiles").innerHTML=TILES.map(t=>`<div class="tile ${tile===t.id?"sel":""}" data-tile="${t.id}"><i class="fa-solid ${t.icon}"></i>${t.label}</div>`).join("");
+  const rSel=checked("#cRoles"),cSel=checked("#cClasses"),gSel=checked("#cGroups"),pSel=checked("#cPerms");
+  chkList($("cRoles"),roleNames(),rSel,"r");chkList($("cClasses"),CLASSES,cSel,"c");chkList($("cGroups"),S.groups,gSel,"g");
+  let ph="";Object.keys(PERMS).forEach(g=>{ph+=`<div class="gh">${g}</div>`+Object.keys(PERMS[g]).map(p=>`<label><input type="checkbox" value="${p}" ${pSel.includes(p)?"checked":""}>${PERMS[g][p]}</label>`).join("")});$("cPerms").innerHTML=ph;
+  if(!$("cDept").options.length){$("cDept").innerHTML=Object.keys(DEPTS).map(k=>`<option value="${k}">${DEPTS[k]}</option>`).join("");$("cLevel").innerHTML=LEVELS.map(l=>`<option>${l}</option>`).join("");$("eDept").innerHTML=$("cDept").innerHTML;$("eLevel").innerHTML=$("cLevel").innerHTML}
+  previewPerms();
+}
+function pickTile(id){
+  tile=id;const t=TILES.find(x=>x.id===id);
+  document.querySelectorAll(".tile").forEach(e=>e.classList.toggle("sel",e.dataset.tile===id));
+  $("cStudent").style.display=t.cat==="student"?"block":"none";$("cStaff").style.display=t.cat==="student"?"none":"block";
+  $("lblUser").textContent=t.cat==="student"?"Student Roll / Reg ID":"Staff / Admin username";
+  document.querySelectorAll("#cRoles input").forEach(i=>i.checked=t.roles.includes(i.value));
+  if(t.cat==="staff"&&id==="teacher"){const f=document.querySelector("#cClasses input");if(f&&!checked("#cClasses").length)f.checked=true}
+  previewPerms();
+}
+function previewPerms(){
+  const s=new Set(checked("#cPerms"));checked("#cRoles").forEach(r=>permsOfRole(r).forEach(p=>s.add(p)));
+  const t=TILES.find(x=>x.id===tile);
+  $("cPreview").innerHTML=t&&t.cat==="student"?`<span class="pill">Student portal access only</span>`:([...s].map(p=>`<span class="pill">${esc(PLABEL[p]||p)}</span>`).join("")||`<span class="pill" style="background:#fef2f2;color:#b91c1c">No privileges selected</span>`);
+}
+$("createForm").addEventListener("submit",async e=>{
+  e.preventDefault();if(!can("users.create"))return alert("You do not have permission to create accounts.");
+  const t=TILES.find(x=>x.id===tile);
+  const username=$("cUser").value.trim();
+  if(!username)return;
+  if(S.users.some(u=>ck(u.username).toLowerCase()===ck(username).toLowerCase()))return alert("That username / Reg ID already exists.");
+  if(t.cat==="admin"&&!isSuper())return alert("Only the Super Admin can create administrators.");
+  const u={id:"usr_"+Date.now(),role:t.cat,name:$("cName").value.trim(),username,pass:$("cPass").value.trim(),
+    dept:t.cat==="student"?$("cDept").value:"Faculty",level:t.cat==="student"?$("cLevel").value:"Faculty",
+    staffRoles:t.cat==="student"?[]:checked("#cRoles"),managedClasses:t.cat==="student"?[]:checked("#cClasses"),
+    customPerms:t.cat==="student"?[]:checked("#cPerms"),groups:checked("#cGroups"),status:"active",firstLogin:false,createdAt:Date.now(),createdBy:ME.name};
+  if(t.cat==="admin"&&!u.staffRoles.includes("Administrator"))u.staffRoles.push("Administrator");
+  await db.ref("users/"+ck(username)).set(u);
+  log("create account",u.name+" ("+u.role+")");toast("Account created: "+u.name);
+  e.target.reset();document.querySelectorAll("#createForm input[type=checkbox]").forEach(i=>i.checked=false);pickTile(tile);
+});
+$("createForm").addEventListener("change",previewPerms);
+function genPass(){const c="ABCDEFGHJKMNPQRSTUVWXYZabcdefghijkmnpqrstuvwxyz23456789@#";let p="";for(let i=0;i<10;i++)p+=c[Math.floor(Math.random()*c.length)];$("cPass").value=p}
+async function bulkImport(){
+  if(!can("users.create"))return alert("No permission.");
+  const lines=$("bulk").value.split("\n").map(l=>l.trim()).filter(Boolean);let n=0,skip=0;const up={};
+  lines.forEach(l=>{const [name,username,pass,dept,level]=l.split(",").map(x=>(x||"").trim());
+    if(!name||!username||!pass||S.users.some(u=>ck(u.username).toLowerCase()===ck(username).toLowerCase())){skip++;return}
+    up[ck(username)]={id:"usr_"+Date.now()+n,role:"student",name,username,pass,dept:DEPTS[dept]?dept:"NIT",level:LEVELS.includes(level)?level:"Level 5",staffRoles:[],managedClasses:[],groups:["Students"],status:"active",firstLogin:false,createdAt:Date.now(),createdBy:ME.name};n++});
+  if(n)await db.ref("users").update(up);
+  log("bulk import",n+" students");alert(`Imported ${n} student(s). Skipped ${skip} (blank or duplicate).`);$("bulk").value="";
+}
+
+/* ----- edit ----- */
+function openEdit(k){
+  const u=S.users.find(x=>x._k===k);if(!u||!canTouch(u))return;
+  $("eKey").value=k;$("eName").value=u.name||"";$("eUser").value=u.username||"";$("ePass").value=isSuper()?(u.pass||""):"";$("ePass").placeholder=isSuper()?"":"Leave blank to keep current";$("ePass").required=isSuper();
+  $("eRole").value=u.role||"student";$("eRole").querySelector("option[value=admin]").disabled=!isSuper();
+  $("eLevel").value=u.level||"Level 5";$("eDept").value=u.dept||"NIT";
+  chkList($("eRoles"),roleNames(),u.staffRoles||[],"er");chkList($("eClasses"),CLASSES,u.managedClasses||[],"ec");chkList($("eGroups"),S.groups,u.groups||[],"eg");
+  let ph="";Object.keys(PERMS).forEach(g=>{ph+=`<div class="gh">${g}</div>`+Object.keys(PERMS[g]).map(p=>`<label><input type="checkbox" value="${p}" ${(u.customPerms||[]).includes(p)?"checked":""}>${PERMS[g][p]}</label>`).join("")});$("ePerms").innerHTML=ph;
+  toggleEdit();$("editModal").style.display="flex";
+}
+function toggleEdit(){const r=$("eRole").value;$("eStu").style.display=r==="student"?"grid":"none";$("eStf").style.display=r==="student"?"none":"block"}
+$("eRole").addEventListener("change",toggleEdit);
+$("editForm").addEventListener("submit",async e=>{
+  e.preventDefault();
+  const k=$("eKey").value,u=S.users.find(x=>x._k===k);if(!u)return;
+  const nu=clean(u);const newName=$("eUser").value.trim();
+  nu.name=$("eName").value.trim();nu.username=newName;if($("ePass").value.trim())nu.pass=$("ePass").value.trim();
+  nu.role=$("eRole").value;if(nu.role==="admin"&&!isSuper())return alert("Only Super Admin can make administrators.");
+  if(nu.role==="student"){nu.level=$("eLevel").value;nu.dept=$("eDept").value;nu.staffRoles=[];nu.managedClasses=[];nu.customPerms=[]}
+  else{nu.staffRoles=checked("#eRoles");nu.managedClasses=checked("#eClasses");nu.customPerms=checked("#ePerms");if(nu.dept==null||nu.role!=="student"){nu.dept="Faculty";nu.level="Faculty"}}
+  nu.groups=checked("#eGroups");
+  const nk=ck(newName),upd={};
+  if(nk!==ck(k)){if(S.users.some(x=>ck(x.username).toLowerCase()===nk.toLowerCase()&&x._k!==k))return alert("Username already taken.");upd["users/"+ck(k)]=null}
+  upd["users/"+nk]=nu;
+  await db.ref().update(upd);log("edit account",nu.name);toast("Saved");$("editModal").style.display="none";
+});
+async function toggleUser(k){const u=S.users.find(x=>x._k===k);if(!u||!canTouch(u))return;const s=u.status==="disabled"?"active":"disabled";await db.ref("users/"+ck(k)+"/status").set(s);log("status",u.name+" → "+s)}
+async function delUser(k){const u=S.users.find(x=>x._k===k);if(!u||!canTouch(u))return;if(!confirm(`Permanently delete ${u.name}? This removes them on every device immediately.`))return;await db.ref("users/"+ck(k)).remove();log("delete account",u.name)}
+function impersonate(k){
+  if(!isSuper())return;const u=S.users.find(x=>x._k===k);if(!u)return;
+  localStorage.setItem("ACEJ_IMPERSONATE",JSON.stringify({username:u.username,role:u.role,by:MASTER.user,ts:Date.now()}));
+  log("open portal as user",u.name+" ("+u.role+")");
+  window.open("/portal/?as="+encodeURIComponent(u.username),"_blank");
+}
+
+/* ----- folders ----- */
+function renderFolders(){
+  $("grpList").innerHTML=S.groups.map(g=>{const n=S.users.filter(u=>(u.groups||[]).includes(g)).length;
+    return `<div style="display:flex;justify-content:space-between;align-items:center;padding:9px 0;border-bottom:1px solid var(--border)"><div><i class="fa-solid fa-folder" style="color:var(--purple)"></i> <b>${esc(g)}</b> <span class="pill">${n} members</span></div><div><button class="btn sm" data-act="openGrp" data-g="${esc(g)}">Open</button> <button class="btn sm red" data-act="delGrp" data-g="${esc(g)}"><i class="fa-solid fa-trash"></i></button></div></div>`}).join("")||"<p style='color:#94a3b8'>No groups yet.</p>";
+  let h="";
+  Object.keys(DEPTS).forEach(d=>{const st=S.users.filter(u=>u.role==="student"&&u.dept===d);if(!st.length)return;
+    h+=`<details><summary><i class="fa-solid fa-building-columns"></i> ${esc(DEPTS[d])} (${st.length})</summary>`;
+    LEVELS.forEach(l=>{const s2=st.filter(u=>u.level===l);if(s2.length)h+=`<details><summary>${l} (${s2.length})</summary>${s2.map(u=>`<div class="leaf"><i class="fa-solid fa-user-graduate"></i> ${esc(u.name)} <code>${esc(u.username)}</code></div>`).join("")}</details>`});h+="</details>"});
+  roleNames().forEach(r=>{const st=S.users.filter(u=>(u.staffRoles||[]).includes(r));if(st.length)h+=`<details><summary><i class="fa-solid fa-id-badge"></i> ${esc(r)} (${st.length})</summary>${st.map(u=>`<div class="leaf">${esc(u.name)} <code>${esc(u.username)}</code></div>`).join("")}</details>`});
+  $("tree").innerHTML=h||"<p style='color:#94a3b8'>No accounts yet.</p>";
+  if(openGroup)showGroup(openGroup);
+}
+let openGroup=null;
+function showGroup(g){
+  openGroup=g;const m=S.users.filter(u=>(u.groups||[]).includes(g)),non=S.users.filter(u=>!(u.groups||[]).includes(g));
+  const d=$("grpDetail");d.style.display="block";
+  d.innerHTML=`<h3><i class="fa-solid fa-folder-open" style="color:var(--purple)"></i> ${esc(g)} — ${m.length} member(s)</h3>
+   <div style="display:flex;gap:8px;margin-bottom:12px"><select id="addMember">${non.map(u=>`<option value="${esc(u._k)}">${esc(u.name)} (${esc(u.username)})</option>`).join("")}</select><button class="btn" data-act="addMember" data-g="${esc(g)}"><i class="fa-solid fa-user-plus"></i> Add to folder</button></div>
+   ${m.map(u=>`<span class="pill" style="padding:5px 9px;font-size:.78rem">${esc(u.name)} <a href="#" data-act="rmMember" data-g="${esc(g)}" data-k="${esc(u._k)}" style="color:#ef4444;text-decoration:none">&times;</a></span>`).join("")||"<p style='color:#94a3b8'>Empty folder.</p>"}`;
+}
+async function setMember(g,k,add){const u=S.users.find(x=>x._k===k);if(!u)return;let gs=(u.groups||[]).filter(x=>x!==g);if(add)gs.push(g);await db.ref("users/"+ck(k)+"/groups").set(gs);log(add?"add to folder":"remove from folder",u.name+" · "+g)}
+$("grpForm").addEventListener("submit",async e=>{e.preventDefault();if(!can("groups.manage"))return;const n=$("gName").value.trim();if(n&&!S.groups.includes(n)){await db.ref("groups").set(S.groups.concat(n));log("create group",n)}$("gName").value=""});
+async function delGrp(g){if(!confirm(`Delete folder "${g}"? Members stay, only the folder tag is removed.`))return;
+  const upd={groups:S.groups.filter(x=>x!==g)};await db.ref("groups").set(upd.groups);
+  const u2={};S.users.forEach(u=>{if((u.groups||[]).includes(g))u2["users/"+ck(u._k)+"/groups"]=u.groups.filter(x=>x!==g)});if(Object.keys(u2).length)await db.ref().update(u2);
+  if(openGroup===g){openGroup=null;$("grpDetail").style.display="none"}log("delete group",g)}
+
+/* ----- classes & teachers ----- */
+function marksFor(cls,u){
+  const uk=ck(u.username).toLowerCase();let cw1=0,cw2=0,cat=0,exam=0;
+  const c=S.marks[cls];if(c)Object.keys(c).forEach(co=>{const d=c[co]&&c[co][uk];if(d){cw1=Math.max(cw1,parseInt(d.cw1)||0);cw2=Math.max(cw2,parseInt(d.cw2)||0);cat=Math.max(cat,parseInt(d.cat)||0);exam=Math.max(exam,parseInt(d.exam)||0)}});
+  return{cw1,cw2,cat,exam,total:cw1+cw2+cat+exam};
+}
+function renderClasses(){
+  if(!$("classCards"))return;
+  $("classCards").innerHTML=CLASSES.map(c=>{
+    const st=S.users.filter(u=>u.role==="student"&&classOf(u)===c),tc=S.users.filter(u=>u.role!=="student"&&(u.managedClasses||[]).includes(c));
+    const ms=st.map(u=>marksFor(c,u).total),avg=ms.length?Math.round(ms.reduce((a,b)=>a+b,0)/ms.length):0,comp=ms.filter(x=>x>=70).length;
+    return `<div class="card cc" style="margin:0"><div style="display:flex;justify-content:space-between"><h3 style="margin:0">${esc(c)}</h3><button class="btn sm" data-act="openClass" data-c="${esc(c)}">Details</button></div>
+    <div class="big">${st.length} <span style="font-size:.8rem;color:var(--muted);font-weight:600">students</span></div>
+    <div style="font-size:.82rem;color:var(--muted)">Average ${avg}% · ${comp} competent</div><div class="bar"><i style="width:${avg}%"></i></div>
+    <div style="font-size:.8rem"><b>Teachers:</b> ${tc.length?tc.map(t=>`<span class="pill role">${esc(t.name)}</span>`).join(""):"<span style='color:#b91c1c'>none assigned</span>"}</div></div>`}).join("");
+  $("tBody").innerHTML=S.users.filter(u=>u.role!=="student"&&(u.staffRoles||[]).concat(u.managedClasses||[]).length).map(t=>{
+    const reach=(t.managedClasses||[]).reduce((n,c)=>n+S.users.filter(u=>u.role==="student"&&classOf(u)===c).length,0);
+    return `<tr><td><b>${esc(t.name)}</b></td><td>${(t.staffRoles||[]).map(r=>`<span class="pill">${esc(r)}</span>`).join("")}</td><td>${(t.managedClasses||[]).map(c=>`<span class="pill role">${esc(c)}</span>`).join("")||"—"}</td><td>${reach}</td></tr>`}).join("")||`<tr><td colspan="4" style="text-align:center;color:#94a3b8;padding:18px">No staff assigned yet.</td></tr>`;
+  if(openClassName)showClass(openClassName);
+}
+let openClassName=null;
+function showClass(c){
+  openClassName=c;const st=S.users.filter(u=>u.role==="student"&&classOf(u)===c),tc=S.users.filter(u=>u.role!=="student"&&(u.managedClasses||[]).includes(c));
+  const d=$("classDetail");d.style.display="block";
+  d.innerHTML=`<h3><i class="fa-solid fa-school"></i> ${esc(c)}</h3><p style="margin-bottom:10px"><b>Teachers / managers:</b> ${tc.map(t=>`<span class="pill role">${esc(t.name)} · ${esc((t.staffRoles||[]).join(", ")||"staff")}</span>`).join("")||"none"}</p>
+  <div class="tbl"><table><thead><tr><th>Reg ID</th><th>Student</th><th>Total</th><th>Status</th></tr></thead><tbody>${st.map(u=>{const m=marksFor(c,u);return `<tr><td><code>${esc(u.username)}</code></td><td>${esc(u.name)}</td><td><b>${m.total}%</b></td><td><span class="pill ${m.total>=70?"ok":"bad"}">${m.total>=70?"Competent":"In progress"}</span></td></tr>`}).join("")||"<tr><td colspan=4 style='color:#94a3b8'>No students.</td></tr>"}</tbody></table></div>`;
+}
+
+/* ----- marks ----- */
+function renderMarks(){
+  if(!$("clsBtns"))return;
+  $("clsBtns").innerHTML=CLASSES.map(c=>`<button class="fb ${c===curClass?"active":""}" data-mc="${esc(c)}">${esc(c)}</button>`).join("");
+  const st=S.users.filter(u=>u.role==="student"&&classOf(u)===curClass);
+  $("mBody").innerHTML=st.map(u=>{const m=marksFor(curClass,u);return `<tr><td><code>${esc(u.username)}</code></td><td><b>${esc(u.name)}</b></td><td>${m.cw1}</td><td>${m.cw2}</td><td>${m.cat}</td><td>${m.exam}</td><td><b style="color:${m.total>=70?"#047857":"#b45309"}">${m.total}%</b></td><td><span class="pill ${m.total>=70?"ok":"bad"}">${m.total>=70?"Competent":"In progress"}</span></td></tr>`}).join("")||`<tr><td colspan="8" style="text-align:center;color:#94a3b8;padding:20px">No students in ${esc(curClass)}.</td></tr>`;
+}
+function dl(name,text){const a=document.createElement("a");a.href=URL.createObjectURL(new Blob([text],{type:"text/csv;charset=utf-8"}));a.download=name;a.click()}
+const q=s=>'"'+String(s==null?"":s).replace(/"/g,'""')+'"';
+function exportMarks(){let c="Reg ID,Name,Class,CW1,CW2,CAT,Exam,Total,Status\n";S.users.filter(u=>u.role==="student"&&classOf(u)===curClass).forEach(u=>{const m=marksFor(curClass,u);c+=[q(u.username),q(u.name),q(curClass),m.cw1,m.cw2,m.cat,m.exam,m.total,q(m.total>=70?"Competent":"In Progress")].join(",")+"\n"});dl(curClass.replace(/\s+/g,"_")+"_marks.csv",c)}
+function exportUsers(){let c="Type,Name,Username,Class,Roles,Groups,Status\n";S.users.forEach(u=>{c+=[q(u.role),q(u.name),q(u.username),q(u.role==="student"?classOf(u):(u.managedClasses||[]).join("; ")),q((u.staffRoles||[]).join("; ")),q((u.groups||[]).join("; ")),q(u.status)].join(",")+"\n"});dl("accounts.csv",c);log("export","accounts CSV (no passwords)")}
+
+/* ----- announcements ----- */
+function renderAnn(){
+  if(!$("annList"))return;
+  const a=Object.entries(S.ann).sort((x,y)=>y[1].ts-x[1].ts);
+  $("annList").innerHTML=a.map(([k,v])=>`<div style="padding:10px 0;border-bottom:1px solid var(--border)"><b>${esc(v.title)}</b> <span class="pill">${esc(v.to)}</span><div style="font-size:.84rem;margin:4px 0">${esc(v.msg)}</div><small style="color:var(--muted)">${new Date(v.ts).toLocaleString()} · ${esc(v.by)}</small> <button class="btn sm red" data-act="delAnn" data-k="${esc(k)}"><i class="fa-solid fa-trash"></i></button></div>`).join("")||"<p style='color:#94a3b8'>Nothing published.</p>";
+}
+$("annForm").addEventListener("submit",async e=>{e.preventDefault();if(!can("announce.post"))return;await db.ref("announcements").push({title:$("aTitle").value.trim(),msg:$("aMsg").value.trim(),to:$("aTo").value,ts:Date.now(),by:ME.name});log("announcement",$("aTitle").value);e.target.reset()});
+
+/* ----- roles (super only) ----- */
+function renderRoles(){
+  if(!isSuper()||!$("roleCards"))return;
+  const open=[...document.querySelectorAll("#roleCards details[open]")].map(d=>d.dataset.r);
+  $("roleCards").innerHTML=Object.entries(S.roles).map(([k,r])=>{
+    const n=S.users.filter(u=>(u.staffRoles||[]).includes(r.name)).length;
+    let ph="";Object.keys(PERMS).forEach(g=>{ph+=`<div class="gh">${g}</div>`+Object.keys(PERMS[g]).map(p=>`<label><input type="checkbox" value="${p}" ${(r.perms||[]).includes(p)?"checked":""}>${PERMS[g][p]}</label>`).join("")});
+    return `<div class="card" style="margin:0"><h3><i class="fa-solid fa-id-badge"></i> ${esc(r.name)} <span class="pill">${n} users</span></h3><p style="font-size:.8rem;color:var(--muted);margin-bottom:8px">${esc(r.desc||"")}</p>
+    <details data-r="${esc(k)}" ${open.includes(k)?"open":""}><summary style="cursor:pointer;font-weight:700;color:var(--blue);margin-bottom:6px">${(r.perms||[]).length} privileges — edit</summary><div class="chk" id="rp_${esc(k)}" style="grid-template-columns:1fr">${ph}</div>
+    <div style="margin-top:8px"><button class="btn sm green" data-act="saveRole" data-k="${esc(k)}">Save</button> <button class="btn sm red" data-act="delRole" data-k="${esc(k)}">Delete role</button></div></details></div>`}).join("");
+}
+$("roleForm").addEventListener("submit",async e=>{e.preventDefault();if(!isSuper())return;const n=$("rName").value.trim();if(!n)return;await db.ref("roleDefs/"+ck(n)).set({name:n,desc:$("rDesc").value.trim(),perms:[]});log("create role",n);e.target.reset()});
+async function saveRole(k){const p=[...document.querySelectorAll("#rp_"+CSS.escape(k)+" input:checked")].map(i=>i.value);await db.ref("roleDefs/"+k+"/perms").set(p);log("update role privileges",S.roles[k].name);toast("Role saved — applies instantly")}
+async function delRole(k){const r=S.roles[k];if(!confirm(`Delete role "${r.name}"? Users keep the label but lose its privileges.`))return;await db.ref("roleDefs/"+k).remove();log("delete role",r.name)}
+
+/* ----- audit ----- */
+function renderAudit(){
+  if(!isSuper()||!$("auBody"))return;
+  $("auBody").innerHTML=S.audit.map(a=>`<tr><td style="white-space:nowrap">${new Date(a.ts).toLocaleString()}</td><td>${esc(a.by)}</td><td><span class="pill">${esc(a.action)}</span></td><td>${esc(a.detail)}</td></tr>`).join("")||`<tr><td colspan="4" style="color:#94a3b8;text-align:center;padding:18px">No activity yet.</td></tr>`;
+}
+
+/* ============ EVENTS ============ */
+document.addEventListener("click",e=>{
+  const nb=e.target.closest("#nav button[data-tab]");if(nb)return go(nb.dataset.tab);
+  const gb=e.target.closest("[data-go]");if(gb)return go(gb.dataset.go);
+  const t=e.target.closest("[data-tile]");if(t)return pickTile(t.dataset.tile);
+  const c=e.target.closest("[data-cat]");if(c){catF=c.dataset.cat;return renderUsers()}
+  const g=e.target.closest("[data-grp]");if(g){grpF=g.dataset.grp;return renderUsers()}
+  const mc=e.target.closest("[data-mc]");if(mc){curClass=mc.dataset.mc;return renderMarks()}
+  const a=e.target.closest("[data-act]");if(!a)return;e.preventDefault();
+  const k=a.dataset.k,act=a.dataset.act;
+  ({logout,genPass,bulkImport,exportMarks,exportUsers,
+   closeEdit:()=>$("editModal").style.display="none",
+   edit:()=>openEdit(k),toggle:()=>toggleUser(k),del:()=>delUser(k),impersonate:()=>impersonate(k),
+   reveal:()=>{const p=a.previousElementSibling;p.textContent=p.textContent==="••••••"?(p.dataset.pw||"(none)"):"••••••"},
+   openGrp:()=>showGroup(a.dataset.g),delGrp:()=>delGrp(a.dataset.g),
+   addMember:()=>{const v=$("addMember").value;if(v)setMember(a.dataset.g,v,true)},rmMember:()=>setMember(a.dataset.g,k,false),
+   openClass:()=>showClass(a.dataset.c),delAnn:()=>db.ref("announcements/"+k).remove(),
+   saveRole:()=>saveRole(k),delRole:()=>delRole(k)})[act]?.();
+});
+$("search").addEventListener("input",renderUsers);
+pickTile("student");
+</script>
 </body>
 </html>
