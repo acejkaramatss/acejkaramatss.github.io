@@ -4,7 +4,7 @@
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Student &amp; Staff Academic Workspace | ACEJ KARAMA TSS</title>
-  <meta name="description" content="Official Academic Workspace of ACEJ Karama TSS. Integrated file upload, in-portal document reader, assignments, and weighted assessment.">
+  <meta name="description" content="Official Academic Workspace of ACEJ Karama TSS. Integrated file upload, in-portal document reader, assignments, attendance and weighted assessment.">
   
   <link rel="icon" type="image/png" href="/logo.png?v=3">
   <link rel="shortcut icon" type="image/png" href="/logo.png?v=3">
@@ -206,13 +206,13 @@
     
     .edtech-tiles-grid {
       display: grid;
-      grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
-      gap: 20px;
+      grid-template-columns: repeat(auto-fit, minmax(210px, 1fr));
+      gap: 18px;
       margin-bottom: 25px;
     }
     .edtech-card {
       border-radius: 14px;
-      padding: 20px 22px;
+      padding: 18px 20px;
       color: var(--white);
       display: flex;
       justify-content: space-between;
@@ -224,9 +224,9 @@
     .edtech-card-green { background: var(--edtech-green); }
     .edtech-card-amber { background: var(--edtech-amber); }
     
-    .edtech-card-info h4 { font-size: 0.85rem; font-weight: 700; opacity: 0.9; }
+    .edtech-card-info h4 { font-size: 0.82rem; font-weight: 700; opacity: 0.9; }
     .edtech-card-info .digit { font-size: 1.8rem; font-weight: 900; line-height: 1.1; margin: 4px 0 2px; }
-    .edtech-card-info p { font-size: 0.78rem; opacity: 0.85; }
+    .edtech-card-info p { font-size: 0.75rem; opacity: 0.85; }
 
     .content-panel {
       background: var(--white);
@@ -250,29 +250,32 @@
       background: #1d4ed8;
       color: var(--white);
       border: none;
-      padding: 8px 16px;
-      border-radius: 8px;
+      padding: 7px 14px;
+      border-radius: 7px;
       font-weight: 700;
-      font-size: 0.85rem;
+      font-size: 0.82rem;
       cursor: pointer;
       display: inline-flex;
       align-items: center;
-      gap: 6px;
+      gap: 5px;
       text-decoration: none;
+      transition: background 0.2s;
     }
     .btn-publish-open:hover { background: #1e40af; }
+    .btn-publish-del { background: #fee2e2; color: #b91c1c; border: 1px solid #fca5a5; }
+    .btn-publish-del:hover { background: #ef4444; color: #ffffff; }
 
-    .records-table { width: 100%; border-collapse: collapse; font-size: 0.9rem; }
-    .records-table th, .records-table td { padding: 12px 14px; text-align: left; border-bottom: 1px solid #e2e8f0; }
+    .records-table { width: 100%; border-collapse: collapse; font-size: 0.88rem; }
+    .records-table th, .records-table td { padding: 11px 13px; text-align: left; border-bottom: 1px solid #e2e8f0; }
     .records-table th { background: #f8fafc; color: #475569; font-weight: 700; }
     
-    .grade-badge { display: inline-block; padding: 4px 10px; border-radius: 6px; font-weight: 800; font-size: 0.78rem; }
+    .grade-badge { display: inline-block; padding: 4px 9px; border-radius: 6px; font-weight: 800; font-size: 0.75rem; }
     .grade-competent { background: #ecfdf5; color: #047857; }
     .grade-draft { background: #fef3c7; color: #b45309; }
 
     .grade-input {
-      width: 58px;
-      padding: 6px 4px;
+      width: 55px;
+      padding: 5px 3px;
       border: 1.5px solid var(--border-color);
       border-radius: 6px;
       font-size: 0.88rem;
@@ -316,7 +319,6 @@
       max-height: 90vh; overflow-y: auto;
     }
 
-    /* DOCUMENT READER MODAL */
     .reader-modal-card {
       max-width: 960px; width: 95%; height: 88vh;
       display: flex; flex-direction: column;
@@ -392,7 +394,7 @@
         <form id="portalLoginForm" onsubmit="handlePortalLogin(event)" novalidate>
           <div class="form-group">
             <label id="lblUsername" for="portalUsername">Student Roll / Reg ID Number</label>
-            <input type="text" id="portalUsername" class="input-control" placeholder="e.g. Mugisha" oninput="clearInlineLoginErrors()">
+            <input type="text" id="portalUsername" class="input-control" placeholder="e.g. benjamin" oninput="clearInlineLoginErrors()">
             <div class="inline-error-message" id="usernameInlineError">
               <i class="fa-solid fa-circle-exclamation"></i>
               <span>The username or ID entered isn't connected to an active account.</span>
@@ -510,12 +512,12 @@
         </div>
       </div>
 
-      <!-- 100% WEIGHTED ASSESSMENT -->
+      <!-- 100% WEIGHTED ASSESSMENT (CW1:10, CW2:10, CAT:30, EXAM:50) -->
       <div class="content-panel">
         <div class="panel-header-row">
           <h3>
             <i class="fa-solid fa-chart-column" style="color: #2563eb;"></i> 
-            Student Module Marks Evaluation (<span class="badgeClassLabel">Level 5 NIT</span>)
+            Continuous Assessment &amp; Marks Evaluation (<span class="badgeClassLabel">Level 5 NIT</span>)
           </h3>
           <div style="display:flex; gap:8px;">
             <select id="teacherMarkCourseSelector" onchange="loadCourseMarksForClass()" style="padding:6px 10px; border-radius:6px; border:1.5px solid var(--border-color); font-weight:700;"></select>
@@ -565,7 +567,7 @@
                 <th>Lecture / Material Title</th>
                 <th>File Name</th>
                 <th>Status</th>
-                <th>Action</th>
+                <th>Actions</th>
               </tr>
             </thead>
             <tbody id="trainerNotesTbody"></tbody>
@@ -609,7 +611,7 @@
       <div class="edtech-welcome-banner" style="background: linear-gradient(135deg, #0f2847 0%, #1e3a8a 100%);">
         <div>
           <h2 id="studentHeroTitle">Welcome Student!</h2>
-          <p id="studentHeroSub">Enrolled Class: Level 5 NIT &bull; Reg: Mugisha</p>
+          <p id="studentHeroSub">Enrolled Class: Level 5 NIT &bull; Reg: benjamin</p>
         </div>
       </div>
 
@@ -621,20 +623,20 @@
         </div>
       </div>
 
-      <!-- TILES -->
+      <!-- TILES INCLUDING COURSE ATTENDANCE PROGRESS -->
       <div class="edtech-tiles-grid">
         <div class="edtech-card edtech-card-green">
           <div class="edtech-card-info">
-            <h4>Start Date</h4>
-            <div class="digit" id="studentCourseStartDate" style="font-size:1.3rem;">--</div>
-            <p>Course Launch</p>
+            <h4>My Attendance</h4>
+            <div class="digit" id="studentAttendancePercent">100%</div>
+            <p id="studentAttStatusSub">Attended Sessions</p>
           </div>
-          <div class="edtech-card-icon"><i class="fa-solid fa-calendar-plus"></i></div>
+          <div class="edtech-card-icon"><i class="fa-solid fa-calendar-check"></i></div>
         </div>
 
         <div class="edtech-card edtech-card-amber">
           <div class="edtech-card-info">
-            <h4>Scheduled CAT Date</h4>
+            <h4>CAT Date</h4>
             <div class="digit" id="studentCourseCatDate" style="font-size:1.3rem;">--</div>
             <p>Continuous Assessment</p>
           </div>
@@ -657,6 +659,20 @@
             <p>CW (20) + CAT (30) + Exam (50)</p>
           </div>
           <div class="edtech-card-icon"><i class="fa-solid fa-award"></i></div>
+        </div>
+      </div>
+
+      <!-- SECTION: STUDENT HISTORICAL DATED ATTENDANCE -->
+      <div class="content-panel">
+        <div class="panel-header-row">
+          <h3><i class="fa-solid fa-calendar-day" style="color: #10b981;"></i> My Attendance History by Date</h3>
+          <div style="display:flex; align-items:center; gap:8px;">
+            <label style="font-size:0.85rem; font-weight:700;">Select Date:</label>
+            <input type="date" id="studentHistoryDatePicker" onchange="renderStudentAttendanceForDay()" style="padding:6px 10px; border-radius:6px; border:1.5px solid var(--border-color); font-weight:700;">
+          </div>
+        </div>
+        <div id="studentDayAttendanceResult" style="padding:15px; background:#f8fafc; border-radius:8px; border:1px solid var(--border-color); font-size:0.95rem;">
+          Select a date above to verify your attendance record for that day.
         </div>
       </div>
 
@@ -742,15 +758,13 @@
         <button onclick="closeModal('docReaderModal')" style="background:none; border:none; font-size:1.6rem; cursor:pointer;">&times;</button>
       </div>
 
-      <!-- Embedded Iframe for Previewable Files -->
       <iframe id="docReaderFrame" class="reader-frame" src="" style="display:none;"></iframe>
 
-      <!-- Fallback Card for Unsupported Files (.odg, .docx, .pptx) -->
       <div id="unsupportedDocBox" class="unsupported-doc-box" style="display:none;">
         <i class="fa-solid fa-file-lines" style="font-size:3.5rem; color:var(--blue); margin-bottom:12px;"></i>
         <h4 id="unsupportedDocName" style="font-size:1.15rem; color:var(--text-dark); margin-bottom:6px;">Document</h4>
         <p style="font-size:0.9rem; color:var(--text-muted); max-width:440px; margin-bottom:18px;">
-          This file format is optimized for offline applications (such as LibreOffice or Microsoft Office). You can download and open it directly on your computer or phone.
+          This file format is optimized for offline software (such as LibreOffice or Microsoft Office). Download and open it directly.
         </p>
         <a id="unsupportedDownloadBtn" href="" download class="btn-publish-open" style="font-size:0.95rem; padding:10px 22px;">
           <i class="fa-solid fa-download"></i> Download File Now
@@ -759,7 +773,7 @@
 
       <div style="display:flex; justify-content:flex-end; gap:10px; margin-top:10px;">
         <a id="readerDownloadBtn" href="" download class="btn-publish-open">
-          <i class="fa-solid fa-download"></i> Download
+          <i class="fa-solid fa-download"></i> Download Copy
         </a>
         <button class="btn-nav-act" onclick="closeModal('docReaderModal')">Close</button>
       </div>
@@ -807,6 +821,32 @@
         <button type="submit" id="btnSaveMaterialSubmit" class="btn-login-submit">
           <i class="fa-solid fa-floppy-disk"></i> Save Course Material
         </button>
+      </form>
+    </div>
+  </div>
+
+  <!-- EDIT NOTE METADATA MODAL -->
+  <div class="modal-backdrop" id="editNoteModal">
+    <div class="modal-card">
+      <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:15px;">
+        <h3><i class="fa-solid fa-pen-to-square" style="color: #2563eb;"></i> Edit Note Details</h3>
+        <button onclick="closeModal('editNoteModal')" style="background:none; border:none; font-size:1.5rem; cursor:pointer;">&times;</button>
+      </div>
+
+      <form onsubmit="handleSaveEditedNote(event)">
+        <input type="hidden" id="editNoteId">
+        <div class="form-group">
+          <label>Lecture / Material Title</label>
+          <input type="text" id="editNoteTitle" class="input-control" required>
+        </div>
+        <div class="form-group">
+          <label>Publish Status</label>
+          <select id="editNoteStatus" class="input-control">
+            <option value="draft">💾 Draft (Hidden from students)</option>
+            <option value="published">🚀 Published (Live to students)</option>
+          </select>
+        </div>
+        <button type="submit" class="btn-login-submit"><i class="fa-solid fa-check"></i> Save Changes</button>
       </form>
     </div>
   </div>
@@ -979,7 +1019,7 @@
       document.getElementById('tabStudent').classList.toggle('active-tab', role === 'student');
       document.getElementById('tabStaff').classList.toggle('active-tab', role === 'staff');
       document.getElementById('lblUsername').innerText = (role === 'student') ? 'Student Roll / Reg ID Number' : 'Staff Username or Email';
-      document.getElementById('portalUsername').placeholder = (role === 'student') ? 'e.g. Mugisha' : 'e.g. muneza';
+      document.getElementById('portalUsername').placeholder = (role === 'student') ? 'e.g. benjamin' : 'e.g. muneza';
     }
 
     function clearInlineLoginErrors() {
@@ -1010,6 +1050,7 @@
 
       const todayStr = new Date().toISOString().split('T')[0];
       document.getElementById('attendanceDatePicker').value = todayStr;
+      document.getElementById('studentHistoryDatePicker').value = todayStr;
 
       rtdb.ref('users').on('value', snap => {
         const val = snap.val() || {};
@@ -1028,7 +1069,6 @@
         }
       });
 
-      // NOTES REALTIME LISTENER (STORED OBJECT-BASED)
       rtdb.ref('notes').on('value', snap => {
         allCloudNotes = snap.val() || {};
         if (activeSessionUser) {
@@ -1247,6 +1287,7 @@
       loadClassAttendanceForDate();
     }
 
+    // 100% WEIGHTED MARKS EVALUATION (CW1:10, CW2:10, CAT:30, EXAM:50)
     async function loadCourseMarksForClass() {
       const activeClass = document.getElementById('teacherActiveManagedClass').value;
       const courseCode = document.getElementById('teacherMarkCourseSelector').value;
@@ -1265,7 +1306,13 @@
       students.forEach(s => {
         const u = cleanFirebaseKey(s.username).toLowerCase();
         const m = marksData[u] || { cw1: 8, cw2: 9, cat: 26, exam: 44 };
-        const total = (parseInt(m.cw1)||0) + (parseInt(m.cw2)||0) + (parseInt(m.cat)||0) + (parseInt(m.exam)||0);
+        
+        // Strict boundary cap to prevent >100% bugs
+        const cw1 = Math.min(10, Math.max(0, parseInt(m.cw1) || 0));
+        const cw2 = Math.min(10, Math.max(0, parseInt(m.cw2) || 0));
+        const cat = Math.min(30, Math.max(0, parseInt(m.cat) || 0));
+        const exam = Math.min(50, Math.max(0, parseInt(m.exam) || 0));
+        const total = cw1 + cw2 + cat + exam;
         const isComp = total >= 70;
 
         const tr = document.createElement('tr');
@@ -1273,15 +1320,33 @@
         tr.innerHTML = `
           <td><strong>${s.name}</strong></td>
           <td><code>${s.username}</code></td>
-          <td><input type="number" class="grade-input mark-cw1" value="${m.cw1}" min="0" max="10"></td>
-          <td><input type="number" class="grade-input mark-cw2" value="${m.cw2}" min="0" max="10"></td>
-          <td><input type="number" class="grade-input mark-cat" value="${m.cat}" min="0" max="30"></td>
-          <td><input type="number" class="grade-input mark-exam" value="${m.exam}" min="0" max="50"></td>
-          <td><strong style="color:${isComp ? '#047857' : '#b45309'};">${total}%</strong></td>
-          <td><span class="grade-badge ${isComp ? 'grade-competent' : 'grade-draft'}">${isComp ? 'Competent' : 'In Progress'}</span></td>
+          <td><input type="number" class="grade-input mark-cw1" value="${cw1}" min="0" max="10" oninput="recomputeRowTotal(this)"></td>
+          <td><input type="number" class="grade-input mark-cw2" value="${cw2}" min="0" max="10" oninput="recomputeRowTotal(this)"></td>
+          <td><input type="number" class="grade-input mark-cat" value="${cat}" min="0" max="30" oninput="recomputeRowTotal(this)"></td>
+          <td><input type="number" class="grade-input mark-exam" value="${exam}" min="0" max="50" oninput="recomputeRowTotal(this)"></td>
+          <td><strong class="row-total-display" style="color:${isComp ? '#047857' : '#b45309'};">${total}%</strong></td>
+          <td><span class="grade-badge row-badge ${isComp ? 'grade-competent' : 'grade-draft'}">${isComp ? 'Competent' : 'In Progress'}</span></td>
         `;
         tbody.appendChild(tr);
       });
+    }
+
+    function recomputeRowTotal(input) {
+      const row = input.closest('tr');
+      const cw1 = Math.min(10, Math.max(0, parseInt(row.querySelector('.mark-cw1').value) || 0));
+      const cw2 = Math.min(10, Math.max(0, parseInt(row.querySelector('.mark-cw2').value) || 0));
+      const cat = Math.min(30, Math.max(0, parseInt(row.querySelector('.mark-cat').value) || 0));
+      const exam = Math.min(50, Math.max(0, parseInt(row.querySelector('.mark-exam').value) || 0));
+      const total = cw1 + cw2 + cat + exam;
+      const isComp = total >= 70;
+
+      const totalDisplay = row.querySelector('.row-total-display');
+      totalDisplay.innerText = total + "%";
+      totalDisplay.style.color = isComp ? '#047857' : '#b45309';
+
+      const badge = row.querySelector('.row-badge');
+      badge.className = `grade-badge row-badge ${isComp ? 'grade-competent' : 'grade-draft'}`;
+      badge.innerText = isComp ? 'Competent' : 'In Progress';
     }
 
     async function saveCourseMarksForClass() {
@@ -1294,10 +1359,10 @@
         const u = r.dataset.username;
         if (u) {
           payload[u] = {
-            cw1: parseInt(r.querySelector('.mark-cw1').value) || 0,
-            cw2: parseInt(r.querySelector('.mark-cw2').value) || 0,
-            cat: parseInt(r.querySelector('.mark-cat').value) || 0,
-            exam: parseInt(r.querySelector('.mark-exam').value) || 0
+            cw1: Math.min(10, Math.max(0, parseInt(r.querySelector('.mark-cw1').value) || 0)),
+            cw2: Math.min(10, Math.max(0, parseInt(r.querySelector('.mark-cw2').value) || 0)),
+            cat: Math.min(30, Math.max(0, parseInt(r.querySelector('.mark-cat').value) || 0)),
+            exam: Math.min(50, Math.max(0, parseInt(r.querySelector('.mark-exam').value) || 0))
           };
         }
       });
@@ -1366,7 +1431,6 @@
         date: new Date().toLocaleDateString('en-GB')
       };
 
-      // Direct write by unique ID
       await rtdb.ref('notes/' + noteKey).set(newNote);
 
       alert(status === 'published' ? "Course material published to students!" : "Material saved as Draft in portal.");
@@ -1376,6 +1440,7 @@
       e.target.reset();
     }
 
+    // TEACHER NOTES TABLE WITH WORKING PUBLISH, EDIT & DELETE BUTTONS
     function renderTeacherNotesTable() {
       const activeClass = document.getElementById('teacherActiveManagedClass').value;
       const tbody = document.getElementById('trainerNotesTbody');
@@ -1392,29 +1457,81 @@
       notes.forEach(n => {
         const isDraft = n.status === 'draft';
         const tr = document.createElement('tr');
+        
         tr.innerHTML = `
           <td><strong>${n.courseCode}</strong></td>
           <td>${n.targetClass}</td>
           <td>${n.title}</td>
           <td><code>${n.fileName}</code></td>
           <td><span class="grade-badge ${isDraft ? 'grade-draft' : 'grade-competent'}">${isDraft ? 'Draft (Hidden)' : 'Published'}</span></td>
-          <td>
-            <button class="btn-publish-open" style="padding:4px 8px; font-size:0.75rem;" onclick="viewDocumentInPortal('${n.id}')"><i class="fa-solid fa-eye"></i> View</button>
-            ${isDraft ? `<button class="btn-publish-open" style="padding:4px 8px; font-size:0.75rem; background:#10b981;" onclick="publishDraftNote('\${n.id}')"><i class="fa-solid fa-cloud-arrow-up"></i> Publish</button>` : ''}
+          <td style="white-space:nowrap;">
+            <button class="btn-publish-open" style="padding:4px 8px; font-size:0.75rem;" onclick="viewDocumentInPortal('${n.id}')">
+              <i class="fa-solid fa-eye"></i> View
+            </button>
+            ${isDraft ? `<button class="btn-publish-open btn-publish-action" style="padding:4px 8px; font-size:0.75rem; background:#10b981;" data-id="\${n.id}" onclick="triggerPublishNote(this)">
+              <i class="fa-solid fa-cloud-arrow-up"></i> Publish
+            </button>` : ''}
+            <button class="btn-publish-open" style="padding:4px 8px; font-size:0.75rem; background:#64748b;" onclick="openEditNoteModal('${n.id}')">
+              <i class="fa-solid fa-pen"></i> Edit
+            </button>
+            <button class="btn-publish-open btn-publish-del" style="padding:4px 8px; font-size:0.75rem;" onclick="deleteUploadedNote('${n.id}', '${n.title.replace(/'/g, "\\'")}')">
+              <i class="fa-solid fa-trash"></i>
+            </button>
           </td>
         `;
         tbody.appendChild(tr);
       });
     }
 
-    // DIRECT FIREBASE NODE UPDATE FOR PUBLISH (FIXES PUBLISH BUTTON)
-    async function publishDraftNote(noteId) {
-      if (!confirm("Publish this material so all students in this class can view and read it?")) return;
+    // PUBLISH HANDLER (FIXES PATH ERROR)
+    async function triggerPublishNote(btn) {
+      const noteId = btn.getAttribute('data-id');
+      if (!noteId) return alert("Invalid note ID!");
+      
+      const cleanKey = cleanFirebaseKey(noteId);
       try {
-        await rtdb.ref('notes/' + noteId + '/status').set('published');
-        alert("Course material published successfully!");
+        await rtdb.ref(`notes/${cleanKey}/status`).set('published');
+        alert("Course material published successfully! All students can now read it.");
       } catch (err) {
         alert("Failed to publish: " + err.message);
+      }
+    }
+
+    // EDIT NOTE METADATA
+    function openEditNoteModal(noteId) {
+      const note = allCloudNotes[noteId] || Object.values(allCloudNotes).find(n => n.id === noteId);
+      if (!note) return alert("Note not found!");
+
+      document.getElementById('editNoteId').value = note.id;
+      document.getElementById('editNoteTitle').value = note.title;
+      document.getElementById('editNoteStatus').value = note.status || 'draft';
+      openModal('editNoteModal');
+    }
+
+    async function handleSaveEditedNote(e) {
+      e.preventDefault();
+      const id = document.getElementById('editNoteId').value;
+      const title = document.getElementById('editNoteTitle').value.trim();
+      const status = document.getElementById('editNoteStatus').value;
+
+      const cleanKey = cleanFirebaseKey(id);
+      await rtdb.ref(`notes/${cleanKey}/title`).set(title);
+      await rtdb.ref(`notes/${cleanKey}/status`).set(status);
+
+      alert("Note updated successfully!");
+      closeModal('editNoteModal');
+    }
+
+    // DELETE NOTE (REMOVES DIRECTLY FROM FIREBASE)
+    async function deleteUploadedNote(noteId, title) {
+      if (!confirm(`Permanently delete "${title}"? This will remove the file from Firebase across all devices.`)) return;
+
+      const cleanKey = cleanFirebaseKey(noteId);
+      try {
+        await rtdb.ref('notes/' + cleanKey).remove();
+        alert("Note deleted successfully.");
+      } catch (err) {
+        alert("Delete failed: " + err.message);
       }
     }
 
@@ -1431,7 +1548,7 @@
       return new Blob([uInt8Array], { type: contentType });
     }
 
-    // SMART DOCUMENT READER (HANDLES PDF, IMAGES & ODG/OFFICE FALLBACKS)
+    // DOCUMENT READER (PDF, IMAGES & ODG/OFFICE FALLBACKS)
     function viewDocumentInPortal(noteId) {
       const note = allCloudNotes[noteId] || Object.values(allCloudNotes).find(n => n.id === noteId);
       if (!note || !note.fileData) return alert("Document not found!");
@@ -1453,7 +1570,6 @@
       downloadBtn.href = note.fileData;
       downloadBtn.download = fileName;
 
-      // Render native preview for PDF, Text, and Images
       if (['pdf', 'png', 'jpg', 'jpeg', 'webp', 'txt'].includes(ext)) {
         fallbackBox.style.display = 'none';
         iframe.style.display = 'block';
@@ -1462,7 +1578,6 @@
         currentCreatedBlobUrl = URL.createObjectURL(blob);
         iframe.src = currentCreatedBlobUrl;
       } else {
-        // Fallback for .odg, .docx, .pptx, etc.
         iframe.style.display = 'none';
         fallbackBox.style.display = 'flex';
         document.getElementById('unsupportedDocName').innerText = `${fileName} (${ext.toUpperCase()} File)`;
@@ -1546,6 +1661,7 @@
 
       populateStudentCoursesDropdown();
       renderStudentAllCoursesTranscript();
+      renderStudentAttendanceForDay();
     }
 
     function populateStudentCoursesDropdown() {
@@ -1568,7 +1684,7 @@
       renderStudentCourseDetails();
     }
 
-    function renderStudentCourseDetails() {
+    async function renderStudentCourseDetails() {
       if (!activeSessionUser) return;
       const studentClass = (activeSessionUser.level || "Level 5") + " " + (activeSessionUser.dept || "NIT");
       const code = document.getElementById('studentCourseSelector').value;
@@ -1576,7 +1692,6 @@
 
       if (course) {
         document.getElementById('studentCourseTeacherBadge').innerText = `Instructor: ${course.teacher}`;
-        document.getElementById('studentCourseStartDate').innerText = course.startDate || "TBA";
         document.getElementById('studentCourseCatDate').innerText = course.catDate || "TBA";
         document.getElementById('studentCourseExamDate').innerText = course.examDate || "TBA";
 
@@ -1586,8 +1701,51 @@
         document.getElementById('studentCourseGradeDisplay').innerText = total + "%";
       }
 
+      // Calculate Course Attendance
+      const totalCourseDays = course ? (parseInt(course.totalDays) || 10) : 10;
+      const snap = await rtdb.ref(`attendance/${studentClass}`).once('value');
+      const allAtt = snap.val() || {};
+      
+      let attendedDays = 0;
+      const uKey = cleanFirebaseKey(activeSessionUser.username).toLowerCase();
+      Object.keys(allAtt).forEach(dKey => {
+        if (allAtt[dKey][uKey] && allAtt[dKey][uKey].status === 'Present') {
+          attendedDays++;
+        }
+      });
+      const attPercent = Math.min(100, Math.round((attendedDays / totalCourseDays) * 100));
+      document.getElementById('studentAttendancePercent').innerText = attPercent + "%";
+      document.getElementById('studentAttStatusSub').innerText = `${attendedDays} of ${totalCourseDays} days attended`;
+
       renderStudentNotesTable();
       renderStudentAssignmentsTable();
+    }
+
+    async function renderStudentAttendanceForDay() {
+      if (!activeSessionUser) return;
+      const studentClass = (activeSessionUser.level || "Level 5") + " " + (activeSessionUser.dept || "NIT");
+      const checkDate = document.getElementById('studentHistoryDatePicker').value;
+      const resBox = document.getElementById('studentDayAttendanceResult');
+
+      if (!checkDate) {
+        resBox.innerHTML = `Please select a date to verify attendance.`;
+        return;
+      }
+
+      const dateKey = checkDate.replace(/-/g, '_');
+      const snap = await rtdb.ref(`attendance/${studentClass}/${dateKey}/${cleanFirebaseKey(activeSessionUser.username).toLowerCase()}`).once('value');
+      const record = snap.val();
+
+      if (record) {
+        let badgeColor = record.status === 'Present' ? '#047857' : (record.status === 'Absent' ? '#b91c1c' : '#b45309');
+        resBox.innerHTML = `
+          <div><strong>Date:</strong> ${checkDate}</div>
+          <div style="margin-top:4px;"><strong>Status:</strong> <span style="color:${badgeColor}; font-weight:800; text-transform:uppercase;">${record.status}</span></div>
+          ${record.remark ? `<div style="margin-top:4px; font-size:0.85rem; color:#64748b;"><strong>Instructor Remark:</strong> \${record.remark}</div>` : ''}
+        `;
+      } else {
+        resBox.innerHTML = `<span style="color:#94a3b8;"><i class="fa-solid fa-circle-info"></i> No attendance roll-call was recorded on <strong>${checkDate}</strong>.</span>`;
+      }
     }
 
     function renderStudentAllCoursesTranscript() {
@@ -1605,7 +1763,12 @@
       myCourses.forEach(c => {
         const u = cleanFirebaseKey(activeSessionUser.username).toLowerCase();
         const m = (allCloudMarks[studentClass] && allCloudMarks[studentClass][cleanFirebaseKey(c.code)] && allCloudMarks[studentClass][cleanFirebaseKey(c.code)][u]) || { cw1:0, cw2:0, cat:0, exam:0 };
-        const total = (parseInt(m.cw1)||0) + (parseInt(m.cw2)||0) + (parseInt(m.cat)||0) + (parseInt(m.exam)||0);
+        
+        const cw1 = Math.min(10, Math.max(0, parseInt(m.cw1) || 0));
+        const cw2 = Math.min(10, Math.max(0, parseInt(m.cw2) || 0));
+        const cat = Math.min(30, Math.max(0, parseInt(m.cat) || 0));
+        const exam = Math.min(50, Math.max(0, parseInt(m.exam) || 0));
+        const total = cw1 + cw2 + cat + exam;
         const isComp = total >= 70;
 
         const tr = document.createElement('tr');
@@ -1613,10 +1776,10 @@
           <td><strong>${c.code}</strong></td>
           <td>${c.title}</td>
           <td>${c.teacher}</td>
-          <td>${m.cw1} / 10</td>
-          <td>${m.cw2} / 10</td>
-          <td>${m.cat} / 30</td>
-          <td>${m.exam} / 50</td>
+          <td>${cw1} / 10</td>
+          <td>${cw2} / 10</td>
+          <td>${cat} / 30</td>
+          <td>${exam} / 50</td>
           <td><strong style="color:${isComp ? '#047857' : '#b45309'};">${total}%</strong></td>
           <td><span class="grade-badge ${isComp ? 'grade-competent' : 'grade-draft'}">${isComp ? 'Competent' : 'In Progress'}</span></td>
         `;
