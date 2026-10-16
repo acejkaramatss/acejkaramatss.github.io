@@ -332,7 +332,6 @@ function toast(m){const t=document.createElement("div");t.textContent=m;t.style.
 /* ============ REALTIME (push-based, no polling) ============ */
 function listen(){
   if(listening)return;listening=true;
-  db.ref(".info/connected").on("value",s=>{const on=s.val()===true;$("sync").className="sync"+(on?"":" off");$("sync").querySelector("span").textContent=on?"Live sync · connected":"Offline · reconnecting…"});
   db.ref("users").on("value",s=>{S.users=parseUsers(s.val());renderAll()});
   db.ref("groups").on("value",s=>{const v=s.val();S.groups=Array.isArray(v)?v:(v?Object.values(v):DEFAULT_GROUPS.slice());renderAll()});
   db.ref("roleDefs").on("value",s=>{const v=s.val();if(!v){if(isSuper())db.ref("roleDefs").set(keyed(DEFAULT_ROLES));S.roles=keyed(DEFAULT_ROLES)}else S.roles=v;renderAll()});
@@ -354,10 +353,15 @@ $("loginForm").addEventListener("submit",async e=>{
   e.preventDefault();
   const u=$("lu").value.trim(),p=$("lp").value.trim();
   if(u===MASTER.user&&p===MASTER.pass){ME={isSuper:true,name:"Super Admin ("+MASTER.user+")",username:MASTER.user};return enter()}
-  const snap=await db.ref("users").once("value");
-  const list=parseUsers(snap.val());
-  const m=list.find(x=>x.username&&x.username.toLowerCase()===u.toLowerCase()&&x.pass===p&&x.role==="admin"&&(x.status||"active")==="active");
-  if(!m)return alert("Invalid credentials, or this account is not an active administrator.");
+  let list;
+  try{
+    const snap=await Promise.race([db.ref("users").once("value"),new Promise((_,r)=>setTimeout(()=>r(new Error("timed out")),8000))]);
+    list=parseUsers(snap.val());
+  }catch(err){return alert("Cannot reach the database ("+err.message+"). Check the internet connection and that your Firebase rules allow reading 'users'.")}
+  const m=list.find(x=>x.username&&x.username.toLowerCase()===u.toLowerCase());
+  if(!m||m.pass!==p)return alert("Wrong username or password.");
+  if(m.role!=="admin")return alert("This is a "+(m.role||"user")+" account. Only the Super Admin or administrators can sign in to this console. Use the Student & Staff Portal instead.");
+  if((m.status||"active")!=="active")return alert("This account is disabled.");
   ME={isSuper:false,name:"Admin ("+m.name+")",username:m.username,user:m};enter();
 });
 function enter(){
@@ -637,6 +641,8 @@ document.addEventListener("click",e=>{
 });
 $("search").addEventListener("input",renderUsers);
 pickTile("student");
+// Connection badge works from the moment the page opens (before login)
+db.ref(".info/connected").on("value",s=>{const on=s.val()===true;$("sync").className="sync"+(on?"":" off");$("sync").querySelector("span").textContent=on?"Live sync · connected":"Offline · reconnecting…"});
 </script>
 </body>
 </html>
