@@ -60,6 +60,7 @@
       padding: 5px 12px;
       border-radius: 20px;
       font-weight: 700;
+      cursor: pointer;
     }
 
     .btn-action {
@@ -287,7 +288,7 @@
       <div>ACEJ KARAMA TSS &bull; <span id="adminHeaderBadge">Super Admin Console</span></div>
     </div>
     <div class="header-controls">
-      <div class="sync-status-indicator" id="cloudSyncStatus">
+      <div class="sync-status-indicator" id="cloudSyncStatus" onclick="initRealtimeListeners()" title="Click to refresh connection">
         <i class="fa-solid fa-bolt"></i> <span>Connected (Direct Sync)</span>
       </div>
       <a href="/portal/" target="_blank" class="btn-action">
@@ -337,7 +338,7 @@
       </div>
     </div>
 
-    <!-- ACADEMIC CLASS PROGRESS & MARKS INSPECTOR (NEW) -->
+    <!-- CLASS ACADEMIC PROGRESS & MARKS INSPECTOR -->
     <div class="card-panel" style="border-left: 5px solid var(--blue);">
       <div class="panel-header-row" style="display:flex; justify-content:space-between; align-items:center; flex-wrap:wrap; gap:10px; margin-bottom:12px;">
         <div class="card-title" style="margin-bottom:0;">
@@ -351,7 +352,7 @@
       </div>
 
       <p style="font-size: 0.85rem; color: #64748b; margin-bottom: 12px;">
-        Select an academic class below to view all enrolled students, their continuous assessment (CW1, CW2, CAT), exam scores, and competency status:
+        Select an academic class below to view all enrolled students, continuous assessment (CW1, CW2, CAT), exam scores, and competency status:
       </p>
 
       <div class="group-filter-strip" id="classSelectorButtons">
@@ -527,7 +528,7 @@
     </div>
   </div>
 
-  <!-- EDIT USER MODAL (CLASS & DEPARTMENT SWITCHING CAPABILITY) -->
+  <!-- EDIT USER MODAL -->
   <div class="modal-backdrop" id="editModal">
     <div class="modal-content">
       <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:15px;">
@@ -564,7 +565,7 @@
           </select>
         </div>
 
-        <!-- STUDENT CLASS LEVEL & DEPARTMENT (NEW) -->
+        <!-- STUDENT CLASS LEVEL & DEPARTMENT -->
         <div id="editStudentClassArea">
           <div class="form-ctrl">
             <label>Student Class Level</label>
@@ -636,6 +637,7 @@
       return String(str || '').trim().replace(/[.#$\[\]\/]/g, '_');
     }
 
+    // ROBUST DATA PARSER: Extracts users whether saved as Array, Indexed Map, or Direct Key Objects
     function parseCloudUsers(data) {
       if (!data) return [];
       let list = [];
@@ -643,15 +645,18 @@
         data.forEach((item, index) => {
           if (item) {
             item._fbKey = String(index);
+            if (!item.name && item.username) item.name = item.username;
+            if (!item.username && item.name) item.username = item.name;
             list.push(item);
           }
         });
       } else if (typeof data === 'object') {
         Object.keys(data).forEach(key => {
-          if (data[key] && typeof data[key] === 'object') {
-            let item = data[key];
+          const item = data[key];
+          if (item && typeof item === 'object') {
             item._fbKey = key;
             if (!item.username) item.username = key;
+            if (!item.name) item.name = item.username || key;
             list.push(item);
           }
         });
@@ -685,7 +690,7 @@
       const user = document.getElementById('adminUser').value.trim();
       const pass = document.getElementById('adminPass').value.trim();
 
-      const matchedAdmin = liveUsersList.find(u => u.username.toLowerCase() === user.toLowerCase() && u.pass === pass && (u.role === 'admin' || u.role === 'super'));
+      const matchedAdmin = liveUsersList.find(u => u.username && u.username.toLowerCase() === user.toLowerCase() && u.pass === pass && (u.role === 'admin' || u.role === 'super'));
 
       if (user === MASTER_ADMIN_USER && pass === MASTER_ADMIN_PASS) {
         sessionStorage.setItem("ACEJ_ADMIN_AUTH", "true");
@@ -717,7 +722,6 @@
       initRealtimeListeners();
     }
 
-    // INSPECT CLASS MARKS & PROGRESS (NEW)
     function inspectClassMarks(className, btn) {
       inspectedClass = className;
       document.querySelectorAll('#classSelectorButtons button').forEach(b => b.classList.remove('active'));
@@ -727,6 +731,7 @@
 
     function renderInspectedClassMarks() {
       const tbody = document.getElementById('classInspectorTableBody');
+      if (!tbody) return;
       tbody.innerHTML = "";
 
       const classStudents = liveUsersList.filter(u => u.role === 'student' && ((u.level + " " + u.dept) === inspectedClass || (u.groups && u.groups.includes(inspectedClass))));
@@ -757,8 +762,8 @@
 
         const tr = document.createElement('tr');
         tr.innerHTML = `
-          <td><code>${s.username}</code></td>
-          <td><strong>${s.name}</strong></td>
+          <td><code>${s.username || s.id}</code></td>
+          <td><strong>${s.name || s.username}</strong></td>
           <td><span class="group-pill">${s.level || 'L5'} ${s.dept || 'NIT'}</span></td>
           <td><strong>${cw1}</strong> / 10</td>
           <td><strong>${cw2}</strong> / 10</td>
@@ -815,7 +820,7 @@
       const username = document.getElementById('newUsername').value.trim();
       const pass = document.getElementById('newPassword').value.trim();
 
-      if (liveUsersList.some(u => u.username.toLowerCase() === username.toLowerCase())) {
+      if (liveUsersList.some(u => u.username && u.username.toLowerCase() === username.toLowerCase())) {
         alert("An account with this Reg ID or Username already exists!");
         return;
       }
@@ -859,18 +864,16 @@
       toggleFormRoleFields();
     }
 
-    // OPEN EDIT MODAL (ALLOWS EDITING CLASS FOR CREATED STUDENTS)
     function openEditModal(fbKey) {
       const user = liveUsersList.find(u => (u._fbKey === fbKey || u.username === fbKey));
       if (!user) return;
 
       document.getElementById('editOriginalKey').value = user._fbKey || user.username;
-      document.getElementById('editName').value = user.name;
-      document.getElementById('editUsername').value = user.username;
-      document.getElementById('editPassword').value = user.pass;
+      document.getElementById('editName').value = user.name || "";
+      document.getElementById('editUsername').value = user.username || "";
+      document.getElementById('editPassword').value = user.pass || "";
       document.getElementById('editRole').value = user.role || "student";
 
-      // If Student, fill Level and Dept
       if (user.role === 'student') {
         document.getElementById('editLevel').value = user.level || "Level 5";
         document.getElementById('editDepartment').value = user.dept || "NIT";
@@ -878,7 +881,7 @@
 
       toggleEditRoleFields();
 
-      // Render Staff Roles Checkboxes
+      // Render Staff Roles
       const rolesBox = document.getElementById('editStaffRolesList');
       rolesBox.innerHTML = "";
       const userRoles = user.staffRoles || [];
@@ -889,7 +892,7 @@
         rolesBox.appendChild(item);
       });
 
-      // Render Managed Classes Checkboxes
+      // Render Managed Classes
       const classesBox = document.getElementById('editStaffClassesList');
       classesBox.innerHTML = "";
       const userClasses = user.managedClasses || [];
@@ -958,7 +961,7 @@
         }
 
         await rtdb.ref('users/' + cleanFirebaseKey(newUsername)).set(user);
-        alert(`Account ${user.name} updated!`);
+        alert(`Account ${user.name} updated successfully!`);
         closeEditModal();
       }
     }
@@ -991,83 +994,99 @@
       document.getElementById('statTotalGroups').innerText = liveGroupsList.length;
 
       const regList = document.getElementById('registerGroupsCheckboxList');
-      regList.innerHTML = "";
-      liveGroupsList.forEach((g, idx) => {
-        const item = document.createElement('div');
-        item.className = "priv-item";
-        item.innerHTML = `<input type="checkbox" id="regGrp_${idx}" value="${g}"><label for="regGrp_${idx}">${g}</label>`;
-        regList.appendChild(item);
-      });
+      if (regList) {
+        regList.innerHTML = "";
+        liveGroupsList.forEach((g, idx) => {
+          const item = document.createElement('div');
+          item.className = "priv-item";
+          item.innerHTML = `<input type="checkbox" id="regGrp_${idx}" value="${g}"><label for="regGrp_${idx}">${g}</label>`;
+          regList.appendChild(item);
+        });
+      }
 
       const badgeList = document.getElementById('activeFoldersBadgeList');
-      badgeList.innerHTML = "";
-      liveGroupsList.forEach(g => {
-        const pill = document.createElement('span');
-        pill.className = "folder-item-pill";
-        pill.innerHTML = `<i class="fa-solid fa-folder" style="color:var(--purple);"></i> ${g} <button type="button" onclick="deleteGroup('${g.replace(/'/g, "\\'")}')">&times;</button>`;
-        badgeList.appendChild(pill);
-      });
+      if (badgeList) {
+        badgeList.innerHTML = "";
+        liveGroupsList.forEach(g => {
+          const pill = document.createElement('span');
+          pill.className = "folder-item-pill";
+          pill.innerHTML = `<i class="fa-solid fa-folder" style="color:var(--purple);"></i> ${g} <button type="button" onclick="deleteGroup('${g.replace(/'/g, "\\'")}')">&times;</button>`;
+          badgeList.appendChild(pill);
+        });
+      }
 
       const filterBox = document.getElementById('groupFilterButtons');
-      filterBox.innerHTML = `<span style="font-size:0.8rem; font-weight:800; color:#64748b; margin-right:4px;"><i class="fa-solid fa-filter"></i> Group Folder:</span><button class="filter-btn ${activeFilterGroup === 'all' ? 'active' : ''}" onclick="setGroupFilter('all', this)">All Users</button>`;
-      liveGroupsList.forEach(g => {
-        const btn = document.createElement('button');
-        btn.className = `filter-btn ${activeFilterGroup === g ? 'active' : ''}`;
-        btn.innerText = g;
-        btn.onclick = function() { setGroupFilter(g, this); };
-        filterBox.appendChild(btn);
-      });
+      if (filterBox) {
+        filterBox.innerHTML = `<span style="font-size:0.8rem; font-weight:800; color:#64748b; margin-right:4px;"><i class="fa-solid fa-filter"></i> Group Folder:</span><button class="filter-btn ${activeFilterGroup === 'all' ? 'active' : ''}" onclick="setGroupFilter('all', this)">All Users</button>`;
+        liveGroupsList.forEach(g => {
+          const btn = document.createElement('button');
+          btn.className = `filter-btn ${activeFilterGroup === g ? 'active' : ''}`;
+          btn.innerText = g;
+          btn.onclick = function() { setGroupFilter(g, this); };
+          filterBox.appendChild(btn);
+        });
+      }
     }
 
     function setGroupFilter(group, btn) {
       activeFilterGroup = group;
       document.querySelectorAll('.filter-btn').forEach(b => b.classList.remove('active'));
-      btn.classList.add('active');
+      if (btn) btn.classList.add('active');
       renderData();
     }
 
     function renderData() {
       const userTbody = document.getElementById('userTableBody');
+      if (!userTbody) return;
       userTbody.innerHTML = "";
+
       let countStudents = 0, countStaff = 0;
 
-      const filteredUsers = liveUsersList.filter(u => activeFilterGroup === "all" || (u.groups && u.groups.includes(activeFilterGroup)));
+      // FIXED FILTER: If "all", include every user without requiring a groups array
+      const filteredUsers = liveUsersList.filter(u => {
+        if (activeFilterGroup === "all") return true;
+        return Array.isArray(u.groups) && u.groups.includes(activeFilterGroup);
+      });
 
       liveUsersList.forEach(u => {
         if (u.role === 'student') countStudents++;
-        else if (u.role === 'staff') countStaff++;
+        else if (u.role === 'staff' || u.role === 'admin') countStaff++;
       });
 
-      filteredUsers.forEach(u => {
-        const isStudent = u.role === 'student';
-        let subInfo = "";
-        if (isStudent) {
-          subInfo = `<span class="group-pill" style="background:#e0f2fe; color:#0369a1;"><i class="fa-solid fa-chalkboard"></i> ${u.level || 'L5'} ${u.dept || 'NIT'}</span>`;
-        } else {
-          const roles = (u.staffRoles || []).map(r => `<span class="group-pill">${r}</span>`).join(" ");
-          subInfo = roles || `<span class="group-pill">Trainer</span>`;
-        }
+      if (filteredUsers.length === 0) {
+        userTbody.innerHTML = `<tr><td colspan="7" style="text-align:center; color:#94a3b8; padding:25px;">No accounts found in this view.</td></tr>`;
+      } else {
+        filteredUsers.forEach(u => {
+          const isStudent = u.role === 'student';
+          let subInfo = "";
+          if (isStudent) {
+            subInfo = `<span class="group-pill" style="background:#e0f2fe; color:#0369a1;"><i class="fa-solid fa-chalkboard"></i> ${u.level || 'L5'} ${u.dept || 'NIT'}</span>`;
+          } else {
+            const roles = (u.staffRoles || []).map(r => `<span class="group-pill">${r}</span>`).join(" ");
+            subInfo = roles || `<span class="group-pill">Trainer</span>`;
+          }
 
-        const keyRef = u._fbKey || u.username;
-        const tr = document.createElement('tr');
-        tr.innerHTML = `
-          <td><span class="badge-role ${isStudent ? 'role-student' : 'role-staff'}">${u.role}</span></td>
-          <td><strong>${u.name}</strong></td>
-          <td><code>${u.username}</code></td>
-          <td><code>${u.pass}</code></td>
-          <td>${subInfo}</td>
-          <td><span class="badge-status ${u.status === 'active' ? 'status-active' : 'status-disabled'}">${u.status}</span></td>
-          <td>
-            <button class="btn-tbl btn-tbl-edit" title="Edit Class &amp; Privileges" onclick="openEditModal('${keyRef}')">
-              <i class="fa-solid fa-pen-to-square"></i>
-            </button>
-            <button class="btn-tbl btn-tbl-del" title="Delete User" onclick="deleteUserByExactKey('${keyRef}', '${u.name}')">
-              <i class="fa-solid fa-trash"></i>
-            </button>
-          </td>
-        `;
-        userTbody.appendChild(tr);
-      });
+          const keyRef = u._fbKey || u.username;
+          const tr = document.createElement('tr');
+          tr.innerHTML = `
+            <td><span class="badge-role ${isStudent ? 'role-student' : 'role-staff'}">${u.role || 'user'}</span></td>
+            <td><strong>${u.name || u.username}</strong></td>
+            <td><code>${u.username || u.id}</code></td>
+            <td><code>${u.pass || '••••••'}</code></td>
+            <td>${subInfo}</td>
+            <td><span class="badge-status ${u.status === 'active' ? 'status-active' : 'status-disabled'}">${u.status || 'active'}</span></td>
+            <td>
+              <button class="btn-tbl btn-tbl-edit" title="Edit Profile &amp; Class" onclick="openEditModal('${keyRef}')">
+                <i class="fa-solid fa-pen-to-square"></i>
+              </button>
+              <button class="btn-tbl btn-tbl-del" title="Delete User" onclick="deleteUserByExactKey('${keyRef}', '${u.name || u.username}')">
+                <i class="fa-solid fa-trash"></i>
+              </button>
+            </td>
+          `;
+          userTbody.appendChild(tr);
+        });
+      }
 
       document.getElementById('statTotalUsers').innerText = liveUsersList.length;
       document.getElementById('statTotalStudents').innerText = countStudents;
