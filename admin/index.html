@@ -74,9 +74,9 @@ th,td{padding:10px 12px;border-bottom:1px solid var(--border);text-align:left;ve
 <header class="top">
   <div class="brand"><img src="/logo.png?v=3" alt="" onerror="this.style.display='none'"><div>ACEJ KARAMA TSS &bull; <span id="who">Management Console</span></div></div>
   <div class="hc">
-    <div class="sync" id="sync"><i class="fa-solid fa-bolt"></i> <span>Connecting…</span></div>
+    <div class="sync" id="sync"><i class="fa-solid fa-bolt"></i> <span>Connected (Direct Sync)</span></div>
     <a class="btn ghost" href="/portal/" target="_blank"><i class="fa-solid fa-arrow-up-right-from-square"></i> Portal</a>
-    <button class="btn ghost" id="btnOut" style="display:none" data-act="logout"><i class="fa-solid fa-power-off"></i> Exit</button>
+    <button class="btn ghost" id="btnOut" style="display:none" onclick="logout()"><i class="fa-solid fa-power-off"></i> Exit</button>
   </div>
 </header>
 
@@ -85,8 +85,8 @@ th,td{padding:10px 12px;border-bottom:1px solid var(--border);text-align:left;ve
   <h2>Management Console</h2>
   <p>Sign in as Super Admin or as an authorised administrator.</p>
   <div class="fc"><input id="lu" type="text" placeholder="Username" value="Ismael" autocomplete="username"></div>
-  <div class="fc"><input id="lp" type="password" placeholder="Password" autocomplete="current-password"></div>
-  <button type="button" id="btnSignInSubmit" class="btn" style="width:100%;justify-content:center;padding:12px"><i class="fa-solid fa-unlock"></i> Sign in</button>
+  <div class="fc"><input id="lp" type="password" placeholder="Password" autocomplete="current-password" onkeydown="if(event.key==='Enter')executeAdminLogin()"></div>
+  <button type="button" class="btn" style="width:100%;justify-content:center;padding:12px" onclick="executeAdminLogin()"><i class="fa-solid fa-unlock"></i> Sign in</button>
 </section>
 
 <div id="app"><div class="layout">
@@ -383,18 +383,22 @@ function listen() {
   if (listening) return;
   listening = true;
 
-  db.ref("users").on("value", s => { S.users = parseUsers(s.val()); renderAll(); });
-  db.ref("groups").on("value", s => { const v = s.val(); S.groups = Array.isArray(v) ? v : (v ? Object.values(v) : DEFAULT_GROUPS.slice()); renderAll(); });
-  db.ref("roleDefs").on("value", s => { const v = s.val(); if (!v) { if (isSuper()) db.ref("roleDefs").set(keyed(DEFAULT_ROLES)); S.roles = keyed(DEFAULT_ROLES); } else S.roles = v; renderAll(); });
-  db.ref("marks").on("value", s => { S.marks = s.val() || {}; renderMarks(); renderClasses(); renderDash(); });
-  db.ref("broadcast").on("value", s => { S.ann = s.val() || {}; renderAnn(); });
-  db.ref("audit").limitToLast(150).on("value", s => { S.audit = Object.values(s.val() || {}).sort((a, b) => b.ts - a.ts); renderAudit(); });
+  db.ref("users").on("value", s => { S.users = parseUsers(s.val()); if(ME) renderAll(); });
+  db.ref("groups").on("value", s => { const v = s.val(); S.groups = Array.isArray(v) ? v : (v ? Object.values(v) : DEFAULT_GROUPS.slice()); if(ME) renderAll(); });
+  db.ref("roleDefs").on("value", s => { const v = s.val(); if (!v) { if (isSuper()) db.ref("roleDefs").set(keyed(DEFAULT_ROLES)); S.roles = keyed(DEFAULT_ROLES); } else S.roles = v; if(ME) renderAll(); });
+  db.ref("marks").on("value", s => { S.marks = s.val() || {}; if(ME) { renderMarks(); renderClasses(); renderDash(); } });
+  db.ref("broadcast").on("value", s => { S.ann = s.val() || {}; if(ME) renderAnn(); });
+  db.ref("audit").limitToLast(150).on("value", s => { S.audit = Object.values(s.val() || {}).sort((a, b) => b.ts - a.ts); if(ME) renderAudit(); });
 }
 
-/* ============ AUTH ============ */
-async function processLogin() {
+/* ============ DIRECT LOGIN HANDLER ============ */
+async function executeAdminLogin() {
   const u = $("lu").value.trim();
   const p = $("lp").value.trim();
+
+  if (!u || !p) {
+    return alert("Please enter both username and password.");
+  }
 
   if (u === MASTER.user && p === MASTER.pass) {
     ME = { isSuper: true, name: "Super Admin (" + MASTER.user + ")", username: MASTER.user };
@@ -413,13 +417,9 @@ async function processLogin() {
     ME = { isSuper: false, name: "Admin (" + m.name + ")", username: m.username, user: m };
     enter();
   } catch(err) {
-    alert("Database connection error: " + err.message);
+    alert("Connection error: " + err.message);
   }
 }
-
-$("btnSignInSubmit").addEventListener("click", processLogin);
-$("lp").addEventListener("keydown", e => { if (e.key === "Enter") processLogin(); });
-$("lu").addEventListener("keydown", e => { if (e.key === "Enter") $("lp").focus(); });
 
 function enter() {
   sessionStorage.setItem("ACEJ_ADMIN", JSON.stringify({ isSuper: ME.isSuper, username: ME.username, name: ME.name }));
@@ -492,13 +492,18 @@ function renderAll() {
 
 function chart(id, type, labels, data, colors) {
   if (typeof Chart === "undefined") return;
+  const canvas = $(id);
+  if (!canvas || canvas.offsetParent === null) return;
+
   if (charts[id]) {
     try { charts[id].destroy(); } catch(e){}
   }
-  charts[id] = new Chart($(id), {
+  charts[id] = new Chart(canvas, {
     type,
     data: { labels, datasets: [{ data, backgroundColor: colors, borderRadius: 6 }] },
     options: {
+      responsive: true,
+      maintainAspectRatio: false,
       plugins: { legend: { display: type === "doughnut", position: "bottom" } },
       scales: type === "bar" ? { y: { beginAtZero: true, ticks: { precision: 0 } } } : {}
     }
@@ -513,14 +518,17 @@ function renderDash() {
   $("sAdm").textContent = U.filter(u => u.role === "admin").length;
   $("sGrp").textContent = S.groups.length;
   $("sDis").textContent = U.filter(u => u.status === "disabled").length;
-  chart("chClass", "bar", CLASSES, CLASSES.map(c => U.filter(u => u.role === "student" && classOf(u) === c).length), "#0047AB");
-  const rc = {};
-  U.forEach(u => {
-    if (u.role === "student") rc.Student = (rc.Student || 0) + 1;
-    else if ((u.staffRoles || []).length) u.staffRoles.forEach(r => rc[r] = (rc[r] || 0) + 1);
-    else rc[u.role === "admin" ? "Administrator" : "Staff"] = (rc[u.role === "admin" ? "Administrator" : "Staff"] || 0) + 1;
-  });
-  chart("chRole", "doughnut", Object.keys(rc), Object.values(rc), ["#0047AB", "#FFC72C", "#7e22ce", "#10b981", "#ef4444", "#0ea5e9", "#f97316", "#64748b", "#84cc16", "#ec4899", "#14b8a6"]);
+  
+  if ($("tab-dash").classList.contains("show")) {
+    chart("chClass", "bar", CLASSES, CLASSES.map(c => U.filter(u => u.role === "student" && classOf(u) === c).length), "#0047AB");
+    const rc = {};
+    U.forEach(u => {
+      if (u.role === "student") rc.Student = (rc.Student || 0) + 1;
+      else if ((u.staffRoles || []).length) u.staffRoles.forEach(r => rc[r] = (rc[r] || 0) + 1);
+      else rc[u.role === "admin" ? "Administrator" : "Staff"] = (rc[u.role === "admin" ? "Administrator" : "Staff"] || 0) + 1;
+    });
+    chart("chRole", "doughnut", Object.keys(rc), Object.values(rc), ["#0047AB", "#FFC72C", "#7e22ce", "#10b981", "#ef4444", "#0ea5e9", "#f97316", "#64748b", "#84cc16", "#ec4899", "#14b8a6"]);
+  }
 }
 
 function userSub(u) {
