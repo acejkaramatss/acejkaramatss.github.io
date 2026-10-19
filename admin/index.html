@@ -69,6 +69,13 @@ th,td{padding:10px 12px;border-bottom:1px solid var(--border);text-align:left;ve
 .super-badge{background:var(--gold);color:var(--navy);padding:2px 8px;border-radius:5px;font-size:.7rem;font-weight:900}
 .imp-banner{background:#fffbeb;border:1px solid var(--gold);padding:10px 14px;border-radius:8px;font-size:.84rem;margin-bottom:14px}
 @media(max-width:900px){.layout{grid-template-columns:1fr}nav.side{position:static;height:auto;display:flex;overflow-x:auto;gap:4px}nav.side button{width:auto;white-space:nowrap}nav.side .sep{display:none}.g2,.row2{grid-template-columns:1fr}}
+.hd-thread{background:#f8fafc;border:1px solid var(--border);border-radius:10px;padding:12px;margin-bottom:12px;max-height:340px;overflow-y:auto}
+.hd-msg{max-width:82%;margin-bottom:9px;padding:8px 12px;border-radius:10px;font-size:.88rem}
+.hd-msg.from-user{background:#eff6ff;border:1px solid #bfdbfe;margin-right:auto}
+.hd-msg.from-admin{background:#ecfdf5;border:1px solid #a7f3d0;margin-left:auto}
+.hd-meta{font-size:.7rem;color:var(--muted);font-weight:700;margin-bottom:2px}
+.hd-text{white-space:pre-wrap;word-break:break-word}
+.nav-badge{margin-left:auto;background:var(--red);color:#fff;border-radius:10px;font-size:.68rem;font-weight:800;padding:1px 7px}
 </style>
 </head>
 <body>
@@ -101,6 +108,8 @@ th,td{padding:10px 12px;border-bottom:1px solid var(--border);text-align:left;ve
   <button data-tab="classes" data-perm="classes.view"><i class="fa-solid fa-school"></i> Classes &amp; Teachers</button>
   <button data-tab="marks" data-perm="marks.view"><i class="fa-solid fa-graduation-cap"></i> Marks Inspector</button>
   <button data-tab="announce" data-perm="announce.post"><i class="fa-solid fa-bullhorn"></i> Announcements</button>
+  <div class="sep">Support</div>
+  <button data-tab="helpdesk" data-perm="helpdesk.manage"><i class="fa-solid fa-headset"></i> Help Desk <span id="hdBadge" class="nav-badge" style="display:none">0</span></button>
   <div class="sep">System</div>
   <button data-tab="roles" data-super="1"><i class="fa-solid fa-key"></i> Roles &amp; Privileges</button>
   <button data-tab="audit" data-super="1"><i class="fa-solid fa-clipboard-list"></i> Audit Log</button>
@@ -141,7 +150,7 @@ th,td{padding:10px 12px;border-bottom:1px solid var(--border);text-align:left;ve
       <input id="search" placeholder="Search name, ID, role…" style="width:240px">
     </div>
     <div class="strip" id="grpFilter"></div>
-    <div id="impNote" class="imp-banner" style="display:none"><i class="fa-solid fa-shield-halved"></i> Super Admin actions are audited. Account impersonation is disabled in this build.</div>
+    <div id="impNote" class="imp-banner" style="display:none"><i class="fa-solid fa-shield-halved"></i> Super Admin actions are audited. Use the purple eye button on a student or staff row to open a read-only preview of their portal. Every preview is recorded in the audit log.</div>
     <div class="tbl"><table><thead><tr><th>Type</th><th>Full name</th><th>Username</th><th>Credential status</th><th>Class / Roles</th><th>Status</th><th>Actions</th></tr></thead><tbody id="uBody"></tbody></table></div>
   </div>
 </section>
@@ -234,10 +243,39 @@ th,td{padding:10px 12px;border-bottom:1px solid var(--border);text-align:left;ve
   </div>
 </section>
 
+<!-- HELP DESK (ADDED) -->
+<section class="tab" id="tab-helpdesk">
+  <h2 class="pt"><i class="fa-solid fa-headset"></i> Help Desk</h2>
+  <div class="stats">
+    <div class="stat" style="border-color:var(--red)"><div class="l">Waiting for reply</div><div class="d" id="hdWaiting">0</div></div>
+    <div class="stat" style="border-color:var(--green)"><div class="l">Replied</div><div class="d" id="hdReplied">0</div></div>
+    <div class="stat" style="border-color:var(--muted)"><div class="l">Closed</div><div class="d" id="hdClosed">0</div></div>
+  </div>
+  <div class="card">
+    <div class="strip" style="justify-content:space-between">
+      <div class="strip" id="hdFilters" style="margin:0"></div>
+      <input id="hdSearch" placeholder="Search name, subject…" style="width:240px">
+    </div>
+    <div class="tbl"><table><thead><tr><th>From</th><th>Class / Role</th><th>Subject</th><th>Last activity</th><th>Status</th><th></th></tr></thead><tbody id="hdBody"></tbody></table></div>
+  </div>
+  <div class="card" id="hdDetail" style="display:none"></div>
+  <div class="card">
+    <h3><i class="fa-solid fa-paper-plane"></i> Send a message to a user</h3>
+    <form id="hdCompose">
+      <div class="row2">
+        <div class="fc"><label>To</label><select id="hdTo" required></select></div>
+        <div class="fc"><label>Subject</label><input id="hdSubject" maxlength="120" required></div>
+      </div>
+      <div class="fc"><label>Message</label><textarea id="hdMessage" rows="3" maxlength="2000" required></textarea></div>
+      <button type="submit" class="btn"><i class="fa-solid fa-paper-plane"></i> Send</button>
+    </form>
+  </div>
+</section>
+
 <!-- ROLES -->
 <section class="tab" id="tab-roles">
   <h2 class="pt"><i class="fa-solid fa-key"></i> Roles &amp; Privileges</h2>
-  <div class="imp-banner"><i class="fa-solid fa-shield-halved"></i> Only the Super Admin can edit roles or view the audit log. Account impersonation is not enabled in this build; add it only through a server-verified portal workflow.</div>
+  <div class="imp-banner"><i class="fa-solid fa-shield-halved"></i> Only the Super Admin can edit roles or view the audit log. Portal previews (the eye button in All Accounts) are read-only and are recorded in the audit log.</div>
   <div class="card"><h3>Create a new role</h3>
     <form id="roleForm" class="row2"><input id="rName" placeholder="Role name e.g. Librarian" required><input id="rDesc" placeholder="Short description"><button type="submit" class="btn green" style="grid-column:1/-1;justify-content:center"><i class="fa-solid fa-plus"></i> Add role</button></form></div>
   <div class="g3" id="roleCards"></div>
@@ -296,7 +334,7 @@ const DEFAULT_GROUPS = ["Core Class", "Tech Club", "AERG Itetero", "Prefects", "
 const PERMS = {
   Accounts: {"users.view":"View accounts", "users.create":"Create accounts", "users.edit":"Edit accounts", "users.delete":"Delete accounts", "groups.manage":"Manage groups & folders"},
   Academics: {"classes.view":"View classes & teachers", "classes.manage":"Manage class assignments", "marks.view":"View marks", "marks.edit":"Enter / edit marks", "marks.approve":"Approve & publish marks", "exams.manage":"Manage exams", "attendance.manage":"Take attendance", "timetable.manage":"Manage timetable", "library.manage":"Manage library"},
-  Operations: {"discipline.manage":"Manage discipline records", "stock.manage":"Manage stock & inventory", "finance.manage":"Manage fees & finance", "reports.view":"View reports", "announce.post":"Post announcements"}
+  Operations: {"discipline.manage":"Manage discipline records", "stock.manage":"Manage stock & inventory", "finance.manage":"Manage fees & finance", "reports.view":"View reports", "announce.post":"Post announcements", "helpdesk.manage":"Reply to Help Desk messages"}
 };
 const ALL_PERMS = Object.values(PERMS).flatMap(group => Object.keys(group));
 const DEFAULT_ROLES = {
@@ -478,6 +516,7 @@ function listen() {
   });
   attachListener("marks", snap => { S.marks = snap.val() || {}; renderMarks(); renderClasses(); renderDash(); });
   attachListener("broadcast", snap => { S.ann = snap.val() || {}; renderAnn(); });
+  attachListener("helpdesk", snap => { parseHelpdesk(snap.val()); renderHelpdesk(); });
   if (isSuper()) attachListener("audit", snap => { S.audit = Object.values(snap.val() || {}).sort((a,b) => Number(b.ts || 0) - Number(a.ts || 0)); renderAudit(); }, {last:150});
 }
 function showAuthorizedApp(access, user) {
@@ -564,7 +603,7 @@ function go(tabName) {
 }
 function renderAll() {
   if (!ME) return;
-  applyGates(); renderDash(); renderUsers(); renderCreateLists(); renderFolders(); renderClasses(); renderMarks(); renderRoles(); renderAnn(); renderAudit();
+  applyGates(); renderDash(); renderUsers(); renderCreateLists(); renderFolders(); renderClasses(); renderMarks(); renderRoles(); renderAnn(); renderAudit(); renderHelpdesk();
 }
 function chart(id, type, labels, data, colors) {
   if (typeof Chart === "undefined") return;
@@ -610,7 +649,7 @@ function renderUsers() {
   $("uBody").innerHTML = rows.length ? rows.map(user => {
     const key = esc(user._k || user.username), touch = canTouch(user);
     const status = user.status || "active";
-    return `<tr><td><span class="pill ${esc(user.role || "user")}">${esc(user.role || "user")}</span></td><td><b>${esc(user.name)}</b></td><td><code>${esc(user.username)}</code></td><td><span class="pill">Password hidden</span></td><td>${userSub(user)}</td><td><span class="pill ${status === "disabled" ? "bad" : "ok"}">${esc(status)}</span></td><td style="white-space:nowrap"><button class="btn sm" title="Edit account" data-act="edit" data-k="${key}" ${touch && can("users.edit") ? "" : "disabled"}><i class="fa-solid fa-pen"></i></button> <button class="btn sm gold" data-act="toggle" data-k="${key}" ${touch && can("users.edit") ? "" : "disabled"} title="Enable / disable"><i class="fa-solid fa-ban"></i></button> <button class="btn sm red" data-act="del" data-k="${key}" ${touch && can("users.delete") ? "" : "disabled"} title="Delete account"><i class="fa-solid fa-trash"></i></button></td></tr>`;
+    return `<tr><td><span class="pill ${esc(user.role || "user")}">${esc(user.role || "user")}</span></td><td><b>${esc(user.name)}</b></td><td><code>${esc(user.username)}</code></td><td><span class="pill">Password hidden</span></td><td>${userSub(user)}</td><td><span class="pill ${status === "disabled" ? "bad" : "ok"}">${esc(status)}</span></td><td style="white-space:nowrap"><button class="btn sm" title="Edit account" data-act="edit" data-k="${key}" ${touch && can("users.edit") ? "" : "disabled"}><i class="fa-solid fa-pen"></i></button> <button class="btn sm gold" data-act="toggle" data-k="${key}" ${touch && can("users.edit") ? "" : "disabled"} title="Enable / disable"><i class="fa-solid fa-ban"></i></button> <button class="btn sm red" data-act="del" data-k="${key}" ${touch && can("users.delete") ? "" : "disabled"} title="Delete account"><i class="fa-solid fa-trash"></i></button> <button class="btn sm purple" title="View this user's portal (read-only)" data-viewas="${key}" ${isSuper() && (user.role === "student" || user.role === "staff") ? "" : "disabled"}><i class="fa-solid fa-eye"></i></button></td></tr>`;
   }).join("") : `<tr><td colspan="7" style="text-align:center;color:#94a3b8;padding:24px">No accounts in this view.</td></tr>`;
 }
 function chkList(element, items, selected, name) {
@@ -957,6 +996,176 @@ $("annForm").addEventListener("submit", publishAnnouncement);
 $("roleForm").addEventListener("submit", createRole);
 $("search").addEventListener("input", renderUsers);
 $("editModal").addEventListener("click", event=>{ if(event.target===$("editModal")) closeEdit(); });
+
+/* =====================================================================
+ * ADDED: HELP DESK INBOX + "VIEW PORTAL AS USER" (read-only preview)
+ * Uses the same Firebase connection (db) as the rest of this console.
+ * Help messages live at helpdesk/<userKey>/<threadId>.
+ * ===================================================================== */
+S.help = [];
+let hdFilter = "all", hdOpen = null, hdPrevWaiting = null;
+const hdDrafts = {};
+const hdStatus = t => t.status === "closed" ? "closed" : (t.lastFrom === "admin" ? "replied" : "waiting");
+const hdFmt = ts => Number(ts) ? new Date(Number(ts)).toLocaleString() : "";
+const hdUserOf = t => S.users.find(u => ck(u.username).toLowerCase() === t.uk);
+
+function parseHelpdesk(value) {
+  const out = [];
+  Object.entries(value || {}).forEach(([uk, threads]) => {
+    if (!threads || typeof threads !== "object") return;
+    Object.entries(threads).forEach(([tid, t]) => { if (t && typeof t === "object") out.push({...t, uk, tid}); });
+  });
+  out.sort((a, b) => Number(b.lastTs || b.createdAt || 0) - Number(a.lastTs || a.createdAt || 0));
+  S.help = out;
+}
+
+function renderHelpdesk() {
+  if (!$("hdBody")) return;
+  const help = S.help || [];
+  const count = name => help.filter(t => hdStatus(t) === name).length;
+  const waiting = count("waiting");
+
+  const badge = $("hdBadge");
+  if (badge) { badge.textContent = waiting; badge.style.display = waiting ? "inline-block" : "none"; }
+  if (hdPrevWaiting !== null && waiting > hdPrevWaiting && can("helpdesk.manage")) toast(`Help Desk: ${waiting} message(s) waiting for a reply`);
+  hdPrevWaiting = waiting;
+  if (!can("helpdesk.manage")) return;
+
+  $("hdWaiting").textContent = waiting; $("hdReplied").textContent = count("replied"); $("hdClosed").textContent = count("closed");
+
+  $("hdFilters").innerHTML = [["all","All"],["waiting","Waiting"],["replied","Replied"],["closed","Closed"]]
+    .map(([id, label]) => `<button class="fb ${hdFilter === id ? "active" : ""}" data-hd-filter="${id}">${label}</button>`).join("");
+
+  const query = ($("hdSearch").value || "").toLowerCase();
+  const rows = help.filter(t => hdFilter === "all" || hdStatus(t) === hdFilter)
+    .filter(t => !query || `${t.name || ""} ${t.username || ""} ${t.subject || ""}`.toLowerCase().includes(query));
+  $("hdBody").innerHTML = rows.length ? rows.map(t => {
+    const st = hdStatus(t), key = `${t.uk}/${t.tid}`;
+    return `<tr><td><b>${esc(t.name || t.username || t.uk)}</b><br><code>${esc(t.username || t.uk)}</code></td><td>${t.class ? `<span class="pill role">${esc(t.class)}</span>` : ""}<span class="pill ${esc(t.role || "")}">${esc(t.role || "")}</span></td><td>${esc(t.subject || "(No subject)")}${t.category ? `<br><small style="color:var(--muted)">${esc(t.category)}</small>` : ""}</td><td>${esc(hdFmt(t.lastTs || t.createdAt))}</td><td><span class="pill ${st === "waiting" ? "bad" : (st === "replied" ? "ok" : "")}">${st === "waiting" ? "Waiting" : (st === "replied" ? "Replied" : "Closed")}</span></td><td><button class="btn sm" data-hd-open="${esc(key)}"><i class="fa-solid fa-comments"></i> ${hdOpen === key ? "Hide" : "Open"}</button></td></tr>`;
+  }).join("") : `<tr><td colspan="6" style="text-align:center;color:#94a3b8;padding:24px">No messages in this view.</td></tr>`;
+
+  // list of people for "send a message"
+  const sel = $("hdTo");
+  const people = S.users.filter(u => u.role === "student" || u.role === "staff").sort((a, b) => String(a.name).localeCompare(String(b.name)));
+  const sig = people.map(u => u._k).join("|");
+  if (sel.dataset.sig !== sig) {
+    const prev = sel.value;
+    sel.innerHTML = people.map(u => `<option value="${esc(u._k)}">${esc(u.name)} (${esc(u.username)}) - ${esc(u.role)}</option>`).join("");
+    sel.dataset.sig = sig;
+    if (prev) sel.value = prev;
+  }
+
+  // conversation panel (keep typing position when live updates arrive)
+  const typing = document.activeElement && document.activeElement.id === "hdReply";
+  const detail = $("hdDetail");
+  const cur = hdOpen ? help.find(t => `${t.uk}/${t.tid}` === hdOpen) : null;
+  if (!cur) { detail.style.display = "none"; detail.innerHTML = ""; return; }
+
+  const st = hdStatus(cur);
+  const msgs = Object.values(cur.messages || {}).filter(Boolean).sort((a, b) => Number(a.ts || 0) - Number(b.ts || 0));
+  const owner = hdUserOf(cur);
+  detail.style.display = "block";
+  detail.innerHTML = `
+    <div class="strip" style="justify-content:space-between"><h3 style="margin:0"><i class="fa-solid fa-comments"></i> ${esc(cur.subject || "(No subject)")}</h3><span class="pill ${st === "waiting" ? "bad" : (st === "replied" ? "ok" : "")}">${st}</span></div>
+    <p style="font-size:.82rem;color:var(--muted);margin:6px 0 12px">${esc(cur.name || cur.username || cur.uk)} · <code>${esc(cur.username || cur.uk)}</code> ${cur.role ? "· " + esc(cur.role) : ""} ${cur.class ? "· " + esc(cur.class) : ""} ${cur.category ? "· " + esc(cur.category) : ""}</p>
+    <div class="hd-thread">${msgs.map(m => `<div class="hd-msg ${m.from === "admin" ? "from-admin" : "from-user"}"><div class="hd-meta">${m.from === "admin" ? "Admin" + (m.name ? " (" + esc(m.name) + ")" : "") : esc(m.name || "User")} · ${esc(hdFmt(m.ts))}</div><div class="hd-text">${esc(m.text)}</div></div>`).join("") || `<p style="color:var(--muted)">No messages.</p>`}</div>
+    <textarea id="hdReply" rows="3" maxlength="2000" placeholder="Write your reply..."></textarea>
+    <div class="strip" style="margin-top:10px">
+      <button class="btn" data-hd-send="1"><i class="fa-solid fa-paper-plane"></i> Send reply</button>
+      <button class="btn gold" data-hd-toggle="1"><i class="fa-solid fa-${st === "closed" ? "lock-open" : "check"}"></i> ${st === "closed" ? "Reopen" : "Mark closed"}</button>
+      <button class="btn purple" data-viewas="${owner ? esc(owner._k) : ""}" ${isSuper() && owner ? "" : "disabled"}><i class="fa-solid fa-eye"></i> View their portal</button>
+      <button class="btn red" data-hd-del="1" ${isSuper() ? "" : "disabled"}><i class="fa-solid fa-trash"></i> Delete</button>
+    </div>`;
+  const box = $("hdReply");
+  box.value = hdDrafts[hdOpen] || "";
+  box.oninput = () => { hdDrafts[hdOpen] = box.value; };
+  if (typing) { box.focus(); box.setSelectionRange(box.value.length, box.value.length); }
+}
+
+function hdCurrent() { return hdOpen ? (S.help || []).find(t => `${t.uk}/${t.tid}` === hdOpen) : null; }
+
+async function hdSend() {
+  if (!can("helpdesk.manage")) return toast("Permission denied.");
+  const cur = hdCurrent(); if (!cur) return;
+  const text = ($("hdReply").value || "").trim();
+  if (!text) return toast("Write your reply first.");
+  const now = Date.now();
+  const updates = {lastTs: now, lastFrom: "admin", status: "open"};
+  updates[`messages/m_${now}`] = {from: "admin", name: ME.name, text, ts: now};
+  try {
+    await db.ref(`helpdesk/${cur.uk}/${cur.tid}`).update(updates);
+    hdDrafts[hdOpen] = "";
+    await log("helpdesk-reply", `${cur.username || cur.uk}: ${cur.subject || ""}`);
+    toast("Reply sent.");
+  } catch (err) { alert("Could not send reply: " + friendlyError(err)); }
+}
+
+async function hdToggleClosed() {
+  if (!can("helpdesk.manage")) return toast("Permission denied.");
+  const cur = hdCurrent(); if (!cur) return;
+  const next = hdStatus(cur) === "closed" ? "open" : "closed";
+  try { await db.ref(`helpdesk/${cur.uk}/${cur.tid}/status`).set(next); await log("helpdesk-status", `${cur.username || cur.uk}: ${next}`); }
+  catch (err) { alert("Could not update: " + friendlyError(err)); }
+}
+
+async function hdDelete() {
+  if (!isSuper()) return toast("Only the Super Admin can delete conversations.");
+  const cur = hdCurrent(); if (!cur) return;
+  if (!confirm("Delete this whole conversation?")) return;
+  try { await db.ref(`helpdesk/${cur.uk}/${cur.tid}`).remove(); await log("helpdesk-delete", `${cur.username || cur.uk}: ${cur.subject || ""}`); hdOpen = null; }
+  catch (err) { alert("Could not delete: " + friendlyError(err)); }
+}
+
+async function hdComposeSubmit(event) {
+  event.preventDefault();
+  if (!can("helpdesk.manage")) return toast("Permission denied.");
+  const user = S.users.find(u => u._k === $("hdTo").value);
+  const subject = $("hdSubject").value.trim(), text = $("hdMessage").value.trim();
+  if (!user || !subject || !text) return toast("Choose a person and write a subject and message.");
+  const now = Date.now(), uk = ck(user.username).toLowerCase(), tid = "h_" + now;
+  const thread = {
+    id: tid, subject, category: "From administration", username: user.username, name: user.name, role: user.role,
+    class: user.role === "student" ? classOf(user) : "", status: "open", createdAt: now, lastTs: now, lastFrom: "admin",
+    messages: {["m_" + now]: {from: "admin", name: ME.name, text, ts: now}}
+  };
+  try {
+    await db.ref(`helpdesk/${uk}/${tid}`).set(thread);
+    await log("helpdesk-new", `${user.username}: ${subject}`);
+    $("hdCompose").reset(); toast("Message sent to " + user.name + ".");
+  } catch (err) { alert("Could not send message: " + friendlyError(err)); }
+}
+
+/* ---- VIEW A USER'S PORTAL (Super Admin only, read-only, audited) ---- */
+async function viewAsUser(key) {
+  if (!isSuper()) return toast("Only the Super Admin can open a user's portal.");
+  const user = S.users.find(u => u._k === key);
+  if (!user) return toast("Account not found.");
+  if (user.role !== "student" && user.role !== "staff") return toast("Administrators do not have a portal view.");
+  const win = window.open("about:blank", "_blank");
+  if (!win) return toast("Pop-up blocked. Allow pop-ups for this site and try again.");
+  try {
+    const bytes = new Uint8Array(24); crypto.getRandomValues(bytes);
+    const token = Array.from(bytes, b => b.toString(16).padStart(2, "0")).join("");
+    const now = Date.now();
+    await db.ref(`viewAsTokens/${token}`).set({userKey: user._k, role: user.role, by: ME.email || ME.name || "", uid: ME.uid, ts: now, exp: now + 120000});
+    await log("view-as-user", `${user.username} (${user.role}) - read-only portal preview`);
+    win.location.href = `/portal/?viewAs=${token}`;
+  } catch (err) {
+    try { win.close(); } catch (_) {}
+    alert("Could not open the portal preview: " + friendlyError(err));
+  }
+}
+
+document.addEventListener("click", async event => {
+  const f = event.target.closest("[data-hd-filter]"); if (f) { hdFilter = f.dataset.hdFilter; renderHelpdesk(); return; }
+  const o = event.target.closest("[data-hd-open]"); if (o) { hdOpen = (hdOpen === o.dataset.hdOpen) ? null : o.dataset.hdOpen; renderHelpdesk(); return; }
+  if (event.target.closest("[data-hd-send]")) { await hdSend(); return; }
+  if (event.target.closest("[data-hd-toggle]")) { await hdToggleClosed(); return; }
+  if (event.target.closest("[data-hd-del]")) { await hdDelete(); return; }
+  const v = event.target.closest("[data-viewas]"); if (v && v.dataset.viewas) { await viewAsUser(v.dataset.viewas); return; }
+});
+$("hdSearch").addEventListener("input", renderHelpdesk);
+$("hdCompose").addEventListener("submit", hdComposeSubmit);
 
 </script>
 </body>
